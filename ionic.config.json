@@ -1,0 +1,7 @@
+{
+  "name": "crowd.Bible",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
