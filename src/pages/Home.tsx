@@ -20,6 +20,9 @@ import { chatbubbleOutline, notificationsOutline } from "ionicons/icons";
 
 import { MockTranslationPage } from "../components/readerFeedback/MockTranslationPage";
 import { MockTextFeedbackPage } from "../components/readerFeedback/MockTextFeedbackPage";
+import { MockChapterFeedbackPage } from "../components/readerFeedback/MockChapterFeedbackPage";
+import { MockChapterListPage } from "../components/readerFeedback/MockChapterListPage";
+import { MockVerseFeedbackPage } from "../components/readerFeedback/MockVerseFeedback";
 
 const Home: React.FC = () => {
   return (
@@ -88,6 +91,21 @@ const Home: React.FC = () => {
               path="/home/translation/feedback/text"
               exact
               render={() => <MockTextFeedbackPage />}
+            />
+            <Route
+              path="/home/translation/feedback/chapter"
+              exact
+              render={() => <MockChapterFeedbackPage />}
+            />
+            <Route
+              path="/home/translation/feedback/verse/chapter-list"
+              exact
+              render={() => <MockChapterListPage />}
+            />
+            <Route
+              path="/home/translation/feedback/verse/chapter-list/1"
+              exact
+              render={() => <MockVerseFeedbackPage />}
             />
           </IonRouterOutlet>
         </IonContent>

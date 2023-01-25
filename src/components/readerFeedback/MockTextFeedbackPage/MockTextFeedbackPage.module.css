@@ -10,6 +10,16 @@
   opacity: 0.5;
 }
 
+.titleLabel {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #5c6673;
+  opacity: 0.5;
+}
+
 .titleContainer {
   padding: 60px 20px 0px;
 }

@@ -1,17 +1,12 @@
 import { useState } from "react";
 
-import { IonContent, IonText, IonIcon, IonButton } from "@ionic/react";
+import { IonContent, IonIcon, IonButton } from "@ionic/react";
 
 import { closeOutline } from "ionicons/icons";
 
 import styles from "./MockTextFeedbackPage.module.css";
 
-import {
-  ColumnSpaceBetweenStack,
-  RowSpaceBetweenStack,
-} from "../SpaceBetweenStack";
-import { AgreeButton } from "../AgreeButton";
-import { SimpleQuill } from "../SimpleQuill";
+import { FeedbackEditor } from "../FeedbackEditor";
 import { TextSelection } from "../TextSelection";
 
 const TEMP_DOCUMENT =
@@ -25,47 +20,31 @@ export function MockTextFeedbackPage() {
 
   const isShownFeedbackInput = range.start !== null && range.end !== null;
 
-  console.log(isShownFeedbackInput);
-
   return (
     <IonContent className={styles.container}>
-      <RowSpaceBetweenStack
-        firstComponent={<h3 className={styles.title}>Translation</h3>}
-        lastComponent={
-          <IonButton
-            fill="clear"
-            size="small"
-            onClick={() => {
-              alert("clicked close button!");
-            }}
-            className={styles.iconButton}
-          >
-            <IonIcon icon={closeOutline} color="dark" />
-          </IonButton>
-        }
-        className={styles.titleContainer}
-      />
+      <div className={styles.titleContainer}>
+        <h3 className={styles.title}>Translation</h3>
+        <IonButton
+          fill="clear"
+          size="small"
+          onClick={() => {
+            alert("clicked close button!");
+          }}
+          className={styles.iconButton}
+        >
+          <IonIcon icon={closeOutline} color="dark" />
+        </IonButton>
+      </div>
 
-      <ColumnSpaceBetweenStack
-        firstComponent={
-          <TextSelection
-            text={TEMP_DOCUMENT}
-            range={range}
-            onChangeRange={({ start, end }) => setRange({ start, end })}
-            className={`${styles.textSelection}`}
-          />
-        }
-        lastComponent={
-          isShownFeedbackInput ? (
-            <ColumnSpaceBetweenStack
-              firstComponent={<AgreeButton />}
-              lastComponent={<SimpleQuill />}
-              className={styles.fullWidth}
-            />
-          ) : null
-        }
-        className={styles.textSelectionContainer}
-      />
+      <div className={styles.textSelectionContainer}>
+        <TextSelection
+          text={TEMP_DOCUMENT}
+          range={range}
+          onChangeRange={({ start, end }) => setRange({ start, end })}
+          className={`${styles.textSelection}`}
+        />
+        {isShownFeedbackInput ? <FeedbackEditor /> : null}
+      </div>
     </IonContent>
   );
 }

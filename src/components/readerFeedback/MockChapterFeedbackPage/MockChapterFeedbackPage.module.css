@@ -1,0 +1,63 @@
+.container {
+  padding: 60px 0 20px;
+  height: 100%;
+}
+
+.title {
+  margin: 0;
+  padding: 0;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: -0.02em;
+  text-transform: capitalize;
+  color: #1b1b1b;
+}
+
+.titleLabel {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #5c6673;
+  opacity: 0.5;
+}
+
+.iconButton {
+  font-size: 18px;
+  color: #5c6673;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+.chapterList {
+  padding: 0 20px;
+  overflow-y: auto;
+}
+
+.stackColumn,
+.stackRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.stackColumn {
+  flex-direction: column;
+  width: 100%;
+}
+
+.stackRow {
+  align-items: center;
+  flex-direction: row;
+}
+
+.padding20 {
+  padding: 0 20px;
+}
+
+.adjustedHeight {
+  height: calc(100% - 70px);
+}
