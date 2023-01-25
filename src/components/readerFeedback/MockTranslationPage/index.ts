@@ -1,0 +1,1 @@
+export { MockTranslationPage } from "./MochTranslationPage";
