@@ -27,6 +27,8 @@
 
 .verticalDivider {
   display: block;
+  position: relative;
+  top: 3px;
   width: 0px;
   height: 24px;
   border: 1px solid #c2cbd7;

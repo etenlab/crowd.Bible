@@ -1,0 +1,7 @@
+.stackColumn {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-direction: column;
+  width: 100%;
+}
