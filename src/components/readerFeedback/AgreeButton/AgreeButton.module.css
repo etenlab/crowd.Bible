@@ -1,5 +1,7 @@
 .buttonGrid {
   margin: 0;
+  padding: 0;
+  width: 100%;
 }
 
 .buttonCol {
@@ -11,7 +13,20 @@
 }
 
 .button {
+  display: flex;
+  align-items: center;
+  text-align: center;
   margin: 0;
+  padding: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #ffffff;
+  /* Inside auto layout */
+
+  flex: none;
+  order: 1;
+  flex-grow: 0;
 }
 
 .button label {

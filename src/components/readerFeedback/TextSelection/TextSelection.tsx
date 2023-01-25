@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, CSSProperties } from "react";
 import styles from "./TextSelection.module.css";
 
 type Position = number | null;
@@ -10,12 +10,16 @@ type TextSelectionProps = {
     end: Position;
   };
   onChangeRange({ start, end }: { start: Position; end: Position }): void;
+  className?: string;
+  style?: CSSProperties;
 };
 
 export function TextSelection({
   text,
   range,
   onChangeRange,
+  className,
+  style,
 }: TextSelectionProps) {
   const handleSelectWord = (position: number) => {
     // Set the starting position for range selection
@@ -91,7 +95,7 @@ export function TextSelection({
     .map(wordToJSX(true, start, false));
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${className}`} style={style}>
       {firstPart}
       <span className={styles.selectedText}>{selectedPart}</span>
       {secondPart}

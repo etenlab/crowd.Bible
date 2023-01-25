@@ -2,30 +2,49 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 16px;
-  background: #f0f0f0;
-  border-radius: 5px;
-  /* font-family: "Inter"; */
+  padding: 20px;
 }
 
-.titleContainer {
+.titleColContainer,
+.titleRowContainer {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   padding: 0;
+  text-align: left;
+}
+
+.titleRowContainer {
+  flex-direction: row;
+  gap: 4px;
+}
+
+.titleColContainer {
+  flex-direction: column;
 }
 
 .title {
   font-weight: 600;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: -0.02em;
+  text-transform: capitalize;
+  color: #1b1b1b;
+}
+
+.label {
+  display: block;
+  width: 100%;
+  font-weight: 600;
   font-size: 12px;
-  height: 15px;
-  line-height: 15px;
-  color: #1e1e1e;
-  opacity: 0.5;
+  line-height: 20px;
+  text-align: justify;
+  color: #5c6673;
 }
 
 .iconButton {
-  --padding-start: 0;
-  --padding-end: 0;
+  font-size: 28px;
+  color: #1b1b1b;
+  cursor: pointer;
 }

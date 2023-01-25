@@ -28,7 +28,11 @@ export function SimpleQuill() {
   const handleEmojiClick = (emojiData: EmojiClickData) => {
     setIsOpen(false);
     setValue((value) => {
-      return value.slice(0, lastCursorPosRef.current) + emojiData.emoji + value.slice(lastCursorPosRef.current);
+      return (
+        value.slice(0, lastCursorPosRef.current) +
+        emojiData.emoji +
+        value.slice(lastCursorPosRef.current)
+      );
     });
   };
 
@@ -41,7 +45,7 @@ export function SimpleQuill() {
   const handleIonBlur = async (e: IonTextareaCustomEvent<FocusEvent>) => {
     const element = await e.target.getInputElement();
     lastCursorPosRef.current = element.selectionStart;
-  }
+  };
 
   return (
     <div className={styles.container}>
@@ -54,13 +58,13 @@ export function SimpleQuill() {
         onIonChange={handleIonChange}
         onIonBlur={handleIonBlur}
       />
-      <button
+      <div className={styles.verticalDivider} />
+      <IonIcon
+        icon={happyOutline}
+        className={styles.happyIcon}
         id="emoji-button"
         onClick={openEmoji}
-        className={styles.emojiButton}
-      >
-        <IonIcon icon={happyOutline} className={styles.happyIcon} />
-      </button>
+      />
       <IonPopover
         side="top"
         trigger="emoji-button"
