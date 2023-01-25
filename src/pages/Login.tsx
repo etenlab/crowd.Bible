@@ -2,16 +2,16 @@ import { useState } from "react";
 // import { useIonToast } from '@ionic/react';
 import { useHistory } from 'react-router-dom'
 import axios from "axios"
-import { 
-    IonPage, 
-    IonContent, 
+import {
+    IonPage,
+    IonContent,
     IonGrid,
     IonRow,
     IonCol,
     IonButton,
     IonItem,
     IonInput
-    
+
 } from "@ionic/react";
 
 
@@ -24,7 +24,7 @@ const Login: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loginMessage, setLoginMessage] = useState("");
-    
+
     // const [token, setToken] = useState("");
 
     // const presentToast = (position: 'top' | 'middle' | 'bottom', message: string) => {
@@ -34,9 +34,9 @@ const Login: React.FC = () => {
     //       position: position
     //     });
     // };
-    
 
-    const handleLogin =  async () => {
+
+    const handleLogin = async () => {
 
         // console.log(process.env.REACT_APP_KEYCLOAK_URL);
         // console.log(username)
@@ -51,11 +51,11 @@ const Login: React.FC = () => {
             username: username,
             password: password,
             grant_type: 'password' //'client_credentials'
-        }),{
-            headers: { 
-              "Content-Type": "application/x-www-form-urlencoded"
+        }), {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
             }
-        }).then( async (response) => {
+        }).then(async (response) => {
             console.log("response.data.access_token");
             console.log(response.data.access_token)
             // setToken(response.data.access_token)
@@ -75,14 +75,14 @@ const Login: React.FC = () => {
             //     };
             //     localStorage.setItem('userAuth', JSON.stringify(userData))
             //     console.log("saved to local storage")
-                
+
             // }).catch((e) => {
             //     console.log(e)
             //     presentToast('bottom', e.response.dadta.error_description)
             // });
 
         }).catch(er => {
-            if(er.message){
+            if (er.message) {
                 setLoginMessage(er.response?.data.error_description)
             }
         });
@@ -95,16 +95,16 @@ const Login: React.FC = () => {
                     <IonTitle>Login</IonTitle>
                 </IonToolbar>
             </IonHeader> */}
-            <IonContent  class="auth-form" fullscreen>
+            <IonContent class="auth-form" fullscreen>
                 <IonGrid>
                     <IonRow>
                         <IonCol>
-                        <h2>Log in</h2>
+                            <h2>Log in</h2>
                         </IonCol>
                     </IonRow>
                     <IonRow>
                         <IonCol>
-                            {loginMessage!=="" && (
+                            {loginMessage !== "" && (
                                 <IonItem lines="none"><span className="error">{loginMessage}</span></IonItem>
                             )}
                         </IonCol>
@@ -123,12 +123,12 @@ const Login: React.FC = () => {
                     </IonRow>
                     <IonRow>
                         <IonCol>
-                        <IonButton onClick={handleLogin} expand="block" color="dark" size="default">Login</IonButton>
+                            <IonButton onClick={handleLogin} expand="block" color="dark" size="default">Login</IonButton>
                         </IonCol>
                     </IonRow>
                     <IonRow>
                         <IonCol>
-                        <h3 className="text-center">Don't have an account?</h3>
+                            <h3 className="text-center">Don't have an account?</h3>
                         </IonCol>
                     </IonRow>
                 </IonGrid>

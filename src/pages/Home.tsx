@@ -1,23 +1,97 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './Home.css';
+import { IonReactRouter } from "@ionic/react-router";
+import { Route } from "react-router-dom";
+
+import {
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonMenu,
+  IonMenuButton,
+  IonPage,
+  IonRouterOutlet,
+  IonTitle,
+  IonToolbar,
+  IonIcon,
+} from "@ionic/react";
+import { chatbubbleOutline, notificationsOutline } from "ionicons/icons";
+
+import { MockTranslationPage } from "../components/readerFeedback/MockTranslationPage";
+import { MockTextFeedbackPage } from "../components/readerFeedback/MockTextFeedbackPage";
 
 const Home: React.FC = () => {
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Blank</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
+      <IonReactRouter>
+        <IonMenu contentId="main-content">
+          <IonHeader>
+            <IonToolbar>
+              <IonTitle>crowd.Bible</IonTitle>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent fullscreen>
+            <IonList>
+              <IonItem href="#">
+                <IonLabel>Applications</IonLabel>
+              </IonItem>
+              <IonItem href="#">
+                <IonLabel>Language Proficiency</IonLabel>
+              </IonItem>
+            </IonList>
+          </IonContent>
+        </IonMenu>
+
+        <IonHeader>
           <IonToolbar>
-            <IonTitle size="large">Blank</IonTitle>
+            <IonButtons slot="end">
+              <IonMenuButton />
+            </IonButtons>
+            <IonTitle>crowd.Bible</IonTitle>
+            <IonButtons slot="primary">
+              <div
+                style={{
+                  display: "flex",
+                  gap: "30px",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "black",
+                  padding: "0 30px",
+                }}
+              >
+                <a href="#">
+                  <IonIcon
+                    className="ion-ios7-chatbubble-outline"
+                    icon={chatbubbleOutline}
+                  />
+                </a>
+                <a href="#">
+                  <IonIcon
+                    className="ion-ios7-chatbubble-outline"
+                    icon={notificationsOutline}
+                  />
+                </a>
+              </div>
+            </IonButtons>
+            <IonButtons></IonButtons>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer />
-      </IonContent>
+        <IonContent fullscreen id="main-content" scrollY={true}>
+          <IonRouterOutlet>
+            <Route
+              path="/home/translation"
+              exact
+              render={() => <MockTranslationPage />}
+            />
+            <Route
+              path="/home/translation/feedback/text"
+              exact
+              render={() => <MockTextFeedbackPage />}
+            />
+          </IonRouterOutlet>
+        </IonContent>
+      </IonReactRouter>
     </IonPage>
   );
 };

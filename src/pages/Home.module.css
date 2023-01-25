@@ -1,0 +1,12 @@
+.ionToolbar {
+  --min-height: 61px;
+}
+
+.ionTitle {
+  padding-inline: 20px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+  color: #000000;
+}
