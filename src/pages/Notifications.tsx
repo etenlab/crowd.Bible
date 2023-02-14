@@ -1,8 +1,7 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
-import './Home.css';
 
-const Home: React.FC = () => {
+const NotificationsPage: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
@@ -16,10 +15,10 @@ const Home: React.FC = () => {
             <IonTitle size="large">crowd.Bible</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer />
+        Notifications
       </IonContent>
     </IonPage>
   );
 };
 
-export default Home;
+export default NotificationsPage;

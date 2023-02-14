@@ -71,5 +71,5 @@
   "devDependencies": {
     "@capacitor/cli": "4.6.1"
   },
-  "description": "An Ionic project"
+  "description": "Crowd Sourcing Translation"
 }
