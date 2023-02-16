@@ -27,57 +27,15 @@ import { MockVerseFeedbackPage } from "../components/readerFeedback/MockVerseFee
 const Home: React.FC = () => {
   return (
     <IonPage>
-      <IonReactRouter>
-        <IonMenu contentId="main-content">
-          <IonHeader>
-            <IonToolbar>
-              <IonTitle>crowd.Bible</IonTitle>
-            </IonToolbar>
-          </IonHeader>
-          <IonContent fullscreen>
-            <IonList>
-              <IonItem href="#">
-                <IonLabel>Applications</IonLabel>
-              </IonItem>
-              <IonItem href="#">
-                <IonLabel>Language Proficiency</IonLabel>
-              </IonItem>
-            </IonList>
-          </IonContent>
-        </IonMenu>
-
-        <IonHeader>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>crowd.Bible</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent fullscreen>
+        <IonHeader collapse="condense">
           <IonToolbar>
-            <IonButtons slot="end">
-              <IonMenuButton />
-            </IonButtons>
-            <IonTitle>crowd.Bible</IonTitle>
-            <IonButtons slot="primary">
-              <div
-                style={{
-                  display: "flex",
-                  gap: "30px",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  color: "black",
-                  padding: "0 30px",
-                }}
-              >
-                <a href="#">
-                  <IonIcon
-                    className="ion-ios7-chatbubble-outline"
-                    icon={chatbubbleOutline}
-                  />
-                </a>
-                <a href="#">
-                  <IonIcon
-                    className="ion-ios7-chatbubble-outline"
-                    icon={notificationsOutline}
-                  />
-                </a>
-              </div>
-            </IonButtons>
-            <IonButtons></IonButtons>
+            <IonTitle size="large">crowd.Bible</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent fullscreen id="main-content" scrollY={true}>
@@ -109,7 +67,7 @@ const Home: React.FC = () => {
             />
           </IonRouterOutlet>
         </IonContent>
-      </IonReactRouter>
+      </IonContent>
     </IonPage>
   );
 };

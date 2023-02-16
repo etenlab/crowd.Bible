@@ -1,9 +1,6 @@
 import { Redirect, Route } from "react-router-dom";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import Home from "./pages/Home";
-import Welcome from "./pages/Welcome";
-import Login from "./pages/Login";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -23,27 +20,66 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
+import DiscussionPage from "./pages/Discussion";
+import DiscussionsListPage from "./pages/DiscussionsList";
+import DocumentsListPage from "./pages/DocumentsListPage";
+import NotificationsPage from "./pages/Notifications";
+import RegisterPage from "./pages/Register";
+import SettingsPage from "./pages/Settings";
+import SplashPage from "./pages/Splash";
+import TranslationCandidatesPage from "./pages/TranslationCandidates";
+import TranslationPage from "./pages/TranslationPage";
+import { Welcome } from "./pages/Welcome";
+import Login from "./pages/Login";
+
+import { ThemeProvider } from "@eten-lab/ui-kit";
 
 setupIonicReact();
 
 const App: React.FC = () => (
   <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/home*">
-          <Home />
-        </Route>
-        <Route exact path="/">
-          <Redirect to="/home" />
-        </Route>
-        <Route exact path="/welcome">
-          <Welcome />
-        </Route>
-        <Route exact path="/login">
-          <Login />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
+    <ThemeProvider>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Route exact path="/">
+            <Redirect to="/welcome" />
+          </Route>
+          <Route exact path="/welcome">
+            <Welcome />
+          </Route>
+          <Route exact path="/login">
+            <Login />
+          </Route>
+          <Route exact path="/discussion">
+            <DiscussionPage />
+          </Route>
+          <Route exact path="/discussions-list">
+            <DiscussionsListPage />
+          </Route>
+          <Route exact path="/documents-list">
+            <DocumentsListPage />
+          </Route>
+          <Route exact path="/notifications">
+            <NotificationsPage />
+          </Route>
+          <Route exact path="/register">
+            <RegisterPage />
+          </Route>
+          <Route exact path="/settings">
+            <SettingsPage />
+          </Route>
+          <Route exact path="/splash">
+            <SplashPage />
+          </Route>
+          <Route exact path="/translation-candidates">
+            <TranslationCandidatesPage />
+          </Route>
+          <Route exact path="/translation">
+            <TranslationPage />
+          </Route>
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </ThemeProvider>
   </IonApp>
 );
 
