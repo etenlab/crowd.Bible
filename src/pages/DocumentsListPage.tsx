@@ -1,24 +1,18 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import { IonContent } from "@ionic/react";
 
-const DocumentsListPage: React.FC = () => {
+import { PageLayout } from "../components/PageLayout";
+import { LangugeSelectionBox } from "../components/LanguageSelectionBox";
+import { DocumentList } from "../components/DocumentList";
+
+export function DocumentsListPage() {
   return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>crowd.Bible</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">crowd.Bible</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        Documents List
-      </IonContent>
-    </IonPage>
+    <PageLayout
+      content={
+        <IonContent fullscreen>
+          <LangugeSelectionBox />
+          <DocumentList />
+        </IonContent>
+      }
+    />
   );
-};
-
-export default DocumentsListPage;
+}
