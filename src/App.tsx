@@ -22,15 +22,15 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 import DiscussionPage from "./pages/Discussion";
 import DiscussionsListPage from "./pages/DiscussionsList";
-import DocumentsListPage from "./pages/DocumentsListPage";
 import NotificationsPage from "./pages/Notifications";
-import RegisterPage from "./pages/Register";
 import SettingsPage from "./pages/Settings";
 import SplashPage from "./pages/Splash";
-import TranslationCandidatesPage from "./pages/TranslationCandidates";
-import TranslationPage from "./pages/TranslationPage";
-import { Welcome } from "./pages/Welcome";
-import Login from "./pages/Login";
+import { WelcomePage } from "./pages/Welcome";
+import { LoginPage } from "./pages/Login";
+import { RegisterPage } from "./pages/Register";
+import { DocumentsListPage } from "./pages/DocumentsListPage";
+import { TranslationPage } from "./pages/TranslationPage";
+import { TranslationCandidatesPage } from "./pages/TranslationCandidates";
 
 import { ThemeProvider } from "@eten-lab/ui-kit";
 
@@ -45,10 +45,10 @@ const App: React.FC = () => (
             <Redirect to="/welcome" />
           </Route>
           <Route exact path="/welcome">
-            <Welcome />
+            <WelcomePage />
           </Route>
           <Route exact path="/login">
-            <Login />
+            <LoginPage />
           </Route>
           <Route exact path="/discussion">
             <DiscussionPage />

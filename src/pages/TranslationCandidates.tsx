@@ -1,24 +1,18 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import { useState } from "react";
 
-const TranslationCandidatesPage: React.FC = () => {
+import { IonContent } from "@ionic/react";
+
+import { PageLayout } from "../components/PageLayout";
+import { TranslationCandidates } from "../components/TranslationCandidates";
+
+export function TranslationCandidatesPage() {
   return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>crowd.Bible</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">crowd.Bible</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        Translation Candidates
-      </IonContent>
-    </IonPage>
+    <PageLayout
+      content={
+        <IonContent fullscreen>
+          <TranslationCandidates />
+        </IonContent>
+      }
+    />
   );
-};
-
-export default TranslationCandidatesPage;
+}
