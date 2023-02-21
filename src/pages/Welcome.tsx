@@ -9,7 +9,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "../styles.css";
 
-export function Welcome() {
+export function WelcomePage() {
   return (
     <PageLayout
       isHeader={false}
