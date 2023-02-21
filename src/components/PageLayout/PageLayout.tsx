@@ -36,37 +36,41 @@ export function PageLayout({
   return (
     <>
       <IonMenu ref={ref} contentId="main-content">
-        <IonHeader>
-          <IonToolbar>
-            <Toolbar
-              title="crowd.Bible"
-              buttons={{
-                notification: false,
-                discussion: false,
-                menu: false,
-              }}
-              onClickDiscussionBtn={() => history.push("/discussions-list")}
-              onClickNotificationBtn={() => history.push("/notifications")}
-              onClickMenuBtn={handleToggleMenu}
-            />
-          </IonToolbar>
-        </IonHeader>
+        {isHeader ? (
+          <IonHeader>
+            <IonToolbar>
+              <Toolbar
+                title="crowd.Bible"
+                buttons={{
+                  notification: false,
+                  discussion: false,
+                  menu: false,
+                }}
+                onClickDiscussionBtn={() => history.push("/discussions-list")}
+                onClickNotificationBtn={() => history.push("/notifications")}
+                onClickMenuBtn={handleToggleMenu}
+              />
+            </IonToolbar>
+          </IonHeader>
+        ) : null}
         <IonContent>{menu}</IonContent>
       </IonMenu>
 
       <IonPage>
-        <IonHeader>
-          <IonToolbar>
-            <Toolbar
-              title="crowd.Bible"
-              isNewDiscussion={isNewDiscussion}
-              isNewNotification={isNewNotification}
-              onClickDiscussionBtn={() => history.push("/discussions-list")}
-              onClickNotificationBtn={() => history.push("/notifications")}
-              onClickMenuBtn={handleToggleMenu}
-            />
-          </IonToolbar>
-        </IonHeader>
+        {isHeader ? (
+          <IonHeader>
+            <IonToolbar>
+              <Toolbar
+                title="crowd.Bible"
+                isNewDiscussion={isNewDiscussion}
+                isNewNotification={isNewNotification}
+                onClickDiscussionBtn={() => history.push("/discussions-list")}
+                onClickNotificationBtn={() => history.push("/notifications")}
+                onClickMenuBtn={handleToggleMenu}
+              />
+            </IonToolbar>
+          </IonHeader>
+        ) : null}
         <IonContent fullscreen id="main-content">
           {content}
         </IonContent>
