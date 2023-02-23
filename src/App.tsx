@@ -30,7 +30,12 @@ import { LoginPage } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
 import { DocumentsListPage } from "./pages/DocumentsListPage";
 import { TranslationPage } from "./pages/TranslationPage";
-import { TranslationCandidatesPage } from "./pages/TranslationCandidates";
+import { TranslationCandidatesPage } from "./pages/TranslationCandidatesPage";
+import { TranslationEditPage } from "./pages/TranslationEditPage";
+import { FeedbackPage } from "./pages/FeedbackPage";
+import { TextPartFeedbackPage } from "./pages/TextPartFeedbackPage";
+import { ChapterFeedbackPage } from "./pages/ChapterFeedbackPage";
+import { VerseFeedbackPage } from "./pages/VerseFeedbackPage";
 
 import { ThemeProvider } from "@eten-lab/ui-kit";
 
@@ -76,6 +81,21 @@ const App: React.FC = () => (
           </Route>
           <Route exact path="/translation">
             <TranslationPage />
+          </Route>
+          <Route exact path="/translation-edit">
+            <TranslationEditPage />
+          </Route>
+          <Route exact path="/feedback">
+            <FeedbackPage />
+          </Route>
+          <Route exact path="/feedback/text-part">
+            <TextPartFeedbackPage />
+          </Route>
+          <Route exact path="/feedback/chapter">
+            <ChapterFeedbackPage />
+          </Route>
+          <Route exact path="/feedback/verse">
+            <VerseFeedbackPage />
           </Route>
         </IonRouterOutlet>
       </IonReactRouter>

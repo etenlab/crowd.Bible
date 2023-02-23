@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { IonContent } from "@ionic/react";
-
 import {
   Button,
   MuiMaterial,
@@ -83,79 +81,77 @@ export function LoginPage() {
     <PageLayout
       isHeader={false}
       content={
-        <IonContent fullscreen>
-          <Box
-            component="form"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              padding: "123px 20px 20px 20px",
-              gap: "12px",
-            }}
-            noValidate
-            autoComplete="off"
+        <Box
+          component="form"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            padding: "123px 20px 20px 20px",
+            gap: "12px",
+          }}
+          noValidate
+          autoComplete="off"
+        >
+          <Typography
+            variant="h1"
+            sx={{ color: colors["dark"], marginBottom: "18px" }}
           >
-            <Typography
-              variant="h1"
-              sx={{ color: colors["dark"], marginBottom: "18px" }}
-            >
-              Register
-            </Typography>
+            Register
+          </Typography>
 
-            <Input
-              id="email"
-              name="email"
-              type="text"
-              label="Email"
-              onChange={formik.handleChange}
-              value={formik.values.email}
-              valid={
-                formik.values.email !== null
-                  ? !Boolean(formik.errors.email)
-                  : undefined
-              }
-              helperText={formik.errors.email}
-              fullWidth
-            />
+          <Input
+            id="email"
+            name="email"
+            type="text"
+            label="Email"
+            onChange={formik.handleChange}
+            value={formik.values.email}
+            valid={
+              formik.values.email !== null
+                ? !Boolean(formik.errors.email)
+                : undefined
+            }
+            helperText={formik.errors.email}
+            fullWidth
+          />
 
-            <PasswordInput
-              id="password"
-              name="password"
-              label="Password"
-              onChange={formik.handleChange}
-              onClickShowIcon={handleToggleShow}
-              show={show}
-              value={formik.values.password}
-              valid={
-                formik.values.password !== null
-                  ? !Boolean(formik.errors.password)
-                  : undefined
-              }
-              helperText={formik.errors.password}
-              fullWidth
-            />
+          <PasswordInput
+            id="password"
+            name="password"
+            label="Password"
+            onChange={formik.handleChange}
+            onClickShowIcon={handleToggleShow}
+            show={show}
+            value={formik.values.password}
+            valid={
+              formik.values.password !== null
+                ? !Boolean(formik.errors.password)
+                : undefined
+            }
+            helperText={formik.errors.password}
+            fullWidth
+          />
 
-            <Button
-              variant="contained"
-              endIcon
-              fullWidth
-              onClick={handleLogin}
-              disabled={!formik.isValid}
-            >
-              Login Now
-            </Button>
+          <Button
+            variant="contained"
+            endIcon
+            fullWidth
+            onClick={handleLogin}
+            disabled={!formik.isValid}
+          >
+            Login Now
+          </Button>
 
-            <Button
-              variant="text"
-              endIcon
-              fullWidth
-              color="gray"
-              onClick={handleGoRegister}
-            >
-              Don't you have an account?
-            </Button>
-          </Box>
-        </IonContent>
+          <Button
+            variant="text"
+            endIcon
+            fullWidth
+            color="gray"
+            onClick={handleGoRegister}
+          >
+            Don't you have an account?
+          </Button>
+        </Box>
       }
     />
   );

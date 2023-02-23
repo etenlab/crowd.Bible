@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { IonContent } from "@ionic/react";
-
 import {
   Button,
   MuiMaterial,
@@ -64,7 +62,7 @@ export function RegisterPage() {
           params: queryParams,
           headers: headers,
         });
-  
+
         console.log("register page register result ==>", result);
       } catch (err) {
         console.log(err);
@@ -92,112 +90,110 @@ export function RegisterPage() {
     <PageLayout
       isHeader={false}
       content={
-        <IonContent fullscreen>
-          <Box
-            component="form"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              padding: "123px 20px 20px 20px",
-              gap: "12px",
-            }}
-            noValidate
-            autoComplete="off"
+        <Box
+          component="form"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            padding: "123px 20px 20px 20px",
+            gap: "12px",
+          }}
+          noValidate
+          autoComplete="off"
+        >
+          <Typography
+            variant="h1"
+            sx={{ color: colors["dark"], marginBottom: "18px" }}
           >
-            <Typography
-              variant="h1"
-              sx={{ color: colors["dark"], marginBottom: "18px" }}
-            >
-              Register
-            </Typography>
+            Register
+          </Typography>
 
-            <Input
-              id="email"
-              name="email"
-              type="text"
-              label="Email"
-              onChange={formik.handleChange}
-              value={formik.values.email}
-              valid={
-                formik.values.email !== null
-                  ? !Boolean(formik.errors.email)
-                  : undefined
-              }
-              helperText={formik.errors.email}
-              fullWidth
-            />
+          <Input
+            id="email"
+            name="email"
+            type="text"
+            label="Email"
+            onChange={formik.handleChange}
+            value={formik.values.email}
+            valid={
+              formik.values.email !== null
+                ? !Boolean(formik.errors.email)
+                : undefined
+            }
+            helperText={formik.errors.email}
+            fullWidth
+          />
 
-            <Input
-              id="username"
-              name="username"
-              type="text"
-              label="Username"
-              onChange={formik.handleChange}
-              value={formik.values.username}
-              valid={
-                formik.values.username !== null
-                  ? !Boolean(formik.errors.username)
-                  : undefined
-              }
-              helperText={formik.errors.username}
-              fullWidth
-            />
+          <Input
+            id="username"
+            name="username"
+            type="text"
+            label="Username"
+            onChange={formik.handleChange}
+            value={formik.values.username}
+            valid={
+              formik.values.username !== null
+                ? !Boolean(formik.errors.username)
+                : undefined
+            }
+            helperText={formik.errors.username}
+            fullWidth
+          />
 
-            <PasswordInput
-              id="password"
-              name="password"
-              label="Password"
-              onChange={formik.handleChange}
-              onClickShowIcon={handleToggleShow}
-              show={show}
-              value={formik.values.password}
-              valid={
-                formik.values.password !== null
-                  ? !Boolean(formik.errors.password)
-                  : undefined
-              }
-              helperText={formik.errors.password}
-              fullWidth
-            />
+          <PasswordInput
+            id="password"
+            name="password"
+            label="Password"
+            onChange={formik.handleChange}
+            onClickShowIcon={handleToggleShow}
+            show={show}
+            value={formik.values.password}
+            valid={
+              formik.values.password !== null
+                ? !Boolean(formik.errors.password)
+                : undefined
+            }
+            helperText={formik.errors.password}
+            fullWidth
+          />
 
-            <PasswordInput
-              id="passwordConfirm"
-              name="passwordConfirm"
-              label="Repeat Password"
-              onChange={formik.handleChange}
-              onClickShowIcon={handleToggleShow}
-              show={show}
-              value={formik.values.passwordConfirm}
-              valid={
-                formik.values.passwordConfirm !== null
-                  ? !Boolean(formik.errors.passwordConfirm)
-                  : undefined
-              }
-              helperText={formik.errors.passwordConfirm}
-              fullWidth
-            />
+          <PasswordInput
+            id="passwordConfirm"
+            name="passwordConfirm"
+            label="Repeat Password"
+            onChange={formik.handleChange}
+            onClickShowIcon={handleToggleShow}
+            show={show}
+            value={formik.values.passwordConfirm}
+            valid={
+              formik.values.passwordConfirm !== null
+                ? !Boolean(formik.errors.passwordConfirm)
+                : undefined
+            }
+            helperText={formik.errors.passwordConfirm}
+            fullWidth
+          />
 
-            <Button
-              variant="contained"
-              endIcon
-              fullWidth
-              onClick={handleRegister}
-              disabled={!formik.isValid}
-            >
-              Register Now
-            </Button>
+          <Button
+            variant="contained"
+            endIcon
+            fullWidth
+            onClick={handleRegister}
+            disabled={!formik.isValid}
+          >
+            Register Now
+          </Button>
 
-            <Button
-              variant="text"
-              endIcon
-              fullWidth
-              color="gray"
-              onClick={handleGoLogin}
-            >
-              Do you have an account?
-            </Button>
-          </Box>
-        </IonContent>
+          <Button
+            variant="text"
+            endIcon
+            fullWidth
+            color="gray"
+            onClick={handleGoLogin}
+          >
+            Do you have an account?
+          </Button>
+        </Box>
       }
     />
   );

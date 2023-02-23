@@ -71,7 +71,7 @@ export function PageLayout({
             </IonToolbar>
           </IonHeader>
         ) : null}
-        <IonContent fullscreen id="main-content">
+        <IonContent fullscreen id="main-content" style={{ "--offset-top": 0 }}>
           {content}
         </IonContent>
       </IonPage>
