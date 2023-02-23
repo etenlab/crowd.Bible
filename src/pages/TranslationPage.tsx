@@ -1,24 +1,27 @@
-import { useState } from "react";
+import { useState, MouseEvent } from "react";
 import { useHistory } from "react-router-dom";
-
-import { IonContent } from "@ionic/react";
 
 import {
   CrowdBibleUI,
+  Button,
   Typography,
   MuiMaterial,
+  FiPlus,
   colors,
 } from "@eten-lab/ui-kit";
 
 import { PageLayout } from "../components/PageLayout";
+import { TranslationList } from "../components/TranslationList";
+
+import { mockTranslations } from "./TranslationCandidatesPage";
 
 const { DotsText } = CrowdBibleUI;
-const { Box } = MuiMaterial;
+const { Stack, Backdrop } = MuiMaterial;
 
-const text =
+export const mockDocument =
   "1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 3. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 4. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 5. From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. 6. Ut enim ad minim veniam, quis nostrud exercitation.";
 
-const ranges = [
+const mockRanges = [
   {
     id: 0,
     start: 1,
@@ -48,16 +51,36 @@ const ranges = [
 
 export function TranslationPage() {
   const history = useHistory();
+  const [opened, setOpened] = useState<boolean>(false);
 
   const handleDotClick = (id: number) => {
+    setOpened(true);
+  };
+
+  const handleClose = () => {
+    setOpened(false);
+  };
+
+  const handleCancelBubbling = (event: MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+  };
+
+  const handleGoToEditPage = () => {
+    history.push("/translation-edit");
+  };
+
+  const handleGoToTranslationCandidatesPage = () => {
     history.push("/translation-candidates");
   };
 
   return (
     <PageLayout
       content={
-        <IonContent fullscreen>
-          <Box sx={{ padding: "20px" }}>
+        <Stack
+          justifyContent="space-between"
+          sx={{ height: "calc(100vh - 68px)" }}
+        >
+          <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
             <Typography
               variant="overline"
               sx={{
@@ -69,14 +92,56 @@ export function TranslationPage() {
               Original
             </Typography>
             <DotsText
-              text={text}
-              ranges={ranges}
+              text={mockDocument}
+              ranges={mockRanges}
               onSelect={handleDotClick}
               dotColor="blue-primary"
               selectedColor="light-blue"
             />
-          </Box>
-        </IonContent>
+            <Button
+              variant="contained"
+              startIcon={<FiPlus />}
+              fullWidth
+              onClick={handleGoToEditPage}
+              sx={{ margin: "10px 0" }}
+            >
+              Add My Translation
+            </Button>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleGoToTranslationCandidatesPage}
+              sx={{ margin: "10px 0" }}
+            >
+              Add My Translation
+            </Button>
+          </Stack>
+          <Backdrop
+            open={opened}
+            onClick={handleClose}
+            sx={{
+              alignItems: "flex-end",
+              backgroundColor: "rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <Stack
+              sx={{
+                borderRadius: "20px 20px 0 0",
+                borderTop: `1px solid ${colors["middle-gray"]}`,
+                boxShadow: "0px 0px 20px rgba(4, 16, 31, 0.1)",
+                height: "400px",
+                padding: "0 20px 20px",
+                background: colors["white"],
+              }}
+              onClick={handleCancelBubbling}
+            >
+              <TranslationList
+                translations={mockTranslations}
+                isCheckbox={false}
+              />
+            </Stack>
+          </Backdrop>
+        </Stack>
       }
     />
   );
