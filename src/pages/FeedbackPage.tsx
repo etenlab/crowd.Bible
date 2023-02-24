@@ -9,8 +9,6 @@ import {
   colors,
 } from "@eten-lab/ui-kit";
 
-import { PageLayout } from "../components/PageLayout";
-
 import { mockDocument } from "./TranslationPage";
 
 const { LabelWithIcon, KindSelectionBox } = CrowdBibleUI;
@@ -45,56 +43,49 @@ export function FeedbackPage() {
   };
 
   return (
-    <PageLayout
-      content={
-        <Stack
-          justifyContent="space-between"
-          sx={{ height: "calc(100vh - 68px)" }}
+    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
+      <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
+        <LabelWithIcon
+          label="translation"
+          icon={<BiCommentAdd />}
+          color="gray"
+          onClick={handleClickPlus}
+        />
+        <Typography
+          variant="body2"
+          sx={{
+            lineHeight: "30px",
+            color: colors["dark"],
+            textAlign: "justify",
+          }}
         >
-          <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
-            <LabelWithIcon
-              label="translation"
-              icon={<BiCommentAdd />}
-              color="gray"
-              onClick={handleClickPlus}
-            />
-            <Typography
-              variant="body2"
-              sx={{
-                lineHeight: "30px",
-                color: colors["dark"],
-                textAlign: "justify",
-              }}
-            >
-              {mockDocument}
-            </Typography>
-          </Stack>
-          <Backdrop
-            open={openedKindSelectionBox}
-            sx={{
-              alignItems: "flex-start",
-              backgroundColor: "rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <Stack
-              sx={{
-                borderRadius: "0 0 20px 20px",
-                width: "100%",
-                background: colors["white"],
-              }}
-            >
-              <KindSelectionBox
-                title="Leave Feedback"
-                label="Choose what you want to leave feedback for:"
-                onTextClick={handleTextClick}
-                onChapterClick={handleChapterClick}
-                onVerseClick={handleVerseClick}
-                onCancel={handleCancelKindSelectionBox}
-              />
-            </Stack>
-          </Backdrop>
+          {mockDocument}
+        </Typography>
+      </Stack>
+      <Backdrop
+        open={openedKindSelectionBox}
+        sx={{
+          alignItems: "flex-start",
+          backgroundColor: "rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <Stack
+          sx={{
+            borderRadius: "0 0 20px 20px",
+            width: "100%",
+            background: colors["white"],
+          }}
+        >
+          <KindSelectionBox
+            title="Leave Feedback"
+            label="Choose what you want to leave feedback for:"
+            onTextClick={handleTextClick}
+            onChapterClick={handleChapterClick}
+            onVerseClick={handleVerseClick}
+            onCancel={handleCancelKindSelectionBox}
+          />
         </Stack>
-      }
-    />
+      </Backdrop>
+    </Stack>
   );
 }

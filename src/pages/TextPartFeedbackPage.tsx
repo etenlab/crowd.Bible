@@ -3,8 +3,6 @@ import { useHistory } from "react-router-dom";
 
 import { CrowdBibleUI, MuiMaterial, FiX } from "@eten-lab/ui-kit";
 
-import { PageLayout } from "../components/PageLayout";
-
 import { mockDocument } from "./TranslationPage";
 import { FeedbackInput } from "../components/FeedbackInput";
 
@@ -36,31 +34,24 @@ export function TextPartFeedbackPage() {
     range.start !== null && range.end !== null ? <FeedbackInput /> : null;
 
   return (
-    <PageLayout
-      content={
-        <Stack
-          justifyContent="space-between"
-          sx={{ height: "calc(100vh - 68px)" }}
-        >
-          <Box sx={{ padding: "20px" }}>
-            <LabelWithIcon
-              label="translation"
-              icon={<FiX />}
-              color="gray"
-              onClick={handleClickCancel}
-            />
-          </Box>
+    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
+      <Box sx={{ padding: "20px" }}>
+        <LabelWithIcon
+          label="translation"
+          icon={<FiX />}
+          color="gray"
+          onClick={handleClickCancel}
+        />
+      </Box>
 
-          <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
-            <RangeSelectableTextArea
-              text={mockDocument}
-              range={range}
-              onChangeRange={handleChangeRange}
-            />
-          </Stack>
-          {feedbackInput}
-        </Stack>
-      }
-    />
+      <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
+        <RangeSelectableTextArea
+          text={mockDocument}
+          range={range}
+          onChangeRange={handleChangeRange}
+        />
+      </Stack>
+      {feedbackInput}
+    </Stack>
   );
 }

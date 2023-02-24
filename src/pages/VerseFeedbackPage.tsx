@@ -3,8 +3,6 @@ import { useHistory } from "react-router-dom";
 
 import { CrowdBibleUI, MuiMaterial } from "@eten-lab/ui-kit";
 
-import { PageLayout } from "../components/PageLayout";
-
 import { FeedbackInput } from "../components/FeedbackInput";
 import { mockChapters } from "./ChapterFeedbackPage";
 
@@ -16,10 +14,13 @@ type ChapterListProps = {
   onClickCancel(): void;
 };
 
-function ChapterList({ onClickChapter, onClickCancel }: ChapterListProps) {
+export function ChapterList({
+  onClickChapter,
+  onClickCancel,
+}: ChapterListProps) {
   return (
     <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
-      <Box sx={{ padding: "20px" }}>
+      <Box sx={{ padding: "20px 20px 0" }}>
         <TitleWithIcon
           label="Chapters"
           withBackIcon={false}
@@ -28,7 +29,7 @@ function ChapterList({ onClickChapter, onClickCancel }: ChapterListProps) {
         />
       </Box>
 
-      <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
+      <Stack sx={{ padding: "0 20px 20px", flexGrow: 1, overflowY: "scroll" }}>
         <ButtonList
           withUnderline
           label="Select a Chapter"
@@ -86,7 +87,7 @@ function VerseFeedback({ onClickCancel, onClickBack }: VerseFeedbackProps) {
 
   return (
     <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
-      <Box sx={{ padding: "20px" }}>
+      <Box sx={{ padding: "20px 20px 0 12px" }}>
         <TitleWithIcon
           label="Verses"
           withBackIcon
@@ -95,7 +96,7 @@ function VerseFeedback({ onClickCancel, onClickBack }: VerseFeedbackProps) {
         />
       </Box>
 
-      <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
+      <Stack sx={{ padding: "0 20px 20px", flexGrow: 1, overflowY: "scroll" }}>
         <VerticalRadioList
           label="Select a Verse"
           withUnderline={true}
@@ -126,7 +127,7 @@ export function VerseFeedbackPage() {
     setSelectedChapter(chapter);
   };
 
-  const content = selectedChapter ? (
+  return selectedChapter ? (
     <VerseFeedback
       onClickCancel={handleClickCancel}
       onClickBack={handleClickBack}
@@ -137,6 +138,4 @@ export function VerseFeedbackPage() {
       onClickChapter={handleClickChapter}
     />
   );
-
-  return <PageLayout content={content} />;
 }

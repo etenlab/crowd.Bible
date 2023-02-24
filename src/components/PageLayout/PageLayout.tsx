@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 import {
   IonMenu,
@@ -7,35 +7,64 @@ import {
   IonHeader,
   IonContent,
   IonToolbar,
+  IonList,
+  IonLabel,
+  IonItem,
 } from "@ionic/react";
 
-import { Toolbar } from "@eten-lab/ui-kit";
+import "./PageLayout.css";
+
+import { Toolbar, MuiMaterial, Alert } from "@eten-lab/ui-kit";
+
+import { useAppContext } from "../../hooks/useAppContext";
+
+const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
 
 type PageLayoutProps = {
-  isHeader?: boolean;
-  isNewNotification?: boolean;
-  isNewDiscussion?: boolean;
-  menu?: React.ReactNode;
-  content?: React.ReactNode;
+  children?: React.ReactNode;
 };
 
-export function PageLayout({
-  isHeader = true,
-  menu,
-  content,
-  isNewDiscussion,
-  isNewNotification,
-}: PageLayoutProps) {
+export function PageLayout({ children }: PageLayoutProps) {
   const history = useHistory();
+  const location = useLocation();
+
+  const {
+    states: {
+      global: { role, snack, isNewDiscussion, isNewNotification, loading },
+    },
+    actions: { closeFeedback },
+  } = useAppContext();
+
   const ref = useRef<HTMLIonMenuElement>(null);
 
   const handleToggleMenu = () => {
     ref.current!.toggle();
   };
 
+  let isHeader = true;
+  const qaUrl = role === "translator" ? "/translator-qa" : "/reader-qa";
+
+  switch (location.pathname) {
+    case "/welcome": {
+      isHeader = false;
+      break;
+    }
+    case "/login": {
+      isHeader = false;
+      break;
+    }
+    case "/register": {
+      isHeader = false;
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+
   return (
     <>
-      <IonMenu ref={ref} contentId="main-content">
+      <IonMenu ref={ref} contentId="crowd-bible-app">
         {isHeader ? (
           <IonHeader>
             <IonToolbar>
@@ -53,10 +82,24 @@ export function PageLayout({
             </IonToolbar>
           </IonHeader>
         ) : null}
-        <IonContent>{menu}</IonContent>
+        <IonContent>
+          <IonList>
+            <IonItem href="/documents-list">
+              <IonLabel>Documents List</IonLabel>
+            </IonItem>
+            <IonItem href={qaUrl}>
+              <IonLabel>Question & Answer</IonLabel>
+            </IonItem>
+            <IonItem href="/settings">
+              <IonLabel>Settings</IonLabel>
+            </IonItem>
+            <IonItem href="/#">
+              <IonLabel>Logout</IonLabel>
+            </IonItem>
+          </IonList>
+        </IonContent>
       </IonMenu>
-
-      <IonPage>
+      <IonPage id="crowd-bible-app">
         {isHeader ? (
           <IonHeader>
             <IonToolbar>
@@ -71,8 +114,38 @@ export function PageLayout({
             </IonToolbar>
           </IonHeader>
         ) : null}
-        <IonContent fullscreen id="main-content" style={{ "--offset-top": 0 }}>
-          {content}
+
+        <IonContent fullscreen className="crowd-bible-ion-content">
+          {children}
+
+          <Snackbar
+            open={snack.open}
+            autoHideDuration={5000}
+            onClose={closeFeedback}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+            key="top-center"
+          >
+            <Alert
+              variant="standard"
+              onClose={closeFeedback}
+              severity={snack.severity}
+              sx={{ width: "100%" }}
+            >
+              {snack.message}
+            </Alert>
+          </Snackbar>
+
+          <Backdrop sx={{ color: "#fff", zIndex: 1000 }} open={loading}>
+            <Stack justifyContent="center">
+              <div style={{ margin: "auto" }}>
+                <CircularProgress color="inherit" />
+              </div>
+              <div>LOADING</div>
+            </Stack>
+          </Backdrop>
         </IonContent>
       </IonPage>
     </>

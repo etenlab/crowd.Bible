@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 
+import { useAppContext } from "../../hooks/useAppContext";
 import { CrowdBibleUI, MuiMaterial } from "@eten-lab/ui-kit";
 
 const { AgreeConfirm, SimpleQuill } = CrowdBibleUI;
@@ -8,6 +9,9 @@ const { Box } = MuiMaterial;
 
 export function FeedbackInput() {
   const history = useHistory();
+  const {
+    actions: { alertFeedback },
+  } = useAppContext();
   const [optionalFeedback, setOptionalFeedback] = useState<string>("");
 
   const handleChangeOptionalFeedback = (newValue: string) => {
@@ -15,13 +19,8 @@ export function FeedbackInput() {
   };
 
   const handleSubmitFeedback = (agree: "agree" | "disagree") => {
-    alert(
-      JSON.stringify(
-        { feedback: { opinion: agree, optional: optionalFeedback } },
-        null,
-        2
-      )
-    );
+    alert(`Clicked ${agree}!`);
+    alertFeedback("success", "Your feedback has been sent!");
     history.push("/feedback");
   };
 
@@ -29,6 +28,7 @@ export function FeedbackInput() {
     <Box>
       <AgreeConfirm onClick={handleSubmitFeedback} />
       <SimpleQuill
+        placeholder="Leave Feedback (optional)..."
         value={optionalFeedback}
         onChange={handleChangeOptionalFeedback}
       />

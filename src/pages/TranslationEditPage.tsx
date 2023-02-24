@@ -7,7 +7,6 @@ import {
   colors,
 } from "@eten-lab/ui-kit";
 
-import { PageLayout } from "../components/PageLayout";
 import { TranslationEditor } from "../components/TranslationEditor";
 
 import { mockDocument } from "./TranslationPage";
@@ -31,35 +30,29 @@ export function TranslationEditPage() {
     setRange({ start, end });
   };
 
+  const translationEdit =
+    range.start !== null && range.end !== null ? <TranslationEditor /> : null;
+
   return (
-    <PageLayout
-      content={
-        <Stack
-          justifyContent="space-between"
-          sx={{ height: "calc(100vh - 68px)" }}
+    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
+      <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
+        <Typography
+          variant="overline"
+          sx={{
+            paddingBottom: "16px",
+            color: colors["dark"],
+            opacity: 0.5,
+          }}
         >
-          <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
-            <Typography
-              variant="overline"
-              sx={{
-                paddingBottom: "16px",
-                color: colors["dark"],
-                opacity: 0.5,
-              }}
-            >
-              Original
-            </Typography>
-            <RangeSelectableTextArea
-              text={mockDocument}
-              range={range}
-              onChangeRange={handleChangeRange}
-            />
-          </Stack>
-          <Stack sx={{ flexGrow: 1 }}>
-            <TranslationEditor />
-          </Stack>
-        </Stack>
-      }
-    />
+          Original
+        </Typography>
+        <RangeSelectableTextArea
+          text={mockDocument}
+          range={range}
+          onChangeRange={handleChangeRange}
+        />
+      </Stack>
+      <Stack sx={{ flexGrow: 1 }}>{translationEdit}</Stack>
+    </Stack>
   );
 }

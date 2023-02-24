@@ -1,7 +1,5 @@
 import { useHistory } from "react-router";
 
-import { PageLayout } from "../components/PageLayout";
-
 import { Button, MuiMaterial, BiLeftArrowAlt } from "@eten-lab/ui-kit";
 
 import {
@@ -52,24 +50,20 @@ export function TranslationCandidatesPage() {
   };
 
   return (
-    <PageLayout
-      content={
-        <Stack
-          sx={{ padding: "20px", height: "calc(100vh - 68px)" }}
-          justifyContent="space-between"
-        >
-          <Button
-            variant="text"
-            color="dark"
-            onClick={GoToTranslationPage}
-            sx={{ width: "123px" }}
-          >
-            <BiLeftArrowAlt style={{ fontSize: "24px" }} />
-            Translation
-          </Button>
-          <TranslationList translations={mockTranslations} />
-        </Stack>
-      }
-    />
+    <Stack
+      sx={{ padding: "20px", height: "calc(100vh - 68px)" }}
+      justifyContent="space-between"
+    >
+      <Button
+        variant="text"
+        color="dark"
+        onClick={GoToTranslationPage}
+        sx={{ width: "123px" }}
+      >
+        <BiLeftArrowAlt style={{ fontSize: "24px" }} />
+        Translation
+      </Button>
+      <TranslationList translations={mockTranslations} />
+    </Stack>
   );
 }

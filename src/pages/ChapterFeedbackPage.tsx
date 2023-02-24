@@ -3,8 +3,6 @@ import { useHistory } from "react-router-dom";
 
 import { CrowdBibleUI, MuiMaterial } from "@eten-lab/ui-kit";
 
-import { PageLayout } from "../components/PageLayout";
-
 import { FeedbackInput } from "../components/FeedbackInput";
 
 const { TitleWithIcon, VerticalRadioList } = CrowdBibleUI;
@@ -37,34 +35,27 @@ export function ChapterFeedbackPage() {
   const feedbackInput = selectedChapter !== null ? <FeedbackInput /> : null;
 
   return (
-    <PageLayout
-      content={
-        <Stack
-          justifyContent="space-between"
-          sx={{ height: "calc(100vh - 68px)" }}
-        >
-          <Box sx={{ padding: "20px" }}>
-            <TitleWithIcon
-              label="Chapters"
-              withBackIcon={false}
-              onClose={handleClickCancel}
-              onBack={() => {}}
-            />
-          </Box>
+    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
+      <Box sx={{ padding: "20px" }}>
+        <TitleWithIcon
+          label="Chapters"
+          withBackIcon={false}
+          onClose={handleClickCancel}
+          onBack={() => {}}
+        />
+      </Box>
 
-          <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
-            <VerticalRadioList
-              label="Select a chapter"
-              withUnderline={true}
-              items={mockChapters}
-              value={selectedChapter}
-              onChange={handleChangeChapter}
-            />
-          </Stack>
+      <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
+        <VerticalRadioList
+          label="Select a chapter"
+          withUnderline={true}
+          items={mockChapters}
+          value={selectedChapter}
+          onChange={handleChangeChapter}
+        />
+      </Stack>
 
-          {feedbackInput}
-        </Stack>
-      }
-    />
+      {feedbackInput}
+    </Stack>
   );
 }

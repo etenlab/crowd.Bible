@@ -135,7 +135,7 @@ export function TranslationList({
   };
 
   const handleClickAddMyTranslation = () => {
-    history.push("/translation?mode=editing");
+    history.push("/translation-edit");
   };
 
   return (

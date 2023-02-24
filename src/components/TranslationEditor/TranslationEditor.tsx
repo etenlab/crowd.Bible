@@ -10,13 +10,23 @@ import {
   FiPlus,
 } from "@eten-lab/ui-kit";
 
+import { useAppContext } from "../../hooks/useAppContext";
+
 const { Box } = MuiMaterial;
 
 export function TranslationEditor() {
-  const [text, setText] = useState<string>("");
   const history = useHistory();
+  const {
+    actions: { alertFeedback },
+  } = useAppContext();
+  const [text, setText] = useState<string>("");
 
   const handleGoToTranslationPage = () => {
+    history.push("/translation");
+  };
+
+  const handleSaveTranslation = () => {
+    alertFeedback("success", "Your translation has been sent!");
     history.push("/translation");
   };
 
@@ -53,7 +63,7 @@ export function TranslationEditor() {
         variant="contained"
         startIcon={<FiPlus />}
         fullWidth
-        onClick={handleGoToTranslationPage}
+        onClick={handleSaveTranslation}
         sx={{ margin: "10px 0" }}
       >
         Add My Translation

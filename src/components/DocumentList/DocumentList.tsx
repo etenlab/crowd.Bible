@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
+
 import {
   MuiMaterial,
   Typography,
@@ -7,6 +9,7 @@ import {
   SearchInput,
   BiFile,
 } from "@eten-lab/ui-kit";
+import { useAppContext } from "../../hooks/useAppContext";
 
 const {
   Stack,
@@ -27,10 +30,24 @@ const documents = [
 ];
 
 export function DocumentList() {
+  const history = useHistory();
+  const {
+    states: {
+      global: { role },
+    },
+  } = useAppContext();
   const [isShownSearchInput, setIsShownSearchInput] = useState<boolean>(false);
 
   const handleToggleSearchInput = () => {
     setIsShownSearchInput((shown) => !shown);
+  };
+
+  const handleClickDocument = () => {
+    if (role === "translator") {
+      history.push("/translation");
+    } else if (role === "reader") {
+      history.push("/feedback");
+    }
   };
 
   return (
@@ -61,7 +78,11 @@ export function DocumentList() {
       }
     >
       {documents.map((doc) => (
-        <ListItemButton key={doc} sx={{ paddingLeft: 0, paddingRight: 0 }}>
+        <ListItemButton
+          key={doc}
+          sx={{ paddingLeft: 0, paddingRight: 0 }}
+          onClick={handleClickDocument}
+        >
           <ListItemIcon>
             <BiFile
               style={{
