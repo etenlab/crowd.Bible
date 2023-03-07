@@ -30,7 +30,7 @@ export function PageLayout({ children }: PageLayoutProps) {
 
   const {
     states: {
-      global: { role, snack, isNewDiscussion, isNewNotification, loading },
+      global: { user, snack, isNewDiscussion, isNewNotification, loading },
     },
     actions: { closeFeedback },
   } = useAppContext();
@@ -42,7 +42,7 @@ export function PageLayout({ children }: PageLayoutProps) {
   };
 
   let isHeader = true;
-  const qaUrl = role === "translator" ? "/translator-qa" : "/reader-qa";
+  const qaUrl = user?.role === "translator" ? "/translator-qa" : "/reader-qa";
 
   switch (location.pathname) {
     case "/welcome": {

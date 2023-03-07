@@ -1,1 +1,0 @@
-export { AgreeButton } from "./AgreeButton";
