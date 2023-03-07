@@ -11,9 +11,14 @@ export type SnackType = {
 
 export type RoleType = "reader" | "translator";
 
-export type StateType = {
-  userId: number | null;
+export type IUser = {
+  userId: number;
+  userEmail: string;
   role: RoleType;
+};
+
+export type StateType = {
+  user: IUser | null;
   snack: SnackType;
   loading: boolean;
   isNewDiscussion: boolean;
@@ -27,8 +32,7 @@ const initialSnact: SnackType = {
 };
 
 export const initialState: StateType = {
-  userId: null,
-  role: "translator",
+  user: null,
   snack: initialSnact,
   loading: false,
   isNewDiscussion: false,
@@ -63,11 +67,24 @@ export function reducer(
         snack: { ...initialSnact },
       };
     }
-    case actions.SET_ROLE: {
+    case actions.SET_USER: {
       return {
         ...prevState,
-        role: action.payload as RoleType,
+        user: action.payload as IUser,
       };
+    }
+    case actions.SET_ROLE: {
+      if (prevState.user) {
+        return {
+          ...prevState,
+          user: {
+            ...prevState.user,
+            role: action.payload as RoleType,
+          },
+        };
+      } else {
+        return prevState;
+      }
     }
     default: {
       return prevState;

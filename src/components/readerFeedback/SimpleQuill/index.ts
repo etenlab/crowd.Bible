@@ -1,1 +1,0 @@
-export { SimpleQuill } from "./SimpleQuill";

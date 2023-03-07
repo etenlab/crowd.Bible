@@ -3,6 +3,7 @@ import React, { createContext, useReducer } from "react";
 import { reducer, initialState as reducerInitialState } from "./reducers";
 
 import {
+  IUser,
   RoleType,
   StateType as GlobalStateType,
 } from "./reducers/global.reducer";
@@ -15,6 +16,7 @@ export interface ContextType {
     global: GlobalStateType;
   };
   actions: {
+    setUser(user: IUser): void;
     setRole(role: RoleType): void;
     alertFeedback(feedbackType: FeedbackType, message: string): void;
     closeFeedback(): void;
@@ -30,10 +32,12 @@ type AppProviderProps = {
 export function AppContextProvider({ children }: AppProviderProps) {
   const [state, dispatch] = useReducer(reducer, reducerInitialState);
 
-  const { alertFeedback, closeFeedback, setRole } = useGlobal({ dispatch });
+  const { alertFeedback, closeFeedback, setRole, setUser } = useGlobal({
+    dispatch,
+  });
   const value = {
     states: { global: state.global },
-    actions: { closeFeedback, alertFeedback, setRole },
+    actions: { closeFeedback, alertFeedback, setRole, setUser },
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

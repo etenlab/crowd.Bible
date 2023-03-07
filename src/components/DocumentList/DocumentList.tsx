@@ -33,7 +33,7 @@ export function DocumentList() {
   const history = useHistory();
   const {
     states: {
-      global: { role },
+      global: { user },
     },
   } = useAppContext();
   const [isShownSearchInput, setIsShownSearchInput] = useState<boolean>(false);
@@ -43,9 +43,9 @@ export function DocumentList() {
   };
 
   const handleClickDocument = () => {
-    if (role === "translator") {
+    if (user?.role === "translator") {
       history.push("/translation");
-    } else if (role === "reader") {
+    } else if (user?.role === "reader") {
       history.push("/feedback");
     }
   };

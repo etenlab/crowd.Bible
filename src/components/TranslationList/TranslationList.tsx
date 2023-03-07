@@ -1,4 +1,4 @@
-import { useState, Fragment } from "react";
+import { useState } from "react";
 import { useHistory } from "react-router";
 
 import {
@@ -14,7 +14,7 @@ import {
   FiPlus,
 } from "@eten-lab/ui-kit";
 
-const { Stack, Divider } = MuiMaterial;
+const { Stack, Divider, IconButton } = MuiMaterial;
 
 function Voting({ voted, unvoted }: { voted: number; unvoted: number }) {
   return (
@@ -53,7 +53,7 @@ function Voting({ voted, unvoted }: { voted: number; unvoted: number }) {
   );
 }
 
-function OpenDiscussion() {
+export function OpenDiscussion() {
   return (
     <span
       style={{
@@ -62,7 +62,7 @@ function OpenDiscussion() {
         borderRadius: "4px",
         background: colors["light-blue"],
         color: colors["gray"],
-        fontSize: "18px",
+        fontSize: "24px",
       }}
     >
       <BiMessageRounded />
@@ -84,7 +84,12 @@ function Translation({
   translation: TranslationType;
   isCheckbox: boolean;
 }) {
-  const { text, voted, unvoted } = translation;
+  const { id, text, voted, unvoted } = translation;
+  const history = useHistory();
+
+  const handleClickDiscussionButton = () => {
+    history.push(`/discussion/table-name/${text}/row/${id}`);
+  };
 
   const checkbox = isCheckbox ? <Checkbox sx={{ marginLeft: "-9px" }} /> : null;
 
@@ -109,7 +114,19 @@ function Translation({
             alignItems="center"
           >
             <Voting voted={voted} unvoted={unvoted} />
-            <OpenDiscussion />
+            {/* <OpenDiscussion />
+             */}
+            <IconButton onClick={handleClickDiscussionButton}>
+              <BiMessageRounded
+                style={{
+                  padding: "5px",
+                  borderRadius: "4px",
+                  background: colors["light-blue"],
+                  color: colors["gray"],
+                  fontSize: "26px",
+                }}
+              />
+            </IconButton>
           </Stack>
         </Stack>
       </Stack>

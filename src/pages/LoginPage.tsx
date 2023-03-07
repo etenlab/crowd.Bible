@@ -10,6 +10,7 @@ import {
   PasswordInput,
 } from "@eten-lab/ui-kit";
 import { useFormik } from "formik";
+import { useAppContext } from "../hooks/useAppContext";
 import * as Yup from "yup";
 
 // import axios from "axios";
@@ -28,6 +29,9 @@ const validationSchema = Yup.object().shape({
 export function LoginPage() {
   const [show, setShow] = useState<boolean>(false);
   const history = useHistory();
+  const {
+    actions: { setUser },
+  } = useAppContext();
   const formik = useFormik<{
     email: string | null;
     password: string | null;
@@ -56,6 +60,12 @@ export function LoginPage() {
       // } catch (err) {
       //   console.log(err);
       // }
+
+      setUser({
+        userId: 1,
+        userEmail: values.email!,
+        role: "translator",
+      });
       history.push("/documents-list");
     },
   });

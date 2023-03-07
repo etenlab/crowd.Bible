@@ -20,8 +20,6 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
-import DiscussionPage from "./pages/Discussion";
-import DiscussionsListPage from "./pages/DiscussionsList";
 import NotificationsPage from "./pages/Notifications";
 import SplashPage from "./pages/Splash";
 import { WelcomePage } from "./pages/WelcomePage";
@@ -41,6 +39,7 @@ import { TranslatorQAPage } from "./pages/TranslatorQAPage";
 import { TextPartTranslatorQAPage } from "./pages/TextPartTranslatorQAPage";
 import { ChapterTranslatorQAPage } from "./pages/ChapterTranslatorQAPage";
 import { VerseTranslatorQAPage } from "./pages/VerseTranslatorQAPage";
+import { DiscussionPage } from "./pages/DiscussionPage";
 
 import { ThemeProvider } from "@eten-lab/ui-kit";
 import { AppContextProvider } from "./AppContext";
@@ -64,12 +63,12 @@ const App: React.FC = () => (
               <Route exact path="/login">
                 <LoginPage />
               </Route>
-              <Route exact path="/discussion">
+              <Route exact path="/discussion/table-name/:table_name/row/:row">
                 <DiscussionPage />
               </Route>
-              <Route exact path="/discussions-list">
+              {/* <Route exact path="/discussions-list">
                 <DiscussionsListPage />
-              </Route>
+              </Route> */}
               <Route exact path="/documents-list">
                 <DocumentsListPage />
               </Route>

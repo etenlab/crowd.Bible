@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import {
@@ -24,12 +24,18 @@ export function SettingsPage() {
   const history = useHistory();
   const {
     states: {
-      global: { role },
+      global: { user },
     },
     actions: { setRole },
   } = useAppContext();
 
-  const [selectedRole, setSelectedRole] = useState<RoleType>(role);
+  const [selectedRole, setSelectedRole] = useState<RoleType>("translator");
+
+  useEffect(() => {
+    if (user) {
+      setSelectedRole(user.role);
+    }
+  }, [user]);
 
   const handleChangeRole = (
     _event: React.SyntheticEvent<Element, Event>,
