@@ -1,5 +1,6 @@
-#app {
-  height: 100%;
+#crowd-bible-app {
+  width: 375px;
+  margin: auto;
 }
 
 html,
@@ -61,7 +62,6 @@ body {
 .grid-full-height {
   display: flex;
   flex-flow: column;
-  height: 100%;
 }
 
 .grid-full-height .fill-remaining {
