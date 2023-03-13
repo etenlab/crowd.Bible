@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import {
   Button,
@@ -8,10 +8,10 @@ import {
   colors,
   Input,
   PasswordInput,
-} from "@eten-lab/ui-kit";
-import { useFormik } from "formik";
-import { useAppContext } from "../hooks/useAppContext";
-import * as Yup from "yup";
+} from '@eten-lab/ui-kit';
+import { useFormik } from 'formik';
+import { useAppContext } from '../hooks/useAppContext';
+import * as Yup from 'yup';
 
 // import axios from "axios";
 
@@ -19,11 +19,11 @@ const { Box } = MuiMaterial;
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
+    .email('Invalid email address')
+    .required('Email is required'),
   password: Yup.string()
-    .min(8, "Password must be at least 8 characters")
-    .required("Password is required"),
+    .min(8, 'Password must be at least 8 characters')
+    .required('Password is required'),
 });
 
 export function LoginPage() {
@@ -64,9 +64,9 @@ export function LoginPage() {
       setUser({
         userId: 1,
         userEmail: values.email!,
-        role: "translator",
+        role: 'translator',
       });
-      history.push("/documents-list");
+      history.push('/home');
     },
   });
 
@@ -75,7 +75,7 @@ export function LoginPage() {
   };
 
   const handleGoRegister = () => {
-    history.push("/register");
+    history.push('/register');
   };
 
   const handleLogin = () => {
@@ -90,17 +90,17 @@ export function LoginPage() {
     <Box
       component="form"
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        padding: "123px 20px 20px 20px",
-        gap: "12px",
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '123px 20px 20px 20px',
+        gap: '12px',
       }}
       noValidate
       autoComplete="off"
     >
       <Typography
         variant="h1"
-        sx={{ color: colors["dark"], marginBottom: "18px" }}
+        sx={{ color: colors['dark'], marginBottom: '18px' }}
       >
         Login
       </Typography>
