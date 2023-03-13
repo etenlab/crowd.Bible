@@ -28,7 +28,7 @@ export class RelationshipPropertyValueRepository {
       relationship_property_key_id: key_id,
     });
 
-    new_property_value_instance.property_key = rel_property_key;
+    new_property_value_instance.propertyKey = rel_property_key;
 
     const relationship_property_value = await this.repository.save(
       new_property_value_instance,

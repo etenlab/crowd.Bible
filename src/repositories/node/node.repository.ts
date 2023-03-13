@@ -33,11 +33,11 @@ export class NodeRepository {
 
   async listAllNodesByType(type_name: string): Promise<Node[]> {
     const nodes = await this.repository.find({
-      relations: ['nodeType', 'property_keys', 'property_keys.property_value'],
+      relations: ['nodeType', 'propertyKeys', 'propertyKeys.propertyValue'],
       select: {
-        property_keys: {
+        propertyKeys: {
           property_key: true,
-          property_value: {
+          propertyValue: {
             property_value: true,
           },
         },
@@ -62,14 +62,14 @@ export class NodeRepository {
     prop: { key: string; val: any }
   ): Promise<Node | null> {
     const node = await this.repository.findOne({
-      relations: ["nodeType", "property_keys", "property_keys.property_value"],
+      relations: ["nodeType", "propertyKeys", "propertyKeys.propertyValue"],
       where: {
         nodeType: {
           type_name: type,
         },
-        property_keys: {
+        propertyKeys: {
           property_key: prop.key,
-          property_value: {
+          propertyValue: {
             property_value: prop.val,
           },
         },

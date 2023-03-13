@@ -30,19 +30,17 @@ export class RelationshipPropertyKey extends Syncable {
 
   @ManyToOne(() => Relationship, { onDelete: 'CASCADE' })
   @JoinColumn({
-    name: 'id',
+    name: 'relationship_id',
     referencedColumnName: 'id',
   })
   relationship!: Relationship;
-
-  // @Index("idx_relationship_property_keys_relationship_id")
 
   @Column('varchar')
   relationship_id!: string;
 
   @OneToOne(
     () => RelationshipPropertyValue,
-    (relationshipPropertyValue) => relationshipPropertyValue.property_key,
+    (relationshipPropertyValue) => relationshipPropertyValue.propertyKey,
   )
-  property_value!: RelationshipPropertyValue;
+  propertyValue!: RelationshipPropertyValue;
 }
