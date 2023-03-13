@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { IonContent } from '@ionic/react';
 
 import {
   Typography,
@@ -7,9 +8,9 @@ import {
   MuiMaterial,
   BiCommentAdd,
   colors,
-} from "@eten-lab/ui-kit";
+} from '@eten-lab/ui-kit';
 
-import { mockDocument } from "./TranslationPage";
+import { mockDocument } from './TranslationPage';
 
 const { LabelWithIcon, KindSelectionBox } = CrowdBibleUI;
 const { Stack, Backdrop } = MuiMaterial;
@@ -29,22 +30,22 @@ export function FeedbackPage() {
 
   const handleTextClick = () => {
     handleCancelKindSelectionBox();
-    history.push("/feedback/text-part");
+    history.push('/feedback/text-part');
   };
 
   const handleChapterClick = () => {
     handleCancelKindSelectionBox();
-    history.push("/feedback/chapter");
+    history.push('/feedback/chapter');
   };
 
   const handleVerseClick = () => {
     handleCancelKindSelectionBox();
-    history.push("/feedback/verse");
+    history.push('/feedback/verse');
   };
 
   return (
-    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
-      <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
+    <IonContent>
+      <Stack sx={{ padding: '20px' }}>
         <LabelWithIcon
           label="translation"
           icon={<BiCommentAdd />}
@@ -54,9 +55,9 @@ export function FeedbackPage() {
         <Typography
           variant="body2"
           sx={{
-            lineHeight: "30px",
-            color: colors["dark"],
-            textAlign: "justify",
+            lineHeight: '30px',
+            color: colors['dark'],
+            textAlign: 'justify',
           }}
         >
           {mockDocument}
@@ -65,15 +66,15 @@ export function FeedbackPage() {
       <Backdrop
         open={openedKindSelectionBox}
         sx={{
-          alignItems: "flex-start",
-          backgroundColor: "rgba(0, 0, 0, 0.1)",
+          alignItems: 'flex-start',
+          backgroundColor: 'rgba(0, 0, 0, 0.1)',
         }}
       >
         <Stack
           sx={{
-            borderRadius: "0 0 20px 20px",
-            width: "100%",
-            background: colors["white"],
+            borderRadius: '0 0 20px 20px',
+            width: '100%',
+            background: colors['white'],
           }}
         >
           <KindSelectionBox
@@ -86,6 +87,6 @@ export function FeedbackPage() {
           />
         </Stack>
       </Backdrop>
-    </Stack>
+    </IonContent>
   );
 }

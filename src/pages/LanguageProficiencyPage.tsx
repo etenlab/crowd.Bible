@@ -1,3 +1,5 @@
+import { IonContent } from "@ionic/react";
+
 export function LanguageProficiencyPage() {
-  return <div>/language-prificiency</div>;
+  return <IonContent>/language-prificiency</IonContent>;
 }

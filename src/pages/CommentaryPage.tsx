@@ -1,3 +1,5 @@
+import { IonContent } from '@ionic/react';
+
 export function CommentaryPage() {
-  return <div>/commentary</div>;
+  return <IonContent>/commentary</IonContent>;
 }

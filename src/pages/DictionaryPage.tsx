@@ -1,3 +1,5 @@
+import { IonContent } from '@ionic/react';
+
 export function DictionaryPage() {
-  return <div>/dictionary</div>;
+  return <IonContent>/dictionary</IonContent>;
 }

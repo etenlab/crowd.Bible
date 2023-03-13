@@ -69,7 +69,7 @@ const App: React.FC = () => (
       <ThemeProvider>
         <IonReactRouter>
           <PageLayout>
-            <IonRouterOutlet>
+            <IonRouterOutlet id="crowd-bible-router-outlet">
               <Route exact path="/">
                 <Redirect to="/welcome" />
               </Route>

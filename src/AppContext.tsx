@@ -1,15 +1,15 @@
-import React, { createContext, useReducer } from "react";
+import React, { createContext, useReducer } from 'react';
 
-import { reducer, initialState as reducerInitialState } from "./reducers";
+import { reducer, initialState as reducerInitialState } from './reducers';
 
 import {
   IUser,
   RoleType,
   StateType as GlobalStateType,
-} from "./reducers/global.reducer";
+} from './reducers/global.reducer';
 
-import { useGlobal } from "./hooks/useGlobal";
-import { FeedbackType } from "./reducers/global.reducer";
+import { useGlobal } from './hooks/useGlobal';
+import { FeedbackType } from './reducers/global.reducer';
 
 export interface ContextType {
   states: {
@@ -39,6 +39,8 @@ export function AppContextProvider({ children }: AppProviderProps) {
     states: { global: state.global },
     actions: { closeFeedback, alertFeedback, setRole, setUser },
   };
+
+  console.log(value);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

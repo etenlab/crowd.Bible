@@ -1,3 +1,5 @@
+import { IonContent } from '@ionic/react';
+
 export function BilingualDictionaryPage() {
-  return <div>/bilingual-dictionary</div>;
+  return <IonContent>/bilingual-dictionary</IonContent>;
 }

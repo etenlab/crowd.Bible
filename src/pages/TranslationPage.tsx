@@ -1,5 +1,6 @@
-import { useState, MouseEvent } from "react";
-import { useHistory } from "react-router-dom";
+import { useState, MouseEvent } from 'react';
+import { useHistory } from 'react-router-dom';
+import { IonContent } from '@ionic/react';
 
 import {
   CrowdBibleUI,
@@ -8,17 +9,17 @@ import {
   MuiMaterial,
   FiPlus,
   colors,
-} from "@eten-lab/ui-kit";
+} from '@eten-lab/ui-kit';
 
-import { TranslationList } from "../components/TranslationList";
+import { TranslationList } from '../components/TranslationList';
 
-import { mockTranslations } from "./TranslationCandidatesPage";
+import { mockTranslations } from './TranslationCandidatesPage';
 
 const { DotsText } = CrowdBibleUI;
 const { Stack, Backdrop } = MuiMaterial;
 
 export const mockDocument =
-  "1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 3. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 4. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 5. From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. 6. Ut enim ad minim veniam, quis nostrud exercitation.";
+  '1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 3. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 4. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 5. From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. 6. Ut enim ad minim veniam, quis nostrud exercitation. 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 3. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 4. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 5. From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. 6. Ut enim ad minim veniam, quis nostrud exercitation.';
 
 export const mockRanges = [
   {
@@ -65,21 +66,21 @@ export function TranslationPage() {
   };
 
   const handleGoToEditPage = () => {
-    history.push("/translation-edit");
+    history.push('/translation-edit');
   };
 
   const handleGoToTranslationCandidatesPage = () => {
-    history.push("/translation-candidates");
+    history.push('/translation-candidates');
   };
 
   return (
-    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
-      <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
+    <IonContent>
+      <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
         <Typography
           variant="overline"
           sx={{
-            paddingBottom: "16px",
-            color: colors["dark"],
+            paddingBottom: '16px',
+            color: colors['dark'],
             opacity: 0.5,
           }}
         >
@@ -97,7 +98,7 @@ export function TranslationPage() {
           startIcon={<FiPlus />}
           fullWidth
           onClick={handleGoToEditPage}
-          sx={{ margin: "10px 0" }}
+          sx={{ margin: '10px 0' }}
         >
           Add My Translation
         </Button>
@@ -105,7 +106,7 @@ export function TranslationPage() {
           variant="text"
           fullWidth
           onClick={handleGoToTranslationCandidatesPage}
-          sx={{ margin: "10px 0" }}
+          sx={{ margin: '10px 0' }}
           endIcon
         >
           Go To Translation List
@@ -115,24 +116,24 @@ export function TranslationPage() {
         open={opened}
         onClick={handleClose}
         sx={{
-          alignItems: "flex-end",
-          backgroundColor: "rgba(0, 0, 0, 0.1)",
+          alignItems: 'flex-end',
+          backgroundColor: 'rgba(0, 0, 0, 0.1)',
         }}
       >
         <Stack
           sx={{
-            borderRadius: "20px 20px 0 0",
-            borderTop: `1px solid ${colors["middle-gray"]}`,
-            boxShadow: "0px 0px 20px rgba(4, 16, 31, 0.1)",
-            height: "400px",
-            padding: "0 20px 20px",
-            background: colors["white"],
+            borderRadius: '20px 20px 0 0',
+            borderTop: `1px solid ${colors['middle-gray']}`,
+            boxShadow: '0px 0px 20px rgba(4, 16, 31, 0.1)',
+            height: '400px',
+            padding: '0 20px 20px',
+            background: colors['white'],
           }}
           onClick={handleCancelBubbling}
         >
           <TranslationList translations={mockTranslations} isCheckbox={false} />
         </Stack>
       </Backdrop>
-    </Stack>
+    </IonContent>
   );
 }

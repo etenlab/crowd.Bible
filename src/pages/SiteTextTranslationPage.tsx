@@ -1,3 +1,5 @@
+import { IonContent } from "@ionic/react";
+
 export function SiteTextTranslationPage() {
-  return <div>/site-text-translation</div>;
+  return <IonContent>/site-text-translation</IonContent>;
 }

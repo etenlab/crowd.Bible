@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useState } from 'react';
+import { IonContent } from '@ionic/react';
 
 import {
   CrowdBibleUI,
   Typography,
   MuiMaterial,
   colors,
-} from "@eten-lab/ui-kit";
+} from '@eten-lab/ui-kit';
 
-import { TranslationEditor } from "../components/TranslationEditor";
+import { TranslationEditor } from '../components/TranslationEditor';
 
-import { mockDocument } from "./TranslationPage";
+import { mockDocument } from './TranslationPage';
 
 const { RangeSelectableTextArea } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -34,25 +35,30 @@ export function TranslationEditPage() {
     range.start !== null && range.end !== null ? <TranslationEditor /> : null;
 
   return (
-    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
-      <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
-        <Typography
-          variant="overline"
-          sx={{
-            paddingBottom: "16px",
-            color: colors["dark"],
-            opacity: 0.5,
-          }}
-        >
-          Original
-        </Typography>
-        <RangeSelectableTextArea
-          text={mockDocument}
-          range={range}
-          onChangeRange={handleChangeRange}
-        />
+    <IonContent>
+      <Stack
+        justifyContent="space-between"
+        sx={{ height: 'calc(100vh - 68px)' }}
+      >
+        <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
+          <Typography
+            variant="overline"
+            sx={{
+              paddingBottom: '16px',
+              color: colors['dark'],
+              opacity: 0.5,
+            }}
+          >
+            Original
+          </Typography>
+          <RangeSelectableTextArea
+            text={mockDocument}
+            range={range}
+            onChangeRange={handleChangeRange}
+          />
+        </Stack>
+        <Stack sx={{ flexGrow: 1 }}>{translationEdit}</Stack>
       </Stack>
-      <Stack sx={{ flexGrow: 1 }}>{translationEdit}</Stack>
-    </Stack>
+    </IonContent>
   );
 }

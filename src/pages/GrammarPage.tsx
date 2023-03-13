@@ -1,3 +1,5 @@
+import { IonContent } from '@ionic/react';
+
 export function GrammarPage() {
-  return <div>/grammar</div>;
+  return <IonContent>/grammar</IonContent>;
 }

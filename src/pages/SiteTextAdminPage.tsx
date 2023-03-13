@@ -1,3 +1,5 @@
+import { IonContent } from "@ionic/react";
+
 export function SiteTextAdminPage() {
-  return <div>/site-text-admin</div>;
+  return <IonContent>/site-text-admin</IonContent>;
 }

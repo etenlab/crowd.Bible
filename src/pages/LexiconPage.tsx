@@ -1,3 +1,5 @@
+import { IonContent } from '@ionic/react';
+
 export function LexiconPage() {
-  return <div>/lexicon</div>;
+  return <IonContent>/lexicon</IonContent>;
 }

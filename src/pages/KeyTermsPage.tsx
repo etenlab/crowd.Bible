@@ -1,3 +1,5 @@
+import { IonContent } from '@ionic/react';
+
 export function KeyTermsPage() {
-  return <div>/key-terms</div>;
+  return <IonContent>/key-terms</IonContent>;
 }

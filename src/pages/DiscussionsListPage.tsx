@@ -1,3 +1,5 @@
+import { IonContent } from '@ionic/react';
+
 export function DiscussionsListPage() {
-  return <div>/discussions-list</div>;
+  return <IonContent>/discussions-list</IonContent>;
 }

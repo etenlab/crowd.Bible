@@ -1,3 +1,5 @@
+import { IonContent } from '@ionic/react';
+
 export function AdminPage() {
-  return <div>/admin</div>;
+  return <IonContent>/admin</IonContent>;
 }

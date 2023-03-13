@@ -1,16 +1,17 @@
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { IonContent } from '@ionic/react';
 
-import { CrowdBibleUI, MuiMaterial, FiX } from "@eten-lab/ui-kit";
-import { Question } from "@eten-lab/ui-kit/dist/crowd-bible";
+import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
+import { Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 
-import { mockDocument } from "./TranslationPage";
+import { mockDocument } from './TranslationPage';
 
-import { useAppContext } from "../hooks/useAppContext";
+import { useAppContext } from '../hooks/useAppContext';
 
 const { LabelWithIcon, RangeSelectableTextArea, QuestionCreatorBox } =
   CrowdBibleUI;
-const { Stack, Box } = MuiMaterial;
+const { Stack } = MuiMaterial;
 
 export function TextPartTranslatorQAPage() {
   const history = useHistory();
@@ -34,7 +35,7 @@ export function TextPartTranslatorQAPage() {
   };
 
   const handleClickCancel = () => {
-    history.push("/translator-qa");
+    history.push('/translator-qa');
   };
 
   const handleCancel = () => {
@@ -42,8 +43,8 @@ export function TextPartTranslatorQAPage() {
   };
 
   const handleSave = (question: Question) => {
-    alertFeedback("success", "Your question has been created!");
-    history.push("/translator-qa");
+    alertFeedback('success', 'Your question has been created!');
+    history.push('/translator-qa');
   };
 
   const questionCreatorBox =
@@ -52,24 +53,26 @@ export function TextPartTranslatorQAPage() {
     ) : null;
 
   return (
-    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
-      <Box sx={{ padding: "20px 20px 0" }}>
-        <LabelWithIcon
-          label="translation"
-          icon={<FiX />}
-          color="gray"
-          onClick={handleClickCancel}
-        />
-      </Box>
-
-      <Stack sx={{ padding: "0 20px 20px", flexGrow: 1, overflowY: "scroll" }}>
-        <RangeSelectableTextArea
-          text={mockDocument}
-          range={range}
-          onChangeRange={handleChangeRange}
-        />
+    <IonContent>
+      <Stack
+        justifyContent="space-between"
+        sx={{ height: 'calc(100vh - 68px)' }}
+      >
+        <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
+          <LabelWithIcon
+            label="translation"
+            icon={<FiX />}
+            color="gray"
+            onClick={handleClickCancel}
+          />
+          <RangeSelectableTextArea
+            text={mockDocument}
+            range={range}
+            onChangeRange={handleChangeRange}
+          />
+        </Stack>
+        {questionCreatorBox}
       </Stack>
-      {questionCreatorBox}
-    </Stack>
+    </IonContent>
   );
 }

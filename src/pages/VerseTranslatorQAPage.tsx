@@ -1,15 +1,16 @@
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { IonContent } from '@ionic/react';
 
-import { CrowdBibleUI, MuiMaterial } from "@eten-lab/ui-kit";
-import { Question } from "@eten-lab/ui-kit/dist/crowd-bible";
+import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
+import { Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 
-import { useAppContext } from "../hooks/useAppContext";
+import { useAppContext } from '../hooks/useAppContext';
 
-import { mockVerses, ChapterList } from "./VerseFeedbackPage";
+import { mockVerses, ChapterList } from './VerseFeedbackPage';
 
 const { TitleWithIcon, VerticalRadioList, QuestionCreatorBox } = CrowdBibleUI;
-const { Stack, Box } = MuiMaterial;
+const { Stack } = MuiMaterial;
 
 type VerseFeedbackProps = {
   onClickCancel(): void;
@@ -26,7 +27,7 @@ function VerseTranslatorQA({ onClickCancel, onClickBack }: VerseFeedbackProps) {
 
   const handleChangeVerse = (
     _event: React.SyntheticEvent<Element, Event>,
-    verse: number
+    verse: number,
   ) => {
     setSelectedVerse(verse);
   };
@@ -36,8 +37,8 @@ function VerseTranslatorQA({ onClickCancel, onClickBack }: VerseFeedbackProps) {
   };
 
   const handleSave = (question: Question) => {
-    alertFeedback("success", "Your question has been created!");
-    history.push("/translator-qa");
+    alertFeedback('success', 'Your question has been created!');
+    history.push('/translator-qa');
   };
 
   const questionCreatorBox =
@@ -46,17 +47,14 @@ function VerseTranslatorQA({ onClickCancel, onClickBack }: VerseFeedbackProps) {
     ) : null;
 
   return (
-    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
-      <Box sx={{ padding: "20px 20px 0 12px" }}>
+    <Stack justifyContent="space-between" sx={{ height: 'calc(100vh - 68px)' }}>
+      <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
         <TitleWithIcon
           label="Verses"
           withBackIcon
           onClose={onClickCancel}
           onBack={onClickBack}
         />
-      </Box>
-
-      <Stack sx={{ padding: "0 20px 20px", flexGrow: 1, overflowY: "scroll" }}>
         <VerticalRadioList
           label="Select a Verse"
           withUnderline={true}
@@ -76,7 +74,7 @@ export function VerseTranslatorQAPage() {
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
 
   const handleClickCancel = () => {
-    history.push("/translator-qa");
+    history.push('/translator-qa');
   };
 
   const handleClickBack = () => {
@@ -87,15 +85,19 @@ export function VerseTranslatorQAPage() {
     setSelectedChapter(chapter);
   };
 
-  return selectedChapter ? (
-    <VerseTranslatorQA
-      onClickCancel={handleClickCancel}
-      onClickBack={handleClickBack}
-    />
-  ) : (
-    <ChapterList
-      onClickCancel={handleClickCancel}
-      onClickChapter={handleClickChapter}
-    />
+  return (
+    <IonContent>
+      {selectedChapter ? (
+        <VerseTranslatorQA
+          onClickCancel={handleClickCancel}
+          onClickBack={handleClickBack}
+        />
+      ) : (
+        <ChapterList
+          onClickCancel={handleClickCancel}
+          onClickChapter={handleClickChapter}
+        />
+      )}
+    </IonContent>
   );
 }

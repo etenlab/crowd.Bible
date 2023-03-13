@@ -1,3 +1,5 @@
+import { IonContent } from '@ionic/react';
+
 export function VersificationPage() {
-  return <div>/file-import</div>;
+  return <IonContent>/file-import</IonContent>;
 }

@@ -1,3 +1,5 @@
+import { IonContent } from '@ionic/react';
+
 export function GraphViewerPage() {
-  return <div>/graph-viewer</div>;
+  return <IonContent>/graph-viewer</IonContent>;
 }

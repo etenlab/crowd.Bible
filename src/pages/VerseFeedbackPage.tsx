@@ -1,13 +1,14 @@
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { IonContent } from '@ionic/react';
 
-import { CrowdBibleUI, MuiMaterial } from "@eten-lab/ui-kit";
+import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 
-import { FeedbackInput } from "../components/FeedbackInput";
-import { mockChapters } from "./ChapterFeedbackPage";
+import { FeedbackInput } from '../components/FeedbackInput';
+import { mockChapters } from './ChapterFeedbackPage';
 
 const { TitleWithIcon, VerticalRadioList, ButtonList } = CrowdBibleUI;
-const { Stack, Box } = MuiMaterial;
+const { Stack } = MuiMaterial;
 
 type ChapterListProps = {
   onClickChapter(chapter: number): void;
@@ -19,17 +20,14 @@ export function ChapterList({
   onClickCancel,
 }: ChapterListProps) {
   return (
-    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
-      <Box sx={{ padding: "20px 20px 0" }}>
+    <Stack justifyContent="space-between" sx={{ height: 'calc(100vh - 68px)' }}>
+      <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
         <TitleWithIcon
           label="Chapters"
           withBackIcon={false}
           onClose={onClickCancel}
           onBack={() => {}}
         />
-      </Box>
-
-      <Stack sx={{ padding: "0 20px 20px", flexGrow: 1, overflowY: "scroll" }}>
         <ButtonList
           withUnderline
           label="Select a Chapter"
@@ -44,27 +42,51 @@ export function ChapterList({
 export const mockVerses = [
   {
     value: 1,
-    label: "Ch. 1: Verse 1 Name of the Verse",
+    label: 'Ch. 1: Verse 1 Name of the Verse',
   },
   {
     value: 2,
-    label: "Ch. 2: Verse 2 Name of the Verse",
+    label: 'Ch. 2: Verse 2 Name of the Verse',
   },
   {
     value: 3,
-    label: "Ch. 3: Verse 3 Name of the Verse",
+    label: 'Ch. 3: Verse 3 Name of the Verse',
   },
   {
     value: 4,
-    label: "Ch. 4: Verse 4 Name of the Verse",
+    label: 'Ch. 4: Verse 4 Name of the Verse',
   },
   {
     value: 5,
-    label: "Ch. 5: Verse 5 Name of the Verse",
+    label: 'Ch. 5: Verse 5 Name of the Verse',
   },
   {
     value: 6,
-    label: "Ch. 6: Verse 6 Name of the Verse",
+    label: 'Ch. 6: Verse 6 Name of the Verse',
+  },
+  {
+    value: 7,
+    label: 'Ch. 7: Verse 1 Name of the Verse',
+  },
+  {
+    value: 8,
+    label: 'Ch. 8: Verse 2 Name of the Verse',
+  },
+  {
+    value: 9,
+    label: 'Ch. 9: Verse 3 Name of the Verse',
+  },
+  {
+    value: 10,
+    label: 'Ch. 10: Verse 4 Name of the Verse',
+  },
+  {
+    value: 11,
+    label: 'Ch. 11: Verse 5 Name of the Verse',
+  },
+  {
+    value: 12,
+    label: 'Ch. 12: Verse 6 Name of the Verse',
   },
 ];
 
@@ -78,7 +100,7 @@ function VerseFeedback({ onClickCancel, onClickBack }: VerseFeedbackProps) {
 
   const handleChangeVerse = (
     _event: React.SyntheticEvent<Element, Event>,
-    verse: number
+    verse: number,
   ) => {
     setSelectedVerse(verse);
   };
@@ -86,17 +108,14 @@ function VerseFeedback({ onClickCancel, onClickBack }: VerseFeedbackProps) {
   const feedbackInput = selectedVerse !== null ? <FeedbackInput /> : null;
 
   return (
-    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
-      <Box sx={{ padding: "20px 20px 0 12px" }}>
+    <Stack justifyContent="space-between" sx={{ height: 'calc(100vh - 68px)' }}>
+      <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
         <TitleWithIcon
           label="Verses"
           withBackIcon
           onClose={onClickCancel}
           onBack={onClickBack}
         />
-      </Box>
-
-      <Stack sx={{ padding: "0 20px 20px", flexGrow: 1, overflowY: "scroll" }}>
         <VerticalRadioList
           label="Select a Verse"
           withUnderline={true}
@@ -116,7 +135,7 @@ export function VerseFeedbackPage() {
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
 
   const handleClickCancel = () => {
-    history.push("/feedback");
+    history.push('/feedback');
   };
 
   const handleClickBack = () => {
@@ -127,15 +146,19 @@ export function VerseFeedbackPage() {
     setSelectedChapter(chapter);
   };
 
-  return selectedChapter ? (
-    <VerseFeedback
-      onClickCancel={handleClickCancel}
-      onClickBack={handleClickBack}
-    />
-  ) : (
-    <ChapterList
-      onClickCancel={handleClickCancel}
-      onClickChapter={handleClickChapter}
-    />
+  return (
+    <IonContent>
+      {selectedChapter ? (
+        <VerseFeedback
+          onClickCancel={handleClickCancel}
+          onClickBack={handleClickBack}
+        />
+      ) : (
+        <ChapterList
+          onClickCancel={handleClickCancel}
+          onClickChapter={handleClickChapter}
+        />
+      )}
+    </IonContent>
   );
 }
