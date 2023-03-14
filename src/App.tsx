@@ -56,6 +56,7 @@ import { CommentaryPage } from './pages/CommentaryPage';
 import { GrammarPage } from './pages/GrammarPage';
 import { VersificationPage } from './pages/VersificationPage';
 import { AlignmentPage } from './pages/AlignmentPage';
+import { SvgTranslationPage } from './pages/SvgTranslationPage';
 
 import { ThemeProvider } from '@eten-lab/ui-kit';
 import { AppContextProvider } from './AppContext';
@@ -177,6 +178,9 @@ const App: React.FC = () => (
               </Route>
               <Route exact path="/alignment">
                 <AlignmentPage />
+              </Route>
+              <Route exact path="/svg-translation">
+                <SvgTranslationPage />
               </Route>
             </IonRouterOutlet>
           </PageLayout>

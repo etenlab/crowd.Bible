@@ -55,6 +55,9 @@ export function HomePage() {
         <IonItem href="/alignment">
           <IonLabel>/alignment</IonLabel>
         </IonItem>
+        <IonItem href="/svg-translation">
+          <IonLabel>/svg-translation</IonLabel>
+        </IonItem>
       </IonList>
     </IonContent>
   );
