@@ -44,6 +44,7 @@ import { DiscussionPage } from "./pages/DiscussionPage";
 import { ThemeProvider } from "@eten-lab/ui-kit";
 import { AppContextProvider } from "./AppContext";
 import { PageLayout } from "./components/PageLayout";
+import { Svg } from './pages/Svg';
 
 setupIonicReact();
 
@@ -119,6 +120,9 @@ const App: React.FC = () => (
               </Route>
               <Route exact path="/translator-qa/verse">
                 <VerseTranslatorQAPage />
+              </Route>
+              <Route exact path="/svg/translate">
+                <Svg />
               </Route>
             </IonRouterOutlet>
           </PageLayout>
