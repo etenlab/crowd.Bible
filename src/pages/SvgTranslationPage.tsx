@@ -2,6 +2,7 @@ import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { INode, parseSync, stringify } from 'svgson';
 import { FormLabel, Button, Box, FormControl, TextField } from '@mui/material';
+import { Alert } from '@eten-lab/ui-kit';
 
 export const SvgTranslationPage = () => {
   const [originalSvg, setOriginalSvg] = useState(null as null | string);
@@ -77,6 +78,10 @@ export const SvgTranslationPage = () => {
     [],
   );
 
+  if (textContents.length === 0 && originalSvg) {
+    return <Alert severity="warning">No text or textPath tags found</Alert>;
+  }
+
   return (
     <IonContent>
       <Box
@@ -86,20 +91,19 @@ export const SvgTranslationPage = () => {
         alignItems={'center'}
         padding="20px"
       >
-        {!originalSvg && (
-          <Button variant="contained" component="label">
-            Upload SVG
-            <input
-              hidden
-              multiple
-              accept="image/svg+xml"
-              onChange={fileHandler}
-              type="file"
-            />
-          </Button>
-        )}
+        <Button variant="contained" component="label">
+          Upload SVG
+          <input
+            hidden
+            multiple
+            accept="image/svg+xml"
+            onChange={fileHandler}
+            type="file"
+          />
+        </Button>
 
         {error && <div>Error: {error}</div>}
+
         {translatedSvg && (
           <Box display="flex" flexDirection={'column'} justifyContent="start">
             {originalSvg && (
@@ -112,6 +116,7 @@ export const SvgTranslationPage = () => {
                 />
               </Box>
             )}
+
             <FormControl>
               {/* <InputLabel htmlFor="my-input">Translate to</InputLabel> */}
               <TextField
@@ -125,6 +130,7 @@ export const SvgTranslationPage = () => {
                 error={translateTo.length !== 3}
               />
             </FormControl>
+
             <Box
               display="flex"
               flexDirection={'column'}
