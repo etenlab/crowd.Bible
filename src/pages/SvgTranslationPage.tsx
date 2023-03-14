@@ -137,7 +137,7 @@ export const SvgTranslationPage = () => {
               paddingBottom={'10px'}
             >
               {textContents.map((text, i) => (
-                <FormControl margin="dense">
+                <FormControl margin="dense" key={i}>
                   <FormLabel>{text}</FormLabel>
                   <TextField
                     id={`text-${i}`}
