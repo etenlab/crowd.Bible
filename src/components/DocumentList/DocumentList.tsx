@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import {
   MuiMaterial,
@@ -8,8 +8,8 @@ import {
   CiSearch,
   SearchInput,
   BiFile,
-} from "@eten-lab/ui-kit";
-import { useAppContext } from "../../hooks/useAppContext";
+} from '@eten-lab/ui-kit';
+import { useAppContext } from '../../hooks/useAppContext';
 
 const {
   Stack,
@@ -22,11 +22,16 @@ const {
 } = MuiMaterial;
 
 const documents = [
-  "Document #1",
-  "Document #2",
-  "Document #3",
-  "Document #4",
-  "Document #5",
+  'Document #1',
+  'Document #2',
+  'Document #3',
+  'Document #4',
+  'Document #5',
+  'Document #6',
+  'Document #7',
+  'Document #8',
+  'Document #9',
+  'Document #10',
 ];
 
 export function DocumentList() {
@@ -36,6 +41,9 @@ export function DocumentList() {
       global: { user },
     },
   } = useAppContext();
+
+  console.log(user);
+
   const [isShownSearchInput, setIsShownSearchInput] = useState<boolean>(false);
 
   const handleToggleSearchInput = () => {
@@ -43,17 +51,19 @@ export function DocumentList() {
   };
 
   const handleClickDocument = () => {
-    if (user?.role === "translator") {
-      history.push("/translation");
-    } else if (user?.role === "reader") {
-      history.push("/feedback");
+    alert('clicked');
+    alert(user?.role);
+    if (user?.role === 'translator') {
+      history.push('/translation');
+    } else if (user?.role === 'reader') {
+      history.push('/feedback');
     }
   };
 
   return (
     <List
       component="nav"
-      sx={{ padding: "20px" }}
+      sx={{ padding: '20px' }}
       subheader={
         <ListSubheader component="div" sx={{ padding: 0 }}>
           <Stack
@@ -63,7 +73,7 @@ export function DocumentList() {
           >
             <Typography
               variant="overline"
-              sx={{ color: colors["gray"], opacity: 0.5 }}
+              sx={{ color: colors['gray'], opacity: 0.5 }}
             >
               List of docs
             </Typography>
@@ -86,10 +96,10 @@ export function DocumentList() {
           <ListItemIcon>
             <BiFile
               style={{
-                borderRadius: "7px",
-                padding: "7px",
-                fontSize: "32px",
-                background: colors["light-blue"],
+                borderRadius: '7px',
+                padding: '7px',
+                fontSize: '32px',
+                background: colors['light-blue'],
               }}
             />
           </ListItemIcon>

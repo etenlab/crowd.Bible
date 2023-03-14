@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import React, { useRef } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import {
   IonMenu,
@@ -10,13 +10,13 @@ import {
   IonList,
   IonLabel,
   IonItem,
-} from "@ionic/react";
+} from '@ionic/react';
 
-import "./PageLayout.css";
+import './PageLayout.css';
 
-import { Toolbar, MuiMaterial, Alert } from "@eten-lab/ui-kit";
+import { Toolbar, MuiMaterial, Alert } from '@eten-lab/ui-kit';
 
-import { useAppContext } from "../../hooks/useAppContext";
+import { useAppContext } from '../../hooks/useAppContext';
 
 const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
 
@@ -42,18 +42,18 @@ export function PageLayout({ children }: PageLayoutProps) {
   };
 
   let isHeader = true;
-  const qaUrl = user?.role === "translator" ? "/translator-qa" : "/reader-qa";
+  const qaUrl = user?.role === 'translator' ? '/translator-qa' : '/reader-qa';
 
   switch (location.pathname) {
-    case "/welcome": {
+    case '/welcome': {
       isHeader = false;
       break;
     }
-    case "/login": {
+    case '/login': {
       isHeader = false;
       break;
     }
-    case "/register": {
+    case '/register': {
       isHeader = false;
       break;
     }
@@ -75,8 +75,8 @@ export function PageLayout({ children }: PageLayoutProps) {
                   discussion: false,
                   menu: false,
                 }}
-                onClickDiscussionBtn={() => history.push("/discussions-list")}
-                onClickNotificationBtn={() => history.push("/notifications")}
+                onClickDiscussionBtn={() => history.push('/discussions-list')}
+                onClickNotificationBtn={() => history.push('/notifications')}
                 onClickMenuBtn={handleToggleMenu}
               />
             </IonToolbar>
@@ -84,8 +84,8 @@ export function PageLayout({ children }: PageLayoutProps) {
         ) : null}
         <IonContent>
           <IonList>
-            <IonItem href="/documents-list">
-              <IonLabel>Documents List</IonLabel>
+            <IonItem href="/home">
+              <IonLabel>Home</IonLabel>
             </IonItem>
             <IonItem href={qaUrl}>
               <IonLabel>Question & Answer</IonLabel>
@@ -107,8 +107,8 @@ export function PageLayout({ children }: PageLayoutProps) {
                 title="crowd.Bible"
                 isNewDiscussion={isNewDiscussion}
                 isNewNotification={isNewNotification}
-                onClickDiscussionBtn={() => history.push("/discussions-list")}
-                onClickNotificationBtn={() => history.push("/notifications")}
+                onClickDiscussionBtn={() => history.push('/discussions-list')}
+                onClickNotificationBtn={() => history.push('/notifications')}
                 onClickMenuBtn={handleToggleMenu}
               />
             </IonToolbar>
@@ -123,8 +123,8 @@ export function PageLayout({ children }: PageLayoutProps) {
             autoHideDuration={5000}
             onClose={closeFeedback}
             anchorOrigin={{
-              vertical: "top",
-              horizontal: "center",
+              vertical: 'top',
+              horizontal: 'center',
             }}
             key="top-center"
           >
@@ -132,15 +132,15 @@ export function PageLayout({ children }: PageLayoutProps) {
               variant="standard"
               onClose={closeFeedback}
               severity={snack.severity}
-              sx={{ width: "100%" }}
+              sx={{ width: '100%' }}
             >
               {snack.message}
             </Alert>
           </Snackbar>
 
-          <Backdrop sx={{ color: "#fff", zIndex: 1000 }} open={loading}>
+          <Backdrop sx={{ color: '#fff', zIndex: 1000 }} open={loading}>
             <Stack justifyContent="center">
-              <div style={{ margin: "auto" }}>
+              <div style={{ margin: 'auto' }}>
                 <CircularProgress color="inherit" />
               </div>
               <div>LOADING</div>

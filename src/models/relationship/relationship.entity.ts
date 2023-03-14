@@ -40,8 +40,6 @@ export class Relationship extends Syncable {
   @Column('varchar')
   from_node_id!: string;
 
-  // @Index("idx_relationships_from_node_id")
-
   @ManyToOne(() => Node, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'to_node_id', referencedColumnName: 'id' })
   toNode!: Node;
@@ -49,11 +47,9 @@ export class Relationship extends Syncable {
   @Column('varchar')
   to_node_id!: string;
 
-  // @Index("idx_relationships_to_node_id")
-
   @OneToMany(
     () => RelationshipPropertyKey,
     (relationship_property_key) => relationship_property_key.relationship,
   )
-  property_keys!: RelationshipPropertyKey[];
+  propertyKeys!: RelationshipPropertyKey[];
 }

@@ -15,14 +15,14 @@ export class NodePropertyKeyRepository {
     node_id: string,
     key_name: string,
   ): Promise<string | null> {
-    const property_key = await this.repository
+    const propertyKey = await this.repository
       .createQueryBuilder('nodePropertyKey')
       .where('nodePropertyKey.id = :node_id', { node_id })
       .andWhere('nodePropertyKey.property_key = :key_name', { key_name })
       .getOne();
 
-    if (property_key) {
-      return property_key.id;
+    if (propertyKey) {
+      return propertyKey.id;
     }
 
     const node = await this.dbService.dataSource
@@ -37,7 +37,7 @@ export class NodePropertyKeyRepository {
       property_key: key_name,
       node_id: node_id,
       sync_layer: this.syncService.syncLayer,
-    } as NodePropertyKey);
+    });
 
     new_property_key_instance.node = node;
 

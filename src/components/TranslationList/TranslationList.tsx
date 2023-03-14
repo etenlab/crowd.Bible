@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useHistory } from "react-router";
+import { useState } from 'react';
+import { useHistory } from 'react-router';
 
 import {
   Tabs,
@@ -12,7 +12,7 @@ import {
   BiDislike,
   BiLike,
   FiPlus,
-} from "@eten-lab/ui-kit";
+} from '@eten-lab/ui-kit';
 
 const { Stack, Divider, IconButton } = MuiMaterial;
 
@@ -21,32 +21,32 @@ function Voting({ voted, unvoted }: { voted: number; unvoted: number }) {
     <Stack direction="row" gap="20px">
       <span
         style={{
-          display: "inline-flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "5px",
-          borderRadius: "4px",
-          background: colors["light-green"],
-          color: colors["green"],
-          fontSize: "16px",
+          display: 'inline-flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '5px',
+          borderRadius: '4px',
+          background: colors['light-green'],
+          color: colors['green'],
+          fontSize: '16px',
         }}
       >
-        <BiLike style={{ fontSize: "18px" }} />
+        <BiLike style={{ fontSize: '18px' }} />
         {voted}
       </span>
       <span
         style={{
-          display: "inline-flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "5px",
-          borderRadius: "4px",
-          background: colors["light-red"],
-          color: colors["red"],
-          fontSize: "16px",
+          display: 'inline-flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '5px',
+          borderRadius: '4px',
+          background: colors['light-red'],
+          color: colors['red'],
+          fontSize: '16px',
         }}
       >
-        <BiDislike style={{ fontSize: "18px" }} />
+        <BiDislike style={{ fontSize: '18px' }} />
         {unvoted}
       </span>
     </Stack>
@@ -57,12 +57,12 @@ export function OpenDiscussion() {
   return (
     <span
       style={{
-        padding: "5px",
+        padding: '5px',
         paddingBottom: 0,
-        borderRadius: "4px",
-        background: colors["light-blue"],
-        color: colors["gray"],
-        fontSize: "24px",
+        borderRadius: '4px',
+        background: colors['light-blue'],
+        color: colors['gray'],
+        fontSize: '24px',
       }}
     >
       <BiMessageRounded />
@@ -91,20 +91,20 @@ function Translation({
     history.push(`/discussion/table-name/${text}/row/${id}`);
   };
 
-  const checkbox = isCheckbox ? <Checkbox sx={{ marginLeft: "-9px" }} /> : null;
+  const checkbox = isCheckbox ? <Checkbox sx={{ marginLeft: '-9px' }} /> : null;
 
   return (
     <>
       <Stack
         direction="row"
         alignItems="flex-start"
-        sx={{ marginBottom: "12px" }}
+        sx={{ marginBottom: '12px' }}
       >
         {checkbox}
         <Stack gap="3px">
           <Typography
             variant="body3"
-            sx={{ padding: "9px 0", color: colors["dark"] }}
+            sx={{ padding: '9px 0', color: colors['dark'] }}
           >
             {text}
           </Typography>
@@ -119,11 +119,11 @@ function Translation({
             <IconButton onClick={handleClickDiscussionButton}>
               <BiMessageRounded
                 style={{
-                  padding: "5px",
-                  borderRadius: "4px",
-                  background: colors["light-blue"],
-                  color: colors["gray"],
-                  fontSize: "26px",
+                  padding: '5px',
+                  borderRadius: '4px',
+                  background: colors['light-blue'],
+                  color: colors['gray'],
+                  fontSize: '26px',
                 }}
               />
             </IconButton>
@@ -144,7 +144,7 @@ export function TranslationList({
   translations,
   isCheckbox = true,
 }: TranslationListProps) {
-  const [currentTab, setCurrentTab] = useState<string>("all");
+  const [currentTab, setCurrentTab] = useState<string>('all');
   const history = useHistory();
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -152,32 +152,32 @@ export function TranslationList({
   };
 
   const handleClickAddMyTranslation = () => {
-    history.push("/translation-edit");
+    history.push('/translation-edit');
   };
 
   return (
     <>
       <Tabs
         tabs={[
-          { value: "all", label: "All Translations" },
-          { value: "mine", label: "My Translations(2)" },
+          { value: 'all', label: 'All Translations' },
+          { value: 'mine', label: 'My Translations(2)' },
         ]}
         value={currentTab}
         onChange={handleTabChange}
       />
-      {currentTab === "mine" ? (
+      {currentTab === 'mine' ? (
         <Button
           variant="contained"
           startIcon={<FiPlus />}
           fullWidth
           onClick={handleClickAddMyTranslation}
-          sx={{ margin: "10px 0" }}
+          sx={{ margin: '10px 0' }}
         >
           Add My Translation
         </Button>
       ) : null}
 
-      <Stack sx={{ flexGrow: 1, overflowY: "scroll" }}>
+      <Stack sx={{ flexGrow: 1, overflowY: 'auto' }}>
         {translations.map((item) => (
           <Translation
             key={item.id}

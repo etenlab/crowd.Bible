@@ -1,21 +1,22 @@
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { IonContent } from '@ionic/react';
 
-import { CrowdBibleUI, MuiMaterial, FiX } from "@eten-lab/ui-kit";
+import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 
-import { mockDocument, mockRanges } from "./TranslationPage";
+import { mockDocument, mockRanges } from './TranslationPage';
 
-import { useAppContext } from "../hooks/useAppContext";
+import { useAppContext } from '../hooks/useAppContext';
 
 const { DotsText, LabelWithIcon, QuestionBox } = CrowdBibleUI;
-const { Stack, Box } = MuiMaterial;
+const { Stack } = MuiMaterial;
 
 type QuestionType =
-  | "Normal"
-  | "Agree/Disagree"
-  | "True/False"
-  | "Multiselect"
-  | "Choose One";
+  | 'Normal'
+  | 'Agree/Disagree'
+  | 'True/False'
+  | 'Multiselect'
+  | 'Choose One';
 
 export type CheckItemType = {
   item: string;
@@ -26,34 +27,34 @@ const mockQuestion = [
   {
     id: 0,
     question:
-      "From its medieval origins to the digital era, learn everything is to know about the ubiquitous?",
-    questionKind: "Normal",
+      'From its medieval origins to the digital era, learn everything is to know about the ubiquitous?',
+    questionKind: 'Normal',
   },
   {
     id: 1,
     question:
-      "From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs?",
-    questionKind: "Agree/Disagree",
+      'From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs?',
+    questionKind: 'Agree/Disagree',
   },
   {
     id: 2,
     question:
-      "From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs?",
-    questionKind: "True/False",
+      'From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs?',
+    questionKind: 'True/False',
   },
   {
     id: 3,
     question:
-      "From its medieval origins to the digital era, learn everything there is to know?",
-    questionKind: "Choose One",
-    questionData: ["Laying", "Typesetter", "Attributed"],
+      'From its medieval origins to the digital era, learn everything there is to know?',
+    questionKind: 'Choose One',
+    questionData: ['Laying', 'Typesetter', 'Attributed'],
   },
   {
     id: 4,
     question:
-      "From its medieval origins to the digital era, learn everything there is to know?",
-    questionKind: "Multiselect",
-    questionData: ["Laying", "Typesetter", "Attributed"],
+      'From its medieval origins to the digital era, learn everything there is to know?',
+    questionKind: 'Multiselect',
+    questionData: ['Laying', 'Typesetter', 'Attributed'],
   },
 ];
 
@@ -85,12 +86,12 @@ export function ReaderQAPage() {
     chooseOne?: string;
     multiselect?: CheckItemType[];
   }) => {
-    alertFeedback("success", "Your answer has been sent!");
+    alertFeedback('success', 'Your answer has been sent!');
     handleCancelQuestion();
   };
 
   const handleGoToTranslationPage = () => {
-    history.push("/translation");
+    history.push('/translation');
   };
 
   const selectedQuestion =
@@ -108,25 +109,28 @@ export function ReaderQAPage() {
     ) : null;
 
   return (
-    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
-      <Box sx={{ padding: "20px" }}>
-        <LabelWithIcon
-          label="translation"
-          icon={<FiX />}
-          color="gray"
-          onClick={handleGoToTranslationPage}
-        />
-      </Box>
-      <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
-        <DotsText
-          text={mockDocument}
-          ranges={mockRanges}
-          onSelect={handleDotClick}
-          dotColor="yellow"
-          selectedColor="middle-yellow"
-        />
+    <IonContent>
+      <Stack
+        justifyContent="space-between"
+        sx={{ height: 'calc(100vh - 68px)' }}
+      >
+        <Stack sx={{ padding: '20px', overflowY: 'auto' }}>
+          <LabelWithIcon
+            label="translation"
+            icon={<FiX />}
+            color="gray"
+            onClick={handleGoToTranslationPage}
+          />
+          <DotsText
+            text={mockDocument}
+            ranges={mockRanges}
+            onSelect={handleDotClick}
+            dotColor="yellow"
+            selectedColor="middle-yellow"
+          />
+        </Stack>
+        <Stack sx={{ flexGrow: 1 }}>{questionBox}</Stack>
       </Stack>
-      <Stack sx={{ flexGrow: 1 }}>{questionBox}</Stack>
-    </Stack>
+    </IonContent>
   );
 }

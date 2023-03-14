@@ -1,13 +1,15 @@
-import { useHistory, useParams } from "react-router";
+import { IonContent } from '@ionic/react';
+
+import { useHistory, useParams } from 'react-router';
 
 import {
   MuiMaterial,
   BiLeftArrowAlt,
   Typography,
   colors,
-} from "@eten-lab/ui-kit";
-import { DiscussionForDev } from "@eten-lab/discussion-box";
-import { useAppContext } from "../hooks/useAppContext";
+} from '@eten-lab/ui-kit';
+import { DiscussionForDev } from '@eten-lab/discussion-box';
+import { useAppContext } from '../hooks/useAppContext';
 
 const { Stack, IconButton } = MuiMaterial;
 
@@ -35,24 +37,28 @@ export function DiscussionPage() {
     ) : null;
 
   return (
-    <Stack>
-      <Stack direction="row" justifyContent="flex-start" alignItems="center">
-        <IconButton onClick={goBack}>
-          <BiLeftArrowAlt style={{ fontSize: "24px", color: colors["dark"] }} />
-        </IconButton>
-        <Typography
-          variant="h2"
-          sx={{
-            color: colors["dark"],
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {table_name}
-        </Typography>
+    <IonContent>
+      <Stack>
+        <Stack direction="row" justifyContent="flex-start" alignItems="center">
+          <IconButton onClick={goBack}>
+            <BiLeftArrowAlt
+              style={{ fontSize: '24px', color: colors['dark'] }}
+            />
+          </IconButton>
+          <Typography
+            variant="h2"
+            sx={{
+              color: colors['dark'],
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {table_name}
+          </Typography>
+        </Stack>
+        {discussionUI}
       </Stack>
-      {discussionUI}
-    </Stack>
+    </IonContent>
   );
 }

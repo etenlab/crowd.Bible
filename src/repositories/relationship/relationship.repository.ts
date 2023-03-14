@@ -16,11 +16,6 @@ export class RelationshipRepository {
     node_2: string,
     type_name: string,
   ): Promise<Relationship | null> {
-    // const relationship = await this.repository.save({
-    //   from_id: node_1,
-    //   to_id: node_2,
-    //   relationship_type: type_name,
-    // });
     const nodeRepo = this.dbService.dataSource.getRepository(Node);
     const node_from = await nodeRepo.findOneBy({ id: node_1 });
     const node_to = await nodeRepo.findOneBy({ id: node_2 });
@@ -52,9 +47,6 @@ export class RelationshipRepository {
   }
 
   async listAllRelationshipsByType(type_name: string): Promise<Relationship[]> {
-    // const relationships = await this.repository.findBy({
-    //   relationship_type: type_name,
-    // });
     const relationships = await this.repository
       .createQueryBuilder('rel')
       .leftJoinAndSelect('rel.relationshipType', 'relationship_type')

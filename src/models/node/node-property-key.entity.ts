@@ -28,20 +28,16 @@ export class NodePropertyKey extends Syncable {
   @Column('varchar')
   property_key!: string;
 
-  @ManyToOne(() => Node, (node) => node.property_keys, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'id', referencedColumnName: 'id' })
+  @ManyToOne(() => Node, (node) => node.propertyKeys, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'node_id', referencedColumnName: 'id' })
   node!: Node;
-
-  // @Index("idx_node_property_keys_node_id_key")
-  // @RelationId((node: Node) => node.node_id)
-  // node_id!: string
 
   @Column('varchar')
   node_id!: string;
 
   @OneToOne(
     () => NodePropertyValue,
-    (nodePropertyValue) => nodePropertyValue.property_key,
+    (nodePropertyValue) => nodePropertyValue.propertyKey,
   )
-  property_value!: NodePropertyValue;
+  propertyValue!: NodePropertyValue;
 }

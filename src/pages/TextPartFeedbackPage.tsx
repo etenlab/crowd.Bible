@@ -1,13 +1,14 @@
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { IonContent } from '@ionic/react';
 
-import { CrowdBibleUI, MuiMaterial, FiX } from "@eten-lab/ui-kit";
+import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 
-import { mockDocument } from "./TranslationPage";
-import { FeedbackInput } from "../components/FeedbackInput";
+import { mockDocument } from './TranslationPage';
+import { FeedbackInput } from '../components/FeedbackInput';
 
 const { LabelWithIcon, RangeSelectableTextArea } = CrowdBibleUI;
-const { Stack, Box } = MuiMaterial;
+const { Stack } = MuiMaterial;
 
 export function TextPartFeedbackPage() {
   const history = useHistory();
@@ -27,31 +28,33 @@ export function TextPartFeedbackPage() {
   };
 
   const handleClickCancel = () => {
-    history.push("/feedback");
+    history.push('/feedback');
   };
 
   const feedbackInput =
     range.start !== null && range.end !== null ? <FeedbackInput /> : null;
 
   return (
-    <Stack justifyContent="space-between" sx={{ height: "calc(100vh - 68px)" }}>
-      <Box sx={{ padding: "20px" }}>
-        <LabelWithIcon
-          label="translation"
-          icon={<FiX />}
-          color="gray"
-          onClick={handleClickCancel}
-        />
-      </Box>
-
-      <Stack sx={{ padding: "20px", flexGrow: 1, overflowY: "scroll" }}>
-        <RangeSelectableTextArea
-          text={mockDocument}
-          range={range}
-          onChangeRange={handleChangeRange}
-        />
+    <IonContent>
+      <Stack
+        justifyContent="space-between"
+        sx={{ height: 'calc(100vh - 68px)' }}
+      >
+        <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
+          <LabelWithIcon
+            label="translation"
+            icon={<FiX />}
+            color="gray"
+            onClick={handleClickCancel}
+          />
+          <RangeSelectableTextArea
+            text={mockDocument}
+            range={range}
+            onChangeRange={handleChangeRange}
+          />
+        </Stack>
+        {feedbackInput}
       </Stack>
-      {feedbackInput}
-    </Stack>
+    </IonContent>
   );
 }

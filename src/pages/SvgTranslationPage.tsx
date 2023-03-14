@@ -1,8 +1,9 @@
+import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { INode, parseSync, stringify } from 'svgson';
 import { FormLabel, Button, Box, FormControl, TextField } from '@mui/material';
 
-export const Svg = () => {
+export const SvgTranslationPage = () => {
   const [originalSvg, setOriginalSvg] = useState(null as null | string);
   const [error, setError] = useState('');
   const [translateTo, setTranslateTo] = useState('');
@@ -77,92 +78,89 @@ export const Svg = () => {
   );
 
   return (
-    <Box
-      display="flex"
-      flexDirection={'column'}
-      justifyContent="start"
-      alignItems={'center'}
-      padding="20px"
-    >
-      {!originalSvg && (
-        <Button variant="contained" component="label">
-          Upload SVG
-          <input
-            hidden
-            multiple
-            accept="image/svg+xml"
-            onChange={fileHandler}
-            type="file"
-          />
-        </Button>
-      )}
+    <IonContent>
+      <Box
+        display="flex"
+        flexDirection={'column'}
+        justifyContent="start"
+        alignItems={'center'}
+        padding="20px"
+      >
+        {!originalSvg && (
+          <Button variant="contained" component="label">
+            Upload SVG
+            <input
+              hidden
+              multiple
+              accept="image/svg+xml"
+              onChange={fileHandler}
+              type="file"
+            />
+          </Button>
+        )}
 
-      {error && <div>Error: {error}</div>}
-      {translatedSvg && (
-        <Box display="flex" flexDirection={'column'} justifyContent="start">
-          {originalSvg && (
+        {error && <div>Error: {error}</div>}
+        {translatedSvg && (
+          <Box display="flex" flexDirection={'column'} justifyContent="start">
+            {originalSvg && (
+              <Box paddingBottom={'10px'}>
+                <img
+                  src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                    originalSvg,
+                  )}`}
+                  alt="Original svg"
+                />
+              </Box>
+            )}
+            <FormControl>
+              {/* <InputLabel htmlFor="my-input">Translate to</InputLabel> */}
+              <TextField
+                id="language"
+                label="Translate to"
+                variant="outlined"
+                placeholder="SIL language code"
+                onChange={(e) => {
+                  setTranslateTo(e.target.value);
+                }}
+                error={translateTo.length !== 3}
+              />
+            </FormControl>
+            <Box
+              display="flex"
+              flexDirection={'column'}
+              justifyContent="start"
+              alignItems={'center'}
+              paddingBottom={'10px'}
+            >
+              {textContents.map((text, i) => (
+                <FormControl margin="dense">
+                  <FormLabel>{text}</FormLabel>
+                  <TextField
+                    id={`text-${i}`}
+                    variant="filled"
+                    placeholder="Your translation"
+                    onChange={(e) => {
+                      const newTranslations = [...translations];
+                      newTranslations[i] = e.target.value;
+                      setTranslations(newTranslations);
+                    }}
+                  />
+                  {/* </Box> */}
+                </FormControl>
+              ))}
+            </Box>
             <Box paddingBottom={'10px'}>
               <img
                 src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                  originalSvg,
+                  translatedSvg,
                 )}`}
-                alt="Original svg"
+                alt="translated svg"
               />
             </Box>
-          )}
-          <FormControl>
-            {/* <InputLabel htmlFor="my-input">Translate to</InputLabel> */}
-            <TextField
-              id="language"
-              label="Translate to"
-              variant="outlined"
-              placeholder="SIL language code"
-              onChange={(e) => {
-                setTranslateTo(e.target.value);
-              }}
-              error={translateTo.length !== 3}
-            />
-          </FormControl>
-          <Box
-            display="flex"
-            flexDirection={'column'}
-            justifyContent="start"
-            alignItems={'center'}
-          >
-            {textContents.map((text, i) => (
-              <Box
-                width={'100%'}
-                display={'flex'}
-                flexDirection={'row'}
-                justifyContent={'space-between'}
-                alignItems={'center'}
-                key={i}
-              >
-                <FormLabel>{text}</FormLabel>
-                <TextField
-                  id={`text-${i}`}
-                  variant="filled"
-                  placeholder="Your translation"
-                  onChange={(e) => {
-                    const newTranslations = [...translations];
-                    newTranslations[i] = e.target.value;
-                    setTranslations(newTranslations);
-                  }}
-                />
-              </Box>
-            ))}
           </Box>
-          <Box paddingBottom={'10px'}>
-            <img
-              src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                translatedSvg,
-              )}`}
-              alt="translated svg"
-            />
-          </Box>
-        </Box>
-      )}
-    </Box>
+        )}
+      </Box>
+    </IonContent>
   );
 };
 
