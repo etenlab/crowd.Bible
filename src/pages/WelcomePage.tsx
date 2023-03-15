@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router-dom';
+// import { useHistory } from 'react-router-dom';
 
 import { IonGrid, IonRow, IonCol, IonContent } from '@ionic/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -10,7 +10,7 @@ import 'swiper/css/pagination';
 import '../styles.css';
 
 export function WelcomePage() {
-  const history = useHistory();
+  // const history = useHistory();
 
   // const handleGoToLoginPage = () => {
   //   history.push('/login');
