@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { INode, parseSync, stringify } from 'svgson';
 import { FormLabel, Button, Box, FormControl, TextField } from '@mui/material';
 import { Alert } from '@eten-lab/ui-kit';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 export const SvgTranslationPage = () => {
   const [originalSvg, setOriginalSvg] = useState(null as null | string);
@@ -106,12 +107,18 @@ export const SvgTranslationPage = () => {
           <Box display="flex" flexDirection={'column'} justifyContent="start">
             {originalSvg && (
               <Box paddingBottom={'10px'}>
-                <img
-                  src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                    originalSvg,
-                  )}`}
-                  alt="Original svg"
-                />
+                <TransformWrapper>
+                  <TransformComponent>
+                    <img
+                      width={'100%'}
+                      height={'auto'}
+                      src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                        originalSvg,
+                      )}`}
+                      alt="Original svg"
+                    />
+                  </TransformComponent>
+                </TransformWrapper>
               </Box>
             )}
 
@@ -155,13 +162,18 @@ export const SvgTranslationPage = () => {
             </Box>
 
             <Box paddingBottom={'10px'}>
-              translated:
-              <img
-                src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                  translatedSvg,
-                )}`}
-                alt="translated svg"
-              />
+              <TransformWrapper>
+                <TransformComponent>
+                  <img
+                    width={'100%'}
+                    height={'auto'}
+                    src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                      translatedSvg,
+                    )}`}
+                    alt="translated svg"
+                  />
+                </TransformComponent>
+              </TransformWrapper>
             </Box>
           </Box>
         )}
