@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import {
@@ -35,10 +35,40 @@ export function PageLayout({ children }: PageLayoutProps) {
     actions: { closeFeedback },
   } = useAppContext();
 
+  const [themeMode, setThemeMode] = useState<'dark' | 'light'>('light');
   const ref = useRef<HTMLIonMenuElement>(null);
+  const prefersDarkRef = useRef<MediaQueryList | null>(null);
+  const bodyRef = useRef<HTMLElement | null>(null);
+
+  const toggleDarkTheme = (shouldToggle: boolean) => {
+    console.log(bodyRef.current);
+
+    if (shouldToggle) {
+      setThemeMode('dark');
+    } else {
+      setThemeMode('light');
+    }
+
+    bodyRef.current?.classList.toggle('dark', shouldToggle);
+  };
+
+  useEffect(() => {
+    bodyRef.current = window.document.body;
+    prefersDarkRef.current = window.matchMedia('(prefers-color-scheme: dark)');
+    prefersDarkRef.current.addListener((e) => toggleDarkTheme(e.matches));
+    toggleDarkTheme(prefersDarkRef.current.matches);
+  }, []);
 
   const handleToggleMenu = () => {
     ref.current!.toggle();
+  };
+
+  const handleToogleTheme = () => {
+    if (themeMode === 'light') {
+      toggleDarkTheme(true);
+    } else {
+      toggleDarkTheme(false);
+    }
   };
 
   let isHeader = true;
@@ -75,6 +105,8 @@ export function PageLayout({ children }: PageLayoutProps) {
                   discussion: false,
                   menu: false,
                 }}
+                themeMode={themeMode}
+                onClickThemeModeBtn={handleToogleTheme}
                 onClickDiscussionBtn={() => history.push('/discussions-list')}
                 onClickNotificationBtn={() => history.push('/notifications')}
                 onClickMenuBtn={handleToggleMenu}
@@ -105,6 +137,8 @@ export function PageLayout({ children }: PageLayoutProps) {
             <IonToolbar>
               <Toolbar
                 title="crowd.Bible"
+                themeMode={themeMode}
+                onClickThemeModeBtn={handleToogleTheme}
                 isNewDiscussion={isNewDiscussion}
                 isNewNotification={isNewNotification}
                 onClickDiscussionBtn={() => history.push('/discussions-list')}
