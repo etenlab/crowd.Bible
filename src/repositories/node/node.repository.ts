@@ -1,11 +1,14 @@
 // import { Repository } from 'typeorm';
 import { NodeType } from '../../models';
 import { Node } from '../../models/node/node.entity';
-import { DbService } from '../../services/db.service';
-import { SyncService } from '../../services/sync.service';
+import { type DbService } from '../../services/db.service';
+import { type SyncService } from '../../services/sync.service';
 
 export class NodeRepository {
-  constructor(private dbService: DbService, private syncService: SyncService) {}
+  constructor(
+    private readonly dbService: DbService,
+    private readonly syncService: SyncService,
+  ) {}
 
   get repository() {
     return this.dbService.dataSource.getRepository(Node);
@@ -15,14 +18,14 @@ export class NodeRepository {
     let nodeType = await this.dbService.dataSource
       .getRepository(NodeType)
       .findOneBy({ type_name });
-    if (!nodeType) {
+    if (nodeType == null) {
       nodeType = await this.dbService.dataSource
         .getRepository(NodeType)
         .save({ type_name });
     }
 
     const new_node = this.repository.create({
-      nodeType: nodeType,
+      nodeType,
       node_type: type_name,
       sync_layer: this.syncService.syncLayer,
     });
@@ -59,10 +62,11 @@ export class NodeRepository {
 
   async getNodeByProp(
     type: string,
-    prop: { key: string; val: any }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    prop: { key: string; val: any },
   ): Promise<Node | null> {
     const node = await this.repository.findOne({
-      relations: ["nodeType", "propertyKeys", "propertyKeys.propertyValue"],
+      relations: ['nodeType', 'propertyKeys', 'propertyKeys.propertyValue'],
       where: {
         nodeType: {
           type_name: type,

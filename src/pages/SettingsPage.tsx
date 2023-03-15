@@ -11,7 +11,7 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '../hooks/useAppContext';
-import { RoleType } from '../reducers/global.reducer';
+import { type RoleType } from '../reducers/global.reducer';
 
 const { VerticalRadioList } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -33,7 +33,7 @@ export function SettingsPage() {
   const [selectedRole, setSelectedRole] = useState<RoleType>('translator');
 
   useEffect(() => {
-    if (user) {
+    if (user != null) {
       setSelectedRole(user.role);
     }
   }, [user]);
@@ -53,7 +53,7 @@ export function SettingsPage() {
   return (
     <IonContent>
       <Stack sx={{ padding: '20px' }} gap="20px">
-        <Typography variant="h2" sx={{ color: colors['dark'] }}>
+        <Typography variant="h2" sx={{ color: colors.dark }}>
           Settings
         </Typography>
         <VerticalRadioList

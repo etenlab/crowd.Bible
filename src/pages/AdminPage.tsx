@@ -20,7 +20,7 @@ import {
 
 import { gql, useApolloClient } from '@apollo/client';
 
-const queries: any = {
+const queries = {
   sil_language_codes: gql`
     query GetLangCodes {
       sil_language_codes {
@@ -62,7 +62,9 @@ const queries: any = {
   `,
 };
 
-const fieldsObj: any = {
+type QueriesKeyType = keyof typeof queries;
+
+const fieldsObj = {
   sil_language_codes: [
     { field: 'id', filter: true },
     { field: 'code', filter: true },
@@ -92,25 +94,29 @@ const fieldsObj: any = {
   ],
 };
 
+type FieldsObjKeyType = keyof typeof fieldsObj;
+
 export function AdminPage() {
   // return <IonContent>/admin</IonContent>;
 
-  const [languageTable, setLanguageTable] = useState('');
+  const [languageTable, setLanguageTable] = useState<
+    QueriesKeyType | QueriesKeyType
+  >('sil_language_codes');
   const client = useApolloClient();
 
   const gridRef = useRef(); // Optional - for accessing Grid's API
-  const [rowData, setRowData] = useState(); // Set rowData to Array of Objects, one Object per Row
+  const [rowData, setRowData] = useState<unknown>(); // Set rowData to Array of Objects, one Object per Row
 
   // Each Column Definition results in one Column.
   // {"code":"aas","country_code":"TZ","id":15,"name":"Aasáx\r","status":"L","__typename":"sil_language_codes"}
-  const [columnDefs, setColumnDefs] = useState<any>();
+  const [columnDefs, setColumnDefs] = useState<unknown>();
 
   const importToGraph = () => {};
 
   const loadData = async () => {
     console.log(languageTable);
     const response = await client.query({ query: queries[languageTable] });
-    setColumnDefs(fieldsObj[languageTable]);
+    setColumnDefs(fieldsObj[languageTable as FieldsObjKeyType]);
     setRowData(response.data[languageTable]);
   };
 
@@ -123,7 +129,9 @@ export function AdminPage() {
 
         <IonCardContent>
           <IonSelect
-            onIonChange={(e: any) => setLanguageTable(e.detail.value)}
+            onIonChange={(e) => {
+              setLanguageTable(e.detail.value as QueriesKeyType);
+            }}
             placeholder="Select Language Table"
           >
             <IonSelectOption value="sil_language_codes">

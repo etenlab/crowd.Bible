@@ -41,7 +41,7 @@ export function LoginPage() {
       email: null,
       password: null,
     },
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: async (values) => {
       // const url = `${process.env.REACT_APP_DATABASE_API_URL}/users/login`;
       // const queryParams = { realm: process.env.REACT_APP_REALM_NAME };
@@ -102,7 +102,7 @@ export function LoginPage() {
       >
         <Typography
           variant="h1"
-          sx={{ color: colors['dark'], marginBottom: '18px' }}
+          sx={{ color: colors.dark, marginBottom: '18px' }}
         >
           Login
         </Typography>
@@ -115,9 +115,7 @@ export function LoginPage() {
           onChange={formik.handleChange}
           value={formik.values.email}
           valid={
-            formik.values.email !== null
-              ? !Boolean(formik.errors.email)
-              : undefined
+            formik.values.email !== null ? !formik.errors.email : undefined
           }
           helperText={formik.errors.email}
           fullWidth
@@ -133,7 +131,7 @@ export function LoginPage() {
           value={formik.values.password}
           valid={
             formik.values.password !== null
-              ? !Boolean(formik.errors.password)
+              ? !formik.errors.password
               : undefined
           }
           helperText={formik.errors.password}
@@ -157,7 +155,7 @@ export function LoginPage() {
           color="gray"
           onClick={handleGoRegister}
         >
-          Don't you have an account?
+          {"Don't you have an account?"}
         </Button>
       </Box>
     </IonContent>

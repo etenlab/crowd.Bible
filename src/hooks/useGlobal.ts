@@ -1,18 +1,22 @@
-import { useRef, Dispatch, useCallback } from "react";
+import { useRef, type Dispatch, useCallback } from 'react';
 
 import {
   setRole as setRoleAction,
   setUser as setUserAction,
   alertFeedback as alertFeedbackAction,
   closeFeedback as closeFeedbackAction,
-} from "../reducers/global.actions";
+} from '../reducers/global.actions';
 
-import { ActionType } from "../reducers";
-import { FeedbackType, RoleType, IUser } from "../reducers/global.reducer";
+import { type ActionType } from '../reducers';
+import {
+  type FeedbackType,
+  type RoleType,
+  type IUser,
+} from '../reducers/global.reducer';
 
-type UseGlobalProps = {
+interface UseGlobalProps {
   dispatch: Dispatch<ActionType<unknown>>;
-};
+}
 
 // This hook take care every chagnes of discussion's state via connecting graphql servers
 export function useGlobal({ dispatch }: UseGlobalProps) {
@@ -32,7 +36,7 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     (feedbackType: FeedbackType, message: string) => {
       dispatchRef.current.dispatch(alertFeedbackAction(feedbackType, message));
     },
-    []
+    [],
   );
 
   const closeFeedback = useCallback(() => {

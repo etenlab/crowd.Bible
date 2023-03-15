@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import {
@@ -20,9 +20,9 @@ import { useAppContext } from '../../hooks/useAppContext';
 
 const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
 
-type PageLayoutProps = {
+interface PageLayoutProps {
   children?: React.ReactNode;
-};
+}
 
 export function PageLayout({ children }: PageLayoutProps) {
   const history = useHistory();
@@ -55,7 +55,9 @@ export function PageLayout({ children }: PageLayoutProps) {
   useEffect(() => {
     bodyRef.current = window.document.body;
     prefersDarkRef.current = window.matchMedia('(prefers-color-scheme: dark)');
-    prefersDarkRef.current.addListener((e) => toggleDarkTheme(e.matches));
+    prefersDarkRef.current.addListener((e) => {
+      toggleDarkTheme(e.matches);
+    });
     toggleDarkTheme(prefersDarkRef.current.matches);
   }, []);
 
@@ -107,8 +109,12 @@ export function PageLayout({ children }: PageLayoutProps) {
                 }}
                 themeMode={themeMode}
                 onClickThemeModeBtn={handleToogleTheme}
-                onClickDiscussionBtn={() => history.push('/discussions-list')}
-                onClickNotificationBtn={() => history.push('/notifications')}
+                onClickDiscussionBtn={() => {
+                  history.push('/discussions-list');
+                }}
+                onClickNotificationBtn={() => {
+                  history.push('/notifications');
+                }}
                 onClickMenuBtn={handleToggleMenu}
               />
             </IonToolbar>
@@ -141,8 +147,12 @@ export function PageLayout({ children }: PageLayoutProps) {
                 onClickThemeModeBtn={handleToogleTheme}
                 isNewDiscussion={isNewDiscussion}
                 isNewNotification={isNewNotification}
-                onClickDiscussionBtn={() => history.push('/discussions-list')}
-                onClickNotificationBtn={() => history.push('/notifications')}
+                onClickDiscussionBtn={() => {
+                  history.push('/discussions-list');
+                }}
+                onClickNotificationBtn={() => {
+                  history.push('/notifications');
+                }}
                 onClickMenuBtn={handleToggleMenu}
               />
             </IonToolbar>

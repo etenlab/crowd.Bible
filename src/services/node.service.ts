@@ -4,11 +4,11 @@ import { NodeRepository } from '../repositories/node/node.repository';
 import { RelationshipPropertyKeyRepository } from '../repositories/relationship/relationship-property-key.repository';
 import { RelationshipPropertyValueRepository } from '../repositories/relationship/relationship-property-value.repository';
 import { RelationshipRepository } from '../repositories/relationship/relationship.repository';
-import { DbService } from './db.service';
-import { Node } from '../models/node/node.entity';
-import { Relationship } from '../models/relationship/relationship.entity';
+import { type DbService } from './db.service';
+import { type Node } from '../models/node/node.entity';
+import { type Relationship } from '../models/relationship/relationship.entity';
 import { tableNodeToTable } from '../utils/table';
-import { SyncService } from './sync.service';
+import { type SyncService } from './sync.service';
 
 export class NodeService {
   nodeRepo!: NodeRepository;
@@ -39,7 +39,7 @@ export class NodeService {
   }
 
   // Layer 2
-  async createNodeFromObject(type_name: string, obj: Object): Promise<Node> {
+  async createNodeFromObject(type_name: string, obj: object): Promise<Node> {
     try {
       const node = await this.nodeRepo.createNode(type_name);
       for (const [key, value] of Object.entries(obj)) {
@@ -62,7 +62,7 @@ export class NodeService {
 
   async createRelationshipFromObject(
     type_name: string,
-    obj: Object,
+    obj: object,
     from_node: string | undefined,
     to_node: string | undefined,
   ): Promise<string | null> {
@@ -75,7 +75,7 @@ export class NodeService {
         to_node,
         type_name,
       );
-      if (!relationship) {
+      if (relationship == null) {
         return null;
       }
 
@@ -104,10 +104,10 @@ export class NodeService {
     id: string,
     node_type_name: string,
     rel_type_name: string,
-    obj: {},
+    obj: object,
   ) {
     const to_node = await this.nodeRepo.readNode(id);
-    if (!to_node) {
+    if (to_node == null) {
       return null;
     }
 
@@ -119,7 +119,7 @@ export class NodeService {
     );
 
     return {
-      relationship: relationship,
+      relationship,
       node: from_node,
     };
   }
@@ -128,10 +128,10 @@ export class NodeService {
     id: string,
     node_type_name: string,
     rel_type_name: string,
-    obj: {},
+    obj: object,
   ) {
     const from_node = await this.nodeRepo.readNode(id);
-    if (!from_node) {
+    if (from_node == null) {
       return null;
     }
 
@@ -143,15 +143,15 @@ export class NodeService {
     );
 
     return {
-      relationship: relationship,
+      relationship,
       node: to_node,
     };
   }
 
-  async upsertNodeObject(id: string, obj: Object): Promise<Node | null> {
+  async upsertNodeObject(id: string, obj: object): Promise<Node | null> {
     try {
       const node = await this.nodeRepo.readNode(id);
-      if (!node) {
+      if (node == null) {
         return null;
       }
 
@@ -175,11 +175,11 @@ export class NodeService {
 
   async upsertRelationshipObject(
     rel_id: string,
-    obj: Object,
+    obj: object,
   ): Promise<Relationship | null> {
     try {
       const rel = await this.relationshipRepo.readRelationship(rel_id);
-      if (!rel) {
+      if (rel == null) {
         return null;
       }
       for (const [key, value] of Object.entries(obj)) {
@@ -213,7 +213,7 @@ export class NodeService {
         name,
       });
 
-      return tableNodeToTable(table);
+      return tableNodeToTable(table) as Table;
     } catch (err) {
       console.log(err);
       throw new Error('Failed to create a new table.');
@@ -242,16 +242,16 @@ export class NodeService {
           propertyKeys: {
             property_key: 'name',
             propertyValue: {
-              property_value: JSON.stringify({value: name}),
+              property_value: JSON.stringify({ value: name }),
             },
           },
         },
       });
-      if (!table) {
+      if (table == null) {
         return null;
       }
 
-      return tableNodeToTable(table);
+      return tableNodeToTable(table) as Table;
     } catch (err) {
       throw new Error('Failed to get table.');
     }
@@ -261,6 +261,7 @@ export class NodeService {
     table_name: string,
     column_name: string,
     row_id: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cell_data: any,
   ): Promise<TableCell> {
     try {
@@ -281,8 +282,12 @@ export class NodeService {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const new_cell: TableCell = {};
-      table_cell?.propertyKeys?.forEach((key) => {
-        (new_cell as any)[key.property_key] = JSON.parse(key.propertyValue.property_value).value;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      table_cell?.propertyKeys?.forEach((key: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (new_cell as any)[key.property_key] = JSON.parse(
+          key.propertyValue.property_value,
+        ).value;
       });
 
       return new_cell;
@@ -302,7 +307,7 @@ export class NodeService {
 
       return {
         id: document.id,
-        name: name,
+        name,
       };
     } catch (err) {
       console.log(err);
@@ -317,13 +322,13 @@ export class NodeService {
         val: name,
       });
 
-      if (!document) {
+      if (document == null) {
         return null;
       }
 
       return {
         id: document.id,
-        name: name,
+        name,
       };
     } catch (err) {
       console.log(err);
@@ -335,11 +340,11 @@ export class NodeService {
 
   async createWord(name: string): Promise<Word | null> {
     try {
-      if (await this.getWord(name)) {
-        console.log('conflict: ', name)
+      if ((await this.getWord(name)) != null) {
+        console.log('conflict: ', name);
         return null;
       }
-      console.log('no conflict: ', name)
+      console.log('no conflict: ', name);
       const word = await this.createNodeFromObject('word', {
         name: {
           value: name,
@@ -348,7 +353,7 @@ export class NodeService {
 
       return {
         id: word.id,
-        name: name,
+        name,
       };
     } catch (err) {
       console.log(err);
@@ -365,13 +370,13 @@ export class NodeService {
         },
       });
 
-      if (!word) {
+      if (word == null) {
         return null;
       }
 
       return {
         id: word.id,
-        name: name,
+        name,
       };
     } catch (err) {
       console.log(err);
@@ -431,17 +436,22 @@ export class NodeService {
       },
     });
 
-    if (!word_sequence || !word_sequence.nodeRelationships) {
+    if (word_sequence == null || word_sequence.nodeRelationships == null) {
       return null;
     }
 
-    let words: Array<string> = [];
+    const words: string[] = [];
 
-    word_sequence.nodeRelationships.forEach((rel) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    word_sequence.nodeRelationships.forEach((rel: any) => {
       if (rel.relationship_type === 'word-sequence-to-word') {
         words.push(
-          JSON.parse(rel.toNode.propertyKeys.find((key) => key.property_key === 'word')
-            ?.propertyValue.property_value).value,
+          JSON.parse(
+            rel.toNode.propertyKeys.find(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (key: any) => key.property_key === 'word',
+            )?.propertyValue.property_value,
+          ).value,
         );
       }
     });

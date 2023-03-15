@@ -1,10 +1,13 @@
 import { Relationship } from '../../models';
 import { RelationshipPropertyKey } from '../../models/relationship/relationship-property-key.entity';
-import { DbService } from '../../services/db.service';
-import { SyncService } from '../../services/sync.service';
+import { type DbService } from '../../services/db.service';
+import { type SyncService } from '../../services/sync.service';
 
 export class RelationshipPropertyKeyRepository {
-  constructor(private dbService: DbService, private syncService: SyncService) {}
+  constructor(
+    private readonly dbService: DbService,
+    private readonly syncService: SyncService,
+  ) {}
 
   private get repository() {
     return this.dbService.dataSource.getRepository(RelationshipPropertyKey);
@@ -20,7 +23,7 @@ export class RelationshipPropertyKeyRepository {
       .andWhere('relPropertyKey.property_key = :key_name', { key_name })
       .getOne();
 
-    if (property_key) {
+    if (property_key != null) {
       return property_key.id;
     }
 
@@ -30,7 +33,7 @@ export class RelationshipPropertyKeyRepository {
         id: rel_id,
       });
 
-    if (!relationship) {
+    if (relationship == null) {
       return null;
     }
 

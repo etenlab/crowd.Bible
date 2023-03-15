@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
-import { Question } from '@eten-lab/ui-kit/dist/crowd-bible';
+import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 
 import { mockChapters } from './ChapterFeedbackPage';
 

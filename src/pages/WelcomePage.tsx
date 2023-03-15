@@ -30,7 +30,7 @@ export function WelcomePage() {
             <Typography
               variant="h1"
               sx={{
-                color: colors['dark'],
+                color: colors.dark,
                 textAlign: 'center',
                 marginTop: '40px',
               }}
@@ -47,8 +47,12 @@ export function WelcomePage() {
               modules={[Pagination]}
               spaceBetween={50}
               slidesPerView={1}
-              onSlideChange={() => console.log('slide change')}
-              onSwiper={(swiper) => console.log(swiper)}
+              onSlideChange={() => {
+                console.log('slide change');
+              }}
+              onSwiper={(swiper) => {
+                console.log(swiper);
+              }}
             >
               <SwiperSlide>
                 <IonGrid>
@@ -65,12 +69,12 @@ export function WelcomePage() {
                   </IonRow>
                   <IonRow>
                     <IonCol>
-                      <Typography variant="h3" sx={{ color: colors['dark'] }}>
+                      <Typography variant="h3" sx={{ color: colors.dark }}>
                         Digital Era, Learn Everything
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{ color: colors['gray'], justifyContent: 'center' }}
+                        sx={{ color: colors.gray, justifyContent: 'center' }}
                       >
                         Welcome Text About the <br />
                         Application. Next Line of the Text
@@ -97,12 +101,12 @@ export function WelcomePage() {
                   </IonRow>
                   <IonRow>
                     <IonCol>
-                      <Typography variant="h3" sx={{ color: colors['dark'] }}>
+                      <Typography variant="h3" sx={{ color: colors.dark }}>
                         Digital Era, Learn Everything
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{ color: colors['gray'], justifyContent: 'center' }}
+                        sx={{ color: colors.gray, justifyContent: 'center' }}
                       >
                         Welcome Text About the <br />
                         Application. Next Line of the Text
@@ -129,12 +133,12 @@ export function WelcomePage() {
                   </IonRow>
                   <IonRow>
                     <IonCol>
-                      <Typography variant="h3" sx={{ color: colors['dark'] }}>
+                      <Typography variant="h3" sx={{ color: colors.dark }}>
                         Digital Era, Learn Everything
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{ color: colors['gray'], justifyContent: 'center' }}
+                        sx={{ color: colors.gray, justifyContent: 'center' }}
                       >
                         Welcome Text About the <br />
                         Application. Next Line of the Text
@@ -161,12 +165,12 @@ export function WelcomePage() {
                   </IonRow>
                   <IonRow>
                     <IonCol>
-                      <Typography variant="h3" sx={{ color: colors['dark'] }}>
+                      <Typography variant="h3" sx={{ color: colors.dark }}>
                         Digital Era, Learn Everything
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{ color: colors['gray'], justifyContent: 'center' }}
+                        sx={{ color: colors.gray, justifyContent: 'center' }}
                       >
                         Welcome Text About the <br />
                         Application. Next Line of the Text

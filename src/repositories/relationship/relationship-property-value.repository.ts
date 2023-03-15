@@ -1,10 +1,13 @@
 import { RelationshipPropertyKey } from '../../models';
 import { RelationshipPropertyValue } from '../../models/relationship/relationship-property-value.entity';
-import { DbService } from '../../services/db.service';
-import { SyncService } from '../../services/sync.service';
+import { type DbService } from '../../services/db.service';
+import { type SyncService } from '../../services/sync.service';
 
 export class RelationshipPropertyValueRepository {
-  constructor(private dbService: DbService, private syncService: SyncService) {}
+  constructor(
+    private readonly dbService: DbService,
+    private readonly syncService: SyncService,
+  ) {}
 
   private get repository() {
     return this.dbService.dataSource.getRepository(RelationshipPropertyValue);
@@ -12,13 +15,14 @@ export class RelationshipPropertyValueRepository {
 
   async createRelationshipPropertyValue(
     key_id: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     key_value: any,
   ): Promise<string | null> {
     const rel_property_key = await this.dbService.dataSource
       .getRepository(RelationshipPropertyKey)
       .findOneBy({ id: key_id });
 
-    if (!rel_property_key) {
+    if (rel_property_key == null) {
       return null;
     }
 

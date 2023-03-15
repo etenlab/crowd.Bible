@@ -24,7 +24,7 @@ export class RelationshipPropertyValue extends Syncable {
   readonly relationship_property_value_id!: string | null;
 
   @Column('varchar')
-  property_value!: any;
+  property_value!: unknown;
 
   @OneToOne(() => RelationshipPropertyKey)
   @JoinColumn({

@@ -1,1 +1,1 @@
-export { LangugeSelectionBox } from "./LanguageSelectionBox";
+export { LangugeSelectionBox } from './LanguageSelectionBox';

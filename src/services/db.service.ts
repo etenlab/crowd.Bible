@@ -14,16 +14,20 @@ import { SyncSession } from '../models/Sync';
 
 export class DbService {
   // todo
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   localForage: any;
   dataSource!: DataSource;
-  private startupSubscriptions: Function[] = [];
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  private readonly startupSubscriptions: Function[] = [];
 
   constructor() {
     // todo
     this.initLocalForage().then(() => {
       initSqlJs({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         locateFile: (file: any) => `https://sql.js.org/dist/${file}`,
       }).then(async (SQL) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window as any).SQL = SQL;
         this.dataSource = this.configureConnection();
         this.dataSource.initialize();
@@ -31,6 +35,7 @@ export class DbService {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   onStartup(fn: Function) {
     this.startupSubscriptions.push(fn);
   }
@@ -38,6 +43,7 @@ export class DbService {
   private async initLocalForage() {
     const localForageImport = await import('localforage');
     this.localForage = localForageImport.default;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).localforage = this.localForage;
   }
 

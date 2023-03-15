@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
-import { useAppContext } from "../../hooks/useAppContext";
-import { CrowdBibleUI, MuiMaterial } from "@eten-lab/ui-kit";
+import { useAppContext } from '../../hooks/useAppContext';
+import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 
 const { AgreeConfirm, SimpleQuill } = CrowdBibleUI;
 const { Box } = MuiMaterial;
@@ -12,16 +12,16 @@ export function FeedbackInput() {
   const {
     actions: { alertFeedback },
   } = useAppContext();
-  const [optionalFeedback, setOptionalFeedback] = useState<string>("");
+  const [optionalFeedback, setOptionalFeedback] = useState<string>('');
 
   const handleChangeOptionalFeedback = (newValue: string) => {
     setOptionalFeedback(newValue);
   };
 
-  const handleSubmitFeedback = (agree: "agree" | "disagree") => {
+  const handleSubmitFeedback = (agree: 'agree' | 'disagree') => {
     alert(`Clicked ${agree}!`);
-    alertFeedback("success", "Your feedback has been sent!");
-    history.push("/feedback");
+    alertFeedback('success', 'Your feedback has been sent!');
+    history.push('/feedback');
   };
 
   return (

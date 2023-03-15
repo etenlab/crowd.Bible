@@ -1,5 +1,5 @@
-import { useState, ChangeEvent } from "react";
-import { useHistory } from "react-router";
+import { useState, type ChangeEvent } from 'react';
+import { useHistory } from 'react-router';
 
 import {
   TextArea,
@@ -8,9 +8,9 @@ import {
   MuiMaterial,
   BiLeftArrowAlt,
   FiPlus,
-} from "@eten-lab/ui-kit";
+} from '@eten-lab/ui-kit';
 
-import { useAppContext } from "../../hooks/useAppContext";
+import { useAppContext } from '../../hooks/useAppContext';
 
 const { Box } = MuiMaterial;
 
@@ -19,15 +19,15 @@ export function TranslationEditor() {
   const {
     actions: { alertFeedback },
   } = useAppContext();
-  const [text, setText] = useState<string>("");
+  const [text, setText] = useState<string>('');
 
   const handleGoToTranslationPage = () => {
-    history.push("/translation");
+    history.push('/translation');
   };
 
   const handleSaveTranslation = () => {
-    alertFeedback("success", "Your translation has been sent!");
-    history.push("/translation");
+    alertFeedback('success', 'Your translation has been sent!');
+    history.push('/translation');
   };
 
   const handleChangeText = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -37,10 +37,10 @@ export function TranslationEditor() {
   return (
     <Box
       sx={{
-        padding: "20px",
-        borderRadius: "20px 20px 0 0",
-        borderTop: `1px solid ${colors["middle-gray"]}`,
-        boxShadow: "0px 0px 20px rgba(4, 16, 31, 0.1)",
+        padding: '20px',
+        borderRadius: '20px 20px 0 0',
+        borderTop: `1px solid ${colors['middle-gray']}`,
+        boxShadow: '0px 0px 20px rgba(4, 16, 31, 0.1)',
       }}
     >
       <Button
@@ -49,7 +49,7 @@ export function TranslationEditor() {
         variant="text"
         sx={{ paddingLeft: 0 }}
       >
-        <BiLeftArrowAlt style={{ fontSize: "24px" }} />
+        <BiLeftArrowAlt style={{ fontSize: '24px' }} />
         Add My Translation
       </Button>
       <TextArea
@@ -64,7 +64,7 @@ export function TranslationEditor() {
         startIcon={<FiPlus />}
         fullWidth
         onClick={handleSaveTranslation}
-        sx={{ margin: "10px 0" }}
+        sx={{ margin: '10px 0' }}
       >
         Add My Translation
       </Button>

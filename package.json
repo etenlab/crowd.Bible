@@ -41,7 +41,6 @@
     "swiper": "^8.4.6",
     "ts-invariant": "^0.10.3",
     "typeorm": "^0.3.12",
-    "typescript": "^4.1.3",
     "util": "^0.12.5",
     "web-vitals": "^0.2.4",
     "workbox-background-sync": "^5.1.4",
@@ -61,12 +60,13 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx,md,mdx,js,jsx}\"",
     "precommit": "lint-staged",
     "test": "react-app-rewired test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
     "eject": "react-app-rewired eject",
     "ionic:serve": "react-app-rewired start",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.{ts,tsx,md,mdx,js,jsx}\" --fix"
   },
   "eslintConfig": {
     "extends": [
@@ -92,8 +92,17 @@
   "devDependencies": {
     "@capacitor/cli": "4.6.1",
     "@types/node": "^18.14.6",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
     "browserify-fs": "^1.0.0",
     "crypto-browserify": "^3.12.0",
+    "eslint": "^8.36.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-config-standard-with-typescript": "^34.0.1",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.32.2",
     "https-browserify": "^1.0.0",
     "husky": "^8.0.0",
     "lint-staged": "^13.2.0",
@@ -104,12 +113,14 @@
     "react-app-rewired": "^2.2.1",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
+    "typescript": "^4.9.5",
     "url": "^0.11.0"
   },
   "description": "Crowd Sourcing Translation",
   "lint-staged": {
     "**/*.{ts,tsx,md,mdx,js,jsx}": [
-      "npm run format"
+      "npm run format",
+      "npx eslint --fix"
     ]
   }
 }

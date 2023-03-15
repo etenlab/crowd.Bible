@@ -45,7 +45,7 @@ export function RegisterPage() {
       password: null,
       passwordConfirm: null,
     },
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: async (values) => {
       // const url = `${process.env.REACT_APP_DATABASE_API_URL}/users/register`;
       // const queryParams = { realm: process.env.REACT_APP_REALM_NAME };
@@ -99,7 +99,7 @@ export function RegisterPage() {
       >
         <Typography
           variant="h1"
-          sx={{ color: colors['dark'], marginBottom: '18px' }}
+          sx={{ color: colors.dark, marginBottom: '18px' }}
         >
           Register
         </Typography>
@@ -112,9 +112,7 @@ export function RegisterPage() {
           onChange={formik.handleChange}
           value={formik.values.email}
           valid={
-            formik.values.email !== null
-              ? !Boolean(formik.errors.email)
-              : undefined
+            formik.values.email !== null ? !formik.errors.email : undefined
           }
           helperText={formik.errors.email}
           fullWidth
@@ -129,7 +127,7 @@ export function RegisterPage() {
           value={formik.values.username}
           valid={
             formik.values.username !== null
-              ? !Boolean(formik.errors.username)
+              ? !formik.errors.username
               : undefined
           }
           helperText={formik.errors.username}
@@ -146,7 +144,7 @@ export function RegisterPage() {
           value={formik.values.password}
           valid={
             formik.values.password !== null
-              ? !Boolean(formik.errors.password)
+              ? !formik.errors.password
               : undefined
           }
           helperText={formik.errors.password}
@@ -163,7 +161,7 @@ export function RegisterPage() {
           value={formik.values.passwordConfirm}
           valid={
             formik.values.passwordConfirm !== null
-              ? !Boolean(formik.errors.passwordConfirm)
+              ? !formik.errors.passwordConfirm
               : undefined
           }
           helperText={formik.errors.passwordConfirm}

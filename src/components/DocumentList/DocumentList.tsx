@@ -73,7 +73,7 @@ export function DocumentList() {
           >
             <Typography
               variant="overline"
-              sx={{ color: colors['gray'], opacity: 0.5 }}
+              sx={{ color: colors.gray, opacity: 0.5 }}
             >
               List of docs
             </Typography>

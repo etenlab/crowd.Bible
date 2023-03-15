@@ -5,7 +5,7 @@ import { Button, MuiMaterial, BiLeftArrowAlt } from '@eten-lab/ui-kit';
 
 import {
   TranslationList,
-  TranslationType,
+  type TranslationType,
 } from '../components/TranslationList';
 
 const { Stack } = MuiMaterial;
