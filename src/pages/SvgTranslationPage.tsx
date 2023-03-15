@@ -4,6 +4,7 @@ import { INode, parseSync, stringify } from 'svgson';
 import { FormLabel, Button, Box, FormControl, TextField } from '@mui/material';
 import { Alert } from '@eten-lab/ui-kit';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { DebounceInput } from 'react-debounce-input';
 
 export const SvgTranslationPage = () => {
   const [originalSvg, setOriginalSvg] = useState(null as null | string);
@@ -146,10 +147,12 @@ export const SvgTranslationPage = () => {
               {textContents.map((text, i) => (
                 <FormControl margin="dense" key={i}>
                   <FormLabel>{text}</FormLabel>
-                  <TextField
+                  <DebounceInput
+                    element={TextField}
                     id={`text-${i}`}
                     variant="filled"
                     placeholder="Your translation"
+                    debounceTimeout={1000}
                     onChange={(e) => {
                       const newTranslations = [...translations];
                       newTranslations[i] = e.target.value;
