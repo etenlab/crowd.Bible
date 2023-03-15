@@ -1,7 +1,8 @@
 import { IonContent } from '@ionic/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { INode, parseSync, stringify } from 'svgson';
 import { FormLabel, Button, Box, FormControl, TextField } from '@mui/material';
+import { Alert } from '@eten-lab/ui-kit';
 
 export const SvgTranslationPage = () => {
   const [originalSvg, setOriginalSvg] = useState(null as null | string);
@@ -10,23 +11,6 @@ export const SvgTranslationPage = () => {
   const [translations, setTranslations] = useState([] as string[]);
   const [textContents, setTextContents] = useState([] as string[]);
   const [parsed, setParsed] = useState<INode | null>(null);
-
-  useEffect(() => {
-    if (!originalSvg) return;
-
-    const parsed = parseSync(originalSvg);
-    const textArray = [] as string[];
-
-    iterateOverINode(parsed, (node) => {
-      if (node.type === 'text' || node.type === 'textPath') {
-        if (!node.value) return;
-        textArray.push(node.value);
-      }
-    });
-
-    setTextContents(textArray);
-    setParsed(parsed);
-  }, [originalSvg]);
 
   const translatedSvg: string = useMemo(() => {
     if (!parsed) return '';
@@ -69,13 +53,32 @@ export const SvgTranslationPage = () => {
           return;
         }
 
-        setOriginalSvg(filecontent.toString());
+        const originalSvg = filecontent.toString();
+
+        const parsed = parseSync(originalSvg);
+        const textArray = [] as string[];
+
+        iterateOverINode(parsed, (node) => {
+          if (node.type === 'text' || node.type === 'textPath') {
+            if (!node.value) return;
+            textArray.push(node.value);
+          }
+        });
+
+        setTextContents(textArray);
+        setParsed(parsed);
+        setOriginalSvg(originalSvg);
       };
 
       r.readAsText(f);
     },
     [],
   );
+
+  if (textContents.length === 0 && originalSvg) {
+    debugger;
+    return <Alert severity="warning">No text or textPath tags found</Alert>;
+  }
 
   return (
     <IonContent>
@@ -86,20 +89,19 @@ export const SvgTranslationPage = () => {
         alignItems={'center'}
         padding="20px"
       >
-        {!originalSvg && (
-          <Button variant="contained" component="label">
-            Upload SVG
-            <input
-              hidden
-              multiple
-              accept="image/svg+xml"
-              onChange={fileHandler}
-              type="file"
-            />
-          </Button>
-        )}
+        <Button variant="contained" component="label">
+          Upload SVG
+          <input
+            hidden
+            multiple
+            accept="image/svg+xml"
+            onChange={fileHandler}
+            type="file"
+          />
+        </Button>
 
         {error && <div>Error: {error}</div>}
+
         {translatedSvg && (
           <Box display="flex" flexDirection={'column'} justifyContent="start">
             {originalSvg && (
@@ -112,6 +114,7 @@ export const SvgTranslationPage = () => {
                 />
               </Box>
             )}
+
             <FormControl>
               {/* <InputLabel htmlFor="my-input">Translate to</InputLabel> */}
               <TextField
@@ -125,6 +128,7 @@ export const SvgTranslationPage = () => {
                 error={translateTo.length !== 3}
               />
             </FormControl>
+
             <Box
               display="flex"
               flexDirection={'column'}
@@ -133,7 +137,7 @@ export const SvgTranslationPage = () => {
               paddingBottom={'10px'}
             >
               {textContents.map((text, i) => (
-                <FormControl margin="dense">
+                <FormControl margin="dense" key={i}>
                   <FormLabel>{text}</FormLabel>
                   <TextField
                     id={`text-${i}`}
