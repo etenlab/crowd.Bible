@@ -17,7 +17,7 @@ export const SvgTranslationPage = () => {
 
     const trans = [...translations];
 
-    iterateOverINode(parsed, (node) => {
+    iterateOverINode(parsed, ['style'], (node) => {
       if (node.type === 'text' || node.type === 'textPath') {
         if (!node.value) return;
         node.value = trans.shift() || node.value;
@@ -58,7 +58,7 @@ export const SvgTranslationPage = () => {
         const parsed = parseSync(originalSvg);
         const textArray = [] as string[];
 
-        iterateOverINode(parsed, (node) => {
+        iterateOverINode(parsed, ['style'], (node) => {
           if (node.type === 'text' || node.type === 'textPath') {
             if (!node.value) return;
             textArray.push(node.value);
@@ -153,7 +153,9 @@ export const SvgTranslationPage = () => {
                 </FormControl>
               ))}
             </Box>
+
             <Box paddingBottom={'10px'}>
+              translated:
               <img
                 src={`data:image/svg+xml;utf8,${encodeURIComponent(
                   translatedSvg,
@@ -168,11 +170,23 @@ export const SvgTranslationPage = () => {
   );
 };
 
-// Should iterate over INode and its children in a consistent order
-function iterateOverINode(node: INode, cb: (node: INode) => void) {
+/**
+ * Should iterate over INode and its children in a consistent order
+ * @param node starting node
+ * @param skipNodeNames node names to exclude with all its children
+ * @param cb callbacke to be applied
+ * @returns
+ */
+function iterateOverINode(
+  node: INode,
+  skipNodeNames: string[],
+  cb: (node: INode) => void,
+) {
+  if (skipNodeNames.includes(node.name)) return;
+
   cb(node);
 
   for (const child of node.children || []) {
-    iterateOverINode(child, cb);
+    iterateOverINode(child, skipNodeNames, cb);
   }
 }
