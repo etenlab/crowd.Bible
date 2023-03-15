@@ -12,9 +12,9 @@ import '../styles.css';
 export function WelcomePage() {
   const history = useHistory();
 
-  const handleGoToLoginPage = () => {
-    history.push('/login');
-  };
+  // const handleGoToLoginPage = () => {
+  //   history.push('/login');
+  // };
 
   return (
     <IonContent>
