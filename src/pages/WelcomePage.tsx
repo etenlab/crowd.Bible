@@ -21,17 +21,10 @@ export function WelcomePage() {
       <IonGrid className="grid-full-height">
         <IonRow>
           <IonCol>
-            <h2>crowd.Bible</h2>
+            <h2 className="splash-title">crowd.Bible</h2>
           </IonCol>
         </IonRow>
-        <IonRow>
-          <IonCol>
-            <p>
-              Welcome Text About the <br />
-              Application. Next Line of the Text
-            </p>
-          </IonCol>
-        </IonRow>
+
         <IonRow className="fill-remaining">
           <IonCol>
             <Swiper
@@ -43,36 +36,133 @@ export function WelcomePage() {
               onSwiper={(swiper) => console.log(swiper)}
             >
               <SwiperSlide>
-                <IonGrid>
-                  <IonRow>
-                    <IonCol>
-                      <img
-                        alt="placeholder"
-                        className="slider-image"
-                        src="assets/image.png"
-                      />
-                    </IonCol>
-                  </IonRow>
-                </IonGrid>
-              </SwiperSlide>
-              <SwiperSlide>Slide 2</SwiperSlide>
-              <SwiperSlide>Slide 3</SwiperSlide>
-              <SwiperSlide>Slide 4</SwiperSlide>
+                    <IonGrid>
+                      <IonRow>
+                        <IonCol>
+                          <img
+                            alt="placeholder"
+                            className="slider-image"
+                            src="assets/image.png"
+                            width="335"
+                            height="225"
+                          />
+                        </IonCol>
+                      </IonRow>
+                      <IonRow>
+                        <IonCol>
+                          <h2 className="slide-title">Digital Era, Learn Everything</h2>
+                          <p>
+                            Welcome Text About the <br />
+                            Application. Next Line of the Text
+                          </p>
+                        </IonCol>
+                      </IonRow>
+                      <IonRow>
+                        <IonCol>
+                          <Button variant="contained" endIcon fullWidth>
+                            Get Started Now
+                          </Button>
+                        </IonCol>
+                      </IonRow>
+                    </IonGrid>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                  <IonGrid>
+                      <IonRow>
+                        <IonCol>
+                          <img
+                            alt="placeholder"
+                            className="slider-image"
+                            src="assets/image.png"
+                            width="335"
+                            height="225"
+                          />
+                        </IonCol>
+                      </IonRow>
+                      <IonRow>
+                        <IonCol>
+                          <h2 className="slide-title">Digital Era, Learn Everything</h2>
+                          <p>
+                            Welcome Text About the <br />
+                            Application. Next Line of the Text
+                          </p>
+                        </IonCol>
+                      </IonRow>
+                      <IonRow>
+                        <IonCol>
+                          <Button variant="contained" endIcon fullWidth>
+                            Get Started Now
+                          </Button>
+                        </IonCol>
+                      </IonRow>
+                    </IonGrid>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                  <IonGrid>
+                      <IonRow>
+                        <IonCol>
+                          <img
+                            alt="placeholder"
+                            className="slider-image"
+                            src="assets/image.png"
+                            width="335"
+                            height="225"
+                          />
+                        </IonCol>
+                      </IonRow>
+                      <IonRow>
+                        <IonCol>
+                          <h2 className="slide-title">Digital Era, Learn Everything</h2>
+                          <p>
+                            Welcome Text About the <br />
+                            Application. Next Line of the Text
+                          </p>
+                        </IonCol>
+                      </IonRow>
+                      <IonRow>
+                        <IonCol>
+                          <Button variant="contained" endIcon fullWidth>
+                            Get Started Now
+                          </Button>
+                        </IonCol>
+                      </IonRow>
+                    </IonGrid>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                  <IonGrid>
+                      <IonRow>
+                        <IonCol>
+                          <img
+                            alt="placeholder"
+                            className="slider-image"
+                            src="assets/image.png"
+                            width="335"
+                            height="225"
+                          />
+                        </IonCol>
+                      </IonRow>
+                      <IonRow>
+                        <IonCol>
+                          <h2 className="slide-title">Digital Era, Learn Everything</h2>
+                          <p>
+                            Welcome Text About the <br />
+                            Application. Next Line of the Text
+                          </p>
+                        </IonCol>
+                      </IonRow>
+                      <IonRow>
+                        <IonCol>
+                          <Button variant="contained" endIcon fullWidth>
+                            Get Started Now
+                          </Button>
+                        </IonCol>
+                      </IonRow>
+                    </IonGrid>
+                  </SwiperSlide>
             </Swiper>
           </IonCol>
         </IonRow>
-        <IonRow>
-          <IonCol>
-            <Button
-              variant="contained"
-              endIcon
-              fullWidth
-              onClick={handleGoToLoginPage}
-            >
-              Get Started Now
-            </Button>
-          </IonCol>
-        </IonRow>
+
       </IonGrid>
     </IonContent>
   );
