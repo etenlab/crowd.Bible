@@ -63,21 +63,15 @@ export class NodeService {
   async createRelationshipFromObject(
     type_name: string,
     obj: object,
-    from_node: string | undefined,
-    to_node: string | undefined,
-  ): Promise<string | null> {
-    if (from_node === undefined || to_node === undefined) {
-      return null;
-    }
+    from_node: string,
+    to_node: string,
+  ): Promise<string> {
     try {
       const relationship = await this.relationshipRepo.createRelationship(
         from_node,
         to_node,
         type_name,
       );
-      if (relationship == null) {
-        return null;
-      }
 
       for (const [key, value] of Object.entries(obj)) {
         const property_key_id =
@@ -96,7 +90,7 @@ export class NodeService {
       return relationship.id;
     } catch (err) {
       console.log(err);
-      return null;
+      throw new Error(`Failed to create new relationship '${type_name}'`);
     }
   }
 
@@ -263,15 +257,12 @@ export class NodeService {
     try {
       const column = await this.nodeRepo.repository.findOne({
         relations: [
-          'nodeType',
           'propertyKeys',
           'propertyKeys.propertyValue',
           'nodeRelationships',
         ],
         where: {
-          nodeType: {
-            type_name: 'table-column',
-          },
+          node_type: 'table-column',
           propertyKeys: {
             property_key: 'name',
             propertyValue: {
@@ -344,19 +335,15 @@ export class NodeService {
     try {
       const cell = await this.nodeRepo.repository.findOne({
         relations: [
-          'nodeType',
           'propertyKeys',
           'propertyKeys.propertyValue',
           'nodeRelationships',
-          'nodeRelationships.fromNode',
         ],
         select: {
           propertyKeys: true,
         },
         where: {
-          nodeType: {
-            type_name: 'table-cell',
-          },
+          node_type: 'table-cell',
           nodeRelationships: [{ from_node_id: column }, { from_node_id: row }],
         },
       });
@@ -377,7 +364,6 @@ export class NodeService {
     try {
       const cell = await this.nodeRepo.repository.findOne({
         relations: [
-          'nodeType',
           'propertyKeys',
           'propertyKeys.propertyValue',
           'nodeRelationships',
@@ -386,9 +372,7 @@ export class NodeService {
           propertyKeys: true,
         },
         where: {
-          nodeType: {
-            type_name: 'table-cell',
-          },
+          node_type: 'table-cell',
           nodeRelationships: [{ from_node_id: column }, { from_node_id: row }],
         },
       });
@@ -476,15 +460,12 @@ export class NodeService {
     try {
       const wordNode = await this.nodeRepo.repository.findOne({
         relations: [
-          'nodeType',
           'propertyKeys',
           'propertyKeys.propertyValue',
           'nodeRelationships',
         ],
         where: {
-          nodeType: {
-            type_name: 'word',
-          },
+          node_type: 'word',
           propertyKeys: {
             property_key: 'name',
             propertyValue: {
@@ -505,6 +486,38 @@ export class NodeService {
     } catch (err) {
       console.log(err);
       throw new Error(`Failed to get word '${word} - ${language}'`);
+    }
+  }
+
+  // --------- Word-Translation --------- //
+
+  async createWordTranslationRelationship(
+    from: string,
+    to: string,
+  ): Promise<string> {
+    try {
+      const translation = await this.relationshipRepo.repository.findOne({
+        where: {
+          relationship_type: 'word-to-translation',
+          from_node_id: from,
+          to_node_id: to,
+        },
+      });
+
+      if (translation) {
+        return translation.id;
+      }
+
+      const new_translation_id = await this.createRelationshipFromObject(
+        'word-to-translation',
+        {},
+        from,
+        to,
+      );
+      return new_translation_id;
+    } catch (err) {
+      console.log(err);
+      throw new Error(`Failed to create translation '${from} - ${to}'`);
     }
   }
 
