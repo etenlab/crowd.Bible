@@ -517,40 +517,45 @@ export class NodeService {
     import_uid: string,
     language: string,
   ): Promise<Node> {
-    const word_sequence = await this.createNodeFromObject('word-sequence', {
-      'import-uid': import_uid,
-    });
+    try {
+      const word_sequence = await this.createNodeFromObject('word-sequence', {
+        'import-uid': import_uid,
+      });
 
-    const words = text.split(' ');
-    for (const [i, word] of words.entries()) {
-      const new_word_id = await this.createWord(word, language);
+      const words = text.split(' ');
+      for (const [i, word] of words.entries()) {
+        const new_word_id = await this.createWord(word, language);
+        await this.createRelationshipFromObject(
+          'word-sequence-to-word',
+          { position: i + 1 },
+          word_sequence.id,
+          new_word_id,
+        );
+      }
       await this.createRelationshipFromObject(
-        'word-sequence-to-word',
-        { position: i + 1 },
+        'word-sequenece-to-language-entry',
+        {},
         word_sequence.id,
-        new_word_id,
+        language,
       );
-    }
-    await this.createRelationshipFromObject(
-      'word-sequenece-to-language-entry',
-      {},
-      word_sequence.id,
-      language,
-    )
-    await this.createRelationshipFromObject(
-      'word-sequence-to-document',
-      {},
-      word_sequence.id,
-      document,
-    );
-    await this.createRelationshipFromObject(
-      'word-sequence-to-creator',
-      {},
-      word_sequence.id,
-      creator,
-    );
+      await this.createRelationshipFromObject(
+        'word-sequence-to-document',
+        {},
+        word_sequence.id,
+        document,
+      );
+      await this.createRelationshipFromObject(
+        'word-sequence-to-creator',
+        {},
+        word_sequence.id,
+        creator,
+      );
 
-    return word_sequence;
+      return word_sequence;
+    } catch (err) {
+      console.log(err);
+      throw new Error(`Failed to create new word-sequence '${text}'`);
+    }
   }
 
   async getText(word_sequence_id: string): Promise<string | null> {
