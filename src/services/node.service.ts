@@ -517,7 +517,7 @@ export class NodeService {
       return new_translation_id;
     } catch (err) {
       console.log(err);
-      throw new Error(`Failed to create translation '${from} - ${to}'`);
+      throw new Error(`Failed to create word-to-translation '${from} - ${to}'`);
     }
   }
 
@@ -632,6 +632,35 @@ export class NodeService {
     );
 
     return filtered_word_sequences.map((sequence) => sequence.id);
+  }
+
+  // --------- Word-Sequence-Translation --------- //
+
+  async createWordSequenceTranslationRelationship(from: string, to: string): Promise<string> {
+    try {
+      const translation = await this.relationshipRepo.repository.findOne({
+        where: {
+          relationship_type: 'word-sequence-to-translation',
+          from_node_id: from,
+          to_node_id: to,
+        },
+      });
+
+      if (translation) {
+        return translation.id;
+      }
+
+      const new_translation_id = await this.createRelationshipFromObject(
+        'word-sequence-to-translation',
+        {},
+        from,
+        to,
+      );
+      return new_translation_id;
+    } catch (err) {
+      console.log(err);
+      throw new Error(`Failed to create word-sequence-to-translation '${from} - ${to}'`);
+    }
   }
 }
 
