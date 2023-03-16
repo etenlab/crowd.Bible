@@ -105,12 +105,10 @@ export class NodeService {
     node_type_name: string,
     rel_type_name: string,
     obj: object,
-  ) {
-    const to_node = await this.nodeRepo.readNode(id);
-    if (to_node == null) {
-      return null;
-    }
-
+  ): Promise<{
+    relationship: Relationship | null;
+    node: Node;
+  }> {
     const from_node = await this.createNodeFromObject(node_type_name, obj);
     const relationship = await this.relationshipRepo.createRelationship(
       from_node.id,
@@ -129,7 +127,10 @@ export class NodeService {
     node_type_name: string,
     rel_type_name: string,
     obj: object,
-  ) {
+  ): Promise<{
+    relationship: Relationship | null;
+    node: Node;
+  }> {
     const to_node = await this.createNodeFromObject(node_type_name, obj);
     const relationship = await this.relationshipRepo.createRelationship(
       id,
@@ -219,19 +220,9 @@ export class NodeService {
 
   async getTable(name: string): Promise<string | null> {
     try {
-      const table: Node | null = await this.nodeRepo.repository.findOne({
-        relations: ['nodeType', 'propertyKeys', 'propertyKeys.propertyValue'],
-        where: {
-          nodeType: {
-            type_name: 'table',
-          },
-          propertyKeys: {
-            property_key: 'name',
-            propertyValue: {
-              property_value: JSON.stringify({ value: name }),
-            },
-          },
-        },
+      const table = await this.nodeRepo.getNodeByProp('table', {
+        key: 'name',
+        value: name,
       });
 
       if (!table) {
@@ -390,7 +381,6 @@ export class NodeService {
           'propertyKeys',
           'propertyKeys.propertyValue',
           'nodeRelationships',
-          'nodeRelationships.fromNode',
         ],
         select: {
           propertyKeys: true,
@@ -442,7 +432,7 @@ export class NodeService {
     try {
       const document = await this.nodeRepo.getNodeByProp('document', {
         key: 'name',
-        val: name,
+        value: name,
       });
 
       if (document == null) {
@@ -461,49 +451,60 @@ export class NodeService {
 
   // --------- Word --------- //
 
-  async createWord(name: string): Promise<Word | null> {
+  async createWord(word: string, language: string): Promise<string> {
     try {
-      if ((await this.getWord(name)) != null) {
-        console.log('conflict: ', name);
-        return null;
+      const word_id = await this.getWord(word, language);
+      if (word_id) {
+        return word_id;
       }
-      console.log('no conflict: ', name);
-      const word = await this.createNodeFromObject('word', {
-        name: {
-          value: name,
-        },
-      });
 
-      return {
-        id: word.id,
-        name,
-      };
+      const { node } = await this.createRelatedFromNodeFromObject(
+        language,
+        'word',
+        'word-to-language-entry',
+        {},
+      );
+
+      return node.id;
     } catch (err) {
       console.log(err);
-      throw new Error('Failed to create a new word.');
+      throw new Error(`Failed to create new word '${word} - ${language}'`);
     }
   }
 
-  async getWord(name: string): Promise<Word | null> {
+  async getWord(word: string, language: string): Promise<string | null> {
     try {
-      const word = await this.nodeRepo.getNodeByProp('word', {
-        key: 'name',
-        val: {
-          value: name,
+      const wordNode = await this.nodeRepo.repository.findOne({
+        relations: [
+          'nodeType',
+          'propertyKeys',
+          'propertyKeys.propertyValue',
+          'nodeRelationships',
+        ],
+        where: {
+          nodeType: {
+            type_name: 'word',
+          },
+          propertyKeys: {
+            property_key: 'name',
+            propertyValue: {
+              property_value: JSON.stringify({ value: word }),
+            },
+          },
+          nodeRelationships: {
+            to_node_id: language,
+          },
         },
       });
 
-      if (word == null) {
+      if (!wordNode) {
         return null;
       }
 
-      return {
-        id: word.id,
-        name,
-      };
+      return wordNode.id;
     } catch (err) {
       console.log(err);
-      throw new Error('Failed to get word.');
+      throw new Error(`Failed to get word '${word} - ${language}'`);
     }
   }
 
