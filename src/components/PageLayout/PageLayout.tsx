@@ -41,8 +41,6 @@ export function PageLayout({ children }: PageLayoutProps) {
   const bodyRef = useRef<HTMLElement | null>(null);
 
   const toggleDarkTheme = (shouldToggle: boolean) => {
-    console.log(bodyRef.current);
-
     if (shouldToggle) {
       setThemeMode('dark');
     } else {
