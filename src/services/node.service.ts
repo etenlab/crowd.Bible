@@ -199,13 +199,18 @@ export class NodeService {
 
   // --------- Table --------- //
 
-  async createTable(name: string): Promise<Table> {
+  async createTable(name: string): Promise<string> {
     try {
-      const table = await this.createNodeFromObject('table', {
+      const table_id = await this.getTable(name);
+      if (table_id) {
+        return table_id;
+      }
+
+      const new_table = await this.createNodeFromObject('table', {
         name,
       });
 
-      return tableNodeToTable(table) as Table;
+      return new_table.id;
     } catch (err) {
       console.log(err);
       throw new Error(`Failed to create new table '${name}'`);
@@ -242,6 +247,11 @@ export class NodeService {
 
   async createColumn(table: string, column_name: string): Promise<string> {
     try {
+      const column_id = await this.getColumn(table, column_name);
+      if (column_id) {
+        return column_id;
+      }
+
       const { node } = await this.createRelatedToNodeFromObject(
         table,
         'table-column',
