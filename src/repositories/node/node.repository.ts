@@ -54,9 +54,11 @@ export class NodeRepository {
     return nodes;
   }
 
-  async readNode(node_id: string): Promise<Node | null> {
+  async readNode(node_id: string): Promise<Node> {
     const node = await this.repository.findOneBy({ id: node_id });
-
+    if (!node) {
+      throw new Error(`Failed to find node: ${node_id}`);
+    }
     return node;
   }
 
