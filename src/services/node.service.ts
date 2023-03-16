@@ -515,6 +515,7 @@ export class NodeService {
     document: string,
     creator: string,
     import_uid: string,
+    language: string,
   ): Promise<Node> {
     const word_sequence = await this.createNodeFromObject('word-sequence', {
       'import-uid': import_uid,
@@ -522,15 +523,20 @@ export class NodeService {
 
     const words = text.split(' ');
     for (const [i, word] of words.entries()) {
-      const new_word = await this.createWord(word);
+      const new_word_id = await this.createWord(word, language);
       await this.createRelationshipFromObject(
         'word-sequence-to-word',
         { position: i + 1 },
         word_sequence.id,
-        new_word?.id,
+        new_word_id,
       );
     }
-
+    await this.createRelationshipFromObject(
+      'word-sequenece-to-language-entry',
+      {},
+      word_sequence.id,
+      language,
+    )
     await this.createRelationshipFromObject(
       'word-sequence-to-document',
       {},
