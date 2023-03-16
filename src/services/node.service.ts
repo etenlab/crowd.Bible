@@ -63,21 +63,15 @@ export class NodeService {
   async createRelationshipFromObject(
     type_name: string,
     obj: object,
-    from_node: string | undefined,
-    to_node: string | undefined,
-  ): Promise<string | null> {
-    if (from_node === undefined || to_node === undefined) {
-      return null;
-    }
+    from_node: string,
+    to_node: string,
+  ): Promise<string> {
     try {
       const relationship = await this.relationshipRepo.createRelationship(
         from_node,
         to_node,
         type_name,
       );
-      if (relationship == null) {
-        return null;
-      }
 
       for (const [key, value] of Object.entries(obj)) {
         const property_key_id =
@@ -96,21 +90,19 @@ export class NodeService {
       return relationship.id;
     } catch (err) {
       console.log(err);
-      return null;
+      throw new Error(`Failed to create new relationship '${type_name}'`);
     }
   }
 
-  async createRelatedFromNodeToObject(
+  async createRelatedFromNodeFromObject(
     id: string,
     node_type_name: string,
     rel_type_name: string,
     obj: object,
-  ) {
-    const to_node = await this.nodeRepo.readNode(id);
-    if (to_node == null) {
-      return null;
-    }
-
+  ): Promise<{
+    relationship: Relationship | null;
+    node: Node;
+  }> {
     const from_node = await this.createNodeFromObject(node_type_name, obj);
     const relationship = await this.relationshipRepo.createRelationship(
       from_node.id,
@@ -129,12 +121,10 @@ export class NodeService {
     node_type_name: string,
     rel_type_name: string,
     obj: object,
-  ) {
-    const from_node = await this.nodeRepo.readNode(id);
-    if (from_node == null) {
-      return null;
-    }
-
+  ): Promise<{
+    relationship: Relationship | null;
+    node: Node;
+  }> {
     const to_node = await this.createNodeFromObject(node_type_name, obj);
     const relationship = await this.relationshipRepo.createRelationship(
       id,
@@ -151,9 +141,6 @@ export class NodeService {
   async upsertNodeObject(id: string, obj: object): Promise<Node | null> {
     try {
       const node = await this.nodeRepo.readNode(id);
-      if (node == null) {
-        return null;
-      }
 
       for (const [key, value] of Object.entries(obj)) {
         const property_key_id =
@@ -205,95 +192,205 @@ export class NodeService {
 
   // Layer 3
 
-  // -------- Table --------- //
+  // --------- Table --------- //
 
-  async createTable(name: string): Promise<Table> {
+  async createTable(name: string): Promise<string> {
     try {
-      const table = await this.createNodeFromObject('table', {
+      const table_id = await this.getTable(name);
+      if (table_id) {
+        return table_id;
+      }
+
+      const new_table = await this.createNodeFromObject('table', {
         name,
       });
 
-      return tableNodeToTable(table) as Table;
+      return new_table.id;
     } catch (err) {
       console.log(err);
-      throw new Error('Failed to create a new table.');
+      throw new Error(`Failed to create new table '${name}'`);
     }
   }
 
-  async getTable(name: string): Promise<Table | null> {
+  async getTable(name: string): Promise<string | null> {
     try {
-      const table: Node | null = await this.nodeRepo.repository.findOne({
-        relations: [
-          'nodeType',
-          'propertyKeys',
-          'propertyKeys.propertyValue',
-          'nodeRelationships',
-          'nodeRelationships.toNode',
-          'nodeRelationships.toNode.propertyKeys',
-          'nodeRelationships.toNode.propertyKeys.propertyValue',
-        ],
-        select: {
-          nodeRelationships: true,
-        },
-        where: {
-          nodeType: {
-            type_name: 'table',
-          },
-          propertyKeys: {
-            property_key: 'name',
-            propertyValue: {
-              property_value: JSON.stringify({ value: name }),
-            },
-          },
-        },
+      const table = await this.nodeRepo.getNodeByProp('table', {
+        key: 'name',
+        value: name,
       });
-      if (table == null) {
+
+      if (!table) {
         return null;
       }
 
-      return tableNodeToTable(table) as Table;
+      return table.id;
     } catch (err) {
-      throw new Error('Failed to get table.');
+      console.log(err);
+      throw new Error(`Failed to get table '${name}'`);
     }
   }
 
-  async addTableData(
-    table_name: string,
-    column_name: string,
-    row_id: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    cell_data: any,
-  ): Promise<TableCell> {
+  async createColumn(table: string, column_name: string): Promise<string> {
     try {
-      const table = await this.getTable(table_name);
-      const table_cell = await this.createNodeFromObject('table-cell', {
-        column: column_name,
-        row: row_id,
-        data: cell_data,
+      const column_id = await this.getColumn(table, column_name);
+      if (column_id) {
+        return column_id;
+      }
+
+      const { node } = await this.createRelatedToNodeFromObject(
+        table,
+        'table-column',
+        'table-to-column',
+        { name: column_name },
+      );
+
+      return node.id;
+    } catch (err) {
+      console.log(err);
+      throw new Error(
+        `Failed to create new table-column '${table} - ${column_name}'`,
+      );
+    }
+  }
+
+  async getColumn(table: string, column_name: string): Promise<string | null> {
+    try {
+      const column = await this.nodeRepo.repository.findOne({
+        relations: [
+          'propertyKeys',
+          'propertyKeys.propertyValue',
+          'nodeRelationships',
+        ],
+        where: {
+          node_type: 'table-column',
+          propertyKeys: {
+            property_key: 'name',
+            propertyValue: {
+              property_value: JSON.stringify({ value: column_name }),
+            },
+          },
+          nodeRelationships: {
+            from_node_id: table,
+          },
+        },
+      });
+
+      if (!column) {
+        return null;
+      }
+
+      return column.id;
+    } catch (err) {
+      console.log(err);
+      throw new Error(`Failed to get table-column '${table} - ${column_name}'`);
+    }
+  }
+
+  async createRow(table: string): Promise<string> {
+    try {
+      const { node } = await this.createRelatedToNodeFromObject(
+        table,
+        'table-row',
+        'table-to-row',
+        {},
+      );
+      return node.id;
+    } catch (err) {
+      console.log(err);
+      throw new Error(`Failed to create new table-row '${table}'`);
+    }
+  }
+
+  // async getRow(table: string, finder: (table: string) => string): Promise<string | null> {
+
+  // }
+
+  async createCell(column: string, row: string, value: any): Promise<string> {
+    try {
+      const cell = await this.createNodeFromObject('table-cell', {
+        data: value,
       });
 
       await this.createRelationshipFromObject(
-        'table-to-table-cell',
+        'table-column-to-cell',
         {},
-        table?.id,
-        table_cell.id,
+        column,
+        cell.id,
+      );
+      await this.createRelationshipFromObject(
+        'table-row-to-cell',
+        {},
+        row,
+        cell.id,
       );
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const new_cell: TableCell = {};
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      table_cell?.propertyKeys?.forEach((key: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (new_cell as any)[key.property_key] = JSON.parse(
-          key.propertyValue.property_value,
-        ).value;
-      });
-
-      return new_cell;
+      return cell.id;
     } catch (err) {
       console.log(err);
-      throw new Error('Failed to add table data.');
+      throw new Error(`Failed to create new table-cell '${column} - ${row}'`);
+    }
+  }
+
+  async readCell(column: string, row: string): Promise<any> {
+    try {
+      const cell = await this.nodeRepo.repository.findOne({
+        relations: [
+          'propertyKeys',
+          'propertyKeys.propertyValue',
+          'nodeRelationships',
+        ],
+        select: {
+          propertyKeys: true,
+        },
+        where: {
+          node_type: 'table-cell',
+          nodeRelationships: [{ from_node_id: column }, { from_node_id: row }],
+        },
+      });
+
+      if (!cell) {
+        return null;
+      }
+
+      return JSON.parse(cell.propertyKeys[0].propertyValue.property_value)
+        .value;
+    } catch (err) {
+      console.log(err);
+      throw new Error(`Failed to read table-cell '${column} - ${row}'`);
+    }
+  }
+
+  async updateCell(column: string, row: string, value: any): Promise<any> {
+    try {
+      const cell = await this.nodeRepo.repository.findOne({
+        relations: [
+          'propertyKeys',
+          'propertyKeys.propertyValue',
+          'nodeRelationships',
+        ],
+        select: {
+          propertyKeys: true,
+        },
+        where: {
+          node_type: 'table-cell',
+          nodeRelationships: [{ from_node_id: column }, { from_node_id: row }],
+        },
+      });
+
+      if (!cell) {
+        return null;
+      }
+      cell.propertyKeys[0].propertyValue;
+
+      const updated_cell = await this.nodePropertyValueRepo.repository.save({
+        ...cell.propertyKeys[0].propertyValue,
+        property_value: JSON.stringify(value),
+      });
+
+      return updated_cell.id;
+    } catch (err) {
+      console.log(err);
+      throw new Error(`Failed to update table-cell '${column} - ${row}'`);
     }
   }
 
@@ -319,7 +416,7 @@ export class NodeService {
     try {
       const document = await this.nodeRepo.getNodeByProp('document', {
         key: 'name',
-        val: name,
+        value: name,
       });
 
       if (document == null) {
@@ -336,91 +433,142 @@ export class NodeService {
     }
   }
 
-  // -------- Word --------- //
+  // --------- Word --------- //
 
-  async createWord(name: string): Promise<Word | null> {
+  async createWord(word: string, language: string): Promise<string> {
     try {
-      if ((await this.getWord(name)) != null) {
-        console.log('conflict: ', name);
-        return null;
+      const word_id = await this.getWord(word, language);
+      if (word_id) {
+        return word_id;
       }
-      console.log('no conflict: ', name);
-      const word = await this.createNodeFromObject('word', {
-        name: {
-          value: name,
-        },
-      });
 
-      return {
-        id: word.id,
-        name,
-      };
+      const { node } = await this.createRelatedFromNodeFromObject(
+        language,
+        'word',
+        'word-to-language-entry',
+        {},
+      );
+
+      return node.id;
     } catch (err) {
       console.log(err);
-      throw new Error('Failed to create a new word.');
+      throw new Error(`Failed to create new word '${word} - ${language}'`);
     }
   }
 
-  async getWord(name: string): Promise<Word | null> {
+  async getWord(word: string, language: string): Promise<string | null> {
     try {
-      const word = await this.nodeRepo.getNodeByProp('word', {
-        key: 'name',
-        val: {
-          value: name,
+      const wordNode = await this.nodeRepo.repository.findOne({
+        relations: [
+          'propertyKeys',
+          'propertyKeys.propertyValue',
+          'nodeRelationships',
+        ],
+        where: {
+          node_type: 'word',
+          propertyKeys: {
+            property_key: 'name',
+            propertyValue: {
+              property_value: JSON.stringify({ value: word }),
+            },
+          },
+          nodeRelationships: {
+            to_node_id: language,
+          },
         },
       });
 
-      if (word == null) {
+      if (!wordNode) {
         return null;
       }
 
-      return {
-        id: word.id,
-        name,
-      };
+      return wordNode.id;
     } catch (err) {
       console.log(err);
-      throw new Error('Failed to get word.');
+      throw new Error(`Failed to get word '${word} - ${language}'`);
     }
   }
 
-  // -------- Word-Sequence --------- //
+  // --------- Word-Translation --------- //
+
+  async createWordTranslationRelationship(
+    from: string,
+    to: string,
+  ): Promise<string> {
+    try {
+      const translation = await this.relationshipRepo.repository.findOne({
+        where: {
+          relationship_type: 'word-to-translation',
+          from_node_id: from,
+          to_node_id: to,
+        },
+      });
+
+      if (translation) {
+        return translation.id;
+      }
+
+      const new_translation_id = await this.createRelationshipFromObject(
+        'word-to-translation',
+        {},
+        from,
+        to,
+      );
+      return new_translation_id;
+    } catch (err) {
+      console.log(err);
+      throw new Error(`Failed to create word-to-translation '${from} - ${to}'`);
+    }
+  }
+
+  // --------- Word-Sequence --------- //
 
   async createWordSequence(
     text: string,
     document: string,
     creator: string,
     import_uid: string,
+    language: string,
   ): Promise<Node> {
-    const word_sequence = await this.createNodeFromObject('word-sequence', {
-      'import-uid': import_uid,
-    });
+    try {
+      const word_sequence = await this.createNodeFromObject('word-sequence', {
+        'import-uid': import_uid,
+      });
 
-    const words = text.split(' ');
-    for (const [i, word] of words.entries()) {
-      const new_word = await this.createWord(word);
+      const words = text.split(' ');
+      for (const [i, word] of words.entries()) {
+        const new_word_id = await this.createWord(word, language);
+        await this.createRelationshipFromObject(
+          'word-sequence-to-word',
+          { position: i + 1 },
+          word_sequence.id,
+          new_word_id,
+        );
+      }
       await this.createRelationshipFromObject(
-        'word-sequence-to-word',
-        { position: i + 1 },
+        'word-sequenece-to-language-entry',
+        {},
         word_sequence.id,
-        new_word?.id,
+        language,
       );
+      await this.createRelationshipFromObject(
+        'word-sequence-to-document',
+        {},
+        word_sequence.id,
+        document,
+      );
+      await this.createRelationshipFromObject(
+        'word-sequence-to-creator',
+        {},
+        word_sequence.id,
+        creator,
+      );
+
+      return word_sequence;
+    } catch (err) {
+      console.log(err);
+      throw new Error(`Failed to create new word-sequence '${text}'`);
     }
-
-    await this.createRelationshipFromObject(
-      'word-sequence-to-document',
-      {},
-      word_sequence.id,
-      document,
-    );
-    await this.createRelationshipFromObject(
-      'word-sequence-to-creator',
-      {},
-      word_sequence.id,
-      creator,
-    );
-
-    return word_sequence;
   }
 
   async getText(word_sequence_id: string): Promise<string | null> {
@@ -459,7 +607,7 @@ export class NodeService {
     return words.join(' ');
   }
 
-  // -------- Word-Sequence-Connection --------- //
+  // --------- Word-Sequence-Connection --------- //
 
   async appendWordSequence(from: string, to: string): Promise<string | null> {
     const word_sequence_connection = await this.createRelationshipFromObject(
@@ -484,6 +632,35 @@ export class NodeService {
     );
 
     return filtered_word_sequences.map((sequence) => sequence.id);
+  }
+
+  // --------- Word-Sequence-Translation --------- //
+
+  async createWordSequenceTranslationRelationship(from: string, to: string): Promise<string> {
+    try {
+      const translation = await this.relationshipRepo.repository.findOne({
+        where: {
+          relationship_type: 'word-sequence-to-translation',
+          from_node_id: from,
+          to_node_id: to,
+        },
+      });
+
+      if (translation) {
+        return translation.id;
+      }
+
+      const new_translation_id = await this.createRelationshipFromObject(
+        'word-sequence-to-translation',
+        {},
+        from,
+        to,
+      );
+      return new_translation_id;
+    } catch (err) {
+      console.log(err);
+      throw new Error(`Failed to create word-sequence-to-translation '${from} - ${to}'`);
+    }
   }
 }
 

@@ -7,6 +7,7 @@ import {
   type RoleType,
   type StateType as GlobalStateType,
   type FeedbackType,
+  TranslatedMap,
 } from './reducers/global.reducer';
 
 import { useGlobal } from './hooks/useGlobal';
@@ -20,6 +21,7 @@ export interface ContextType {
     setRole: (role: RoleType) => void;
     alertFeedback: (feedbackType: FeedbackType, message: string) => void;
     closeFeedback: () => void;
+    setTranslatedMap: (translatedMap: TranslatedMap) => void;
   };
 }
 
@@ -32,12 +34,19 @@ interface AppProviderProps {
 export function AppContextProvider({ children }: AppProviderProps) {
   const [state, dispatch] = useReducer(reducer, reducerInitialState);
 
-  const { alertFeedback, closeFeedback, setRole, setUser } = useGlobal({
-    dispatch,
-  });
+  const { alertFeedback, closeFeedback, setRole, setUser, setTranslatedMap } =
+    useGlobal({
+      dispatch,
+    });
   const value = {
     states: { global: state.global },
-    actions: { closeFeedback, alertFeedback, setRole, setUser },
+    actions: {
+      closeFeedback,
+      alertFeedback,
+      setRole,
+      setUser,
+      setTranslatedMap,
+    },
   };
 
   console.log(value);

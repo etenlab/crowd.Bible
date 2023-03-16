@@ -8,6 +8,13 @@ export interface SnackType {
   message: string;
   severity: FeedbackType;
 }
+export interface TranslatedMap {
+  translatedMapStr?: string;
+}
+
+const initialTranslatedMap: TranslatedMap = {
+  translatedMapStr: undefined,
+};
 
 export type RoleType = 'reader' | 'translator';
 
@@ -23,6 +30,7 @@ export interface StateType {
   loading: boolean;
   isNewDiscussion: boolean;
   isNewNotification: boolean;
+  translatedMap: TranslatedMap;
 }
 
 const initialSnact: SnackType = {
@@ -37,6 +45,7 @@ export const initialState: StateType = {
   loading: false,
   isNewDiscussion: false,
   isNewNotification: false,
+  translatedMap: initialTranslatedMap,
 };
 
 export function reducer(
@@ -85,6 +94,12 @@ export function reducer(
       } else {
         return prevState;
       }
+    }
+    case actions.SET_TRANSLATED_MAP: {
+      return {
+        ...prevState,
+        translatedMap: action.payload as TranslatedMap,
+      };
     }
     default: {
       return prevState;

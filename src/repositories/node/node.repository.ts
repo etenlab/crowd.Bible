@@ -36,7 +36,7 @@ export class NodeRepository {
 
   async listAllNodesByType(type_name: string): Promise<Node[]> {
     const nodes = await this.repository.find({
-      relations: ['nodeType', 'propertyKeys', 'propertyKeys.propertyValue'],
+      relations: ['propertyKeys', 'propertyKeys.propertyValue'],
       select: {
         propertyKeys: {
           property_key: true,
@@ -46,39 +46,44 @@ export class NodeRepository {
         },
       },
       where: {
-        nodeType: {
-          type_name,
-        },
+        node_type: type_name,
       },
     });
     return nodes;
   }
 
-  async readNode(node_id: string): Promise<Node | null> {
+  async readNode(node_id: string): Promise<Node> {
     const node = await this.repository.findOneBy({ id: node_id });
-
+    if (!node) {
+      throw new Error(`Failed to find node: ${node_id}`);
+    }
     return node;
   }
 
   async getNodeByProp(
     type: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    prop: { key: string; val: any },
+    prop: { key: string; value: any },
   ): Promise<Node | null> {
-    const node = await this.repository.findOne({
-      relations: ['nodeType', 'propertyKeys', 'propertyKeys.propertyValue'],
-      where: {
-        nodeType: {
-          type_name: type,
-        },
-        propertyKeys: {
-          property_key: prop.key,
-          propertyValue: {
-            property_value: prop.val,
+    try {
+      const node = await this.repository.findOne({
+        relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+        where: {
+          node_type: type,
+          propertyKeys: {
+            property_key: prop.key,
+            propertyValue: {
+              property_value: JSON.stringify({ value: prop.value }),
+            },
           },
         },
-      },
-    });
-    return node;
+      });
+      return node;
+    } catch (err) {
+      console.log(err);
+      throw new Error(
+        `Failed to get node by prop '${type} - prop: { key: ${prop.key}, value: ${prop.value} }'`,
+      );
+    }
   }
 }

@@ -10,7 +10,7 @@ export class RelationshipRepository {
     private readonly syncService: SyncService,
   ) {}
 
-  private get repository() {
+  get repository() {
     return this.dbService.dataSource.getRepository(Relationship);
   }
 
@@ -18,13 +18,16 @@ export class RelationshipRepository {
     node_1: string,
     node_2: string,
     type_name: string,
-  ): Promise<Relationship | null> {
+  ): Promise<Relationship> {
     const nodeRepo = this.dbService.dataSource.getRepository(Node);
     const node_from = await nodeRepo.findOneBy({ id: node_1 });
     const node_to = await nodeRepo.findOneBy({ id: node_2 });
 
-    if (node_from == null || node_to == null) {
-      return null;
+    if (!node_from) {
+      throw new Error(`Node not found '${node_1}'`);
+    }
+    if (!node_to) {
+      throw new Error(`Node not found '${node_2}'`);
     }
 
     let relType = await this.dbService.dataSource
