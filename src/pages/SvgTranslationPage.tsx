@@ -22,8 +22,8 @@ type Item = {
 
 const { TitleWithIcon, ButtonList } = CrowdBibleUI;
 
-const WIDTH = 360;
 const PADDING = 20;
+const WIDTH = 360 - PADDING / 2;
 
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
 const MOCK_TRANSLATED_MAPS: Item[] = [
@@ -61,10 +61,6 @@ export const SvgTranslationPage = () => {
     setTranslatedMap({ translatedMapStr: str });
     return str;
   }, [parsed, translations, setTranslatedMap]);
-
-  // useEffect(() => {
-  //   setTranslatedMap({ translatedMapStr: translatedSvg });
-  // }, [translatedSvg]);
 
   const fileHandler: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
@@ -195,9 +191,14 @@ export const SvgTranslationPage = () => {
           </Box>
         )}
 
-        <Box display="flex" flexDirection={'column'} justifyContent="start">
+        <Box
+          display="flex"
+          flexDirection={'column'}
+          justifyContent="start"
+          paddingLeft={`${PADDING / 2}px`}
+        >
           {originalSvg && (
-            <Box paddingBottom={`${PADDING / 2}px`}>
+            <Box>
               <Typography variant={'caption'}>Uploaded map</Typography>
               <TransformWrapper>
                 <TransformComponent>
@@ -216,12 +217,26 @@ export const SvgTranslationPage = () => {
 
           {translatedSvg && (
             <>
+              <Box>
+                <Typography variant={'caption'}>Translated map</Typography>
+                <TransformWrapper>
+                  <TransformComponent>
+                    <img
+                      width={`${WIDTH}px`}
+                      height={'auto'}
+                      src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                        translatedSvg,
+                      )}`}
+                      alt="translated svg"
+                    />
+                  </TransformComponent>
+                </TransformWrapper>
+              </Box>
               <Box
                 display="flex"
                 flexDirection={'column'}
                 justifyContent="start"
                 alignItems={'center'}
-                paddingBottom={`${PADDING / 2}px`}
               >
                 {textContents.map((text, i) => (
                   <Box
@@ -239,7 +254,7 @@ export const SvgTranslationPage = () => {
                         element={Input}
                         id={`text-${i}`}
                         label="Translate"
-                        debounceTimeout={1000}
+                        debounceTimeout={500}
                         onChange={(e) => {
                           const newTranslations = [...translations];
                           newTranslations[i] = e.target.value;
@@ -249,21 +264,6 @@ export const SvgTranslationPage = () => {
                     </Box>
                   </Box>
                 ))}
-              </Box>
-
-              <Box paddingBottom={`${PADDING / 2}px`}>
-                <TransformWrapper>
-                  <TransformComponent>
-                    <img
-                      width={`${WIDTH}px`}
-                      height={'auto'}
-                      src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                        translatedSvg,
-                      )}`}
-                      alt="translated svg"
-                    />
-                  </TransformComponent>
-                </TransformWrapper>
               </Box>
             </>
           )}
