@@ -1,10 +1,16 @@
-import { type FeedbackType, type RoleType, type IUser } from './global.reducer';
+import {
+  type FeedbackType,
+  type RoleType,
+  type IUser,
+  TranslatedMap,
+} from './global.reducer';
 
 export const actions = {
   ALERT_FEEDBACK: 'ALERT_FEEDBACK',
   CLOSE_FEEDBACK: 'CLOSE_FEEDBACK',
   SET_ROLE: 'SET_ROLE',
   SET_USER: 'SET_USER',
+  SET_TRANSLATED_MAP: 'SET_TRANSLATED_MAP',
 };
 
 export function setUser(user: IUser) {
@@ -35,5 +41,12 @@ export function closeFeedback() {
   return {
     type: actions.CLOSE_FEEDBACK,
     payload: null,
+  };
+}
+
+export function setTranslatedMap(translatedMap: TranslatedMap) {
+  return {
+    type: actions.SET_TRANSLATED_MAP,
+    payload: translatedMap,
   };
 }

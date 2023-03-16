@@ -5,6 +5,7 @@ import {
   setUser as setUserAction,
   alertFeedback as alertFeedbackAction,
   closeFeedback as closeFeedbackAction,
+  setTranslatedMap as setTranslatedMapAction,
 } from '../reducers/global.actions';
 
 import { type ActionType } from '../reducers';
@@ -12,6 +13,7 @@ import {
   type FeedbackType,
   type RoleType,
   type IUser,
+  TranslatedMap,
 } from '../reducers/global.reducer';
 
 interface UseGlobalProps {
@@ -39,6 +41,10 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     [],
   );
 
+  const setTranslatedMap = useCallback((translatedMap: TranslatedMap) => {
+    dispatchRef.current.dispatch(setTranslatedMapAction(translatedMap));
+  }, []);
+
   const closeFeedback = useCallback(() => {
     dispatchRef.current.dispatch(closeFeedbackAction());
   }, []);
@@ -48,5 +54,6 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     setUser,
     alertFeedback,
     closeFeedback,
+    setTranslatedMap,
   };
 }

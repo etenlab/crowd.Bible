@@ -60,6 +60,7 @@ import { GrammarPage } from './pages/GrammarPage';
 import { VersificationPage } from './pages/VersificationPage';
 import { AlignmentPage } from './pages/AlignmentPage';
 import { SvgTranslationPage } from './pages/SvgTranslationPage';
+import { SvgTranslatedPage } from './pages/SvgTranslatedPage';
 
 setupIonicReact();
 
@@ -180,6 +181,9 @@ const App: React.FC = () => (
               </Route>
               <Route exact path="/svg-translation">
                 <SvgTranslationPage />
+              </Route>
+              <Route exact path="/svg-translated-map">
+                <SvgTranslatedPage />
               </Route>
             </IonRouterOutlet>
           </PageLayout>

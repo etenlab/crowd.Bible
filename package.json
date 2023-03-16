@@ -9,7 +9,7 @@
     "@capacitor/keyboard": "4.1.0",
     "@capacitor/status-bar": "4.1.1",
     "@eten-lab/discussion-box": "^0.2.9",
-    "@eten-lab/ui-kit": "^0.3.32",
+    "@eten-lab/ui-kit": "^0.3.39",
     "@ionic/react": "^6.0.0",
     "@ionic/react-router": "^6.0.0",
     "@testing-library/jest-dom": "^5.11.9",
