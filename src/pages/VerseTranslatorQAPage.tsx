@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
-import { Question } from '@eten-lab/ui-kit/dist/crowd-bible';
+import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 
 import { useAppContext } from '../hooks/useAppContext';
 
@@ -12,10 +12,10 @@ import { mockVerses, ChapterList } from './VerseFeedbackPage';
 const { TitleWithIcon, VerticalRadioList, QuestionCreatorBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
-type VerseFeedbackProps = {
-  onClickCancel(): void;
-  onClickBack(): void;
-};
+interface VerseFeedbackProps {
+  onClickCancel: () => void;
+  onClickBack: () => void;
+}
 
 function VerseTranslatorQA({ onClickCancel, onClickBack }: VerseFeedbackProps) {
   const history = useHistory();

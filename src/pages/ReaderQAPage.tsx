@@ -18,10 +18,10 @@ type QuestionType =
   | 'Multiselect'
   | 'Choose One';
 
-export type CheckItemType = {
+export interface CheckItemType {
   item: string;
   checked: boolean;
-};
+}
 
 const mockQuestion = [
   {

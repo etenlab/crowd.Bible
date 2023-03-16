@@ -24,7 +24,7 @@ export class NodePropertyValue extends Syncable {
   readonly node_property_value_id!: string | null;
 
   @Column('varchar')
-  property_value!: any;
+  property_value!: unknown;
 
   @OneToOne(
     () => NodePropertyKey,

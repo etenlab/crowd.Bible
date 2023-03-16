@@ -7,6 +7,7 @@ interface Table {
 interface TableCell {
   column?: string;
   row?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any;
 }
 

@@ -1,13 +1,13 @@
 import {
-  StateType as GlobalStateType,
+  type StateType as GlobalStateType,
   initialState as globalInitialState,
   reducer as globalReducer,
-} from "./global.reducer";
+} from './global.reducer';
 
-export type ActionType<T> = {
+export interface ActionType<T> {
   type: string;
   payload: T;
-};
+}
 
 export interface StateType {
   global: GlobalStateType;
@@ -19,7 +19,7 @@ export const initialState = {
 
 export function reducer(
   state: StateType = initialState,
-  action: ActionType<unknown>
+  action: ActionType<unknown>,
 ): StateType {
   return {
     global: globalReducer(state.global, action),

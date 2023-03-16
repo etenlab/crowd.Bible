@@ -1,11 +1,14 @@
 // import { Repository } from 'typeorm';
 import { Node } from '../../models';
 import { NodePropertyKey } from '../../models/node/node-property-key.entity';
-import { DbService } from '../../services/db.service';
-import { SyncService } from '../../services/sync.service';
+import { type DbService } from '../../services/db.service';
+import { type SyncService } from '../../services/sync.service';
 
 export class NodePropertyKeyRepository {
-  constructor(private dbService: DbService, private syncService: SyncService) {}
+  constructor(
+    private readonly dbService: DbService,
+    private readonly syncService: SyncService,
+  ) {}
 
   private get repository() {
     return this.dbService.dataSource.getRepository(NodePropertyKey);
@@ -21,7 +24,7 @@ export class NodePropertyKeyRepository {
       .andWhere('nodePropertyKey.property_key = :key_name', { key_name })
       .getOne();
 
-    if (propertyKey) {
+    if (propertyKey != null) {
       return propertyKey.id;
     }
 
@@ -29,13 +32,13 @@ export class NodePropertyKeyRepository {
       .getRepository(Node)
       .findOneBy({ id: node_id });
 
-    if (!node) {
+    if (node == null) {
       return null;
     }
 
     const new_property_key_instance = this.repository.create({
       property_key: key_name,
-      node_id: node_id,
+      node_id,
       sync_layer: this.syncService.syncLayer,
     });
 

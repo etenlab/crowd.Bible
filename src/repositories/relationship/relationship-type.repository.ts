@@ -1,9 +1,12 @@
 import { RelationshipType } from '../../models/relationship/relationship-type.entity';
-import { DbService } from '../../services/db.service';
-import { SyncService } from '../../services/sync.service';
+import { type DbService } from '../../services/db.service';
+import { type SyncService } from '../../services/sync.service';
 
 export class RelationshipTypeRepository {
-  constructor(private dbService: DbService, private syncService: SyncService) {}
+  constructor(
+    private readonly dbService: DbService,
+    private readonly syncService: SyncService,
+  ) {}
 
   private get repository() {
     return this.dbService.dataSource.getRepository(RelationshipType);

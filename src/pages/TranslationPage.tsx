@@ -1,4 +1,4 @@
-import { useState, MouseEvent } from 'react';
+import { useState, type MouseEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
 
@@ -80,7 +80,7 @@ export function TranslationPage() {
           variant="overline"
           sx={{
             paddingBottom: '16px',
-            color: colors['dark'],
+            color: colors.dark,
             opacity: 0.5,
           }}
         >
@@ -127,7 +127,7 @@ export function TranslationPage() {
             boxShadow: '0px 0px 20px rgba(4, 16, 31, 0.1)',
             height: '400px',
             padding: '0 20px 20px',
-            background: colors['white'],
+            background: colors.white,
           }}
           onClick={handleCancelBubbling}
         >

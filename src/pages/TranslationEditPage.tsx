@@ -45,7 +45,7 @@ export function TranslationEditPage() {
             variant="overline"
             sx={{
               paddingBottom: '16px',
-              color: colors['dark'],
+              color: colors.dark,
               opacity: 0.5,
             }}
           >

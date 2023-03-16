@@ -1,6 +1,6 @@
 import { IonContent } from '@ionic/react';
 import { useCallback, useMemo, useState } from 'react';
-import { INode, parseSync, stringify } from 'svgson';
+import { type INode, parseSync, stringify } from 'svgson';
 import { FormLabel, Button, Box, FormControl, TextField } from '@mui/material';
 import { Alert } from '@eten-lab/ui-kit';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
@@ -15,7 +15,7 @@ export const SvgTranslationPage = () => {
   const [parsed, setParsed] = useState<INode | null>(null);
 
   const translatedSvg: string = useMemo(() => {
-    if (!parsed) return '';
+    if (parsed == null) return '';
 
     const trans = [...translations];
 
@@ -35,13 +35,13 @@ export const SvgTranslationPage = () => {
     (e) => {
       const f = e.target.files?.[0];
 
-      if (!f) return;
+      if (f == null) return;
 
       const r = new FileReader();
 
-      r!.onload = function (evt: ProgressEvent<FileReader>) {
+      r.onload = function (evt: ProgressEvent<FileReader>) {
         if (evt.target?.readyState !== 2) return;
-        if (evt.target.error) {
+        if (evt.target.error != null) {
           setError('Error while reading file. Read console for more info');
           console.error(evt.target.error);
           return;
@@ -51,7 +51,7 @@ export const SvgTranslationPage = () => {
 
         if (!filecontent) {
           setError('Error while reading file. Read console for more info');
-          console.error(`filecontent is null after reading`);
+          console.error('filecontent is null after reading');
           return;
         }
 

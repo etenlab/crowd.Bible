@@ -56,7 +56,7 @@ export function TranslatorQAPage() {
           variant="body2"
           sx={{
             lineHeight: '30px',
-            color: colors['dark'],
+            color: colors.dark,
             textAlign: 'justify',
           }}
         >
@@ -74,7 +74,7 @@ export function TranslatorQAPage() {
           sx={{
             borderRadius: '0 0 20px 20px',
             width: '100%',
-            background: colors['white'],
+            background: colors.white,
           }}
         >
           <KindSelectionBox

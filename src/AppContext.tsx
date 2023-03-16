@@ -3,31 +3,31 @@ import React, { createContext, useReducer } from 'react';
 import { reducer, initialState as reducerInitialState } from './reducers';
 
 import {
-  IUser,
-  RoleType,
-  StateType as GlobalStateType,
+  type IUser,
+  type RoleType,
+  type StateType as GlobalStateType,
+  type FeedbackType,
 } from './reducers/global.reducer';
 
 import { useGlobal } from './hooks/useGlobal';
-import { FeedbackType } from './reducers/global.reducer';
 
 export interface ContextType {
   states: {
     global: GlobalStateType;
   };
   actions: {
-    setUser(user: IUser): void;
-    setRole(role: RoleType): void;
-    alertFeedback(feedbackType: FeedbackType, message: string): void;
-    closeFeedback(): void;
+    setUser: (user: IUser) => void;
+    setRole: (role: RoleType) => void;
+    alertFeedback: (feedbackType: FeedbackType, message: string) => void;
+    closeFeedback: () => void;
   };
 }
 
 export const AppContext = createContext<ContextType | undefined>(undefined);
 
-type AppProviderProps = {
+interface AppProviderProps {
   children?: React.ReactNode;
-};
+}
 
 export function AppContextProvider({ children }: AppProviderProps) {
   const [state, dispatch] = useReducer(reducer, reducerInitialState);

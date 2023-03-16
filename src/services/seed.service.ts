@@ -1,22 +1,22 @@
-import { NodePropertyKeyRepository } from '../repositories/node/node-property-key.repository';
-import { NodePropertyValueRepository } from '../repositories/node/node-property-value.repository';
-import { NodeTypeRepository } from '../repositories/node/node-type.repository';
-import { NodeRepository } from '../repositories/node/node.repository';
-import { RelationshipPropertyKeyRepository } from '../repositories/relationship/relationship-property-key.repository';
-import { RelationshipPropertyValueRepository } from '../repositories/relationship/relationship-property-value.repository';
-import { RelationshipTypeRepository } from '../repositories/relationship/relationship-type.repository';
-import { RelationshipRepository } from '../repositories/relationship/relationship.repository';
+import { type NodePropertyKeyRepository } from '../repositories/node/node-property-key.repository';
+import { type NodePropertyValueRepository } from '../repositories/node/node-property-value.repository';
+import { type NodeTypeRepository } from '../repositories/node/node-type.repository';
+import { type NodeRepository } from '../repositories/node/node.repository';
+import { type RelationshipPropertyKeyRepository } from '../repositories/relationship/relationship-property-key.repository';
+import { type RelationshipPropertyValueRepository } from '../repositories/relationship/relationship-property-value.repository';
+import { type RelationshipTypeRepository } from '../repositories/relationship/relationship-type.repository';
+import { type RelationshipRepository } from '../repositories/relationship/relationship.repository';
 
 export class SeedService {
   constructor(
-    private nodeRepository: NodeRepository,
-    private nodeTypeRepository: NodeTypeRepository,
-    private nodePropertyKeyRepository: NodePropertyKeyRepository,
-    private nodePropertyValueRepository: NodePropertyValueRepository,
-    private relationshipRepository: RelationshipRepository,
-    private relationshipTypeRepository: RelationshipTypeRepository,
-    private relationshipPropertyKeyRepository: RelationshipPropertyKeyRepository,
-    private relationshipPropertyValueRepository: RelationshipPropertyValueRepository,
+    private readonly nodeRepository: NodeRepository,
+    private readonly nodeTypeRepository: NodeTypeRepository,
+    private readonly nodePropertyKeyRepository: NodePropertyKeyRepository,
+    private readonly nodePropertyValueRepository: NodePropertyValueRepository,
+    private readonly relationshipRepository: RelationshipRepository,
+    private readonly relationshipTypeRepository: RelationshipTypeRepository,
+    private readonly relationshipPropertyKeyRepository: RelationshipPropertyKeyRepository,
+    private readonly relationshipPropertyValueRepository: RelationshipPropertyValueRepository,
   ) {}
 
   async createNodesAndRelationship() {
@@ -36,14 +36,14 @@ export class SeedService {
       );
 
     const relationship = await this.relationshipRepository.createRelationship(
-      node1.id!,
-      node2.id!,
+      node1.id,
+      node2.id,
       relationshipType,
     );
 
     const nodePropKey =
       await this.nodePropertyKeyRepository.createNodePropertyKey(
-        node1.id!,
+        node1.id,
         Math.random().toString(36).substring(2, 10),
       );
 
@@ -54,7 +54,7 @@ export class SeedService {
 
     const relationshipPropKey =
       await this.relationshipPropertyKeyRepository.createRelationshipPropertyKey(
-        relationship!.id!,
+        relationship!.id,
         Math.random().toString(36).substring(2, 10),
       );
 

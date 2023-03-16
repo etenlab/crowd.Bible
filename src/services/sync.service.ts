@@ -2,19 +2,20 @@ import { NodePropertyKey } from '../models/node/node-property-key.entity';
 import { NodePropertyValue } from '../models/node/node-property-value.entity';
 import { NodeType } from '../models/node/node-type.entity';
 import { Node } from '../models/node/node.entity';
-import { DbService } from './db.service';
+import { type DbService } from './db.service';
 import axios from 'axios';
-import { SyncSessionRepository } from '../repositories/sync-session.repository';
+import { type SyncSessionRepository } from '../repositories/sync-session.repository';
 import { Relationship } from '../models/relationship/relationship.entity';
 import { RelationshipType } from '../models/relationship/relationship-type.entity';
 import { RelationshipPropertyKey } from '../models/relationship/relationship-property-key.entity';
 import { RelationshipPropertyValue } from '../models/relationship/relationship-property-value.entity';
 
-type SyncTable = {
+interface SyncTable {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   entity: any;
   tableName: string;
   pk: string;
-};
+}
 
 const syncTables: SyncTable[] = [
   {
@@ -59,10 +60,11 @@ const syncTables: SyncTable[] = [
   },
 ];
 
-type SyncEntry = {
+interface SyncEntry {
   table: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rows: any[];
-};
+}
 
 const CURRENT_SYNC_LAYER_KEY = 'syncLayer';
 const LAST_SYNC_LAYER_KEY = 'lastSyncLayer';
@@ -70,18 +72,20 @@ const LAST_SYNC_FROM_SERVER_KEY = 'lastSyncFromServer';
 export class SyncService {
   private currentSyncLayer: number;
   private lastLayerSync: number;
-  private serverUrl: string;
+  private readonly serverUrl: string;
 
   constructor(
-    private dbService: DbService,
-    private syncSessionRepository: SyncSessionRepository,
+    private readonly dbService: DbService,
+    private readonly syncSessionRepository: SyncSessionRepository,
   ) {
     this.currentSyncLayer = Number(
       localStorage.getItem(CURRENT_SYNC_LAYER_KEY) || '0',
     );
 
-    if (!process.env.REACT_APP_CPG_SERVER_URL)
+    if (!process.env.REACT_APP_CPG_SERVER_URL) {
       throw new Error('REACT_APP_CPG_SERVER_URL not set');
+    }
+
     this.serverUrl = process.env.REACT_APP_CPG_SERVER_URL;
 
     this.lastLayerSync = Number(
@@ -141,7 +145,7 @@ export class SyncService {
       if (!items.length) continue;
 
       for (const item of items) {
-        delete item['sync_layer'];
+        delete item.sync_layer;
       }
 
       syncData.push({
@@ -150,8 +154,8 @@ export class SyncService {
       });
     }
 
-    if (!syncData.length) {
-      console.log(`Nothing to sync out`);
+    if (syncData.length === 0) {
+      console.log('Nothing to sync out');
       return null;
     }
 
@@ -216,13 +220,14 @@ export class SyncService {
     const lastSyncParam = this.getLastSyncFromServerTime();
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const params = {} as any;
 
       if (lastSyncParam) {
         params['last-sync'] = lastSyncParam;
         console.log(`Doing sync from ${lastSyncParam}`);
       } else {
-        console.log(`Doing first sync`);
+        console.log('Doing first sync');
       }
 
       const response = await axios.get(`${this.serverUrl}/sync/from-server`, {
@@ -234,7 +239,7 @@ export class SyncService {
       const lastSync = data.lastSync;
       const entries = data.entries;
 
-      if (!entries.length) {
+      if (entries.length === 0) {
         console.log('No new sync entries from server');
         return null;
       }
@@ -251,7 +256,7 @@ export class SyncService {
 
   private async saveSyncEntries(entries: SyncEntry[]) {
     if (entries.length < 1) {
-      console.log(`Nothing to sync in`);
+      console.log('Nothing to sync in');
     } else {
       console.log('Saving sync entries...');
     }
@@ -262,7 +267,7 @@ export class SyncService {
 
       const syncTable = syncTables.find((t) => t.tableName === table);
 
-      if (!syncTable) {
+      if (syncTable == null) {
         throw new Error(`Unknown table ${table}`);
       }
 
@@ -305,6 +310,6 @@ export class SyncService {
       }
     }
 
-    console.log(`Sync entries saved`);
+    console.log('Sync entries saved');
   }
 }

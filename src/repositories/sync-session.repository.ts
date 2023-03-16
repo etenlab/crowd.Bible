@@ -1,8 +1,8 @@
-import { DbService } from '../services/db.service';
+import { type DbService } from '../services/db.service';
 import { SyncSession } from '../models/Sync';
 
 export class SyncSessionRepository {
-  constructor(private dbService: DbService) {}
+  constructor(private readonly dbService: DbService) {}
 
   private get repository() {
     return this.dbService.dataSource.getRepository(SyncSession);
@@ -22,9 +22,7 @@ export class SyncSessionRepository {
   async completeSyncSession(id: number, error?: Error): Promise<void> {
     await this.repository.update(id, {
       completed: true,
-      error: error ? error.toString() : undefined,
+      error: error != null ? error.toString() : undefined,
     });
-
-    return;
   }
 }

@@ -27,7 +27,7 @@ export function DiscussionPage() {
   };
 
   const discussionUI =
-    table_name.length > 0 && +row > 0 && user ? (
+    table_name.length > 0 && +row > 0 && user != null ? (
       <DiscussionForDev
         tableName={table_name.substring(0, 30)}
         rowId={+row}
@@ -41,14 +41,12 @@ export function DiscussionPage() {
       <Stack>
         <Stack direction="row" justifyContent="flex-start" alignItems="center">
           <IconButton onClick={goBack}>
-            <BiLeftArrowAlt
-              style={{ fontSize: '24px', color: colors['dark'] }}
-            />
+            <BiLeftArrowAlt style={{ fontSize: '24px', color: colors.dark }} />
           </IconButton>
           <Typography
             variant="h2"
             sx={{
-              color: colors['dark'],
+              color: colors.dark,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

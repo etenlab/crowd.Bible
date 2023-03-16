@@ -1,10 +1,13 @@
 import { NodePropertyKey } from '../../models';
 import { NodePropertyValue } from '../../models/node/node-property-value.entity';
-import { DbService } from '../../services/db.service';
-import { SyncService } from '../../services/sync.service';
+import { type DbService } from '../../services/db.service';
+import { type SyncService } from '../../services/sync.service';
 
 export class NodePropertyValueRepository {
-  constructor(private dbService: DbService, private syncService: SyncService) {}
+  constructor(
+    private readonly dbService: DbService,
+    private readonly syncService: SyncService,
+  ) {}
 
   private get repository() {
     return this.dbService.dataSource.getRepository(NodePropertyValue);
@@ -12,13 +15,14 @@ export class NodePropertyValueRepository {
 
   async createNodePropertyValue(
     key_id: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     key_value: any,
   ): Promise<string | null> {
     const node_property_key = await this.dbService.dataSource
       .getRepository(NodePropertyKey)
       .findOneBy({ id: key_id });
 
-    if (!node_property_key) {
+    if (node_property_key == null) {
       return null;
     }
 

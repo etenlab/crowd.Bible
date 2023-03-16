@@ -1,11 +1,14 @@
 import { Node } from '../../models/node/node.entity';
 import { RelationshipType } from '../../models';
 import { Relationship } from '../../models/relationship/relationship.entity';
-import { DbService } from '../../services/db.service';
-import { SyncService } from '../../services/sync.service';
+import { type DbService } from '../../services/db.service';
+import { type SyncService } from '../../services/sync.service';
 
 export class RelationshipRepository {
-  constructor(private dbService: DbService, private syncService: SyncService) {}
+  constructor(
+    private readonly dbService: DbService,
+    private readonly syncService: SyncService,
+  ) {}
 
   private get repository() {
     return this.dbService.dataSource.getRepository(Relationship);
@@ -20,14 +23,14 @@ export class RelationshipRepository {
     const node_from = await nodeRepo.findOneBy({ id: node_1 });
     const node_to = await nodeRepo.findOneBy({ id: node_2 });
 
-    if (!node_from || !node_to) {
+    if (node_from == null || node_to == null) {
       return null;
     }
 
     let relType = await this.dbService.dataSource
       .getRepository(RelationshipType)
       .findOneBy({ type_name });
-    if (!relType) {
+    if (relType == null) {
       relType = await this.dbService.dataSource
         .getRepository(RelationshipType)
         .save({ type_name });

@@ -27,7 +27,7 @@ function Voting({ voted, unvoted }: { voted: number; unvoted: number }) {
           padding: '5px',
           borderRadius: '4px',
           background: colors['light-green'],
-          color: colors['green'],
+          color: colors.green,
           fontSize: '16px',
         }}
       >
@@ -42,7 +42,7 @@ function Voting({ voted, unvoted }: { voted: number; unvoted: number }) {
           padding: '5px',
           borderRadius: '4px',
           background: colors['light-red'],
-          color: colors['red'],
+          color: colors.red,
           fontSize: '16px',
         }}
       >
@@ -61,7 +61,7 @@ export function OpenDiscussion() {
         paddingBottom: 0,
         borderRadius: '4px',
         background: colors['light-blue'],
-        color: colors['gray'],
+        color: colors.gray,
         fontSize: '24px',
       }}
     >
@@ -70,12 +70,12 @@ export function OpenDiscussion() {
   );
 }
 
-export type TranslationType = {
+export interface TranslationType {
   id: number;
   text: string;
   voted: number;
   unvoted: number;
-};
+}
 
 function Translation({
   translation,
@@ -104,7 +104,7 @@ function Translation({
         <Stack gap="3px">
           <Typography
             variant="body3"
-            sx={{ padding: '9px 0', color: colors['dark'] }}
+            sx={{ padding: '9px 0', color: colors.dark }}
           >
             {text}
           </Typography>
@@ -122,7 +122,7 @@ function Translation({
                   padding: '5px',
                   borderRadius: '4px',
                   background: colors['light-blue'],
-                  color: colors['gray'],
+                  color: colors.gray,
                   fontSize: '26px',
                 }}
               />
@@ -135,10 +135,10 @@ function Translation({
   );
 }
 
-type TranslationListProps = {
+interface TranslationListProps {
   translations: TranslationType[];
   isCheckbox?: boolean;
-};
+}
 
 export function TranslationList({
   translations,

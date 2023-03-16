@@ -10,10 +10,10 @@ import { mockChapters } from './ChapterFeedbackPage';
 const { TitleWithIcon, VerticalRadioList, ButtonList } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
-type ChapterListProps = {
-  onClickChapter(chapter: number): void;
-  onClickCancel(): void;
-};
+interface ChapterListProps {
+  onClickChapter: (chapter: number) => void;
+  onClickCancel: () => void;
+}
 
 export function ChapterList({
   onClickChapter,
@@ -90,10 +90,10 @@ export const mockVerses = [
   },
 ];
 
-type VerseFeedbackProps = {
-  onClickCancel(): void;
-  onClickBack(): void;
-};
+interface VerseFeedbackProps {
+  onClickCancel: () => void;
+  onClickBack: () => void;
+}
 
 function VerseFeedback({ onClickCancel, onClickBack }: VerseFeedbackProps) {
   const [selectedVerse, setSelectedVerse] = useState<number | null>(null);

@@ -1,10 +1,10 @@
-import { FeedbackType, RoleType, IUser } from "./global.reducer";
+import { type FeedbackType, type RoleType, type IUser } from './global.reducer';
 
 export const actions = {
-  ALERT_FEEDBACK: "ALERT_FEEDBACK",
-  CLOSE_FEEDBACK: "CLOSE_FEEDBACK",
-  SET_ROLE: "SET_ROLE",
-  SET_USER: "SET_USER",
+  ALERT_FEEDBACK: 'ALERT_FEEDBACK',
+  CLOSE_FEEDBACK: 'CLOSE_FEEDBACK',
+  SET_ROLE: 'SET_ROLE',
+  SET_USER: 'SET_USER',
 };
 
 export function setUser(user: IUser) {

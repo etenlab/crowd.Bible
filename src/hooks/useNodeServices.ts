@@ -9,7 +9,7 @@ export default function useNodeServices() {
   const [nodeService, setNodeService] = useState<NodeService>();
 
   useEffect(() => {
-    if (service?.dataSource && syncService) {
+    if (service?.dataSource != null && syncService != null) {
       setNodeService(new NodeService(service, syncService));
     }
   }, [service, syncService]);
