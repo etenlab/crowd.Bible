@@ -3,6 +3,7 @@ import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { WordTableV2 } from '../local-ui-kit/WordTable-v2';
 const { TitleWithIcon, WordTable } = CrowdBibleUI;
 
 type Content = {
@@ -20,7 +21,7 @@ const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
 const MOCK_KEY_TERMS: Array<Item> = [
   {
     title: {
-      content: 'title content',
+      content: 'title content title content title content',
       downVote: 1,
       upVote: 2,
     },
@@ -31,7 +32,7 @@ const MOCK_KEY_TERMS: Array<Item> = [
         downVote: 11,
       },
       {
-        content: 'some content122',
+        content: 'some content11',
         upVote: 10,
         downVote: 11,
       },
@@ -39,9 +40,24 @@ const MOCK_KEY_TERMS: Array<Item> = [
   },
   {
     title: {
-      content: 'title content2',
+      content: 'title content2 title content2 title content2',
       downVote: 21,
       upVote: 22,
+    },
+    contents: [
+      {
+        content: 'some content4',
+        upVote: 30,
+        downVote: 31,
+      },
+    ],
+  },
+  {
+    title: {
+      content:
+        'title content3 title content3 title content3 title content 3title content3',
+      downVote: 31,
+      upVote: 32,
     },
     contents: [
       {
@@ -55,7 +71,17 @@ const MOCK_KEY_TERMS: Array<Item> = [
 
 const PADDING = 20;
 
-export function KeyTermsPage() {
+const button = (
+  <Button
+    variant="contained"
+    startIcon={<FiPlus />}
+    onClick={() => alert('click!')}
+  >
+    New Word
+  </Button>
+);
+
+export function KeyTermsPageV2() {
   const [keyTerms, setKeyTerms] = useState([] as Array<any>);
   useEffect(() => {
     setKeyTerms(MOCK_KEY_TERMS);
@@ -85,16 +111,6 @@ export function KeyTermsPage() {
               label="Key Terms"
             ></TitleWithIcon>
           </Box>
-          <Box flex={1} width={1} minWidth={'140px'}>
-            <Button
-              variant="contained"
-              startIcon={<FiPlus />}
-              fullWidth
-              onClick={() => alert('click!')}
-            >
-              New Word
-            </Button>
-          </Box>
         </Box>
 
         <Box
@@ -121,11 +137,11 @@ export function KeyTermsPage() {
           <Box width={1} paddingBottom={`${PADDING}px`}>
             <Input fullWidth label="Search..."></Input>
           </Box>
-          <WordTable
+          <WordTableV2
             items={keyTerms}
-            label_1="Key Term"
-            label_2="Definition"
-          ></WordTable>
+            label_1="Phrase"
+            label_2={button}
+          ></WordTableV2>
         </Box>
       </Box>
     </IonContent>

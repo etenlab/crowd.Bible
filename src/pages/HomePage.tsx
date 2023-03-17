@@ -60,6 +60,9 @@ export function HomePage() {
           <IonItem href="/key-terms">
             <IonLabel>Key terms editor</IonLabel>
           </IonItem>
+          <IonItem href="/key-terms-v2">
+            <IonLabel>Key terms editor v2</IonLabel>
+          </IonItem>
 
           <IonItem href="/lexicon">
             <IonLabel>Lexicon editor</IonLabel>

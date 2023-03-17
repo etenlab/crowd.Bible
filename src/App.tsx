@@ -61,6 +61,7 @@ import { VersificationPage } from './pages/VersificationPage';
 import { AlignmentPage } from './pages/AlignmentPage';
 import { SvgTranslationPage } from './pages/SvgTranslationPage';
 import { SvgTranslatedPage } from './pages/SvgTranslatedPage';
+import { KeyTermsPageV2 } from './pages/KeyTermsPageV2';
 
 setupIonicReact();
 
@@ -163,6 +164,9 @@ const App: React.FC = () => (
               </Route>
               <Route exact path="/key-terms">
                 <KeyTermsPage />
+              </Route>
+              <Route exact path="/key-terms-v2">
+                <KeyTermsPageV2 />
               </Route>
               <Route exact path="/lexicon">
                 <LexiconPage />
