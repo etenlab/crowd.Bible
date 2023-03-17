@@ -75,7 +75,7 @@ export function TranslatorQAPage() {
           sx={{
             borderRadius: '0 0 20px 20px',
             width: '100%',
-            background: getColor('whtie'),
+            background: getColor('white'),
           }}
         >
           <KindSelectionBox
