@@ -43,8 +43,6 @@ export function DocumentList() {
   } = useAppContext();
   const { getColor } = useColorModeContext();
 
-  console.log(user);
-
   const [isShownSearchInput, setIsShownSearchInput] = useState<boolean>(false);
 
   const handleToggleSearchInput = () => {

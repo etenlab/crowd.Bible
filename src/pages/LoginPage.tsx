@@ -56,7 +56,6 @@ export function LoginPage() {
       //     headers: headers,
       //   });
 
-      //   console.log(result);
       // } catch (err) {
       //   console.log(err);
       // }

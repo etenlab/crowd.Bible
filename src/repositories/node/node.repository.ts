@@ -80,7 +80,7 @@ export class NodeRepository {
       });
       return node;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(
         `Failed to get node by prop '${type} - prop: { key: ${prop.key}, value: ${prop.value} }'`,
       );

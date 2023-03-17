@@ -114,7 +114,6 @@ export function AdminPage() {
   const importToGraph = () => {};
 
   const loadData = async () => {
-    console.log(languageTable);
     const response = await client.query({ query: queries[languageTable] });
     setColumnDefs(fieldsObj[languageTable as FieldsObjKeyType]);
     setRowData(response.data[languageTable]);

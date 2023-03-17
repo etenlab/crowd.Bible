@@ -59,7 +59,6 @@ export function RegisterPage() {
       //     params: queryParams,
       //     headers: headers,
       //   });
-      //   console.log("register page register result ==>", result);
       // } catch (err) {
       //   console.log(err);
       // }

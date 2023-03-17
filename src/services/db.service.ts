@@ -75,7 +75,7 @@ export class DbService {
   }
 
   status() {
-    console.log('//todo');
+    // console.log('//todo');
   }
 }
 
