@@ -76,7 +76,7 @@ export function HomePage() {
           </IonItemDivider>
 
           <IonItem href="/svg-translation">
-            <IonLabel>svg file translation editor</IonLabel>
+            <IonLabel>Map translation editor</IonLabel>
           </IonItem>
         </IonItemGroup>
 
@@ -105,16 +105,6 @@ export function HomePage() {
 
           <IonItem href="/site-text-translation">
             <IonLabel>Site text translation editor</IonLabel>
-          </IonItem>
-        </IonItemGroup>
-
-        <IonItemGroup>
-          <IonItemDivider>
-            <IonLabel>Other Tools</IonLabel>
-          </IonItemDivider>
-
-          <IonItem href="/discussions-list">
-            <IonLabel>Discussions list</IonLabel>
           </IonItem>
         </IonItemGroup>
       </IonList>
