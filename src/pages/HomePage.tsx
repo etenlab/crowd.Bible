@@ -5,12 +5,9 @@ import {
   IonContent,
   IonItemGroup,
   IonItemDivider,
-  useIonRouter,
 } from '@ionic/react';
 
 export function HomePage() {
-  const router = useIonRouter();
-  // router.push('/home');
   return (
     <IonContent>
       <IonList>
