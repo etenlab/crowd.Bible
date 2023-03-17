@@ -128,23 +128,23 @@ export function PageLayout({ children }: PageLayoutProps) {
         ) : null}
         <IonContent>
           <IonList>
-            <IonItem href="/home">
+            <IonItem routerLink="/home">
               <IonLabel>Home</IonLabel>
             </IonItem>
 
-            <IonItem href="/language-proficiency">
+            <IonItem routerLink="/language-proficiency">
               <IonLabel>Language proficiency setting</IonLabel>
             </IonItem>
 
-            <IonItem href="/settings">
+            <IonItem routerLink="/settings">
               <IonLabel>Settings</IonLabel>
             </IonItem>
 
-            <IonItem href="/admin">
+            <IonItem routerLink="/admin">
               <IonLabel>Admin</IonLabel>
             </IonItem>
 
-            <IonItem href="/#">
+            <IonItem routerLink="/#">
               <IonLabel>Logout</IonLabel>
             </IonItem>
           </IonList>
