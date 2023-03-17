@@ -590,15 +590,12 @@ export class NodeService {
 
     const words: string[] = [];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    word_sequence.nodeRelationships.forEach((rel: any) => {
+    word_sequence.nodeRelationships.forEach((rel) => {
       if (rel.relationship_type === 'word-sequence-to-word') {
         words.push(
           JSON.parse(
-            rel.toNode.propertyKeys.find(
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (key: any) => key.property_key === 'word',
-            )?.propertyValue.property_value,
+            rel.toNode.propertyKeys.find((key) => key.property_key === 'word')
+              ?.propertyValue.property_value ?? '',
           ).value,
         );
       }
@@ -636,7 +633,10 @@ export class NodeService {
 
   // --------- Word-Sequence-Translation --------- //
 
-  async createWordSequenceTranslationRelationship(from: string, to: string): Promise<string> {
+  async createWordSequenceTranslationRelationship(
+    from: string,
+    to: string,
+  ): Promise<string> {
     try {
       const translation = await this.relationshipRepo.repository.findOne({
         where: {
@@ -659,7 +659,9 @@ export class NodeService {
       return new_translation_id;
     } catch (err) {
       console.log(err);
-      throw new Error(`Failed to create word-sequence-to-translation '${from} - ${to}'`);
+      throw new Error(
+        `Failed to create word-sequence-to-translation '${from} - ${to}'`,
+      );
     }
   }
 }
