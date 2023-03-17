@@ -5,17 +5,28 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { useAppContext } from '../hooks/useAppContext';
 import { useHistory } from 'react-router';
+import { useEffect, useState } from 'react';
 const { TitleWithIcon } = CrowdBibleUI;
 
-const WIDTH = 360;
 const PADDING = 20;
 
 export const SvgTranslatedPage = () => {
+  const [windowWidth, setWindowWidth] = useState(getWindowWidth());
   const {
     states: {
       global: { translatedMap },
     },
   } = useAppContext();
+
+  useEffect(() => {
+    function handleWindowResize() {
+      setWindowWidth(getWindowWidth());
+    }
+    window.addEventListener('resize', handleWindowResize);
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+    };
+  }, []);
 
   const history = useHistory();
 
@@ -47,7 +58,7 @@ export const SvgTranslatedPage = () => {
               <TransformWrapper>
                 <TransformComponent>
                   <img
-                    width={`${WIDTH}px`}
+                    width={`${windowWidth}px`}
                     height={'auto'}
                     src={`data:image/svg+xml;utf8,${encodeURIComponent(
                       translatedMap.translatedMapStr,
@@ -63,3 +74,8 @@ export const SvgTranslatedPage = () => {
     </IonContent>
   );
 };
+
+function getWindowWidth() {
+  const { innerWidth, innerHeight } = window;
+  return innerWidth;
+}

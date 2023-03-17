@@ -1,5 +1,5 @@
 import { IonContent } from '@ionic/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { type INode, parseSync, stringify } from 'svgson';
 import { Box, Typography } from '@mui/material';
 import {
@@ -23,7 +23,6 @@ type Item = {
 const { TitleWithIcon, ButtonList } = CrowdBibleUI;
 
 const PADDING = 20;
-const WIDTH = 360 - PADDING / 2;
 
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
 const MOCK_TRANSLATED_MAPS: Item[] = [
@@ -40,6 +39,17 @@ export const SvgTranslationPage = () => {
   const [textContents, setTextContents] = useState([] as string[]);
   const [parsed, setParsed] = useState<INode | null>(null);
   const history = useHistory();
+  const [windowWidth, setWindowWidth] = useState(getWindowWidth());
+
+  useEffect(() => {
+    function handleWindowResize() {
+      setWindowWidth(getWindowWidth());
+    }
+    window.addEventListener('resize', handleWindowResize);
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+    };
+  }, []);
 
   const {
     states: {
@@ -58,9 +68,8 @@ export const SvgTranslationPage = () => {
       }
     });
     const str = stringify(parsed);
-    setTranslatedMap({ translatedMapStr: str });
     return str;
-  }, [parsed, translations, setTranslatedMap]);
+  }, [parsed, translations]);
 
   const fileHandler: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
@@ -126,6 +135,7 @@ export const SvgTranslationPage = () => {
           <TitleWithIcon
             onClose={() => {}}
             onBack={() => {
+              setTranslatedMap({ translatedMapStr: translatedSvg });
               setOriginalSvg(null);
               setParsed(null);
               setTranslatedMapsList(MOCK_TRANSLATED_MAPS);
@@ -154,12 +164,13 @@ export const SvgTranslationPage = () => {
         >
           <Box flex={1}>
             <Autocomplete
+              fullWidth
               options={MOCK_ETHNOLOGUE_OPTIONS}
               label="Ethnologue"
             ></Autocomplete>
           </Box>
           <Box flex={1}>
-            <Input label="Language ID"></Input>
+            <Input fullWidth label="Language ID"></Input>
           </Box>
         </Box>
 
@@ -203,7 +214,7 @@ export const SvgTranslationPage = () => {
               <TransformWrapper>
                 <TransformComponent>
                   <img
-                    width={`${WIDTH}px`}
+                    width={`${windowWidth - PADDING}px`}
                     height={'auto'}
                     src={`data:image/svg+xml;utf8,${encodeURIComponent(
                       originalSvg,
@@ -222,7 +233,7 @@ export const SvgTranslationPage = () => {
                 <TransformWrapper>
                   <TransformComponent>
                     <img
-                      width={`${WIDTH}px`}
+                      width={`${windowWidth - PADDING}px`}
                       height={'auto'}
                       src={`data:image/svg+xml;utf8,${encodeURIComponent(
                         translatedSvg,
@@ -244,12 +255,13 @@ export const SvgTranslationPage = () => {
                     display={'flex'}
                     flexDirection={'row'}
                     paddingTop={`${PADDING / 2}px`}
+                    width={1}
                     justifyContent={'space-between'}
                   >
-                    <Typography width={`${WIDTH / 2}px`} variant="body1">
+                    <Typography width={0.5} variant="body1">
                       {text}
                     </Typography>
-                    <Box width={`${WIDTH / 2}px`}>
+                    <Box width={0.5}>
                       <DebounceInput
                         element={Input}
                         id={`text-${i}`}
@@ -292,4 +304,9 @@ function iterateOverINode(
   for (const child of node.children || []) {
     iterateOverINode(child, skipNodeNames, cb);
   }
+}
+
+function getWindowWidth() {
+  const { innerWidth, innerHeight } = window;
+  return innerWidth;
 }
