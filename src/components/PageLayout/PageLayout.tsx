@@ -131,12 +131,19 @@ export function PageLayout({ children }: PageLayoutProps) {
             <IonItem href="/home">
               <IonLabel>Home</IonLabel>
             </IonItem>
-            <IonItem href={qaUrl}>
-              <IonLabel>Question & Answer</IonLabel>
+
+            <IonItem href="/language-proficiency">
+              <IonLabel>Language proficiency setting</IonLabel>
             </IonItem>
+
             <IonItem href="/settings">
               <IonLabel>Settings</IonLabel>
             </IonItem>
+
+            <IonItem href="/admin">
+              <IonLabel>Admin</IonLabel>
+            </IonItem>
+
             <IonItem href="/#">
               <IonLabel>Logout</IonLabel>
             </IonItem>
