@@ -72,7 +72,7 @@ const App: React.FC = () => (
           <PageLayout>
             <IonRouterOutlet id="crowd-bible-router-outlet">
               <Route exact path="/">
-                <Redirect to="/welcome" />
+                <Redirect to="/home" />
               </Route>
               <Route exact path="/welcome">
                 <WelcomePage />
