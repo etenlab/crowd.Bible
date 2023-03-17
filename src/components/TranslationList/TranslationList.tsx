@@ -6,7 +6,7 @@ import {
   Button,
   MuiMaterial,
   Typography,
-  colors,
+  useColorModeContext,
   Checkbox,
   BiMessageRounded,
   BiDislike,
@@ -17,6 +17,8 @@ import {
 const { Stack, Divider, IconButton } = MuiMaterial;
 
 function Voting({ voted, unvoted }: { voted: number; unvoted: number }) {
+  const { getColor } = useColorModeContext();
+
   return (
     <Stack direction="row" gap="20px">
       <span
@@ -26,8 +28,8 @@ function Voting({ voted, unvoted }: { voted: number; unvoted: number }) {
           alignItems: 'center',
           padding: '5px',
           borderRadius: '4px',
-          background: colors['light-green'],
-          color: colors.green,
+          background: getColor('light-green'),
+          color: getColor('green'),
           fontSize: '16px',
         }}
       >
@@ -41,8 +43,8 @@ function Voting({ voted, unvoted }: { voted: number; unvoted: number }) {
           alignItems: 'center',
           padding: '5px',
           borderRadius: '4px',
-          background: colors['light-red'],
-          color: colors.red,
+          background: getColor('light-red'),
+          color: getColor('red'),
           fontSize: '16px',
         }}
       >
@@ -54,14 +56,15 @@ function Voting({ voted, unvoted }: { voted: number; unvoted: number }) {
 }
 
 export function OpenDiscussion() {
+  const { getColor } = useColorModeContext();
   return (
     <span
       style={{
         padding: '5px',
         paddingBottom: 0,
         borderRadius: '4px',
-        background: colors['light-blue'],
-        color: colors.gray,
+        background: getColor('light-blue'),
+        color: getColor('gray'),
         fontSize: '24px',
       }}
     >
@@ -86,6 +89,7 @@ function Translation({
 }) {
   const { id, text, voted, unvoted } = translation;
   const history = useHistory();
+  const { getColor } = useColorModeContext();
 
   const handleClickDiscussionButton = () => {
     history.push(`/discussion/table-name/${text}/row/${id}`);
@@ -104,7 +108,7 @@ function Translation({
         <Stack gap="3px">
           <Typography
             variant="body3"
-            sx={{ padding: '9px 0', color: colors.dark }}
+            sx={{ padding: '9px 0', color: getColor('dark') }}
           >
             {text}
           </Typography>
@@ -121,8 +125,8 @@ function Translation({
                 style={{
                   padding: '5px',
                   borderRadius: '4px',
-                  background: colors['light-blue'],
-                  color: colors.gray,
+                  background: getColor('light-blue'),
+                  color: getColor('gray'),
                   fontSize: '26px',
                 }}
               />

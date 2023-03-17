@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { IonGrid, IonRow, IonCol, IonContent } from '@ionic/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper';
-import { Button, Typography, colors } from '@eten-lab/ui-kit';
+import { Button, Typography } from '@eten-lab/ui-kit';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -29,8 +29,8 @@ export function WelcomePage() {
           <IonCol>
             <Typography
               variant="h1"
+              color="text.dark"
               sx={{
-                color: colors.dark,
                 textAlign: 'center',
                 marginTop: '40px',
               }}
@@ -69,12 +69,13 @@ export function WelcomePage() {
                   </IonRow>
                   <IonRow>
                     <IonCol>
-                      <Typography variant="h3" sx={{ color: colors.dark }}>
+                      <Typography variant="h3" color="text.dark">
                         Digital Era, Learn Everything
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{ color: colors.gray, justifyContent: 'center' }}
+                        color="text.gray"
+                        sx={{ justifyContent: 'center' }}
                       >
                         Welcome Text About the <br />
                         Application. Next Line of the Text
@@ -101,12 +102,13 @@ export function WelcomePage() {
                   </IonRow>
                   <IonRow>
                     <IonCol>
-                      <Typography variant="h3" sx={{ color: colors.dark }}>
+                      <Typography variant="h3" color="text.dark">
                         Digital Era, Learn Everything
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{ color: colors.gray, justifyContent: 'center' }}
+                        color="text.gray"
+                        sx={{ justifyContent: 'center' }}
                       >
                         Welcome Text About the <br />
                         Application. Next Line of the Text
@@ -133,12 +135,13 @@ export function WelcomePage() {
                   </IonRow>
                   <IonRow>
                     <IonCol>
-                      <Typography variant="h3" sx={{ color: colors.dark }}>
+                      <Typography variant="h3" color="text.dark">
                         Digital Era, Learn Everything
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{ color: colors.gray, justifyContent: 'center' }}
+                        color="text.gray"
+                        sx={{ justifyContent: 'center' }}
                       >
                         Welcome Text About the <br />
                         Application. Next Line of the Text
@@ -165,12 +168,13 @@ export function WelcomePage() {
                   </IonRow>
                   <IonRow>
                     <IonCol>
-                      <Typography variant="h3" sx={{ color: colors.dark }}>
+                      <Typography variant="h3" color="text.dark">
                         Digital Era, Learn Everything
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{ color: colors.gray, justifyContent: 'center' }}
+                        color="text.gray"
+                        sx={{ justifyContent: 'center' }}
                       >
                         Welcome Text About the <br />
                         Application. Next Line of the Text

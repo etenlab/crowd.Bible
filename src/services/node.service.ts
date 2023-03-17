@@ -55,7 +55,7 @@ export class NodeService {
 
       return node;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error('Failed to create a new Node from object.');
     }
   }
@@ -89,7 +89,7 @@ export class NodeService {
 
       return relationship.id;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(`Failed to create new relationship '${type_name}'`);
     }
   }
@@ -155,7 +155,7 @@ export class NodeService {
 
       return node;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return null;
     }
   }
@@ -185,7 +185,7 @@ export class NodeService {
 
       return rel;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return null;
     }
   }
@@ -207,7 +207,7 @@ export class NodeService {
 
       return new_table.id;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(`Failed to create new table '${name}'`);
     }
   }
@@ -225,7 +225,7 @@ export class NodeService {
 
       return table.id;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(`Failed to get table '${name}'`);
     }
   }
@@ -246,7 +246,7 @@ export class NodeService {
 
       return node.id;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(
         `Failed to create new table-column '${table} - ${column_name}'`,
       );
@@ -281,7 +281,7 @@ export class NodeService {
 
       return column.id;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(`Failed to get table-column '${table} - ${column_name}'`);
     }
   }
@@ -296,7 +296,7 @@ export class NodeService {
       );
       return node.id;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(`Failed to create new table-row '${table}'`);
     }
   }
@@ -326,7 +326,7 @@ export class NodeService {
 
       return cell.id;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(`Failed to create new table-cell '${column} - ${row}'`);
     }
   }
@@ -355,7 +355,7 @@ export class NodeService {
       return JSON.parse(cell.propertyKeys[0].propertyValue.property_value)
         .value;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(`Failed to read table-cell '${column} - ${row}'`);
     }
   }
@@ -389,7 +389,7 @@ export class NodeService {
 
       return updated_cell.id;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(`Failed to update table-cell '${column} - ${row}'`);
     }
   }
@@ -407,7 +407,7 @@ export class NodeService {
         name,
       };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error('Failed to create a new document.');
     }
   }
@@ -428,7 +428,7 @@ export class NodeService {
         name,
       };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error('Failed to get document.');
     }
   }
@@ -451,7 +451,7 @@ export class NodeService {
 
       return node.id;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(`Failed to create new word '${word} - ${language}'`);
     }
   }
@@ -484,7 +484,7 @@ export class NodeService {
 
       return wordNode.id;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(`Failed to get word '${word} - ${language}'`);
     }
   }
@@ -516,7 +516,7 @@ export class NodeService {
       );
       return new_translation_id;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(`Failed to create word-to-translation '${from} - ${to}'`);
     }
   }
@@ -566,7 +566,7 @@ export class NodeService {
 
       return word_sequence;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(`Failed to create new word-sequence '${text}'`);
     }
   }
@@ -658,7 +658,7 @@ export class NodeService {
       );
       return new_translation_id;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error(
         `Failed to create word-sequence-to-translation '${from} - ${to}'`,
       );

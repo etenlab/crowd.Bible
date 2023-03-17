@@ -8,7 +8,7 @@ import {
   Typography,
   MuiMaterial,
   FiPlus,
-  colors,
+  useColorModeContext,
 } from '@eten-lab/ui-kit';
 
 import { TranslationList } from '../components/TranslationList';
@@ -51,6 +51,7 @@ export const mockRanges = [
 
 export function TranslationPage() {
   const history = useHistory();
+  const { getColor } = useColorModeContext();
   const [opened, setOpened] = useState<boolean>(false);
 
   const handleDotClick = (id: number) => {
@@ -78,9 +79,9 @@ export function TranslationPage() {
       <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
         <Typography
           variant="overline"
+          color="text.dark"
           sx={{
             paddingBottom: '16px',
-            color: colors.dark,
             opacity: 0.5,
           }}
         >
@@ -123,11 +124,11 @@ export function TranslationPage() {
         <Stack
           sx={{
             borderRadius: '20px 20px 0 0',
-            borderTop: `1px solid ${colors['middle-gray']}`,
+            borderTop: `1px solid ${getColor('middle-gray')}`,
             boxShadow: '0px 0px 20px rgba(4, 16, 31, 0.1)',
             height: '400px',
             padding: '0 20px 20px',
-            background: colors.white,
+            background: getColor('white'),
           }}
           onClick={handleCancelBubbling}
         >

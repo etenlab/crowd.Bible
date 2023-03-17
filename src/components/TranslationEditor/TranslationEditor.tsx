@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 import {
   TextArea,
   Button,
-  colors,
+  useColorModeContext,
   MuiMaterial,
   BiLeftArrowAlt,
   FiPlus,
@@ -19,6 +19,7 @@ export function TranslationEditor() {
   const {
     actions: { alertFeedback },
   } = useAppContext();
+  const { getColor } = useColorModeContext();
   const [text, setText] = useState<string>('');
 
   const handleGoToTranslationPage = () => {
@@ -39,7 +40,7 @@ export function TranslationEditor() {
       sx={{
         padding: '20px',
         borderRadius: '20px 20px 0 0',
-        borderTop: `1px solid ${colors['middle-gray']}`,
+        borderTop: `1px solid ${getColor('middle-gray')}`,
         boxShadow: '0px 0px 20px rgba(4, 16, 31, 0.1)',
       }}
     >

@@ -6,7 +6,6 @@ import {
   Button,
   MuiMaterial,
   Typography,
-  colors,
   Input,
   PasswordInput,
 } from '@eten-lab/ui-kit';
@@ -57,7 +56,6 @@ export function LoginPage() {
       //     headers: headers,
       //   });
 
-      //   console.log(result);
       // } catch (err) {
       //   console.log(err);
       // }
@@ -102,7 +100,8 @@ export function LoginPage() {
       >
         <Typography
           variant="h1"
-          sx={{ color: colors.dark, marginBottom: '18px' }}
+          color="text.dark"
+          sx={{ marginBottom: '18px' }}
         >
           Login
         </Typography>

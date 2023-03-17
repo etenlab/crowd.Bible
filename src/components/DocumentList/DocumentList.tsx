@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import {
   MuiMaterial,
   Typography,
-  colors,
+  useColorModeContext,
   CiSearch,
   SearchInput,
   BiFile,
@@ -41,8 +41,7 @@ export function DocumentList() {
       global: { user },
     },
   } = useAppContext();
-
-  console.log(user);
+  const { getColor } = useColorModeContext();
 
   const [isShownSearchInput, setIsShownSearchInput] = useState<boolean>(false);
 
@@ -71,10 +70,7 @@ export function DocumentList() {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Typography
-              variant="overline"
-              sx={{ color: colors.gray, opacity: 0.5 }}
-            >
+            <Typography variant="overline" sx={{ opacity: 0.5 }}>
               List of docs
             </Typography>
             <IconButton onClick={handleToggleSearchInput}>
@@ -99,7 +95,7 @@ export function DocumentList() {
                 borderRadius: '7px',
                 padding: '7px',
                 fontSize: '32px',
-                background: colors['light-blue'],
+                background: getColor('light-blue'),
               }}
             />
           </ListItemIcon>

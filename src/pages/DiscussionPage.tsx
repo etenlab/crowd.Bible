@@ -6,7 +6,7 @@ import {
   MuiMaterial,
   BiLeftArrowAlt,
   Typography,
-  colors,
+  useColorModeContext,
 } from '@eten-lab/ui-kit';
 import { DiscussionForDev } from '@eten-lab/discussion-box';
 import { useAppContext } from '../hooks/useAppContext';
@@ -14,6 +14,7 @@ import { useAppContext } from '../hooks/useAppContext';
 const { Stack, IconButton } = MuiMaterial;
 
 export function DiscussionPage() {
+  const { getColor } = useColorModeContext();
   const history = useHistory();
   const {
     states: {
@@ -41,12 +42,14 @@ export function DiscussionPage() {
       <Stack>
         <Stack direction="row" justifyContent="flex-start" alignItems="center">
           <IconButton onClick={goBack}>
-            <BiLeftArrowAlt style={{ fontSize: '24px', color: colors.dark }} />
+            <BiLeftArrowAlt
+              style={{ fontSize: '24px', color: getColor('dark') }}
+            />
           </IconButton>
           <Typography
             variant="h2"
+            color="text.dark"
             sx={{
-              color: colors.dark,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

@@ -49,7 +49,5 @@ export function AppContextProvider({ children }: AppProviderProps) {
     },
   };
 
-  console.log(value);
-
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

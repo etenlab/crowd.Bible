@@ -14,7 +14,12 @@ import {
 
 import './PageLayout.css';
 
-import { Toolbar, MuiMaterial, Alert } from '@eten-lab/ui-kit';
+import {
+  Toolbar,
+  MuiMaterial,
+  Alert,
+  useColorModeContext,
+} from '@eten-lab/ui-kit';
 
 import { useAppContext } from '../../hooks/useAppContext';
 
@@ -27,6 +32,7 @@ interface PageLayoutProps {
 export function PageLayout({ children }: PageLayoutProps) {
   const history = useHistory();
   const location = useLocation();
+  const { setColorMode } = useColorModeContext();
 
   const {
     states: {
@@ -43,8 +49,10 @@ export function PageLayout({ children }: PageLayoutProps) {
   const toggleDarkTheme = (shouldToggle: boolean) => {
     if (shouldToggle) {
       setThemeMode('dark');
+      setColorMode('dark');
     } else {
       setThemeMode('light');
+      setColorMode('light');
     }
 
     bodyRef.current?.classList.toggle('dark', shouldToggle);
@@ -123,12 +131,19 @@ export function PageLayout({ children }: PageLayoutProps) {
             <IonItem href="/home">
               <IonLabel>Home</IonLabel>
             </IonItem>
-            <IonItem href={qaUrl}>
-              <IonLabel>Question & Answer</IonLabel>
+
+            <IonItem href="/language-proficiency">
+              <IonLabel>Language proficiency setting</IonLabel>
             </IonItem>
+
             <IonItem href="/settings">
               <IonLabel>Settings</IonLabel>
             </IonItem>
+
+            <IonItem href="/admin">
+              <IonLabel>Admin</IonLabel>
+            </IonItem>
+
             <IonItem href="/#">
               <IonLabel>Logout</IonLabel>
             </IonItem>

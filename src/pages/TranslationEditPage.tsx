@@ -1,12 +1,7 @@
 import { useState } from 'react';
 import { IonContent } from '@ionic/react';
 
-import {
-  CrowdBibleUI,
-  Typography,
-  MuiMaterial,
-  colors,
-} from '@eten-lab/ui-kit';
+import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
 
 import { TranslationEditor } from '../components/TranslationEditor';
 
@@ -43,9 +38,9 @@ export function TranslationEditPage() {
         <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
           <Typography
             variant="overline"
+            color="text.dark"
             sx={{
               paddingBottom: '16px',
-              color: colors.dark,
               opacity: 0.5,
             }}
           >

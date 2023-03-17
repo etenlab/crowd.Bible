@@ -7,7 +7,7 @@ import {
   CrowdBibleUI,
   MuiMaterial,
   BiCommentAdd,
-  colors,
+  useColorModeContext,
 } from '@eten-lab/ui-kit';
 
 import { mockDocument } from './TranslationPage';
@@ -16,6 +16,7 @@ const { LabelWithIcon, KindSelectionBox } = CrowdBibleUI;
 const { Stack, Backdrop } = MuiMaterial;
 
 export function TranslatorQAPage() {
+  const { getColor } = useColorModeContext();
   const history = useHistory();
   const [openedKindSelectionBox, setOpenedKindSelectionBox] =
     useState<boolean>(false);
@@ -54,9 +55,9 @@ export function TranslatorQAPage() {
         />
         <Typography
           variant="body2"
+          color="text.dark"
           sx={{
             lineHeight: '30px',
-            color: colors.dark,
             textAlign: 'justify',
           }}
         >
@@ -74,7 +75,7 @@ export function TranslatorQAPage() {
           sx={{
             borderRadius: '0 0 20px 20px',
             width: '100%',
-            background: colors.white,
+            background: getColor('white'),
           }}
         >
           <KindSelectionBox

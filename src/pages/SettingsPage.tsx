@@ -7,7 +7,6 @@ import {
   MuiMaterial,
   Typography,
   Button,
-  colors,
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '../hooks/useAppContext';
@@ -53,7 +52,7 @@ export function SettingsPage() {
   return (
     <IonContent>
       <Stack sx={{ padding: '20px' }} gap="20px">
-        <Typography variant="h2" sx={{ color: colors.dark }}>
+        <Typography variant="h2" color="text.dark">
           Settings
         </Typography>
         <VerticalRadioList
