@@ -197,7 +197,7 @@ export const SvgTranslationPage = () => {
               onClick={(e) => {
                 history.push('/svg-translated-map');
               }}
-              Icon={<BiRightArrowAlt size={25} />}
+              // Icon={<BiRightArrowAlt size={25} />}
             ></ButtonList>
           </Box>
         )}

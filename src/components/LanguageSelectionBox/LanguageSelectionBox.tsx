@@ -2,17 +2,19 @@ import {
   MuiMaterial,
   Autocomplete,
   Typography,
-  colors,
+  useColorModeContext,
 } from '@eten-lab/ui-kit';
 
 const { Stack } = MuiMaterial;
 
 export function LangugeSelectionBox() {
+  const { getColor } = useColorModeContext();
+
   return (
     <Stack
-      sx={{ padding: '20px', gap: '12px', background: colors['light-blue'] }}
+      sx={{ padding: '20px', gap: '12px', background: getColor('light-blue') }}
     >
-      <Typography variant="h2" sx={{ color: colors.dark }}>
+      <Typography variant="h2" color="text.dark">
         Documents
       </Typography>
       <Autocomplete
