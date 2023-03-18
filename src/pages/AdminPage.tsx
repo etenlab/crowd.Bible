@@ -97,6 +97,7 @@ const fieldsObj = {
 type FieldsObjKeyType = keyof typeof fieldsObj;
 
 export function AdminPage() {
+  /*
   // return <IonContent>/admin</IonContent>;
 
   const [languageTable, setLanguageTable] = useState<
@@ -118,6 +119,21 @@ export function AdminPage() {
     setColumnDefs(fieldsObj[languageTable as FieldsObjKeyType]);
     setRowData(response.data[languageTable]);
   };
+  */
+
+  const addNewData = async () => {
+    try {
+      const res = await fetch(
+        'https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab',
+        // {
+        //   mode: 'no-cors',
+        // },
+      );
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <IonContent>
@@ -125,40 +141,8 @@ export function AdminPage() {
         <IonCardHeader>
           <IonCardTitle>Import</IonCardTitle>
         </IonCardHeader>
-
-        <IonCardContent>
-          <IonSelect
-            onIonChange={(e) => {
-              setLanguageTable(e.detail.value as QueriesKeyType);
-            }}
-            placeholder="Select Language Table"
-          >
-            <IonSelectOption value="sil_language_codes">
-              Sil Language Codes
-            </IonSelectOption>
-            <IonSelectOption value="iso_639_2">ISO</IonSelectOption>
-            <IonSelectOption value="glottolog_language">
-              Glottolog
-            </IonSelectOption>
-          </IonSelect>
-        </IonCardContent>
       </IonCard>
-
-      <IonButton onClick={loadData}>Load Data</IonButton>
-      <IonButton onClick={importToGraph}>Import</IonButton>
-      <div className="ag-theme-alpine" style={{ width: '100%', height: 500 }}>
-        {/* <AgGridReact
-            rowData={rowData} // Row Data for Rows
-
-            columnDefs={columnDefs} // Column Defs for Columns
-            //  defaultColDef={defaultColDef} // Default Column Properties
-
-            animateRows={true} // Optional - set to 'true' to have rows animate when sorted
-            rowSelection='multiple' // Options - allows click selection of rows
-
-            onCellClicked={cellClickedListener} // Optional - registering for Grid Event
-        /> */}
-      </div>
+      <IonButton onClick={addNewData}>Load</IonButton>
     </IonContent>
   );
 }
