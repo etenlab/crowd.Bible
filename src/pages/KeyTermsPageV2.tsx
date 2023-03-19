@@ -3,7 +3,9 @@ import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { WordTableV2 } from '../local-ui-kit/WordTable-v2';
+import { VoteButtonGroup } from '../local-ui-kit/VoteButtonGroup';
+import { ListItemButton, ListItemText } from '@mui/material';
+
 const { TitleWithIcon, WordTable } = CrowdBibleUI;
 
 type Content = {
@@ -82,7 +84,7 @@ const button = (
 );
 
 export function KeyTermsPageV2() {
-  const [keyTerms, setKeyTerms] = useState([] as Array<any>);
+  const [keyTerms, setKeyTerms] = useState([] as Array<Item>);
   useEffect(() => {
     setKeyTerms(MOCK_KEY_TERMS);
   }, []);
@@ -137,11 +139,30 @@ export function KeyTermsPageV2() {
           <Box width={1} paddingBottom={`${PADDING}px`}>
             <Input fullWidth label="Search..."></Input>
           </Box>
-          <WordTableV2
-            items={keyTerms}
-            label_1="Phrase"
-            label_2={button}
-          ></WordTableV2>
+          {keyTerms.map((kt) => (
+            <Box display={'flex'} key={kt.title.content}>
+              <Box flex={4}>
+                <ListItemButton onClick={() => console.log('click')}>
+                  <ListItemText primary={kt.title.content} color="dark" />
+                </ListItemButton>
+              </Box>
+              <Box display={'flex'} flex={1}>
+                <VoteButtonGroup
+                  item
+                  container
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="flex-end"
+                  like
+                  dislike
+                  likeCount={kt.title.upVote}
+                  dislikeCount={kt.title.downVote}
+                  setDislike={() => console.log('dis')}
+                  setLike={() => console.log('like')}
+                ></VoteButtonGroup>
+              </Box>
+            </Box>
+          ))}
         </Box>
       </Box>
     </IonContent>
