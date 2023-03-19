@@ -16,30 +16,30 @@ export function HomePage() {
             <IonLabel>Document Tools</IonLabel>
           </IonItemDivider>
 
-          <IonItem href="/documents-list">
+          <IonItem routerLink="/documents-list">
             <IonLabel>Documents viewer</IonLabel>
           </IonItem>
 
-          <IonItem href={'/translator-qa'}>
+          <IonItem routerLink={'/translator-qa'}>
             <IonLabel>Feedback editor for translators</IonLabel>
           </IonItem>
 
-          <IonItem href={'/reader-qa'}>
+          <IonItem routerLink={'/reader-qa'}>
             <IonLabel>Feedback editor for readers</IonLabel>
           </IonItem>
 
-          <IonItem href="/translation">
+          <IonItem routerLink="/translation">
             <IonLabel>Translation editor</IonLabel>
           </IonItem>
 
-          <IonItem href="/commentary">
+          <IonItem routerLink="/commentary">
             <IonLabel>Commentary viewer</IonLabel>
           </IonItem>
 
-          <IonItem href="/versification">
+          <IonItem routerLink="/versification">
             <IonLabel>Versification editor</IonLabel>
           </IonItem>
-          <IonItem href="/alignment">
+          <IonItem routerLink="/alignment">
             <IonLabel>Alignment editor</IonLabel>
           </IonItem>
         </IonItemGroup>
@@ -49,26 +49,26 @@ export function HomePage() {
             <IonLabel>Language Tools</IonLabel>
           </IonItemDivider>
 
-          <IonItem href="/dictionary">
+          <IonItem routerLink="/dictionary">
             <IonLabel>Dictionary editor</IonLabel>
           </IonItem>
 
-          <IonItem href="/bilingual-dictionary">
+          <IonItem routerLink="/bilingual-dictionary">
             <IonLabel>Bilingual dictionary linker</IonLabel>
           </IonItem>
 
-          <IonItem href="/key-terms">
+          <IonItem routerLink="/key-terms">
             <IonLabel>Key terms editor</IonLabel>
           </IonItem>
           <IonItem href="/key-terms-v2">
             <IonLabel>Key terms editor v2</IonLabel>
           </IonItem>
 
-          <IonItem href="/lexicon">
+          <IonItem routerLink="/lexicon">
             <IonLabel>Lexicon editor</IonLabel>
           </IonItem>
 
-          <IonItem href="/grammar">
+          <IonItem routerLink="/grammar">
             <IonLabel>Grammar editor</IonLabel>
           </IonItem>
         </IonItemGroup>
@@ -78,8 +78,8 @@ export function HomePage() {
             <IonLabel>Media Tools</IonLabel>
           </IonItemDivider>
 
-          <IonItem href="/svg-translation">
-            <IonLabel>svg file translation editor</IonLabel>
+          <IonItem routerLink="/svg-translation">
+            <IonLabel>Map translation editor</IonLabel>
           </IonItem>
         </IonItemGroup>
 
@@ -88,11 +88,11 @@ export function HomePage() {
             <IonLabel>Data Tools</IonLabel>
           </IonItemDivider>
 
-          <IonItem href="/graph-viewer">
+          <IonItem routerLink="/graph-viewer">
             <IonLabel>Data viewer</IonLabel>
           </IonItem>
 
-          <IonItem href="/file-import">
+          <IonItem routerLink="/file-import">
             <IonLabel>File import tool</IonLabel>
           </IonItem>
         </IonItemGroup>
@@ -102,22 +102,12 @@ export function HomePage() {
             <IonLabel>Application Development Tools</IonLabel>
           </IonItemDivider>
 
-          <IonItem href="/site-text-admin">
+          <IonItem routerLink="/site-text-admin">
             <IonLabel>Site text user interface editor</IonLabel>
           </IonItem>
 
-          <IonItem href="/site-text-translation">
+          <IonItem routerLink="/site-text-translation">
             <IonLabel>Site text translation editor</IonLabel>
-          </IonItem>
-        </IonItemGroup>
-
-        <IonItemGroup>
-          <IonItemDivider>
-            <IonLabel>Other Tools</IonLabel>
-          </IonItemDivider>
-
-          <IonItem href="/discussions-list">
-            <IonLabel>Discussions list</IonLabel>
           </IonItem>
         </IonItemGroup>
       </IonList>
