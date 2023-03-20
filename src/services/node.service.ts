@@ -305,6 +305,7 @@ export class NodeService {
 
   // }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async createCell(column: string, row: string, value: any): Promise<string> {
     try {
       const cell = await this.createNodeFromObject('table-cell', {
@@ -331,6 +332,7 @@ export class NodeService {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async readCell(column: string, row: string): Promise<any> {
     try {
       const cell = await this.nodeRepo.repository.findOne({
@@ -360,6 +362,7 @@ export class NodeService {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async updateCell(column: string, row: string, value: any): Promise<any> {
     try {
       const cell = await this.nodeRepo.repository.findOne({
