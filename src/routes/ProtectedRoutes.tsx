@@ -1,5 +1,4 @@
-import { Route, Redirect } from 'react-router-dom';
-import { IonRouterOutlet } from '@ionic/react';
+import { Route } from 'react-router-dom';
 
 import NotificationsPage from '@/pages/Notifications';
 import { SettingsPage } from '@/pages/SettingsPage';
@@ -16,7 +15,7 @@ import { AppDevRoutes } from './AppDevRoutes';
 
 export function ProtectedRoutes() {
   return (
-    <IonRouterOutlet>
+    <>
       <Route exact path="/home">
         <HomePage />
       </Route>
@@ -49,12 +48,6 @@ export function ProtectedRoutes() {
       <DataToolsRoutes />
 
       <AppDevRoutes />
-
-      <Route exact path="/">
-        <Redirect to="/home" />
-      </Route>
-
-      <Route render={() => <Redirect to="/welcome" />} />
-    </IonRouterOutlet>
+    </>
   );
 }

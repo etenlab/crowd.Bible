@@ -53,7 +53,6 @@ export function PageLayout({ children }: PageLayoutProps) {
   const bodyRef = useRef<HTMLElement | null>(null);
 
   const toggleDarkTheme = (shouldToggle: boolean) => {
-    console.log('called toggleDarkTheme');
     if (shouldToggle) {
       setThemeMode('dark');
       setColorMode('dark');
@@ -69,7 +68,6 @@ export function PageLayout({ children }: PageLayoutProps) {
     bodyRef.current = window.document.body;
 
     if (user && user.prefersColorScheme) {
-      console.log(user.prefersColorScheme);
       toggleDarkTheme(user.prefersColorScheme === 'dark');
       return;
     }
@@ -100,7 +98,6 @@ export function PageLayout({ children }: PageLayoutProps) {
   };
 
   let isHeader = true;
-  const qaUrl = user?.role === 'translator' ? '/translator-qa' : '/reader-qa';
 
   switch (location.pathname) {
     case '/welcome': {
@@ -162,10 +159,6 @@ export function PageLayout({ children }: PageLayoutProps) {
 
             <IonItem routerLink="/admin">
               <IonLabel>Admin</IonLabel>
-            </IonItem>
-
-            <IonItem routerLink={qaUrl}>
-              <IonLabel>Question & Answer</IonLabel>
             </IonItem>
 
             <IonItem routerLink="/logout" onClick={handleLogout}>

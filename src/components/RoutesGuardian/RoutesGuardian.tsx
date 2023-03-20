@@ -14,8 +14,6 @@ export function RoutesGuardian({ children }: GuardRoutesType) {
     },
   } = useAppContext();
 
-  console.log('Guardian ===> ', user);
-
   const isAutherized = (user: IUser | null) => {
     if (user) {
       return true;

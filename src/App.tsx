@@ -1,4 +1,4 @@
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
@@ -28,7 +28,7 @@ import { ThemeProvider } from '@eten-lab/ui-kit';
 import { AppContextProvider } from './AppContext';
 import { PageLayout } from './components/PageLayout';
 import { RoutesGuardian } from './components/RoutesGuardian';
-import { ProtectedRoutes } from './router/ProtectedRoutes';
+import { ProtectedRoutes } from './routes/ProtectedRoutes';
 
 setupIonicReact();
 
@@ -40,20 +40,22 @@ export default function App() {
           <IonReactRouter>
             <PageLayout>
               <IonRouterOutlet id="crowd-bible-router-outlet">
-                <Route exact path="/welcome">
-                  <WelcomePage />
-                </Route>
+                <Switch>
+                  <Route exact path="/welcome">
+                    <WelcomePage />
+                  </Route>
 
-                <Route exact path="/login">
-                  <LoginPage />
-                </Route>
-                <Route exact path="/register">
-                  <RegisterPage />
-                </Route>
+                  <Route exact path="/login">
+                    <LoginPage />
+                  </Route>
+                  <Route exact path="/register">
+                    <RegisterPage />
+                  </Route>
 
-                <RoutesGuardian>
-                  <ProtectedRoutes />
-                </RoutesGuardian>
+                  <RoutesGuardian>
+                    <ProtectedRoutes />
+                  </RoutesGuardian>
+                </Switch>
               </IonRouterOutlet>
             </PageLayout>
           </IonReactRouter>

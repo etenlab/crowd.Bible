@@ -1,5 +1,4 @@
 import { Route } from 'react-router-dom';
-import { IonRouterOutlet } from '@ionic/react';
 
 import { DictionaryPage } from '@/pages/LanguageTools/DictionaryPage';
 import { BilingualDictionaryPage } from '@/pages/LanguageTools/BilingualDictionaryPage';
@@ -11,7 +10,7 @@ import { GrammarPage } from '@/pages/LanguageTools/GrammarPage';
 
 export function LanguageToolsRoutes() {
   return (
-    <IonRouterOutlet>
+    <>
       <Route exact path="/dictionary">
         <DictionaryPage />
       </Route>
@@ -33,6 +32,6 @@ export function LanguageToolsRoutes() {
       <Route exact path="/grammar">
         <GrammarPage />
       </Route>
-    </IonRouterOutlet>
+    </>
   );
 }

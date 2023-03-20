@@ -55,7 +55,7 @@ export function reducer(
     global: globalReducer(state.global, action),
   };
 
-  console.log(newState);
+  // console.log(newState);
 
   persistStore(newState);
 

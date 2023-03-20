@@ -9,7 +9,7 @@
       "@/pages/*": ["src/pages/*"],
       "@/reducers/*": ["src/reducers/*"],
       "@/repositories/*": ["src/repositories/*"],
-      "@/router/*": ["src/router/*"],
+      "@/routes/*": ["src/routes/*"],
       "@/services/*": ["src/services/*"],
       "@/utils/*": ["src/utils/*"]
     }

@@ -19,7 +19,6 @@ export function FeedbackInput() {
   };
 
   const handleSubmitFeedback = (agree: 'agree' | 'disagree') => {
-    alert(`Clicked ${agree}!`);
     alertFeedback('success', 'Your feedback has been sent!');
     history.push('/feedback');
   };

@@ -1,5 +1,4 @@
 import { Route } from 'react-router-dom';
-import { IonRouterOutlet } from '@ionic/react';
 
 import { DocumentsListPage } from '@/pages/DocumentTools/DocumentsListPage';
 import { TranslationPage } from '@/pages/DocumentTools/TranslationPage';
@@ -20,7 +19,7 @@ import { AlignmentPage } from '@/pages/DocumentTools/AlignmentPage';
 
 export function DocumentToolsRoutes() {
   return (
-    <IonRouterOutlet>
+    <>
       <Route exact path="/documents-list">
         <DocumentsListPage />
       </Route>
@@ -75,6 +74,6 @@ export function DocumentToolsRoutes() {
       <Route exact path="/alignment">
         <AlignmentPage />
       </Route>
-    </IonRouterOutlet>
+    </>
   );
 }

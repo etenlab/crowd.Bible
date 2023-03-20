@@ -50,8 +50,6 @@ export function DocumentList() {
   };
 
   const handleClickDocument = () => {
-    alert('clicked');
-    alert(user?.role);
     if (user?.role === 'translator') {
       history.push('/translation');
     } else if (user?.role === 'reader') {
