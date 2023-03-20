@@ -17,11 +17,13 @@ const initialTranslatedMap: TranslatedMap = {
 };
 
 export type RoleType = 'reader' | 'translator';
+export type PrefersColorSchemeType = 'light' | 'dark';
 
 export interface IUser {
   userId: number;
   userEmail: string;
   role: RoleType;
+  prefersColorScheme?: 'light' | 'dark';
 }
 
 export interface StateType {
@@ -94,6 +96,19 @@ export function reducer(
       } else {
         return prevState;
       }
+    }
+    case actions.SET_PREFERS_COLOR_SCHEME: {
+      if (prevState.user === null) {
+        return prevState;
+      }
+
+      return {
+        ...prevState,
+        user: {
+          ...prevState.user,
+          prefersColorScheme: action.payload as PrefersColorSchemeType,
+        },
+      };
     }
     case actions.SET_TRANSLATED_MAP: {
       return {

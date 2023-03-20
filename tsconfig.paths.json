@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/src/*": ["src/*"],
+      "@/components/*": ["src/components/*"],
+      "@/hooks/*": ["src/hooks/*"],
+      "@/models/*": ["src/models/*"],
+      "@/pages/*": ["src/pages/*"],
+      "@/reducers/*": ["src/reducers/*"],
+      "@/repositories/*": ["src/repositories/*"],
+      "@/router/*": ["src/router/*"],
+      "@/services/*": ["src/services/*"],
+      "@/utils/*": ["src/utils/*"]
+    }
+  }
+}
