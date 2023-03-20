@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NodeService } from '../services/node.service';
+import { NodeService } from '@/services/node.service';
 import useDbService from './useDbService';
 import useSyncService from './useSyncService';
 

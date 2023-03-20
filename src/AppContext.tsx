@@ -1,6 +1,6 @@
 import React, { createContext, useReducer } from 'react';
 
-import { reducer, loadPersistedStore } from './reducers';
+import { reducer, loadPersistedStore } from '@/reducers/index';
 
 import {
   type IUser,

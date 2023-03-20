@@ -21,7 +21,7 @@ import {
   useColorModeContext,
 } from '@eten-lab/ui-kit';
 
-import { useAppContext } from '../../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 
 const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
 
@@ -53,6 +53,7 @@ export function PageLayout({ children }: PageLayoutProps) {
   const bodyRef = useRef<HTMLElement | null>(null);
 
   const toggleDarkTheme = (shouldToggle: boolean) => {
+    console.log('called toggleDarkTheme');
     if (shouldToggle) {
       setThemeMode('dark');
       setColorMode('dark');
@@ -65,11 +66,14 @@ export function PageLayout({ children }: PageLayoutProps) {
   };
 
   useEffect(() => {
+    bodyRef.current = window.document.body;
+
     if (user && user.prefersColorScheme) {
+      console.log(user.prefersColorScheme);
+      toggleDarkTheme(user.prefersColorScheme === 'dark');
       return;
     }
 
-    bodyRef.current = window.document.body;
     prefersDarkRef.current = window.matchMedia('(prefers-color-scheme: dark)');
     prefersDarkRef.current.addListener((e) => {
       toggleDarkTheme(e.matches);

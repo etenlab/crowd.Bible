@@ -8,16 +8,16 @@ import {
   setTranslatedMap as setTranslatedMapAction,
   setPrefersColorScheme as setPrefersColorSchemeAction,
   logout as logoutAction,
-} from '../reducers/global.actions';
+} from '@/reducers/global.actions';
 
-import { type ActionType } from '../reducers';
+import { type ActionType } from '@/reducers/index';
 import {
   type FeedbackType,
   type RoleType,
   type IUser,
   type PrefersColorSchemeType,
   TranslatedMap,
-} from '../reducers/global.reducer';
+} from '@/reducers/global.reducer';
 
 interface UseGlobalProps {
   dispatch: Dispatch<ActionType<unknown>>;

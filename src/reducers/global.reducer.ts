@@ -116,6 +116,12 @@ export function reducer(
         translatedMap: action.payload as TranslatedMap,
       };
     }
+    case actions.LOGOUT: {
+      return {
+        ...prevState,
+        user: null,
+      };
+    }
     default: {
       return prevState;
     }

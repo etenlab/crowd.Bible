@@ -1,7 +1,7 @@
 import { seedService } from '..';
 import { useEffect, useState } from 'react';
 import useDbService from './useDbService';
-import { type SeedService } from '../services/seed.service';
+import { type SeedService } from '@/services/seed.service';
 
 export default function useSeedService() {
   const { service } = useDbService();
