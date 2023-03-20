@@ -93,9 +93,14 @@ export function PageLayout({ children }: PageLayoutProps) {
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleGoToHomePage = () => {
+    history.push('/home');
   };
+
+  // const handleLogout = () => {
+  //   // logout();
+  //   history.push('/home');
+  // };
 
   let isHeader = true;
 
@@ -161,7 +166,7 @@ export function PageLayout({ children }: PageLayoutProps) {
               <IonLabel>Admin</IonLabel>
             </IonItem>
 
-            <IonItem routerLink="/logout" onClick={handleLogout}>
+            <IonItem routerLink="/home">
               <IonLabel>Logout</IonLabel>
             </IonItem>
           </IonList>
@@ -174,6 +179,7 @@ export function PageLayout({ children }: PageLayoutProps) {
               <Toolbar
                 title="crowd.Bible"
                 themeMode={themeMode}
+                onClickTitleBtn={handleGoToHomePage}
                 onClickThemeModeBtn={handleToogleTheme}
                 isNewDiscussion={isNewDiscussion}
                 isNewNotification={isNewNotification}

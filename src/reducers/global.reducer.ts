@@ -42,7 +42,12 @@ const initialSnact: SnackType = {
 };
 
 export const initialState: StateType = {
-  user: null,
+  user: {
+    userId: 1,
+    userEmail: 'hiroshi@test.com',
+    role: 'translator',
+    prefersColorScheme: 'light',
+  },
   snack: initialSnact,
   loading: false,
   isNewDiscussion: false,

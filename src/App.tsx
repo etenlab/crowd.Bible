@@ -1,4 +1,4 @@
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
@@ -20,9 +20,10 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import { WelcomePage } from './pages/WelcomePage';
-import { LoginPage } from './pages/LoginPage';
-import { RegisterPage } from './pages/RegisterPage';
+import './styles.css';
+// import { WelcomePage } from './pages/WelcomePage';
+// import { LoginPage } from './pages/LoginPage';
+// import { RegisterPage } from './pages/RegisterPage';
 
 import { ThemeProvider } from '@eten-lab/ui-kit';
 import { AppContextProvider } from './AppContext';
@@ -41,7 +42,7 @@ export default function App() {
             <PageLayout>
               <IonRouterOutlet id="crowd-bible-router-outlet">
                 <Switch>
-                  <Route exact path="/welcome">
+                  {/* <Route exact path="/welcome">
                     <WelcomePage />
                   </Route>
 
@@ -50,7 +51,7 @@ export default function App() {
                   </Route>
                   <Route exact path="/register">
                     <RegisterPage />
-                  </Route>
+                  </Route> */}
 
                   <RoutesGuardian>
                     <ProtectedRoutes />

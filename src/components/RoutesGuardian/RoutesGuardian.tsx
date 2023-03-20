@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router-dom';
+// import { useHistory } from 'react-router-dom';
 import { useAppContext } from '@/hooks/useAppContext';
 import { type IUser } from '@/reducers/global.reducer';
 
@@ -7,7 +7,7 @@ type GuardRoutesType = {
 };
 
 export function RoutesGuardian({ children }: GuardRoutesType) {
-  const history = useHistory();
+  // const history = useHistory();
   const {
     states: {
       global: { user },
