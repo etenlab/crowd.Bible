@@ -24,7 +24,7 @@ import { gql, useApolloClient } from '@apollo/client';
 
 import useNodeServices from '@/hooks/useNodeServices';
 
-import txtfile from '@/utils/iso-639-3.tab.txt';
+import txtfile from '../utils/iso-639-3.tab';
 import { LoadingStatus } from '../enums';
 
 const queries = {
