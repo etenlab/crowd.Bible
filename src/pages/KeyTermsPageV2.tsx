@@ -10,7 +10,6 @@ import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
 import { Box, Divider } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { VoteButtonGroup } from '../local-ui-kit/VoteButtonGroup';
 import {
   ListItemButton,
   ListItemText,
@@ -20,7 +19,7 @@ import {
   PaletteColor,
 } from '@mui/material';
 
-const { TitleWithIcon, WordTable } = CrowdBibleUI;
+const { TitleWithIcon, VoteButtonGroup } = CrowdBibleUI;
 
 type Content = {
   content: string;
