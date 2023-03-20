@@ -61,6 +61,10 @@ export function HomePage() {
             <IonLabel>Key terms editor</IonLabel>
           </IonItem>
 
+          <IonItem routerLink="/key-terms-v2">
+            <IonLabel>Key terms editor v2</IonLabel>
+          </IonItem>
+
           <IonItem routerLink="/lexicon">
             <IonLabel>Lexicon editor</IonLabel>
           </IonItem>

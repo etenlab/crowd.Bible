@@ -13,12 +13,19 @@ import {
   IonCardSubtitle,
   IonCardTitle,
   IonContent,
+  IonLoading,
   IonPage,
   IonSelect,
   IonSelectOption,
+  IonToast,
 } from '@ionic/react';
 
 import { gql, useApolloClient } from '@apollo/client';
+
+import useNodeServices from '@/hooks/useNodeServices';
+
+import txtfile from '@/utils/iso-639-3.tab.txt';
+import { LoadingStatus } from '../enums';
 
 const queries = {
   sil_language_codes: gql`
@@ -97,6 +104,7 @@ const fieldsObj = {
 type FieldsObjKeyType = keyof typeof fieldsObj;
 
 export function AdminPage() {
+  /*
   // return <IonContent>/admin</IonContent>;
 
   const [languageTable, setLanguageTable] = useState<
@@ -118,6 +126,57 @@ export function AdminPage() {
     setColumnDefs(fieldsObj[languageTable as FieldsObjKeyType]);
     setRowData(response.data[languageTable]);
   };
+  */
+  const nodeService = useNodeServices();
+
+  const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>(
+    LoadingStatus.INITIAL,
+  );
+
+  const [loadResult, setLoadResult] = useState('Load finished.');
+
+  const addNewData = async () => {
+    setLoadingStatus(LoadingStatus.LOADING);
+    try {
+      const res = await fetch(txtfile);
+      const data = await res.text();
+      if (!nodeService.nodeService) {
+        return;
+      }
+      const table = await nodeService.nodeService.createTable('iso-639-3.tab');
+
+      const rows = data.split('\r\n');
+      const columns = rows.shift()?.split('\t');
+      if (!columns) {
+        return;
+      }
+
+      const col_ids = [],
+        row_ids = [];
+      for (const col of columns) {
+        col_ids.push(await nodeService.nodeService.createColumn(table, col));
+      }
+      console.log(col_ids);
+
+      for (const row of rows) {
+        const row_id = await nodeService.nodeService.createRow(table);
+        row_ids.push(row_id);
+        const cells = row.split('\t');
+        for (const [index, col_id] of col_ids.entries()) {
+          const cell_id = await nodeService.nodeService.createCell(
+            col_id,
+            row_id,
+            cells[index],
+          );
+          console.log(cell_id);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      setLoadResult('Error occured while loading.');
+    }
+    setLoadingStatus(LoadingStatus.FINISHED);
+  };
 
   return (
     <IonContent>
@@ -125,40 +184,21 @@ export function AdminPage() {
         <IonCardHeader>
           <IonCardTitle>Import</IonCardTitle>
         </IonCardHeader>
-
         <IonCardContent>
-          <IonSelect
-            onIonChange={(e) => {
-              setLanguageTable(e.detail.value as QueriesKeyType);
-            }}
-            placeholder="Select Language Table"
-          >
-            <IonSelectOption value="sil_language_codes">
-              Sil Language Codes
-            </IonSelectOption>
-            <IonSelectOption value="iso_639_2">ISO</IonSelectOption>
-            <IonSelectOption value="glottolog_language">
-              Glottolog
-            </IonSelectOption>
-          </IonSelect>
+          <IonButton onClick={addNewData}>Load</IonButton>
         </IonCardContent>
       </IonCard>
-
-      <IonButton onClick={loadData}>Load Data</IonButton>
-      <IonButton onClick={importToGraph}>Import</IonButton>
-      <div className="ag-theme-alpine" style={{ width: '100%', height: 500 }}>
-        {/* <AgGridReact
-            rowData={rowData} // Row Data for Rows
-
-            columnDefs={columnDefs} // Column Defs for Columns
-            //  defaultColDef={defaultColDef} // Default Column Properties
-
-            animateRows={true} // Optional - set to 'true' to have rows animate when sorted
-            rowSelection='multiple' // Options - allows click selection of rows
-
-            onCellClicked={cellClickedListener} // Optional - registering for Grid Event
-        /> */}
-      </div>
+      <IonLoading
+        isOpen={loadingStatus === LoadingStatus.LOADING}
+        onDidDismiss={() => setLoadingStatus(LoadingStatus.FINISHED)}
+        message={'Loading table...'}
+      />
+      <IonToast
+        isOpen={loadingStatus === LoadingStatus.FINISHED}
+        color={loadResult === 'Load finished.' ? 'success' : 'danger'}
+        message={loadResult}
+        duration={5000}
+      />
     </IonContent>
   );
 }
