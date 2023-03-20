@@ -45,7 +45,6 @@ export default function App() {
                   {/* <Route exact path="/welcome">
                     <WelcomePage />
                   </Route>
-
                   <Route exact path="/login">
                     <LoginPage />
                   </Route>

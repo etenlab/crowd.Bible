@@ -3,8 +3,8 @@ import { Route } from 'react-router-dom';
 import { DictionaryPage } from '@/pages/LanguageTools/DictionaryPage';
 import { BilingualDictionaryPage } from '@/pages/LanguageTools/BilingualDictionaryPage';
 import { LanguageProficiencyPage } from '@/pages/LanguageTools/LanguageProficiencyPage';
-import { KeyTermsPage } from '@/pages/LanguageTools/KeyTermsPage';
-import { KeyTermsPageV2 } from '@/pages/LanguageTools/KeyTermsPageV2';
+import { PhraseBookPage } from '@/pages/LanguageTools/PhraseBookPage';
+import { PhraseBookPageV2 } from '@/pages/LanguageTools/PhraseBookPageV2';
 import { LexiconPage } from '@/pages/LanguageTools/LexiconPage';
 import { GrammarPage } from '@/pages/LanguageTools/GrammarPage';
 
@@ -20,11 +20,11 @@ export function LanguageToolsRoutes() {
       <Route exact path="/language-proficiency">
         <LanguageProficiencyPage />
       </Route>
-      <Route exact path="/key-terms">
-        <KeyTermsPage />
+      <Route exact path="/phrase-book">
+        <PhraseBookPage />
       </Route>
-      <Route exact path="/key-terms-v2">
-        <KeyTermsPageV2 />
+      <Route exact path="/phrase-book-v2">
+        <PhraseBookPageV2 />
       </Route>
       <Route exact path="/lexicon">
         <LexiconPage />
