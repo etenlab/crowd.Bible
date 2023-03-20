@@ -206,6 +206,9 @@ export function PageLayout({ children }: PageLayoutProps) {
               vertical: 'top',
               horizontal: 'center',
             }}
+            sx={{
+              top: '70px !important',
+            }}
             key="top-center"
           >
             <Alert

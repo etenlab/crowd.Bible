@@ -20,6 +20,7 @@ local-ui-kit
 .env.production.local
 /.vscode/*
 !/.vscode/extensions.json
+!/.vscode/settings.json
 .idea
 
 npm-debug.log*
