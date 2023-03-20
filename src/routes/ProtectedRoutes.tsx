@@ -1,4 +1,4 @@
-import { Route } from 'react-router-dom';
+import { Redirect, Route } from 'react-router-dom';
 
 import NotificationsPage from '@/pages/Notifications';
 import { SettingsPage } from '@/pages/SettingsPage';
@@ -48,6 +48,10 @@ export function ProtectedRoutes() {
       <DataToolsRoutes />
 
       <AppDevRoutes />
+
+      <Route exact path="/">
+        <Redirect to="/home" />
+      </Route>
     </>
   );
 }
