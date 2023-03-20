@@ -86,16 +86,6 @@ const MOCK_PHRASES: Array<Item> = [
 
 const PADDING = 20;
 
-const button = (
-  <Button
-    variant="contained"
-    startIcon={<FiPlus />}
-    onClick={() => alert('click!')}
-  >
-    New Word
-  </Button>
-);
-
 export function PhraseBookPageV2() {
   const [phrases, setPhrases] = useState([] as Array<Item>);
   const [selectedTerm, setSelectedTerm] = useState(null as unknown as Item);
@@ -174,7 +164,7 @@ export function PhraseBookPageV2() {
                   fullWidth
                   onClick={() => alert('click!!!')}
                 >
-                  New Word
+                  New Phrase
                 </Button>
               </Box>
             </Box>
