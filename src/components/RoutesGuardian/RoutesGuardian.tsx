@@ -22,9 +22,9 @@ export function RoutesGuardian({ children }: GuardRoutesType) {
     }
   };
 
-  if (!isAutherized(user)) {
-    history.push('/login');
-  }
+  // if (!isAutherized(user)) {
+  //   history.push('/login');
+  // }
 
   return <>{children}</>;
 }
