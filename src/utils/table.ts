@@ -1,4 +1,4 @@
-import { type Node } from '../models';
+import { type Node } from '@/models/index';
 
 export const tableNodeToTable = (node: Node) => {
   const cells = node.nodeRelationships?.map((cell) => {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { useAppContext } from '../../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 
 const { AgreeConfirm, SimpleQuill } = CrowdBibleUI;

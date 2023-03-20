@@ -7,10 +7,10 @@ import {
   RelationshipType,
   RelationshipPropertyKey,
   RelationshipPropertyValue,
-} from '../models';
+} from '@/models/index';
 import initSqlJs from 'sql.js';
 import { DataSource } from 'typeorm';
-import { SyncSession } from '../models/Sync';
+import { SyncSession } from '@/models/Sync';
 
 export class DbService {
   // todo
