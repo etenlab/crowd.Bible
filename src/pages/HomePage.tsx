@@ -61,12 +61,12 @@ export function HomePage() {
             <IonLabel>Bilingual dictionary linker</IonLabel>
           </IonItem>
 
-          <IonItem routerLink="/key-terms">
-            <IonLabel>Key terms editor</IonLabel>
+          <IonItem routerLink="/phrase-book">
+            <IonLabel>Phrase-book editor</IonLabel>
           </IonItem>
 
-          <IonItem routerLink="/key-terms-v2">
-            <IonLabel>Key terms editor v2</IonLabel>
+          <IonItem routerLink="/phrase-book-v2">
+            <IonLabel>Phrase-book editor v2</IonLabel>
           </IonItem>
 
           <IonItem routerLink="/lexicon">
