@@ -3,29 +3,21 @@ import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
+import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 
-import { FeedbackInput } from '../components/FeedbackInput';
+import { mockChapters } from './ChapterFeedbackPage';
 
-const { TitleWithIcon, VerticalRadioList } = CrowdBibleUI;
+import { useAppContext } from '@/hooks/useAppContext';
+
+const { TitleWithIcon, VerticalRadioList, QuestionCreatorBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
-export const mockChapters = [
-  { value: 1, label: 'Chapter 1: Name of the Chapter' },
-  { value: 2, label: 'Chapter 2: Name of the Chapter' },
-  { value: 3, label: 'Chapter 3: Name of the Chapter' },
-  { value: 4, label: 'Chapter 4: Name of the Chapter' },
-  { value: 5, label: 'Chapter 5: Name of the Chapter' },
-  { value: 6, label: 'Chapter 6: Name of the Chapter' },
-  { value: 7, label: 'Chapter 7: Name of the Chapter' },
-  { value: 8, label: 'Chapter 8: Name of the Chapter' },
-  { value: 9, label: 'Chapter 9: Name of the Chapter' },
-  { value: 10, label: 'Chapter 10: Name of the Chapter' },
-  { value: 11, label: 'Chapter 11: Name of the Chapter' },
-  { value: 12, label: 'Chapter 12: Name of the Chapter' },
-];
-
-export function ChapterFeedbackPage() {
+export function ChapterTranslatorQAPage() {
   const history = useHistory();
+  const {
+    actions: { alertFeedback },
+  } = useAppContext();
+
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
 
   const handleChangeChapter = (
@@ -36,10 +28,22 @@ export function ChapterFeedbackPage() {
   };
 
   const handleClickCancel = () => {
-    history.push('/feedback');
+    history.push('/translator-qa');
   };
 
-  const feedbackInput = selectedChapter !== null ? <FeedbackInput /> : null;
+  const handleCancel = () => {
+    setSelectedChapter(null);
+  };
+
+  const handleSave = (question: Question) => {
+    alertFeedback('success', 'Your question has been created!');
+    history.push('/translator-qa');
+  };
+
+  const questionCreatorBox =
+    selectedChapter !== null ? (
+      <QuestionCreatorBox onSave={handleSave} onCancel={handleCancel} />
+    ) : null;
 
   return (
     <IonContent>
@@ -63,7 +67,7 @@ export function ChapterFeedbackPage() {
           />
         </Stack>
 
-        {feedbackInput}
+        {questionCreatorBox}
       </Stack>
     </IonContent>
   );

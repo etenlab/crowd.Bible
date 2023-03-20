@@ -12,7 +12,7 @@ import {
 } from '@eten-lab/ui-kit';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { DebounceInput } from 'react-debounce-input';
-import { useAppContext } from '../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 import { useHistory } from 'react-router';
 
 type Item = {

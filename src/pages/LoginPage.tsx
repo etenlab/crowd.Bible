@@ -10,7 +10,7 @@ import {
   PasswordInput,
 } from '@eten-lab/ui-kit';
 import { useFormik } from 'formik';
-import { useAppContext } from '../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 import * as Yup from 'yup';
 
 // import axios from "axios";
@@ -33,12 +33,12 @@ export function LoginPage() {
     actions: { setUser },
   } = useAppContext();
   const formik = useFormik<{
-    email: string | null;
-    password: string | null;
+    email: string;
+    password: string;
   }>({
     initialValues: {
-      email: null,
-      password: null,
+      email: '',
+      password: '',
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -113,9 +113,7 @@ export function LoginPage() {
           label="Email"
           onChange={formik.handleChange}
           value={formik.values.email}
-          valid={
-            formik.values.email !== null ? !formik.errors.email : undefined
-          }
+          valid={formik.values.email !== '' ? !formik.errors.email : undefined}
           helperText={formik.errors.email}
           fullWidth
         />
@@ -129,9 +127,7 @@ export function LoginPage() {
           show={show}
           value={formik.values.password}
           valid={
-            formik.values.password !== null
-              ? !formik.errors.password
-              : undefined
+            formik.values.password !== '' ? !formik.errors.password : undefined
           }
           helperText={formik.errors.password}
           fullWidth
