@@ -18,6 +18,7 @@ import {
   IconButton,
   PaletteColor,
 } from '@mui/material';
+import { FiltersAndSearch } from '../local-ui-kit/FiltersAndSearch';
 
 const { TitleWithIcon, VoteButtonGroup } = CrowdBibleUI;
 
@@ -131,7 +132,7 @@ export function KeyTermsPageV2() {
             </Box>
           </Box>
 
-          <Box
+          {/* <Box
             width={'100%'}
             padding={`${PADDING}px 0 ${PADDING}px`}
             display={'flex'}
@@ -150,11 +151,17 @@ export function KeyTermsPageV2() {
               <Input fullWidth label="Language ID"></Input>
             </Box>
           </Box>
-          <Box display={'flex'} flexDirection="column" width={1}>
-            <Box width={1} paddingBottom={`${PADDING}px`}>
-              <Input fullWidth label="Search..."></Input>
-            </Box>
+          <Box width={1} paddingBottom={`${PADDING}px`}>
+            <Input fullWidth label="Search..."></Input>
+          </Box> */}
 
+          <FiltersAndSearch
+            ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
+            setEthnologue={() => console.log('setEthnologue!')}
+            setLanguage={(l) => console.log('setLanguage! ' + l)}
+            setSearch={(s) => console.log('setSearch' + s)}
+          />
+          <Box display={'flex'} flexDirection="column" width={1}>
             <Box
               width={1}
               flexDirection={'row'}

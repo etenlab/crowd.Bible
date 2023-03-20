@@ -48,9 +48,11 @@ export function HomePage() {
           <IonItemDivider>
             <IonLabel>Language Tools</IonLabel>
           </IonItemDivider>
-
           <IonItem routerLink="/dictionary">
             <IonLabel>Dictionary editor</IonLabel>
+          </IonItem>
+          <IonItem routerLink="/dictionary-v2">
+            <IonLabel>Dictionary editor V2</IonLabel>
           </IonItem>
 
           <IonItem routerLink="/bilingual-dictionary">

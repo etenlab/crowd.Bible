@@ -18,7 +18,7 @@ type Item = {
 };
 
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
-const MOCK_KEY_TERMS: Array<Item> = [
+const MOCK_DICTIONARY: Array<Item> = [
   {
     title: {
       content: 'title content',
@@ -59,7 +59,7 @@ const PADDING = 20;
 export function DictionaryPage() {
   const [keyTerms, setKeyTerms] = useState([] as Array<Item>);
   useEffect(() => {
-    setKeyTerms(MOCK_KEY_TERMS);
+    setKeyTerms(MOCK_DICTIONARY);
   }, []);
 
   return (
@@ -83,7 +83,7 @@ export function DictionaryPage() {
               onBack={() => {}}
               withBackIcon={false}
               withCloseIcon={false}
-              label="Key Terms"
+              label="Dictionary"
             ></TitleWithIcon>
           </Box>
           <Box flex={1} width={1} minWidth={'140px'}>
@@ -108,7 +108,7 @@ export function DictionaryPage() {
         <Box display={'flex'} flexDirection="column" width={1}>
           <WordTable
             items={keyTerms}
-            label_1="Key Term"
+            label_1="Word"
             label_2="Definition"
           ></WordTable>
         </Box>
