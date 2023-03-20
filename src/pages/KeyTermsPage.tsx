@@ -3,6 +3,7 @@ import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { FiltersAndSearch } from '../local-ui-kit/FiltersAndSearch';
 const { TitleWithIcon, WordTable } = CrowdBibleUI;
 
 type Content = {
@@ -97,30 +98,14 @@ export function KeyTermsPage() {
           </Box>
         </Box>
 
-        <Box
-          width={'100%'}
-          padding={`${PADDING}px 0 ${PADDING}px`}
-          display={'flex'}
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          gap={`${PADDING}px`}
-        >
-          <Box flex={1}>
-            <Autocomplete
-              fullWidth
-              options={MOCK_ETHNOLOGUE_OPTIONS}
-              label="Ethnologue"
-            ></Autocomplete>
-          </Box>
-          <Box flex={1}>
-            <Input fullWidth label="Language ID"></Input>
-          </Box>
-        </Box>
+        <FiltersAndSearch
+          ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
+          setEthnologue={() => console.log('setEthnologue!')}
+          setLanguage={(l) => console.log('setLanguage! ' + l)}
+          setSearch={(s) => console.log('setSearch' + s)}
+        />
 
         <Box display={'flex'} flexDirection="column" width={1}>
-          <Box width={1} paddingBottom={`${PADDING}px`}>
-            <Input fullWidth label="Search..."></Input>
-          </Box>
           <WordTable
             items={keyTerms}
             label_1="Key Term"

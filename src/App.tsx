@@ -62,6 +62,7 @@ import { AlignmentPage } from './pages/AlignmentPage';
 import { SvgTranslationPage } from './pages/SvgTranslationPage';
 import { SvgTranslatedPage } from './pages/SvgTranslatedPage';
 import { KeyTermsPageV2 } from './pages/KeyTermsPageV2';
+import { DictionaryPageV2 } from './pages/DictionaryPageV2';
 
 setupIonicReact();
 
@@ -146,6 +147,9 @@ const App: React.FC = () => (
               </Route>
               <Route exact path="/dictionary">
                 <DictionaryPage />
+              </Route>
+              <Route exact path="/dictionary-v2">
+                <DictionaryPageV2 />
               </Route>
               <Route exact path="/bilingual-dictionary">
                 <BilingualDictionaryPage />
