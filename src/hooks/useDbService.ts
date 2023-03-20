@@ -1,13 +1,13 @@
-import { dbService } from '..';
 import { useEffect, useState } from 'react';
-import { type DbService } from '../services/db.service';
+import { AppDataSource } from '../data-source';
+import { DbService } from '../services/db.service';
 
 export default function useDbService() {
   const [service, setService] = useState<DbService>();
 
   useEffect(() => {
     const timerID = setTimeout(() => {
-      setService(dbService);
+      setService(new DbService(AppDataSource));
     }, 1000);
 
     return () => {

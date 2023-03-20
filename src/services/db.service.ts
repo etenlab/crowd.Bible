@@ -20,7 +20,7 @@ export class DbService {
   // eslint-disable-next-line @typescript-eslint/ban-types
   private readonly startupSubscriptions: Function[] = [];
 
-  constructor() {
+  constructor(dataSource: DataSource) {
     // todo
     this.initLocalForage().then(() => {
       initSqlJs({
@@ -29,7 +29,7 @@ export class DbService {
       }).then(async (SQL) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window as any).SQL = SQL;
-        this.dataSource = this.configureConnection();
+        this.dataSource = dataSource;
         this.dataSource.initialize();
       });
     });
@@ -45,9 +45,6 @@ export class DbService {
     this.localForage = localForageImport.default;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).localforage = this.localForage;
-  }
-
-  private configureConnection() {
     this.localForage.config({
       description: 'user',
       driver: this.localForage.INDEXEDDB,
