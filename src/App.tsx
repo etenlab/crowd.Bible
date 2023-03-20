@@ -53,7 +53,6 @@ import { LanguageProficiencyPage } from './pages/LanguageProficiencyPage';
 import { SiteTextAdminPage } from './pages/SiteTextAdminPage';
 import { SiteTextTranslationPage } from './pages/SiteTextTranslationPage';
 import { AdminPage } from './pages/AdminPage';
-import { KeyTermsPage } from './pages/KeyTermsPage';
 import { LexiconPage } from './pages/LexiconPage';
 import { CommentaryPage } from './pages/CommentaryPage';
 import { GrammarPage } from './pages/GrammarPage';
@@ -61,7 +60,8 @@ import { VersificationPage } from './pages/VersificationPage';
 import { AlignmentPage } from './pages/AlignmentPage';
 import { SvgTranslationPage } from './pages/SvgTranslationPage';
 import { SvgTranslatedPage } from './pages/SvgTranslatedPage';
-import { KeyTermsPageV2 } from './pages/KeyTermsPageV2';
+import { PhraseBookPage } from './pages/PhraseBookPage';
+import { PhraseBookPageV2 } from './pages/PhraseBookPageV2';
 
 setupIonicReact();
 
@@ -162,11 +162,11 @@ const App: React.FC = () => (
               <Route exact path="/admin">
                 <AdminPage />
               </Route>
-              <Route exact path="/key-terms">
-                <KeyTermsPage />
+              <Route exact path="/phrase-book">
+                <PhraseBookPage />
               </Route>
-              <Route exact path="/key-terms-v2">
-                <KeyTermsPageV2 />
+              <Route exact path="/phrase-book-v2">
+                <PhraseBookPageV2 />
               </Route>
               <Route exact path="/lexicon">
                 <LexiconPage />
