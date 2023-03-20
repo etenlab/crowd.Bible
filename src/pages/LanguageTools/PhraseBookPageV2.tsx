@@ -1,24 +1,18 @@
-import {
-  Autocomplete,
-  Button,
-  FiPlus,
-  Input,
-  BiVolumeFull,
-} from '@eten-lab/ui-kit';
+import { CrowdBibleUI, Button, FiPlus, BiVolumeFull } from '@eten-lab/ui-kit';
 
-import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
-import { Box, Divider } from '@mui/material';
+import {} from '@mui/material';
 import { useEffect, useState } from 'react';
 import {
-  ListItemButton,
-  ListItemText,
-  Typography,
-  ListItem,
   IconButton,
   PaletteColor,
+  Box,
+  Divider,
+  Typography,
+  ListItem,
 } from '@mui/material';
-import { FiltersAndSearch } from '../local-ui-kit/FiltersAndSearch';
+import { FiltersAndSearch } from '../../local-ui-kit/FiltersAndSearch';
+import { ItemsClickableList } from '../../local-ui-kit/ItemsClickableList';
 
 const { TitleWithIcon, VoteButtonGroup } = CrowdBibleUI;
 
@@ -31,6 +25,11 @@ type Content = {
 type Item = {
   title: Content;
   contents: Content[];
+};
+
+type SetPhraseVotesParams = {
+  titleContent: string;
+  upOrDown: 'upVote' | 'downVote';
 };
 
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
@@ -89,15 +88,23 @@ const PADDING = 20;
 
 export function PhraseBookPageV2() {
   const [phrases, setPhrases] = useState([] as Array<Item>);
-  const [selectedTerm, setSelectedTerm] = useState(null as unknown as Item);
+  const [selectedPhrase, setSelectedPhrase] = useState(null as unknown as Item);
 
   useEffect(() => {
     setPhrases(MOCK_PHRASES);
   }, []);
 
+  const setPhraseVotes = ({ titleContent, upOrDown }: SetPhraseVotesParams) => {
+    const phraseIdx = phrases.findIndex(
+      (ph) => ph.title.content === titleContent,
+    );
+    phrases[phraseIdx].title[upOrDown] += 1;
+    setPhrases([...phrases]);
+  };
+
   return (
     <IonContent>
-      {!selectedTerm ? (
+      {!selectedPhrase ? (
         <Box
           display={'flex'}
           flexDirection={'column'}
@@ -122,34 +129,11 @@ export function PhraseBookPageV2() {
             </Box>
           </Box>
 
-          {/* <Box
-            width={'100%'}
-            padding={`${PADDING}px 0 ${PADDING}px`}
-            display={'flex'}
-            flexDirection={'row'}
-            justifyContent={'space-between'}
-            gap={`${PADDING}px`}
-          >
-            <Box flex={1}>
-              <Autocomplete
-                fullWidth
-                options={MOCK_ETHNOLOGUE_OPTIONS}
-                label="Ethnologue"
-              ></Autocomplete>
-            </Box>
-            <Box flex={1}>
-              <Input fullWidth label="Language ID"></Input>
-            </Box>
-          </Box>
-          <Box width={1} paddingBottom={`${PADDING}px`}>
-            <Input fullWidth label="Search..."></Input>
-          </Box> */}
-
           <FiltersAndSearch
             ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
             setEthnologue={() => console.log('setEthnologue!')}
-            setLanguage={(l) => console.log('setLanguage! ' + l)}
-            setSearch={(s) => console.log('setSearch' + s)}
+            setLanguage={(l: string) => console.log('setLanguage! ' + l)}
+            setSearch={(s: string) => console.log('setSearch' + s)}
           />
           <Box display={'flex'} flexDirection="column" width={1}>
             <Box
@@ -176,30 +160,22 @@ export function PhraseBookPageV2() {
               </Box>
             </Box>
             <Divider />
-            {phrases.map((kt) => (
-              <Box display={'flex'} key={kt.title.content}>
-                <Box flex={4}>
-                  <ListItemButton onClick={() => setSelectedTerm(kt)}>
-                    <ListItemText primary={kt.title.content} color="dark" />
-                  </ListItemButton>
-                </Box>
-                <Box display={'flex'} flex={1}>
-                  <VoteButtonGroup
-                    item
-                    container
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="flex-end"
-                    like
-                    dislike
-                    likeCount={kt.title.upVote}
-                    dislikeCount={kt.title.downVote}
-                    setDislike={() => console.log('dis')}
-                    setLike={() => console.log('like')}
-                  ></VoteButtonGroup>
-                </Box>
-              </Box>
-            ))}
+            <ItemsClickableList
+              items={phrases}
+              setSelectedItem={setSelectedPhrase}
+              setLikeItem={(id) =>
+                setPhraseVotes({
+                  titleContent: id,
+                  upOrDown: 'upVote',
+                })
+              }
+              setDislikeItem={(id) =>
+                setPhraseVotes({
+                  titleContent: id,
+                  upOrDown: 'downVote',
+                })
+              }
+            ></ItemsClickableList>
           </Box>
         </Box>
       ) : (
@@ -213,10 +189,10 @@ export function PhraseBookPageV2() {
           <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
             <TitleWithIcon
               onClose={() => {}}
-              onBack={() => setSelectedTerm(null as unknown as Item)}
+              onBack={() => setSelectedPhrase(null as unknown as Item)}
               withBackIcon={true}
               withCloseIcon={false}
-              label={selectedTerm.title.content}
+              label={selectedPhrase.title.content}
             ></TitleWithIcon>
             <IconButton
               onClick={() => alert('sound!')}
@@ -228,7 +204,7 @@ export function PhraseBookPageV2() {
               <BiVolumeFull />
             </IconButton>
           </Box>
-          {selectedTerm.contents.map(({ content, upVote, downVote }) => (
+          {selectedPhrase.contents.map(({ content, upVote, downVote }) => (
             <ListItem
               sx={{
                 display: 'list-item',

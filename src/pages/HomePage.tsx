@@ -6,6 +6,7 @@ import {
   IonItemGroup,
   IonItemDivider,
 } from '@ionic/react';
+import { Button } from '@mui/material';
 
 export function HomePage() {
   return (
@@ -18,6 +19,7 @@ export function HomePage() {
 
           <IonItem routerLink="/documents-list">
             <IonLabel>Documents viewer</IonLabel>
+            <Button>asfasdf</Button>
           </IonItem>
 
           <IonItem routerLink={'/translator-qa'}>

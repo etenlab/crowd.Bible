@@ -18,7 +18,7 @@ import {
   IconButton,
   PaletteColor,
 } from '@mui/material';
-import { FiltersAndSearch } from '../local-ui-kit/FiltersAndSearch';
+import { FiltersAndSearch } from '../../local-ui-kit/FiltersAndSearch';
 
 const { TitleWithIcon, VoteButtonGroup } = CrowdBibleUI;
 

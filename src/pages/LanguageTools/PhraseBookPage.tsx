@@ -3,7 +3,7 @@ import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { FiltersAndSearch } from '../local-ui-kit/FiltersAndSearch';
+import { FiltersAndSearch } from '../../local-ui-kit/FiltersAndSearch';
 const { TitleWithIcon, WordTable } = CrowdBibleUI;
 
 type Content = {
@@ -101,8 +101,8 @@ export function PhraseBookPage() {
         <FiltersAndSearch
           ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
           setEthnologue={() => console.log('setEthnologue!')}
-          setLanguage={(l) => console.log('setLanguage! ' + l)}
-          setSearch={(s) => console.log('setSearch' + s)}
+          setLanguage={(l: string) => console.log('setLanguage! ' + l)}
+          setSearch={(s: string) => console.log('setSearch' + s)}
         />
 
         <Box display={'flex'} flexDirection="column" width={1}>
