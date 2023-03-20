@@ -1,11 +1,11 @@
-import { type NodePropertyKeyRepository } from '../repositories/node/node-property-key.repository';
-import { type NodePropertyValueRepository } from '../repositories/node/node-property-value.repository';
-import { type NodeTypeRepository } from '../repositories/node/node-type.repository';
-import { type NodeRepository } from '../repositories/node/node.repository';
-import { type RelationshipPropertyKeyRepository } from '../repositories/relationship/relationship-property-key.repository';
-import { type RelationshipPropertyValueRepository } from '../repositories/relationship/relationship-property-value.repository';
-import { type RelationshipTypeRepository } from '../repositories/relationship/relationship-type.repository';
-import { type RelationshipRepository } from '../repositories/relationship/relationship.repository';
+import { type NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
+import { type NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
+import { type NodeTypeRepository } from '@/repositories/node/node-type.repository';
+import { type NodeRepository } from '@/repositories/node/node.repository';
+import { type RelationshipPropertyKeyRepository } from '@/repositories/relationship/relationship-property-key.repository';
+import { type RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
+import { type RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
+import { type RelationshipRepository } from '@/repositories/relationship/relationship.repository';
 
 export class SeedService {
   constructor(

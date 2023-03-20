@@ -9,7 +9,7 @@ import {
   SearchInput,
   BiFile,
 } from '@eten-lab/ui-kit';
-import { useAppContext } from '../../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 
 const {
   Stack,
@@ -50,8 +50,6 @@ export function DocumentList() {
   };
 
   const handleClickDocument = () => {
-    alert('clicked');
-    alert(user?.role);
     if (user?.role === 'translator') {
       history.push('/translation');
     } else if (user?.role === 'reader') {

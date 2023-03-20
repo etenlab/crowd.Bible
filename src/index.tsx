@@ -1,21 +1,23 @@
 import 'reflect-metadata';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import { DbService } from './services/db.service';
-import { SyncService } from './services/sync.service';
-import { SeedService } from './services/seed.service';
-import { NodeRepository } from './repositories/node/node.repository';
-import { NodePropertyKeyRepository } from './repositories/node/node-property-key.repository';
-import { NodePropertyValueRepository } from './repositories/node/node-property-value.repository';
-import { NodeTypeRepository } from './repositories/node/node-type.repository';
-import { RelationshipTypeRepository } from './repositories/relationship/relationship-type.repository';
-import { RelationshipPropertyValueRepository } from './repositories/relationship/relationship-property-value.repository';
-import { RelationshipPropertyKeyRepository } from './repositories/relationship/relationship-property-key.repository';
-import { RelationshipRepository } from './repositories/relationship/relationship.repository';
-import { SyncSessionRepository } from './repositories/sync-session.repository';
+
+import { DbService } from '@/services/db.service';
+import { SyncService } from '@/services/sync.service';
+import { SeedService } from '@/services/seed.service';
+import { NodeRepository } from '@/repositories/node/node.repository';
+import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
+import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
+import { NodeTypeRepository } from '@/repositories/node/node-type.repository';
+import { RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
+import { RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
+import { RelationshipPropertyKeyRepository } from '@/repositories/relationship/relationship-property-key.repository';
+import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
+import { SyncSessionRepository } from '@/repositories/sync-session.repository';
+
+import App from './App';
 
 // singletons
 export const dbService = new DbService();

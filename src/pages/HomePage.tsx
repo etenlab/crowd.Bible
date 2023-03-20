@@ -21,11 +21,15 @@ export function HomePage() {
           </IonItem>
 
           <IonItem routerLink={'/translator-qa'}>
-            <IonLabel>Feedback editor for translators</IonLabel>
+            <IonLabel>Question & Answer editor for translators</IonLabel>
           </IonItem>
 
           <IonItem routerLink={'/reader-qa'}>
-            <IonLabel>Feedback editor for readers</IonLabel>
+            <IonLabel>Question & Answer editor for readers</IonLabel>
+          </IonItem>
+
+          <IonItem routerLink={'/feedback'}>
+            <IonLabel>Feedback</IonLabel>
           </IonItem>
 
           <IonItem routerLink="/translation">
@@ -60,7 +64,8 @@ export function HomePage() {
           <IonItem routerLink="/phrase-book">
             <IonLabel>Phrase-book editor</IonLabel>
           </IonItem>
-          <IonItem href="/phrase-book-v2">
+
+          <IonItem routerLink="/phrase-book-v2">
             <IonLabel>Phrase-book editor v2</IonLabel>
           </IonItem>
 

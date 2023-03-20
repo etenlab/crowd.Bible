@@ -1,6 +1,7 @@
 const webpack = require('webpack');
+const { aliasWebpack } = require('react-app-alias');
 
-module.exports = function override(config) {
+function mainOverride(config) {
   const fallback = config.resolve.fallback || {};
   Object.assign(fallback, {
     path: require.resolve('path-browserify'),
@@ -32,5 +33,15 @@ module.exports = function override(config) {
 
   config.ignoreWarnings = [/Failed to parse source map/];
 
+  return config;
+}
+
+const options = {};
+
+const pathAliasOverride = aliasWebpack(options);
+
+module.exports = function override(config) {
+  config = mainOverride(config);
+  config = pathAliasOverride(config);
   return config;
 };

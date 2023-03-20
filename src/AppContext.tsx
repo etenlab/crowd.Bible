@@ -1,12 +1,13 @@
 import React, { createContext, useReducer } from 'react';
 
-import { reducer, initialState as reducerInitialState } from './reducers';
+import { reducer, loadPersistedStore } from '@/reducers/index';
 
 import {
   type IUser,
   type RoleType,
   type StateType as GlobalStateType,
   type FeedbackType,
+  type PrefersColorSchemeType,
   TranslatedMap,
 } from './reducers/global.reducer';
 
@@ -19,6 +20,8 @@ export interface ContextType {
   actions: {
     setUser: (user: IUser) => void;
     setRole: (role: RoleType) => void;
+    setPrefersColorScheme: (themeMode: PrefersColorSchemeType) => void;
+    logout: () => void;
     alertFeedback: (feedbackType: FeedbackType, message: string) => void;
     closeFeedback: () => void;
     setTranslatedMap: (translatedMap: TranslatedMap) => void;
@@ -27,17 +30,26 @@ export interface ContextType {
 
 export const AppContext = createContext<ContextType | undefined>(undefined);
 
+const initialState = loadPersistedStore();
+
 interface AppProviderProps {
   children?: React.ReactNode;
 }
 
 export function AppContextProvider({ children }: AppProviderProps) {
-  const [state, dispatch] = useReducer(reducer, reducerInitialState);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const { alertFeedback, closeFeedback, setRole, setUser, setTranslatedMap } =
-    useGlobal({
-      dispatch,
-    });
+  const {
+    alertFeedback,
+    closeFeedback,
+    setRole,
+    setUser,
+    logout,
+    setPrefersColorScheme,
+    setTranslatedMap,
+  } = useGlobal({
+    dispatch,
+  });
   const value = {
     states: { global: state.global },
     actions: {
@@ -45,6 +57,8 @@ export function AppContextProvider({ children }: AppProviderProps) {
       alertFeedback,
       setRole,
       setUser,
+      logout,
+      setPrefersColorScheme,
       setTranslatedMap,
     },
   };

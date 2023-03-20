@@ -1,13 +1,13 @@
-import { NodePropertyKeyRepository } from '../repositories/node/node-property-key.repository';
-import { NodePropertyValueRepository } from '../repositories/node/node-property-value.repository';
-import { NodeRepository } from '../repositories/node/node.repository';
-import { RelationshipPropertyKeyRepository } from '../repositories/relationship/relationship-property-key.repository';
-import { RelationshipPropertyValueRepository } from '../repositories/relationship/relationship-property-value.repository';
-import { RelationshipRepository } from '../repositories/relationship/relationship.repository';
+import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
+import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
+import { NodeRepository } from '@/repositories/node/node.repository';
+import { RelationshipPropertyKeyRepository } from '@/repositories/relationship/relationship-property-key.repository';
+import { RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
+import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
 import { type DbService } from './db.service';
-import { type Node } from '../models/node/node.entity';
-import { type Relationship } from '../models/relationship/relationship.entity';
-import { tableNodeToTable } from '../utils/table';
+import { type Node } from '@/models/node/node.entity';
+import { type Relationship } from '@/models/relationship/relationship.entity';
+import { tableNodeToTable } from '@/utils/table';
 import { type SyncService } from './sync.service';
 
 export class NodeService {

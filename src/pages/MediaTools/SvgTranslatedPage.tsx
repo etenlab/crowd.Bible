@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { Alert } from '@eten-lab/ui-kit';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { CrowdBibleUI } from '@eten-lab/ui-kit';
-import { useAppContext } from '../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 import { useHistory } from 'react-router';
 import { useEffect, useState } from 'react';
 const { TitleWithIcon } = CrowdBibleUI;
