@@ -56,7 +56,7 @@ const MOCK_KEY_TERMS: Array<Item> = [
 const PADDING = 20;
 
 export function KeyTermsPage() {
-  const [keyTerms, setKeyTerms] = useState([] as Array<any>);
+  const [keyTerms, setKeyTerms] = useState([] as Array<Item>);
   useEffect(() => {
     setKeyTerms(MOCK_KEY_TERMS);
   }, []);
