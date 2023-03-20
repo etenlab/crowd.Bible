@@ -33,16 +33,16 @@ export function RegisterPage() {
   const [show, setShow] = useState<boolean>(false);
   const history = useHistory();
   const formik = useFormik<{
-    email: string | null;
-    username: string | null;
-    password: string | null;
-    passwordConfirm: string | null;
+    email: string;
+    username: string;
+    password: string;
+    passwordConfirm: string;
   }>({
     initialValues: {
-      email: null,
-      username: null,
-      password: null,
-      passwordConfirm: null,
+      email: '',
+      username: '',
+      password: '',
+      passwordConfirm: '',
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -110,9 +110,7 @@ export function RegisterPage() {
           label="Email"
           onChange={formik.handleChange}
           value={formik.values.email}
-          valid={
-            formik.values.email !== null ? !formik.errors.email : undefined
-          }
+          valid={formik.values.email !== '' ? !formik.errors.email : undefined}
           helperText={formik.errors.email}
           fullWidth
         />
@@ -125,9 +123,7 @@ export function RegisterPage() {
           onChange={formik.handleChange}
           value={formik.values.username}
           valid={
-            formik.values.username !== null
-              ? !formik.errors.username
-              : undefined
+            formik.values.username !== '' ? !formik.errors.username : undefined
           }
           helperText={formik.errors.username}
           fullWidth
@@ -142,9 +138,7 @@ export function RegisterPage() {
           show={show}
           value={formik.values.password}
           valid={
-            formik.values.password !== null
-              ? !formik.errors.password
-              : undefined
+            formik.values.password !== '' ? !formik.errors.password : undefined
           }
           helperText={formik.errors.password}
           fullWidth
@@ -159,7 +153,7 @@ export function RegisterPage() {
           show={show}
           value={formik.values.passwordConfirm}
           valid={
-            formik.values.passwordConfirm !== null
+            formik.values.passwordConfirm !== ''
               ? !formik.errors.passwordConfirm
               : undefined
           }

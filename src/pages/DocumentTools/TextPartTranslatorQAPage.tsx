@@ -2,29 +2,36 @@ import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
 
-import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 
-import { mockChapters } from './ChapterFeedbackPage';
+import { mockDocument } from './TranslationPage';
 
-import { useAppContext } from '../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 
-const { TitleWithIcon, VerticalRadioList, QuestionCreatorBox } = CrowdBibleUI;
+const { LabelWithIcon, RangeSelectableTextArea, QuestionCreatorBox } =
+  CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
-export function ChapterTranslatorQAPage() {
+export function TextPartTranslatorQAPage() {
   const history = useHistory();
   const {
     actions: { alertFeedback },
   } = useAppContext();
 
-  const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [range, setRange] = useState<{
+    start: number | null;
+    end: number | null;
+  }>({ start: null, end: null });
 
-  const handleChangeChapter = (
-    _event: React.SyntheticEvent<Element, Event>,
-    chapter: number,
-  ) => {
-    setSelectedChapter(chapter);
+  const handleChangeRange = ({
+    start,
+    end,
+  }: {
+    start: number | null;
+    end: number | null;
+  }) => {
+    setRange({ start, end });
   };
 
   const handleClickCancel = () => {
@@ -32,7 +39,7 @@ export function ChapterTranslatorQAPage() {
   };
 
   const handleCancel = () => {
-    setSelectedChapter(null);
+    handleChangeRange({ start: null, end: null });
   };
 
   const handleSave = (question: Question) => {
@@ -41,7 +48,7 @@ export function ChapterTranslatorQAPage() {
   };
 
   const questionCreatorBox =
-    selectedChapter !== null ? (
+    range.start !== null && range.end !== null ? (
       <QuestionCreatorBox onSave={handleSave} onCancel={handleCancel} />
     ) : null;
 
@@ -52,21 +59,18 @@ export function ChapterTranslatorQAPage() {
         sx={{ height: 'calc(100vh - 68px)' }}
       >
         <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
-          <TitleWithIcon
-            label="Chapters"
-            withBackIcon={false}
-            onClose={handleClickCancel}
-            onBack={() => {}}
+          <LabelWithIcon
+            label="translation"
+            icon={<FiX />}
+            color="gray"
+            onClick={handleClickCancel}
           />
-          <VerticalRadioList
-            label="Select a chapter"
-            withUnderline={true}
-            items={mockChapters}
-            value={selectedChapter}
-            onChange={handleChangeChapter}
+          <RangeSelectableTextArea
+            text={mockDocument}
+            range={range}
+            onChangeRange={handleChangeRange}
           />
         </Stack>
-
         {questionCreatorBox}
       </Stack>
     </IonContent>

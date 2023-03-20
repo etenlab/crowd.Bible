@@ -1,14 +1,14 @@
-import { NodePropertyKey } from '../models/node/node-property-key.entity';
-import { NodePropertyValue } from '../models/node/node-property-value.entity';
-import { NodeType } from '../models/node/node-type.entity';
-import { Node } from '../models/node/node.entity';
+import { NodePropertyKey } from '@/models/node/node-property-key.entity';
+import { NodePropertyValue } from '@/models/node/node-property-value.entity';
+import { NodeType } from '@/models/node/node-type.entity';
+import { Node } from '@/models/node/node.entity';
 import { type DbService } from './db.service';
 import axios from 'axios';
-import { type SyncSessionRepository } from '../repositories/sync-session.repository';
-import { Relationship } from '../models/relationship/relationship.entity';
-import { RelationshipType } from '../models/relationship/relationship-type.entity';
-import { RelationshipPropertyKey } from '../models/relationship/relationship-property-key.entity';
-import { RelationshipPropertyValue } from '../models/relationship/relationship-property-value.entity';
+import { type SyncSessionRepository } from '@/repositories/sync-session.repository';
+import { Relationship } from '@/models/relationship/relationship.entity';
+import { RelationshipType } from '@/models/relationship/relationship-type.entity';
+import { RelationshipPropertyKey } from '@/models/relationship/relationship-property-key.entity';
+import { RelationshipPropertyValue } from '@/models/relationship/relationship-property-value.entity';
 
 interface SyncTable {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

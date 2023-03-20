@@ -1,7 +1,7 @@
 import { syncService } from '..';
 import { useEffect, useState } from 'react';
 import useDbService from './useDbService';
-import { type SyncService } from '../services/sync.service';
+import { type SyncService } from '@/services/sync.service';
 
 export default function useSyncService() {
   const { service } = useDbService();

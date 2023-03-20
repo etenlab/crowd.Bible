@@ -21,7 +21,7 @@ import {
   useColorModeContext,
 } from '@eten-lab/ui-kit';
 
-import { useAppContext } from '../../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 
 const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
 
@@ -38,10 +38,16 @@ export function PageLayout({ children }: PageLayoutProps) {
     states: {
       global: { user, snack, isNewDiscussion, isNewNotification, loading },
     },
-    actions: { closeFeedback },
+    actions: { closeFeedback, setPrefersColorScheme, logout },
   } = useAppContext();
 
-  const [themeMode, setThemeMode] = useState<'dark' | 'light'>('light');
+  const [themeMode, setThemeMode] = useState<'dark' | 'light'>(() => {
+    if (user && user.prefersColorScheme) {
+      return user.prefersColorScheme;
+    } else {
+      return 'light';
+    }
+  });
   const ref = useRef<HTMLIonMenuElement>(null);
   const prefersDarkRef = useRef<MediaQueryList | null>(null);
   const bodyRef = useRef<HTMLElement | null>(null);
@@ -60,12 +66,18 @@ export function PageLayout({ children }: PageLayoutProps) {
 
   useEffect(() => {
     bodyRef.current = window.document.body;
+
+    if (user && user.prefersColorScheme) {
+      toggleDarkTheme(user.prefersColorScheme === 'dark');
+      return;
+    }
+
     prefersDarkRef.current = window.matchMedia('(prefers-color-scheme: dark)');
     prefersDarkRef.current.addListener((e) => {
       toggleDarkTheme(e.matches);
     });
     toggleDarkTheme(prefersDarkRef.current.matches);
-  }, []);
+  }, [user]);
 
   const handleToggleMenu = () => {
     ref.current!.toggle();
@@ -74,13 +86,23 @@ export function PageLayout({ children }: PageLayoutProps) {
   const handleToogleTheme = () => {
     if (themeMode === 'light') {
       toggleDarkTheme(true);
+      setPrefersColorScheme('dark');
     } else {
       toggleDarkTheme(false);
+      setPrefersColorScheme('light');
     }
   };
 
+  const handleGoToHomePage = () => {
+    history.push('/home');
+  };
+
+  // const handleLogout = () => {
+  //   // logout();
+  //   history.push('/home');
+  // };
+
   let isHeader = true;
-  const qaUrl = user?.role === 'translator' ? '/translator-qa' : '/reader-qa';
 
   switch (location.pathname) {
     case '/welcome': {
@@ -144,7 +166,7 @@ export function PageLayout({ children }: PageLayoutProps) {
               <IonLabel>Admin</IonLabel>
             </IonItem>
 
-            <IonItem routerLink="/#">
+            <IonItem routerLink="/home">
               <IonLabel>Logout</IonLabel>
             </IonItem>
           </IonList>
@@ -157,6 +179,7 @@ export function PageLayout({ children }: PageLayoutProps) {
               <Toolbar
                 title="crowd.Bible"
                 themeMode={themeMode}
+                onClickTitleBtn={handleGoToHomePage}
                 onClickThemeModeBtn={handleToogleTheme}
                 isNewDiscussion={isNewDiscussion}
                 isNewNotification={isNewNotification}

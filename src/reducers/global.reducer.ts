@@ -17,11 +17,13 @@ const initialTranslatedMap: TranslatedMap = {
 };
 
 export type RoleType = 'reader' | 'translator';
+export type PrefersColorSchemeType = 'light' | 'dark';
 
 export interface IUser {
   userId: number;
   userEmail: string;
   role: RoleType;
+  prefersColorScheme?: 'light' | 'dark';
 }
 
 export interface StateType {
@@ -40,7 +42,12 @@ const initialSnact: SnackType = {
 };
 
 export const initialState: StateType = {
-  user: null,
+  user: {
+    userId: 1,
+    userEmail: 'hiroshi@test.com',
+    role: 'translator',
+    prefersColorScheme: 'light',
+  },
   snack: initialSnact,
   loading: false,
   isNewDiscussion: false,
@@ -95,10 +102,29 @@ export function reducer(
         return prevState;
       }
     }
+    case actions.SET_PREFERS_COLOR_SCHEME: {
+      if (prevState.user === null) {
+        return prevState;
+      }
+
+      return {
+        ...prevState,
+        user: {
+          ...prevState.user,
+          prefersColorScheme: action.payload as PrefersColorSchemeType,
+        },
+      };
+    }
     case actions.SET_TRANSLATED_MAP: {
       return {
         ...prevState,
         translatedMap: action.payload as TranslatedMap,
+      };
+    }
+    case actions.LOGOUT: {
+      return {
+        ...prevState,
+        user: null,
       };
     }
     default: {

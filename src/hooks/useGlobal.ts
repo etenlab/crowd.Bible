@@ -6,15 +6,18 @@ import {
   alertFeedback as alertFeedbackAction,
   closeFeedback as closeFeedbackAction,
   setTranslatedMap as setTranslatedMapAction,
-} from '../reducers/global.actions';
+  setPrefersColorScheme as setPrefersColorSchemeAction,
+  logout as logoutAction,
+} from '@/reducers/global.actions';
 
-import { type ActionType } from '../reducers';
+import { type ActionType } from '@/reducers/index';
 import {
   type FeedbackType,
   type RoleType,
   type IUser,
+  type PrefersColorSchemeType,
   TranslatedMap,
-} from '../reducers/global.reducer';
+} from '@/reducers/global.reducer';
 
 interface UseGlobalProps {
   dispatch: Dispatch<ActionType<unknown>>;
@@ -34,6 +37,13 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     dispatchRef.current.dispatch(setRoleAction(role));
   }, []);
 
+  const setPrefersColorScheme = useCallback(
+    (prefers: PrefersColorSchemeType) => {
+      dispatchRef.current.dispatch(setPrefersColorSchemeAction(prefers));
+    },
+    [],
+  );
+
   const alertFeedback = useCallback(
     (feedbackType: FeedbackType, message: string) => {
       dispatchRef.current.dispatch(alertFeedbackAction(feedbackType, message));
@@ -49,9 +59,15 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     dispatchRef.current.dispatch(closeFeedbackAction());
   }, []);
 
+  const logout = useCallback(() => {
+    dispatchRef.current.dispatch(logoutAction());
+  }, []);
+
   return {
     setRole,
     setUser,
+    logout,
+    setPrefersColorScheme,
     alertFeedback,
     closeFeedback,
     setTranslatedMap,

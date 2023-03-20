@@ -11,7 +11,7 @@ import {
   useColorModeContext,
 } from '@eten-lab/ui-kit';
 
-import { TranslationList } from '../components/TranslationList';
+import { TranslationList } from '@/components/TranslationList';
 
 import { mockTranslations } from './TranslationCandidatesPage';
 

@@ -56,10 +56,10 @@ const MOCK_KEY_TERMS: Array<Item> = [
 
 const PADDING = 20;
 
-export function KeyTermsPage() {
-  const [keyTerms, setKeyTerms] = useState([] as Array<Item>);
+export function PhraseBookPage() {
+  const [phrases, setPhrases] = useState([] as Array<Item>);
   useEffect(() => {
-    setKeyTerms(MOCK_KEY_TERMS);
+    setPhrases(MOCK_KEY_TERMS);
   }, []);
 
   return (
@@ -83,7 +83,7 @@ export function KeyTermsPage() {
               onBack={() => {}}
               withBackIcon={false}
               withCloseIcon={false}
-              label="Key Terms"
+              label="Phrase book"
             ></TitleWithIcon>
           </Box>
           <Box flex={1} width={1} minWidth={'140px'}>
@@ -93,7 +93,7 @@ export function KeyTermsPage() {
               fullWidth
               onClick={() => alert('click!')}
             >
-              New Word
+              New Phrase
             </Button>
           </Box>
         </Box>
@@ -107,8 +107,8 @@ export function KeyTermsPage() {
 
         <Box display={'flex'} flexDirection="column" width={1}>
           <WordTable
-            items={keyTerms}
-            label_1="Key Term"
+            items={phrases}
+            label_1="Phrase"
             label_2="Definition"
           ></WordTable>
         </Box>

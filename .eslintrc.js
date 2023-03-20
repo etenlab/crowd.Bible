@@ -4,7 +4,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  ignorePatterns: ['.eslintrc.js', 'config-overrides.js'],
+  ignorePatterns: ['.eslintrc.js', 'config-overrides.js', 'craco.config.js'],
   extends: [
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
