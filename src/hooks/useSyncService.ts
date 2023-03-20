@@ -1,4 +1,4 @@
-import { syncService } from '..';
+import { syncService } from '../singletons';
 import { useEffect, useState } from 'react';
 import useDbService from './useDbService';
 import { type SyncService } from '../services/sync.service';

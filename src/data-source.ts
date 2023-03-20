@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
-import { User } from './entity/User';
 
 const options: SqljsConnectionOptions = {
   type: 'sqljs',
@@ -10,7 +9,7 @@ const options: SqljsConnectionOptions = {
   logging: ['error', 'query', 'schema'],
   synchronize: true,
   migrationsRun: true,
-  entities: ['models/**/*.entities.ts', User],
+  entities: ['models/**/*.entities.ts'],
   migrations: ['migrations/*.ts'],
 };
 

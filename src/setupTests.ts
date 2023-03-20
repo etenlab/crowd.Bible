@@ -3,6 +3,7 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
+import 'fake-indexeddb/auto';
 
 // Mock matchmedia
 window.matchMedia =
@@ -14,3 +15,5 @@ window.matchMedia =
       removeListener: function () {},
     };
   };
+
+process.env.REACT_APP_CPG_SERVER_URL = 'FAKE_URL';
