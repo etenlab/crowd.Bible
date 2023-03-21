@@ -8,10 +8,9 @@ import {
   IonContent,
   IonToolbar,
   IonList,
-  IonLabel,
-  IonItem,
 } from '@ionic/react';
 
+import { LinkItem } from '../LinkItem';
 import './PageLayout.css';
 
 import {
@@ -150,25 +149,14 @@ export function PageLayout({ children }: PageLayoutProps) {
         ) : null}
         <IonContent>
           <IonList>
-            <IonItem routerLink="/home">
-              <IonLabel>Home</IonLabel>
-            </IonItem>
-
-            <IonItem routerLink="/language-proficiency">
-              <IonLabel>Language proficiency setting</IonLabel>
-            </IonItem>
-
-            <IonItem routerLink="/settings">
-              <IonLabel>Settings</IonLabel>
-            </IonItem>
-
-            <IonItem routerLink="/admin">
-              <IonLabel>Admin</IonLabel>
-            </IonItem>
-
-            <IonItem routerLink="/home">
-              <IonLabel>Logout</IonLabel>
-            </IonItem>
+            <LinkItem to="/home" label="Home" />
+            <LinkItem
+              to="/language-proficiency"
+              label="Language proficiency setting"
+            />
+            <LinkItem to="/settings" label="Settings" />
+            <LinkItem to="/admin" label="Admin" />
+            <LinkItem to="/home" label="Logout" />
           </IonList>
         </IonContent>
       </IonMenu>
