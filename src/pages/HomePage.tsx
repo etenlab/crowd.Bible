@@ -19,7 +19,6 @@ export function HomePage() {
 
           <IonItem routerLink="/documents-list">
             <IonLabel>Documents viewer</IonLabel>
-            <Button>asfasdf</Button>
           </IonItem>
 
           <IonItem routerLink={'/translator-qa'}>

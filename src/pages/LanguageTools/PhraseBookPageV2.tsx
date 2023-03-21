@@ -1,7 +1,6 @@
 import { CrowdBibleUI, Button, FiPlus, BiVolumeFull } from '@eten-lab/ui-kit';
 
 import { IonContent } from '@ionic/react';
-import {} from '@mui/material';
 import { useEffect, useState } from 'react';
 import {
   IconButton,
@@ -13,6 +12,7 @@ import {
 } from '@mui/material';
 import { FiltersAndSearch } from '../../local-ui-kit/FiltersAndSearch';
 import { ItemsClickableList } from '../../local-ui-kit/ItemsClickableList';
+import SimpleFormDialog from '../../local-ui-kit/SimpleFormDialog/SimpleFormDialog';
 
 const { TitleWithIcon, VoteButtonGroup } = CrowdBibleUI;
 
@@ -89,17 +89,32 @@ const PADDING = 20;
 export function PhraseBookPageV2() {
   const [phrases, setPhrases] = useState([] as Array<Item>);
   const [selectedPhrase, setSelectedPhrase] = useState(null as unknown as Item);
+  const [isDialogOpened, setIsDialogOpened] = useState(false);
 
   useEffect(() => {
     setPhrases(MOCK_PHRASES);
   }, []);
 
-  const setPhraseVotes = ({ titleContent, upOrDown }: SetPhraseVotesParams) => {
+  const changePhraseVotes = ({
+    titleContent,
+    upOrDown,
+  }: SetPhraseVotesParams) => {
     const phraseIdx = phrases.findIndex(
       (ph) => ph.title.content === titleContent,
     );
     phrases[phraseIdx].title[upOrDown] += 1;
     setPhrases([...phrases]);
+  };
+
+  const addNewPhrase = (value: string) => {
+    setPhrases([
+      ...phrases,
+      {
+        title: { content: value, upVote: 0, downVote: 0 },
+        contents: [],
+      },
+    ]);
+    setIsDialogOpened(false);
   };
 
   return (
@@ -153,7 +168,7 @@ export function PhraseBookPageV2() {
                   variant="contained"
                   startIcon={<FiPlus />}
                   fullWidth
-                  onClick={() => alert('click!!!')}
+                  onClick={() => setIsDialogOpened(true)}
                 >
                   New Phrase
                 </Button>
@@ -164,19 +179,24 @@ export function PhraseBookPageV2() {
               items={phrases}
               setSelectedItem={setSelectedPhrase}
               setLikeItem={(id) =>
-                setPhraseVotes({
+                changePhraseVotes({
                   titleContent: id,
                   upOrDown: 'upVote',
                 })
               }
               setDislikeItem={(id) =>
-                setPhraseVotes({
+                changePhraseVotes({
                   titleContent: id,
                   upOrDown: 'downVote',
                 })
               }
             ></ItemsClickableList>
           </Box>
+          <SimpleFormDialog
+            isOpened={isDialogOpened}
+            handleCancel={() => setIsDialogOpened(false)}
+            handleOk={addNewPhrase}
+          />
         </Box>
       ) : (
         <Box
@@ -186,47 +206,72 @@ export function PhraseBookPageV2() {
           alignItems={'start'}
           padding={`${PADDING}px`}
         >
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
-            <TitleWithIcon
-              onClose={() => {}}
-              onBack={() => setSelectedPhrase(null as unknown as Item)}
-              withBackIcon={true}
-              withCloseIcon={false}
-              label={selectedPhrase.title.content}
-            ></TitleWithIcon>
-            <IconButton
-              onClick={() => alert('sound!')}
-              sx={{
-                color: (theme) => (theme.palette.dark as PaletteColor).main,
-                margitLeft: '20px',
-              }}
-            >
-              <BiVolumeFull />
-            </IconButton>
-          </Box>
-          {selectedPhrase.contents.map(({ content, upVote, downVote }) => (
-            <ListItem
-              sx={{
-                display: 'list-item',
-                padding: 0,
-                fontSize: '12px',
-                lineHeight: '17px',
-              }}
-              key={content}
-            >
-              {content}
-              <div>
-                <VoteButtonGroup
-                  likeCount={upVote}
-                  dislikeCount={downVote}
-                  like={false}
-                  dislike={false}
-                />
-              </div>
-            </ListItem>
-          ))}
+          <ItemContentListEdit
+            item={selectedPhrase}
+            onBack={() => setSelectedPhrase(null as unknown as Item)}
+            buttonText="New Definition"
+          />
         </Box>
       )}
     </IonContent>
+  );
+}
+
+type ItemContentListEditProps = {
+  item: Item;
+  onBack: () => void;
+  buttonText: string;
+};
+
+function ItemContentListEdit({
+  item,
+  onBack,
+  buttonText,
+}: ItemContentListEditProps) {
+  return (
+    <>
+      <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
+        <TitleWithIcon
+          onClose={() => {}}
+          onBack={onBack}
+          withBackIcon={true}
+          withCloseIcon={false}
+          label={item.title.content}
+        ></TitleWithIcon>
+        <IconButton
+          onClick={() => alert('sound!')}
+          sx={{
+            color: (theme) => (theme.palette.dark as PaletteColor).main,
+            margitLeft: '20px',
+          }}
+        >
+          <BiVolumeFull />
+        </IconButton>
+      </Box>
+      {item.contents.map(({ content, upVote, downVote }) => (
+        <ListItem
+          sx={{
+            display: 'list-item',
+            padding: 0,
+            fontSize: '12px',
+            lineHeight: '17px',
+          }}
+          key={content}
+        >
+          {content}
+          <div>
+            <VoteButtonGroup
+              likeCount={upVote}
+              dislikeCount={downVote}
+              like={false}
+              dislike={false}
+            />
+          </div>
+        </ListItem>
+      ))}
+      <Button fullWidth variant="contained" startIcon={<FiPlus />}>
+        {buttonText}
+      </Button>
+    </>
   );
 }
