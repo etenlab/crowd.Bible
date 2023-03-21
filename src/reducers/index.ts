@@ -35,7 +35,14 @@ export function loadPersistedStore(): StateType {
       return initialState;
     }
 
-    return JSON.parse(state) as StateType;
+    const newState = JSON.parse(state) as StateType;
+    return {
+      ...newState,
+      global: {
+        ...newState.global,
+        connectivity: window.navigator.onLine,
+      },
+    };
   } catch (err) {
     console.log(err);
   }
@@ -55,7 +62,7 @@ export function reducer(
     global: globalReducer(state.global, action),
   };
 
-  // console.log(newState);
+  console.log(newState);
 
   persistStore(newState);
 

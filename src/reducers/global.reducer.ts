@@ -30,6 +30,7 @@ export interface StateType {
   user: IUser | null;
   snack: SnackType;
   loading: boolean;
+  connectivity: boolean;
   isNewDiscussion: boolean;
   isNewNotification: boolean;
   translatedMap: TranslatedMap;
@@ -49,6 +50,7 @@ export const initialState: StateType = {
     prefersColorScheme: 'light',
   },
   snack: initialSnact,
+  connectivity: true,
   loading: false,
   isNewDiscussion: false,
   isNewNotification: false,
@@ -119,6 +121,12 @@ export function reducer(
       return {
         ...prevState,
         translatedMap: action.payload as TranslatedMap,
+      };
+    }
+    case actions.SET_CONNECTIVITY: {
+      return {
+        ...prevState,
+        connectivity: action.payload as boolean,
       };
     }
     case actions.LOGOUT: {

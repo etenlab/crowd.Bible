@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useReducer, useEffect } from 'react';
 
 import { reducer, loadPersistedStore } from '@/reducers/index';
 
@@ -21,6 +21,7 @@ export interface ContextType {
     setUser: (user: IUser) => void;
     setRole: (role: RoleType) => void;
     setPrefersColorScheme: (themeMode: PrefersColorSchemeType) => void;
+    setConnectivity: (connectivity: boolean) => void;
     logout: () => void;
     alertFeedback: (feedbackType: FeedbackType, message: string) => void;
     closeFeedback: () => void;
@@ -44,12 +45,23 @@ export function AppContextProvider({ children }: AppProviderProps) {
     closeFeedback,
     setRole,
     setUser,
-    logout,
-    setPrefersColorScheme,
+    setConnectivity,
     setTranslatedMap,
+    setPrefersColorScheme,
+    logout,
   } = useGlobal({
     dispatch,
   });
+
+  useEffect(() => {
+    window.addEventListener('offline', () => {
+      setConnectivity(false);
+    });
+    window.addEventListener('online', () => {
+      setConnectivity(true);
+    });
+  }, []);
+
   const value = {
     states: { global: state.global },
     actions: {
@@ -57,9 +69,10 @@ export function AppContextProvider({ children }: AppProviderProps) {
       alertFeedback,
       setRole,
       setUser,
-      logout,
-      setPrefersColorScheme,
+      setConnectivity,
       setTranslatedMap,
+      setPrefersColorScheme,
+      logout,
     },
   };
 

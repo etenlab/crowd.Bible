@@ -1,5 +1,4 @@
 import {
-  IonItem,
   IonLabel,
   IonList,
   IonContent,
@@ -7,114 +6,87 @@ import {
   IonItemDivider,
 } from '@ionic/react';
 
+import { LinkItem, LinkItemProps } from '@/components/LinkItem';
+
+const linkGroups = [
+  {
+    group: 'Document Tools',
+    linkItems: [
+      { to: '/documents-list', label: 'Documents viewer', onlineOnly: true },
+      {
+        to: '/translator-qa',
+        label: 'Question & Answer editor for translators',
+        onlineOnly: true,
+      },
+      {
+        to: '/reader-qa',
+        label: 'Question & Answer editor for readers',
+        onlineOnly: true,
+      },
+      { to: '/feedback', label: 'Feedback' },
+      { to: '/translation', label: 'Translation editor' },
+      { to: '/commentary', label: 'Commentary viewer' },
+      { to: '/versification', label: 'Versification editor', onlineOnly: true },
+      { to: '/alignment', label: 'Alignment editor' },
+    ],
+  },
+  {
+    group: 'Language Tools',
+    linkItems: [
+      { to: '/dictionary', label: 'Dictionary editor' },
+      { to: '/bilingual-dictionary', label: 'Bilingual dictionary toer' },
+      { to: '/phrase-book', label: 'Phrase-book editor' },
+      { to: '/phrase-book-v2', label: 'Phrase-book editor v2' },
+      { to: '/lexicon', label: 'Lexicon editor' },
+      { to: '/grammar', label: 'Grammar editor' },
+    ],
+  },
+  {
+    group: 'Media Tools',
+    linkItems: [{ to: '/svg-translation', label: 'Map translation editor' }],
+  },
+  {
+    group: 'Data Tools',
+    linkItems: [
+      { to: '/graph-viewer', label: 'Data viewer' },
+      { to: '/file-import', label: 'File import tool' },
+    ],
+  },
+  {
+    group: 'Application Development Tools',
+    linkItems: [
+      { to: '/site-text-admin', label: 'Site text user interface editor' },
+      { to: '/site-text-translation', label: 'Site text translation editor' },
+    ],
+  },
+];
+
+type LinkGroupType = {
+  group: string;
+  linkItems: LinkItemProps[];
+};
+
+function LinkGroup({ group, linkItems }: LinkGroupType) {
+  return (
+    <IonItemGroup>
+      <IonItemDivider>
+        <IonLabel>{group}</IonLabel>
+      </IonItemDivider>
+
+      {linkItems.map((linkItem) => (
+        <LinkItem key={linkItem.to} {...linkItem} />
+      ))}
+    </IonItemGroup>
+  );
+}
+
 export function HomePage() {
   return (
     <IonContent>
       <IonList>
-        <IonItemGroup>
-          <IonItemDivider>
-            <IonLabel>Document Tools</IonLabel>
-          </IonItemDivider>
-
-          <IonItem routerLink="/documents-list">
-            <IonLabel>Documents viewer</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink={'/translator-qa'}>
-            <IonLabel>Question & Answer editor for translators</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink={'/reader-qa'}>
-            <IonLabel>Question & Answer editor for readers</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink={'/feedback'}>
-            <IonLabel>Feedback</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink="/translation">
-            <IonLabel>Translation editor</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink="/commentary">
-            <IonLabel>Commentary viewer</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink="/versification">
-            <IonLabel>Versification editor</IonLabel>
-          </IonItem>
-          <IonItem routerLink="/alignment">
-            <IonLabel>Alignment editor</IonLabel>
-          </IonItem>
-        </IonItemGroup>
-
-        <IonItemGroup>
-          <IonItemDivider>
-            <IonLabel>Language Tools</IonLabel>
-          </IonItemDivider>
-
-          <IonItem routerLink="/dictionary">
-            <IonLabel>Dictionary editor</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink="/bilingual-dictionary">
-            <IonLabel>Bilingual dictionary linker</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink="/phrase-book">
-            <IonLabel>Phrase-book editor</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink="/phrase-book-v2">
-            <IonLabel>Phrase-book editor v2</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink="/lexicon">
-            <IonLabel>Lexicon editor</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink="/grammar">
-            <IonLabel>Grammar editor</IonLabel>
-          </IonItem>
-        </IonItemGroup>
-
-        <IonItemGroup>
-          <IonItemDivider>
-            <IonLabel>Media Tools</IonLabel>
-          </IonItemDivider>
-
-          <IonItem routerLink="/svg-translation">
-            <IonLabel>Map translation editor</IonLabel>
-          </IonItem>
-        </IonItemGroup>
-
-        <IonItemGroup>
-          <IonItemDivider>
-            <IonLabel>Data Tools</IonLabel>
-          </IonItemDivider>
-
-          <IonItem routerLink="/graph-viewer">
-            <IonLabel>Data viewer</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink="/file-import">
-            <IonLabel>File import tool</IonLabel>
-          </IonItem>
-        </IonItemGroup>
-
-        <IonItemGroup>
-          <IonItemDivider>
-            <IonLabel>Application Development Tools</IonLabel>
-          </IonItemDivider>
-
-          <IonItem routerLink="/site-text-admin">
-            <IonLabel>Site text user interface editor</IonLabel>
-          </IonItem>
-
-          <IonItem routerLink="/site-text-translation">
-            <IonLabel>Site text translation editor</IonLabel>
-          </IonItem>
-        </IonItemGroup>
+        {linkGroups.map(({ group, linkItems }) => (
+          <LinkGroup key={group} group={group} linkItems={linkItems} />
+        ))}
       </IonList>
     </IonContent>
   );

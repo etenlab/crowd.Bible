@@ -20,13 +20,18 @@ export const roles = [
   { value: 'reader', label: 'Reader Role' },
 ];
 
+export const connectivities = [
+  { value: 'online', label: 'Online' },
+  { value: 'offline', label: 'Offline' },
+];
+
 export function SettingsPage() {
   const history = useHistory();
   const {
     states: {
-      global: { user },
+      global: { user, connectivity },
     },
-    actions: { setRole },
+    actions: { setRole, setConnectivity },
   } = useAppContext();
 
   const [selectedRole, setSelectedRole] = useState<RoleType>('translator');
@@ -44,9 +49,20 @@ export function SettingsPage() {
     setSelectedRole(role);
   };
 
+  const handleChangeConnectivity = (
+    _event: React.SyntheticEvent<Element, Event>,
+    value: 'online' | 'offline',
+  ) => {
+    if (value === 'online') {
+      setConnectivity(true);
+    } else {
+      setConnectivity(false);
+    }
+  };
+
   const handleClickSave = () => {
     setRole(selectedRole);
-    history.push('/documents-list');
+    history.push('/home');
   };
 
   return (
@@ -61,6 +77,13 @@ export function SettingsPage() {
           items={roles}
           value={selectedRole}
           onChange={handleChangeRole}
+        />
+        <VerticalRadioList
+          label="Network"
+          withUnderline={true}
+          items={connectivities}
+          value={connectivity ? 'online' : 'offline'}
+          onChange={handleChangeConnectivity}
         />
         <Button
           variant="contained"
