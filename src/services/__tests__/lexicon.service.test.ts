@@ -1,8 +1,27 @@
-import LexiconService from '../lexicon.service';
+import getSingletons from '../../singletons';
+import { getTestDataSource } from 'src/data-source';
+import LexiconService, { Lexicon } from '../lexicon.service';
 
 describe(LexiconService, () => {
+  const getService = () =>
+    getSingletons(getTestDataSource()).then(
+      ({ lexiconService }) => lexiconService,
+    );
+
   describe('Core Types', () => {
-    it.todo('Creates lexica');
+    it('Creates lexica', async () => {
+      const service = await getService();
+
+      const d: Partial<Lexicon> = {
+        name: 'foo',
+      };
+
+      const created = await service.lexica.create(d);
+      expect(created).toMatchObject(d);
+
+      const found = await service.lexica.findOneBy({ id: created.id });
+      expect(found).toMatchObject(created);
+    });
     it.todo('Creates lexical categories');
     it.todo('Creates grammatical categories');
     it.todo('Creates grammemes');
