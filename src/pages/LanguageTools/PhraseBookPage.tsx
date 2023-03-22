@@ -1,9 +1,10 @@
-import { Autocomplete, Button, FiPlus, Input } from '@eten-lab/ui-kit';
+import { MuiMaterial } from '@eten-lab/ui-kit';
+import { Button, FiPlus } from '@eten-lab/ui-kit';
 import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
-import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 const { FiltersAndSearch, TitleWithIcon, WordTable } = CrowdBibleUI;
+const { Box } = MuiMaterial;
 
 type Content = {
   content: string;
