@@ -7,6 +7,7 @@ import {
   closeFeedback as closeFeedbackAction,
   setTranslatedMap as setTranslatedMapAction,
   setPrefersColorScheme as setPrefersColorSchemeAction,
+  setConnectivity as setConnectivityAction,
   logout as logoutAction,
 } from '@/reducers/global.actions';
 
@@ -44,6 +45,10 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     [],
   );
 
+  const setConnectivity = useCallback((connectivity: boolean) => {
+    dispatchRef.current.dispatch(setConnectivityAction(connectivity));
+  }, []);
+
   const alertFeedback = useCallback(
     (feedbackType: FeedbackType, message: string) => {
       dispatchRef.current.dispatch(alertFeedbackAction(feedbackType, message));
@@ -67,6 +72,7 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     setRole,
     setUser,
     logout,
+    setConnectivity,
     setPrefersColorScheme,
     alertFeedback,
     closeFeedback,

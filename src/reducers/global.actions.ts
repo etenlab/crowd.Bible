@@ -13,6 +13,7 @@ export const actions = {
   SET_USER: 'SET_USER',
   SET_PREFERS_COLOR_SCHEME: 'SET_PREFERS_COLOR_SCHEME',
   SET_TRANSLATED_MAP: 'SET_TRANSLATED_MAP',
+  SET_CONNECTIVITY: 'SET_CONNECTIVITY',
   LOGOUT: 'LOGOUT',
 };
 
@@ -58,6 +59,13 @@ export function setTranslatedMap(translatedMap: TranslatedMap) {
   return {
     type: actions.SET_TRANSLATED_MAP,
     payload: translatedMap,
+  };
+}
+
+export function setConnectivity(connectivity: boolean) {
+  return {
+    type: actions.SET_CONNECTIVITY,
+    payload: connectivity,
   };
 }
 
