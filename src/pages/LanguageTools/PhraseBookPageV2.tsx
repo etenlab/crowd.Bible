@@ -1,25 +1,16 @@
-import {
-  Autocomplete,
-  Button,
-  FiPlus,
-  Input,
-  BiVolumeFull,
-} from '@eten-lab/ui-kit';
+import { CrowdBibleUI, Button, FiPlus } from '@eten-lab/ui-kit';
 
-import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
-import { Box, Divider } from '@mui/material';
 import { useEffect, useState } from 'react';
-import {
-  ListItemButton,
-  ListItemText,
-  Typography,
-  ListItem,
-  IconButton,
-  PaletteColor,
-} from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 
-const { TitleWithIcon, VoteButtonGroup } = CrowdBibleUI;
+const {
+  TitleWithIcon,
+  FiltersAndSearch,
+  ItemsClickableList,
+  SimpleFormDialog,
+  ItemContentListEdit,
+} = CrowdBibleUI;
 
 type Content = {
   content: string;
@@ -30,6 +21,13 @@ type Content = {
 type Item = {
   title: Content;
   contents: Content[];
+};
+
+type TUpOrDownVote = 'upVote' | 'downVote';
+
+type SetPhraseVotesParams = {
+  titleContent: string;
+  upOrDown: TUpOrDownVote;
 };
 
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
@@ -88,15 +86,72 @@ const PADDING = 20;
 
 export function PhraseBookPageV2() {
   const [phrases, setPhrases] = useState([] as Array<Item>);
-  const [selectedTerm, setSelectedTerm] = useState(null as unknown as Item);
+  const [selectedPhrase, setSelectedPhrase] = useState(null as unknown as Item);
+  const [isDialogOpened, setIsDialogOpened] = useState(false);
 
   useEffect(() => {
     setPhrases(MOCK_PHRASES);
   }, []);
 
+  const changePhraseVotes = ({
+    titleContent,
+    upOrDown,
+  }: SetPhraseVotesParams) => {
+    const phraseIdx = phrases.findIndex(
+      (ph) => ph.title.content === titleContent,
+    );
+    phrases[phraseIdx].title[upOrDown] += 1;
+    setPhrases([...phrases]);
+  };
+
+  const addNewPhrase = (value: string) => {
+    setPhrases([
+      ...phrases,
+      {
+        title: { content: value, upVote: 0, downVote: 0 },
+        contents: [],
+      },
+    ]);
+    setIsDialogOpened(false);
+  };
+
+  const changePhraseContent = ({
+    itemTitleContent, // this is title's, content (type string), i.e. value of the title of the phrase - using here as uniq id
+    contentIndex,
+    newContent, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
+  }: {
+    itemTitleContent: string;
+    contentIndex: number;
+    newContent: Content;
+  }) => {
+    const phraseIdx = phrases.findIndex(
+      (ph) => ph.title.content === itemTitleContent,
+    );
+
+    // const newPhrases = [...phrases];
+    phrases[phraseIdx].contents[contentIndex] = newContent;
+
+    setPhrases([...phrases]);
+  };
+
+  const addPhraseContent = ({
+    itemTitleContent, // this is title's, content (type string), i.e. value of the title of the phrase - using here as uniq id
+    newContent, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
+  }: {
+    itemTitleContent: string;
+    newContent: Content;
+  }) => {
+    const phraseIdx = phrases.findIndex(
+      (ph) => ph.title.content === itemTitleContent,
+    );
+    // const newPhrases = [...phrases];
+    phrases[phraseIdx].contents.push(newContent);
+    setPhrases(phrases);
+  };
+
   return (
     <IonContent>
-      {!selectedTerm ? (
+      {!selectedPhrase ? (
         <Box
           display={'flex'}
           flexDirection={'column'}
@@ -121,30 +176,13 @@ export function PhraseBookPageV2() {
             </Box>
           </Box>
 
-          <Box
-            width={'100%'}
-            padding={`${PADDING}px 0 ${PADDING}px`}
-            display={'flex'}
-            flexDirection={'row'}
-            justifyContent={'space-between'}
-            gap={`${PADDING}px`}
-          >
-            <Box flex={1}>
-              <Autocomplete
-                fullWidth
-                options={MOCK_ETHNOLOGUE_OPTIONS}
-                label="Ethnologue"
-              ></Autocomplete>
-            </Box>
-            <Box flex={1}>
-              <Input fullWidth label="Language ID"></Input>
-            </Box>
-          </Box>
+          <FiltersAndSearch
+            ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
+            setEthnologue={() => console.log('setEthnologue!')}
+            setLanguage={(l: string) => console.log('setLanguage! ' + l)}
+            setSearch={(s: string) => console.log('setSearch' + s)}
+          />
           <Box display={'flex'} flexDirection="column" width={1}>
-            <Box width={1} paddingBottom={`${PADDING}px`}>
-              <Input fullWidth label="Search..."></Input>
-            </Box>
-
             <Box
               width={1}
               flexDirection={'row'}
@@ -162,38 +200,36 @@ export function PhraseBookPageV2() {
                   variant="contained"
                   startIcon={<FiPlus />}
                   fullWidth
-                  onClick={() => alert('click!!!')}
+                  onClick={() => setIsDialogOpened(true)}
                 >
                   New Phrase
                 </Button>
               </Box>
             </Box>
             <Divider />
-            {phrases.map((kt) => (
-              <Box display={'flex'} key={kt.title.content}>
-                <Box flex={4}>
-                  <ListItemButton onClick={() => setSelectedTerm(kt)}>
-                    <ListItemText primary={kt.title.content} color="dark" />
-                  </ListItemButton>
-                </Box>
-                <Box display={'flex'} flex={1}>
-                  <VoteButtonGroup
-                    item
-                    container
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="flex-end"
-                    like
-                    dislike
-                    likeCount={kt.title.upVote}
-                    dislikeCount={kt.title.downVote}
-                    setDislike={() => console.log('dis')}
-                    setLike={() => console.log('like')}
-                  ></VoteButtonGroup>
-                </Box>
-              </Box>
-            ))}
+            <ItemsClickableList
+              items={phrases}
+              setSelectedItem={setSelectedPhrase}
+              setLikeItem={(id) =>
+                changePhraseVotes({
+                  titleContent: id,
+                  upOrDown: 'upVote',
+                })
+              }
+              setDislikeItem={(id) =>
+                changePhraseVotes({
+                  titleContent: id,
+                  upOrDown: 'downVote',
+                })
+              }
+            ></ItemsClickableList>
           </Box>
+          <SimpleFormDialog
+            title={'Enter new Phrase'}
+            isOpened={isDialogOpened}
+            handleCancel={() => setIsDialogOpened(false)}
+            handleOk={addNewPhrase}
+          />
         </Box>
       ) : (
         <Box
@@ -203,45 +239,13 @@ export function PhraseBookPageV2() {
           alignItems={'start'}
           padding={`${PADDING}px`}
         >
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
-            <TitleWithIcon
-              onClose={() => {}}
-              onBack={() => setSelectedTerm(null as unknown as Item)}
-              withBackIcon={true}
-              withCloseIcon={false}
-              label={selectedTerm.title.content}
-            ></TitleWithIcon>
-            <IconButton
-              onClick={() => alert('sound!')}
-              sx={{
-                color: (theme) => (theme.palette.dark as PaletteColor).main,
-                margitLeft: '20px',
-              }}
-            >
-              <BiVolumeFull />
-            </IconButton>
-          </Box>
-          {selectedTerm.contents.map(({ content, upVote, downVote }) => (
-            <ListItem
-              sx={{
-                display: 'list-item',
-                padding: 0,
-                fontSize: '12px',
-                lineHeight: '17px',
-              }}
-              key={content}
-            >
-              {content}
-              <div>
-                <VoteButtonGroup
-                  likeCount={upVote}
-                  dislikeCount={downVote}
-                  like={false}
-                  dislike={false}
-                />
-              </div>
-            </ListItem>
-          ))}
+          <ItemContentListEdit
+            item={selectedPhrase}
+            onBack={() => setSelectedPhrase(null as unknown as Item)}
+            buttonText="New Definition"
+            changeContent={changePhraseContent}
+            addContent={addPhraseContent}
+          />
         </Box>
       )}
     </IonContent>
