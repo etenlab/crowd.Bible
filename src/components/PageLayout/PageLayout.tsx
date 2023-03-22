@@ -8,10 +8,9 @@ import {
   IonContent,
   IonToolbar,
   IonList,
-  IonLabel,
-  IonItem,
 } from '@ionic/react';
 
+import { LinkItem } from '../LinkItem';
 import './PageLayout.css';
 
 import {
@@ -38,10 +37,16 @@ export function PageLayout({ children }: PageLayoutProps) {
     states: {
       global: { user, snack, isNewDiscussion, isNewNotification, loading },
     },
-    actions: { closeFeedback },
+    actions: { closeFeedback, setPrefersColorScheme, logout },
   } = useAppContext();
 
-  const [themeMode, setThemeMode] = useState<'dark' | 'light'>('light');
+  const [themeMode, setThemeMode] = useState<'dark' | 'light'>(() => {
+    if (user && user.prefersColorScheme) {
+      return user.prefersColorScheme;
+    } else {
+      return 'light';
+    }
+  });
   const ref = useRef<HTMLIonMenuElement>(null);
   const prefersDarkRef = useRef<MediaQueryList | null>(null);
   const bodyRef = useRef<HTMLElement | null>(null);
@@ -60,12 +65,18 @@ export function PageLayout({ children }: PageLayoutProps) {
 
   useEffect(() => {
     bodyRef.current = window.document.body;
+
+    if (user && user.prefersColorScheme) {
+      toggleDarkTheme(user.prefersColorScheme === 'dark');
+      return;
+    }
+
     prefersDarkRef.current = window.matchMedia('(prefers-color-scheme: dark)');
     prefersDarkRef.current.addListener((e) => {
       toggleDarkTheme(e.matches);
     });
     toggleDarkTheme(prefersDarkRef.current.matches);
-  }, []);
+  }, [user]);
 
   const handleToggleMenu = () => {
     ref.current!.toggle();
@@ -74,13 +85,23 @@ export function PageLayout({ children }: PageLayoutProps) {
   const handleToogleTheme = () => {
     if (themeMode === 'light') {
       toggleDarkTheme(true);
+      setPrefersColorScheme('dark');
     } else {
       toggleDarkTheme(false);
+      setPrefersColorScheme('light');
     }
   };
 
+  const handleGoToHomePage = () => {
+    history.push('/home');
+  };
+
+  // const handleLogout = () => {
+  //   // logout();
+  //   history.push('/home');
+  // };
+
   let isHeader = true;
-  const qaUrl = user?.role === 'translator' ? '/translator-qa' : '/reader-qa';
 
   switch (location.pathname) {
     case '/welcome': {
@@ -128,25 +149,14 @@ export function PageLayout({ children }: PageLayoutProps) {
         ) : null}
         <IonContent>
           <IonList>
-            <IonItem routerLink="/home">
-              <IonLabel>Home</IonLabel>
-            </IonItem>
-
-            <IonItem routerLink="/language-proficiency">
-              <IonLabel>Language proficiency setting</IonLabel>
-            </IonItem>
-
-            <IonItem routerLink="/settings">
-              <IonLabel>Settings</IonLabel>
-            </IonItem>
-
-            <IonItem routerLink="/admin">
-              <IonLabel>Admin</IonLabel>
-            </IonItem>
-
-            <IonItem routerLink="/#">
-              <IonLabel>Logout</IonLabel>
-            </IonItem>
+            <LinkItem to="/home" label="Home" />
+            <LinkItem
+              to="/language-proficiency"
+              label="Language proficiency setting"
+            />
+            <LinkItem to="/settings" label="Settings" />
+            <LinkItem to="/admin" label="Admin" />
+            <LinkItem to="/home" label="Logout" />
           </IonList>
         </IonContent>
       </IonMenu>
@@ -157,6 +167,7 @@ export function PageLayout({ children }: PageLayoutProps) {
               <Toolbar
                 title="crowd.Bible"
                 themeMode={themeMode}
+                onClickTitleBtn={handleGoToHomePage}
                 onClickThemeModeBtn={handleToogleTheme}
                 isNewDiscussion={isNewDiscussion}
                 isNewNotification={isNewNotification}
@@ -182,6 +193,9 @@ export function PageLayout({ children }: PageLayoutProps) {
             anchorOrigin={{
               vertical: 'top',
               horizontal: 'center',
+            }}
+            sx={{
+              top: '70px !important',
             }}
             key="top-center"
           >

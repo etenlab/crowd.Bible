@@ -3,12 +3,12 @@ import { type SyncService } from '../services/sync.service';
 import useSingletons from './useSingletons';
 
 export default function useSyncService() {
-  const { syncService } = useSingletons();
+  const singletons = useSingletons();
   const [sync, setSync] = useState<SyncService>();
 
   useEffect(() => {
-    setSync(syncService);
-  }, [syncService]);
+    setSync(singletons?.syncService);
+  }, [singletons]);
 
   return sync;
 }

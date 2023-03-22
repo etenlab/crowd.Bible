@@ -2,6 +2,7 @@ import {
   type FeedbackType,
   type RoleType,
   type IUser,
+  type PrefersColorSchemeType,
   TranslatedMap,
 } from './global.reducer';
 
@@ -10,7 +11,10 @@ export const actions = {
   CLOSE_FEEDBACK: 'CLOSE_FEEDBACK',
   SET_ROLE: 'SET_ROLE',
   SET_USER: 'SET_USER',
+  SET_PREFERS_COLOR_SCHEME: 'SET_PREFERS_COLOR_SCHEME',
   SET_TRANSLATED_MAP: 'SET_TRANSLATED_MAP',
+  SET_CONNECTIVITY: 'SET_CONNECTIVITY',
+  LOGOUT: 'LOGOUT',
 };
 
 export function setUser(user: IUser) {
@@ -24,6 +28,13 @@ export function setRole(role: RoleType) {
   return {
     type: actions.SET_ROLE,
     payload: role,
+  };
+}
+
+export function setPrefersColorScheme(prefers: PrefersColorSchemeType) {
+  return {
+    type: actions.SET_PREFERS_COLOR_SCHEME,
+    payload: prefers,
   };
 }
 
@@ -48,5 +59,19 @@ export function setTranslatedMap(translatedMap: TranslatedMap) {
   return {
     type: actions.SET_TRANSLATED_MAP,
     payload: translatedMap,
+  };
+}
+
+export function setConnectivity(connectivity: boolean) {
+  return {
+    type: actions.SET_CONNECTIVITY,
+    payload: connectivity,
+  };
+}
+
+export function logout() {
+  return {
+    type: actions.LOGOUT,
+    payload: null,
   };
 }

@@ -1,17 +1,16 @@
 import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
 
-import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
+
+import { TranslationEditor } from '../../components/TranslationEditor';
 
 import { mockDocument } from './TranslationPage';
-import { FeedbackInput } from '../components/FeedbackInput';
 
-const { LabelWithIcon, RangeSelectableTextArea } = CrowdBibleUI;
+const { RangeSelectableTextArea } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
-export function TextPartFeedbackPage() {
-  const history = useHistory();
+export function TranslationEditPage() {
   const [range, setRange] = useState<{
     start: number | null;
     end: number | null;
@@ -27,12 +26,8 @@ export function TextPartFeedbackPage() {
     setRange({ start, end });
   };
 
-  const handleClickCancel = () => {
-    history.push('/feedback');
-  };
-
-  const feedbackInput =
-    range.start !== null && range.end !== null ? <FeedbackInput /> : null;
+  const translationEdit =
+    range.start !== null && range.end !== null ? <TranslationEditor /> : null;
 
   return (
     <IonContent>
@@ -41,19 +36,23 @@ export function TextPartFeedbackPage() {
         sx={{ height: 'calc(100vh - 68px)' }}
       >
         <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
-          <LabelWithIcon
-            label="translation"
-            icon={<FiX />}
-            color="gray"
-            onClick={handleClickCancel}
-          />
+          <Typography
+            variant="overline"
+            color="text.dark"
+            sx={{
+              paddingBottom: '16px',
+              opacity: 0.5,
+            }}
+          >
+            Original
+          </Typography>
           <RangeSelectableTextArea
             text={mockDocument}
             range={range}
             onChangeRange={handleChangeRange}
           />
         </Stack>
-        {feedbackInput}
+        <Stack sx={{ flexGrow: 1 }}>{translationEdit}</Stack>
       </Stack>
     </IonContent>
   );

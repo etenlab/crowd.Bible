@@ -3,22 +3,15 @@ import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
-import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 
 import { mockDocument } from './TranslationPage';
+import { FeedbackInput } from '../../components/FeedbackInput';
 
-import { useAppContext } from '../hooks/useAppContext';
-
-const { LabelWithIcon, RangeSelectableTextArea, QuestionCreatorBox } =
-  CrowdBibleUI;
+const { LabelWithIcon, RangeSelectableTextArea } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
-export function TextPartTranslatorQAPage() {
+export function TextPartFeedbackPage() {
   const history = useHistory();
-  const {
-    actions: { alertFeedback },
-  } = useAppContext();
-
   const [range, setRange] = useState<{
     start: number | null;
     end: number | null;
@@ -35,22 +28,11 @@ export function TextPartTranslatorQAPage() {
   };
 
   const handleClickCancel = () => {
-    history.push('/translator-qa');
+    history.push('/feedback');
   };
 
-  const handleCancel = () => {
-    handleChangeRange({ start: null, end: null });
-  };
-
-  const handleSave = (question: Question) => {
-    alertFeedback('success', 'Your question has been created!');
-    history.push('/translator-qa');
-  };
-
-  const questionCreatorBox =
-    range.start !== null && range.end !== null ? (
-      <QuestionCreatorBox onSave={handleSave} onCancel={handleCancel} />
-    ) : null;
+  const feedbackInput =
+    range.start !== null && range.end !== null ? <FeedbackInput /> : null;
 
   return (
     <IonContent>
@@ -71,7 +53,7 @@ export function TextPartTranslatorQAPage() {
             onChangeRange={handleChangeRange}
           />
         </Stack>
-        {questionCreatorBox}
+        {feedbackInput}
       </Stack>
     </IonContent>
   );

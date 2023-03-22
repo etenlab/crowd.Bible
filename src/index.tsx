@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+import App from './App';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);

@@ -3,12 +3,12 @@ import { DbService } from '../services/db.service';
 import useSingletons from './useSingletons';
 
 export default function useDbService() {
-  const { dbService } = useSingletons();
+  const singletons = useSingletons();
   const [service, setService] = useState<DbService>();
 
   useEffect(() => {
-    setService(service);
-  }, [dbService]);
+    setService(singletons?.dbService);
+  }, [singletons]);
 
   return { service };
 }

@@ -3,12 +3,12 @@ import { type SeedService } from '../services/seed.service';
 import useSingletons from './useSingletons';
 
 export default function useSeedService() {
-  const { seedService } = useSingletons();
+  const singletons = useSingletons();
   const [sync, setSync] = useState<SeedService>();
 
   useEffect(() => {
-    setSync(seedService);
-  }, [seedService]);
+    setSync(singletons?.seedService);
+  }, [singletons]);
 
   return sync;
 }

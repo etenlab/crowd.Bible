@@ -6,7 +6,7 @@ import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 
 import { mockDocument, mockRanges } from './TranslationPage';
 
-import { useAppContext } from '../hooks/useAppContext';
+import { useAppContext } from '../../hooks/useAppContext';
 
 const { DotsText, LabelWithIcon, QuestionBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;

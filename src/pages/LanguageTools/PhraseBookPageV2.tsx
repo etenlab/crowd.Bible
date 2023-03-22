@@ -33,7 +33,7 @@ type Item = {
 };
 
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
-const MOCK_KEY_TERMS: Array<Item> = [
+const MOCK_PHRASES: Array<Item> = [
   {
     title: {
       content: 'title content title content title content',
@@ -86,22 +86,12 @@ const MOCK_KEY_TERMS: Array<Item> = [
 
 const PADDING = 20;
 
-const button = (
-  <Button
-    variant="contained"
-    startIcon={<FiPlus />}
-    onClick={() => alert('click!')}
-  >
-    New Word
-  </Button>
-);
-
-export function KeyTermsPageV2() {
-  const [keyTerms, setKeyTerms] = useState([] as Array<Item>);
+export function PhraseBookPageV2() {
+  const [phrases, setPhrases] = useState([] as Array<Item>);
   const [selectedTerm, setSelectedTerm] = useState(null as unknown as Item);
 
   useEffect(() => {
-    setKeyTerms(MOCK_KEY_TERMS);
+    setPhrases(MOCK_PHRASES);
   }, []);
 
   return (
@@ -126,7 +116,7 @@ export function KeyTermsPageV2() {
                 onBack={() => {}}
                 withBackIcon={false}
                 withCloseIcon={false}
-                label="Key Terms"
+                label="Phrases"
               ></TitleWithIcon>
             </Box>
           </Box>
@@ -174,12 +164,12 @@ export function KeyTermsPageV2() {
                   fullWidth
                   onClick={() => alert('click!!!')}
                 >
-                  New Word
+                  New Phrase
                 </Button>
               </Box>
             </Box>
             <Divider />
-            {keyTerms.map((kt) => (
+            {phrases.map((kt) => (
               <Box display={'flex'} key={kt.title.content}>
                 <Box flex={4}>
                   <ListItemButton onClick={() => setSelectedTerm(kt)}>

@@ -1,5 +1,5 @@
+import { getTestDataSource } from '../../data-source';
 import getSingletons from '../../singletons';
-import { getTestDataSource } from 'src/data-source';
 import LexiconService, { Lexicon } from '../lexicon.service';
 
 describe(LexiconService, () => {

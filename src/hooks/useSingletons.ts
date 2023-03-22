@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getAppDataSource } from 'src/data-source';
+import { getAppDataSource } from '../data-source';
 import getSingletons, { ISingletons } from '../singletons';
 
 export default function useSingletons() {
