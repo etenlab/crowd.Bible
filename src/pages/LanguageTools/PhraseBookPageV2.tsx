@@ -1,4 +1,4 @@
-import { MuiMaterial } from '@eten-lab/ui-kit';
+import { MuiMaterial, useColorModeContext } from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent } from '@ionic/react';
@@ -89,6 +89,7 @@ export function PhraseBookPageV2() {
   const [phrases, setPhrases] = useState([] as Array<Item>);
   const [selectedPhrase, setSelectedPhrase] = useState(null as unknown as Item);
   const [isDialogOpened, setIsDialogOpened] = useState(false);
+  const { getColor } = useColorModeContext();
 
   useEffect(() => {
     setPhrases(MOCK_PHRASES);
@@ -192,7 +193,7 @@ export function PhraseBookPageV2() {
               alignItems={'center'}
             >
               <Box flex={3}>
-                <Typography variant="subtitle1" sx={{ color: '#8F8F8F' }}>
+                <Typography variant="subtitle1" color={'GrayText'}>
                   Phrase
                 </Typography>
               </Box>
