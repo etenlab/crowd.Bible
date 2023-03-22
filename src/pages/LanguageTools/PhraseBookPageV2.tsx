@@ -1,4 +1,10 @@
-import { CrowdBibleUI, Button, FiPlus, BiVolumeFull } from '@eten-lab/ui-kit';
+import {
+  CrowdBibleUI,
+  Button,
+  FiPlus,
+  BiVolumeFull,
+  Input,
+} from '@eten-lab/ui-kit';
 
 import { IonContent } from '@ionic/react';
 import { useEffect, useState } from 'react';
@@ -12,7 +18,8 @@ import {
 } from '@mui/material';
 import { FiltersAndSearch } from '../../local-ui-kit/FiltersAndSearch';
 import { ItemsClickableList } from '../../local-ui-kit/ItemsClickableList';
-import SimpleFormDialog from '../../local-ui-kit/SimpleFormDialog/SimpleFormDialog';
+import { SimpleFormDialog } from '../../local-ui-kit/SimpleFormDialog';
+import { DebounceInput } from 'react-debounce-input';
 
 const { TitleWithIcon, VoteButtonGroup } = CrowdBibleUI;
 
@@ -27,9 +34,11 @@ type Item = {
   contents: Content[];
 };
 
+type TUpOrDownVote = 'upVote' | 'downVote';
+
 type SetPhraseVotesParams = {
   titleContent: string;
-  upOrDown: 'upVote' | 'downVote';
+  upOrDown: TUpOrDownVote;
 };
 
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
@@ -117,6 +126,40 @@ export function PhraseBookPageV2() {
     setIsDialogOpened(false);
   };
 
+  const changePhraseContent = ({
+    itemTitleContent, // this is title's, content (type string), i.e. value of the title of the phrase - using here as uniq id
+    contentIndex,
+    newContent, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
+  }: {
+    itemTitleContent: string;
+    contentIndex: number;
+    newContent: Content;
+  }) => {
+    const phraseIdx = phrases.findIndex(
+      (ph) => ph.title.content === itemTitleContent,
+    );
+
+    // const newPhrases = [...phrases];
+    phrases[phraseIdx].contents[contentIndex] = newContent;
+
+    setPhrases([...phrases]);
+  };
+
+  const addPhraseContent = ({
+    itemTitleContent, // this is title's, content (type string), i.e. value of the title of the phrase - using here as uniq id
+    newContent, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
+  }: {
+    itemTitleContent: string;
+    newContent: Content;
+  }) => {
+    const phraseIdx = phrases.findIndex(
+      (ph) => ph.title.content === itemTitleContent,
+    );
+    // const newPhrases = [...phrases];
+    phrases[phraseIdx].contents.push(newContent);
+    setPhrases(phrases);
+  };
+
   return (
     <IonContent>
       {!selectedPhrase ? (
@@ -193,6 +236,7 @@ export function PhraseBookPageV2() {
             ></ItemsClickableList>
           </Box>
           <SimpleFormDialog
+            title={'Enter new Phrase'}
             isOpened={isDialogOpened}
             handleCancel={() => setIsDialogOpened(false)}
             handleOk={addNewPhrase}
@@ -210,6 +254,8 @@ export function PhraseBookPageV2() {
             item={selectedPhrase}
             onBack={() => setSelectedPhrase(null as unknown as Item)}
             buttonText="New Definition"
+            changeContent={changePhraseContent}
+            addContent={addPhraseContent}
           />
         </Box>
       )}
@@ -221,13 +267,62 @@ type ItemContentListEditProps = {
   item: Item;
   onBack: () => void;
   buttonText: string;
+  changeContent: (params: {
+    itemTitleContent: string;
+    contentIndex: number;
+    newContent: Content;
+  }) => void;
+  addContent: (params: {
+    itemTitleContent: string;
+    newContent: Content;
+  }) => void;
 };
 
 function ItemContentListEdit({
   item,
   onBack,
   buttonText,
+  changeContent,
+  addContent,
 }: ItemContentListEditProps) {
+  const [isDialogOpened, setIsDialogOpened] = useState(false);
+  const [itemIdxEditting, setItemIdxEditting] = useState(
+    null as unknown as number,
+  );
+
+  const changeContentVotes = (idx: number, upOrDown: TUpOrDownVote) => {
+    const newContent: Content = {
+      ...item.contents[idx],
+      [upOrDown]: item.contents[idx][upOrDown] + 1,
+    };
+    changeContent({
+      itemTitleContent: item.title.content,
+      contentIndex: idx,
+      newContent,
+    });
+  };
+
+  const addNewContent = (value: string) => {
+    const newContent: Content = {
+      content: value,
+      upVote: 0,
+      downVote: 0,
+    };
+    addContent({ itemTitleContent: item.title.content, newContent });
+  };
+
+  const changeContentValue = (idx: number, newContentValue: string) => {
+    const newContent: Content = {
+      ...item.contents[idx],
+      content: newContentValue,
+    };
+    changeContent({
+      itemTitleContent: item.title.content,
+      contentIndex: idx,
+      newContent,
+    });
+  };
+
   return (
     <>
       <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
@@ -248,7 +343,7 @@ function ItemContentListEdit({
           <BiVolumeFull />
         </IconButton>
       </Box>
-      {item.contents.map(({ content, upVote, downVote }) => (
+      {item.contents.map(({ content, upVote, downVote }, idx) => (
         <ListItem
           sx={{
             display: 'list-item',
@@ -258,20 +353,49 @@ function ItemContentListEdit({
           }}
           key={content}
         >
-          {content}
+          {itemIdxEditting === idx ? (
+            // <Input value={content} onBlur={(v) => changeContentValue(idx, v.target.value)} />
+            <DebounceInput
+              element={Input}
+              debounceTimeout={500}
+              value={content}
+              onChange={(v) => changeContentValue(idx, v.target.value)}
+              onBlur={() => setItemIdxEditting(null as unknown as number)}
+            />
+          ) : (
+            <Typography variant="body1" onClick={() => setItemIdxEditting(idx)}>
+              {content}
+            </Typography>
+          )}
           <div>
             <VoteButtonGroup
               likeCount={upVote}
               dislikeCount={downVote}
               like={false}
               dislike={false}
+              setDislike={() => changeContentVotes(idx, 'downVote')}
+              setLike={() => changeContentVotes(idx, 'upVote')}
             />
           </div>
         </ListItem>
       ))}
-      <Button fullWidth variant="contained" startIcon={<FiPlus />}>
+      <Button
+        fullWidth
+        variant="contained"
+        startIcon={<FiPlus />}
+        onClick={() => setIsDialogOpened(true)}
+      >
         {buttonText}
       </Button>
+      <SimpleFormDialog
+        title={'Enter new Definition'}
+        isOpened={isDialogOpened}
+        handleCancel={() => setIsDialogOpened(false)}
+        handleOk={(value) => {
+          addNewContent(value);
+          setIsDialogOpened(false);
+        }}
+      />
     </>
   );
 }
