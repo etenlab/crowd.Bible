@@ -3,8 +3,7 @@ import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { FiltersAndSearch } from '../../local-ui-kit/FiltersAndSearch';
-const { TitleWithIcon, WordTable } = CrowdBibleUI;
+const { FiltersAndSearch, TitleWithIcon, WordTable } = CrowdBibleUI;
 
 type Content = {
   content: string;

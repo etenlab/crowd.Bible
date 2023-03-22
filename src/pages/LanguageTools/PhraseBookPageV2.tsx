@@ -3,12 +3,14 @@ import { CrowdBibleUI, Button, FiPlus } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { Box, Divider, Typography } from '@mui/material';
-import { FiltersAndSearch } from '../../local-ui-kit/FiltersAndSearch';
-import { ItemsClickableList } from '../../local-ui-kit/ItemsClickableList';
-import { SimpleFormDialog } from '../../local-ui-kit/SimpleFormDialog';
-import { ItemContentListEdit } from '../../local-ui-kit/ItemContentListEdit';
 
-const { TitleWithIcon, VoteButtonGroup } = CrowdBibleUI;
+const {
+  TitleWithIcon,
+  FiltersAndSearch,
+  ItemsClickableList,
+  SimpleFormDialog,
+  ItemContentListEdit,
+} = CrowdBibleUI;
 
 type Content = {
   content: string;

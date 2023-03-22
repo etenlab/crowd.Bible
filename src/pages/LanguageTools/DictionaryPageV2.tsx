@@ -18,9 +18,8 @@ import {
   IconButton,
   PaletteColor,
 } from '@mui/material';
-import { FiltersAndSearch } from '../../local-ui-kit/FiltersAndSearch';
 
-const { TitleWithIcon, VoteButtonGroup } = CrowdBibleUI;
+const { FiltersAndSearch, TitleWithIcon, VoteButtonGroup } = CrowdBibleUI;
 
 type Content = {
   content: string;
@@ -135,8 +134,8 @@ export function DictionaryPageV2() {
           <FiltersAndSearch
             ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
             setEthnologue={() => console.log('setEthnologue!')}
-            setLanguage={(l) => console.log('setLanguage! ' + l)}
-            setSearch={(s) => console.log('setSearch' + s)}
+            setLanguage={(l: string) => console.log('setLanguage! ' + l)}
+            setSearch={(s: string) => console.log('setSearch' + s)}
           />
 
           <Box display={'flex'} flexDirection="column" width={1}>
