@@ -193,7 +193,7 @@ export function PhraseBookPageV2() {
               alignItems={'center'}
             >
               <Box flex={3}>
-                <Typography variant="subtitle1" color={'GrayText'}>
+                <Typography variant="subtitle1" color={'text.gray'}>
                   Phrase
                 </Typography>
               </Box>

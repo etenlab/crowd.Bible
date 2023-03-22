@@ -1,9 +1,4 @@
-import {
-  Button,
-  FiPlus,
-  BiVolumeFull,
-  useColorModeContext,
-} from '@eten-lab/ui-kit';
+import { Button, FiPlus, BiVolumeFull } from '@eten-lab/ui-kit';
 
 import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
@@ -98,7 +93,6 @@ const button = (
 export function DictionaryPageV2() {
   const [keyTerms, setKeyTerms] = useState([] as Array<Item>);
   const [selectedTerm, setSelectedTerm] = useState(null as unknown as Item);
-  const { getColor } = useColorModeContext();
 
   useEffect(() => {
     setKeyTerms(MOCK_KEY_TERMS);
@@ -147,7 +141,7 @@ export function DictionaryPageV2() {
               alignItems={'center'}
             >
               <Box flex={3}>
-                <Typography variant="subtitle1" color={'GrayText'}>
+                <Typography variant="subtitle1" color={'text.gray'}>
                   Phrase
                 </Typography>
               </Box>
