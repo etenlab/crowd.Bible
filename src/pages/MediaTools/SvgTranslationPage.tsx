@@ -1,7 +1,7 @@
+import { MuiMaterial } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { type INode, parseSync, stringify } from 'svgson';
-import { Box, Typography } from '@mui/material';
 import {
   Alert,
   Autocomplete,
@@ -9,11 +9,14 @@ import {
   Input,
   CrowdBibleUI,
   BiRightArrowAlt,
+  Typography,
 } from '@eten-lab/ui-kit';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { DebounceInput } from 'react-debounce-input';
 import { useAppContext } from '@/hooks/useAppContext';
 import { useHistory } from 'react-router';
+
+const { Box } = MuiMaterial;
 
 type Item = {
   label: string;

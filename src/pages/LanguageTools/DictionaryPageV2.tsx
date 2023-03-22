@@ -1,10 +1,4 @@
-import {
-  Autocomplete,
-  Button,
-  FiPlus,
-  Input,
-  BiVolumeFull,
-} from '@eten-lab/ui-kit';
+import { Button, FiPlus, BiVolumeFull } from '@eten-lab/ui-kit';
 
 import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
@@ -147,7 +141,7 @@ export function DictionaryPageV2() {
               alignItems={'center'}
             >
               <Box flex={3}>
-                <Typography variant="subtitle1" sx={{ color: '#8F8F8F' }}>
+                <Typography variant="subtitle1" color={'text.gray'}>
                   Phrase
                 </Typography>
               </Box>
