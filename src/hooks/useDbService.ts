@@ -1,19 +1,14 @@
 import { useEffect, useState } from 'react';
-import { AppDataSource } from '../data-source';
 import { DbService } from '../services/db.service';
+import useSingletons from './useSingletons';
 
 export default function useDbService() {
+  const { dbService } = useSingletons();
   const [service, setService] = useState<DbService>();
 
   useEffect(() => {
-    const timerID = setTimeout(() => {
-      setService(new DbService(AppDataSource));
-    }, 1000);
-
-    return () => {
-      clearTimeout(timerID);
-    };
-  }, []);
+    setService(service);
+  }, [dbService]);
 
   return { service };
 }

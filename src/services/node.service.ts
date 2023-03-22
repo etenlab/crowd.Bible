@@ -4,39 +4,19 @@ import { NodeRepository } from '../repositories/node/node.repository';
 import { RelationshipPropertyKeyRepository } from '../repositories/relationship/relationship-property-key.repository';
 import { RelationshipPropertyValueRepository } from '../repositories/relationship/relationship-property-value.repository';
 import { RelationshipRepository } from '../repositories/relationship/relationship.repository';
-import { type DbService } from './db.service';
 import { type Node } from '../models/node/node.entity';
 import { type Relationship } from '../models/relationship/relationship.entity';
-import { tableNodeToTable } from '../utils/table';
-import { type SyncService } from './sync.service';
 
 export class NodeService {
-  nodeRepo!: NodeRepository;
-  nodePropertyKeyRepo!: NodePropertyKeyRepository;
-  nodePropertyValueRepo!: NodePropertyValueRepository;
+  constructor(
+    private readonly nodeRepo: NodeRepository,
+    private readonly nodePropertyKeyRepo: NodePropertyKeyRepository,
+    private readonly nodePropertyValueRepo: NodePropertyValueRepository,
 
-  relationshipRepo!: RelationshipRepository;
-  relationshipPropertyKeyRepo!: RelationshipPropertyKeyRepository;
-  relationshipPropertyValueRepo!: RelationshipPropertyValueRepository;
-
-  constructor(dbService: DbService, syncService: SyncService) {
-    this.nodeRepo = new NodeRepository(dbService, syncService);
-    this.nodePropertyKeyRepo = new NodePropertyKeyRepository(
-      dbService,
-      syncService,
-    );
-    this.nodePropertyValueRepo = new NodePropertyValueRepository(
-      dbService,
-      syncService,
-    );
-    this.relationshipRepo = new RelationshipRepository(dbService, syncService);
-    this.relationshipPropertyKeyRepo = new RelationshipPropertyKeyRepository(
-      dbService,
-      syncService,
-    );
-    this.relationshipPropertyValueRepo =
-      new RelationshipPropertyValueRepository(dbService, syncService);
-  }
+    private readonly relationshipRepo: RelationshipRepository,
+    private readonly relationshipPropertyKeyRepo: RelationshipPropertyKeyRepository,
+    private readonly relationshipPropertyValueRepo: RelationshipPropertyValueRepository,
+  ) {}
 
   // Layer 2
   async createNodeFromObject(type_name: string, obj: object): Promise<Node> {

@@ -1,4 +1,4 @@
-import { type DbService } from '../services/db.service';
+import { DbService } from 'src/services/db.service';
 import { SyncSession } from '../models/Sync';
 
 export class SyncSessionRepository {

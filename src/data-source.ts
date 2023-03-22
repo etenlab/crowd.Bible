@@ -1,6 +1,16 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
+import {
+  Node,
+  NodePropertyKey,
+  NodePropertyValue,
+  NodeType,
+  Relationship,
+  RelationshipPropertyKey,
+  RelationshipPropertyValue,
+  RelationshipType,
+} from './models';
 
 const options: SqljsConnectionOptions = {
   type: 'sqljs',
@@ -9,17 +19,27 @@ const options: SqljsConnectionOptions = {
   logging: ['error', 'query', 'schema'],
   synchronize: true,
   migrationsRun: true,
-  entities: ['models/**/*.entities.ts'],
+  entities: [
+    Node,
+    NodeType,
+    NodePropertyKey,
+    NodePropertyValue,
+    Relationship,
+    RelationshipType,
+    RelationshipPropertyKey,
+    RelationshipPropertyValue,
+  ],
   migrations: ['migrations/*.ts'],
 };
 
-export const AppDataSource = new DataSource({
-  ...options,
-  location: 'graph.db',
-});
-
-export const TestDataSource = new DataSource({
-  ...options,
-  location: 'test.db',
-  dropSchema: true,
-});
+export const getAppDataSource = () =>
+  new DataSource({
+    ...options,
+    location: 'graph.db',
+  });
+export const getTestDataSource = () =>
+  new DataSource({
+    ...options,
+    location: 'test.db',
+    dropSchema: true,
+  });
