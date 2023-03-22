@@ -1,25 +1,12 @@
-import {
-  CrowdBibleUI,
-  Button,
-  FiPlus,
-  BiVolumeFull,
-  Input,
-} from '@eten-lab/ui-kit';
+import { CrowdBibleUI, Button, FiPlus } from '@eten-lab/ui-kit';
 
 import { IonContent } from '@ionic/react';
 import { useEffect, useState } from 'react';
-import {
-  IconButton,
-  PaletteColor,
-  Box,
-  Divider,
-  Typography,
-  ListItem,
-} from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import { FiltersAndSearch } from '../../local-ui-kit/FiltersAndSearch';
 import { ItemsClickableList } from '../../local-ui-kit/ItemsClickableList';
 import { SimpleFormDialog } from '../../local-ui-kit/SimpleFormDialog';
-import { DebounceInput } from 'react-debounce-input';
+import { ItemContentListEdit } from '../../local-ui-kit/ItemContentListEdit';
 
 const { TitleWithIcon, VoteButtonGroup } = CrowdBibleUI;
 
@@ -260,142 +247,5 @@ export function PhraseBookPageV2() {
         </Box>
       )}
     </IonContent>
-  );
-}
-
-type ItemContentListEditProps = {
-  item: Item;
-  onBack: () => void;
-  buttonText: string;
-  changeContent: (params: {
-    itemTitleContent: string;
-    contentIndex: number;
-    newContent: Content;
-  }) => void;
-  addContent: (params: {
-    itemTitleContent: string;
-    newContent: Content;
-  }) => void;
-};
-
-function ItemContentListEdit({
-  item,
-  onBack,
-  buttonText,
-  changeContent,
-  addContent,
-}: ItemContentListEditProps) {
-  const [isDialogOpened, setIsDialogOpened] = useState(false);
-  const [itemIdxEditting, setItemIdxEditting] = useState(
-    null as unknown as number,
-  );
-
-  const changeContentVotes = (idx: number, upOrDown: TUpOrDownVote) => {
-    const newContent: Content = {
-      ...item.contents[idx],
-      [upOrDown]: item.contents[idx][upOrDown] + 1,
-    };
-    changeContent({
-      itemTitleContent: item.title.content,
-      contentIndex: idx,
-      newContent,
-    });
-  };
-
-  const addNewContent = (value: string) => {
-    const newContent: Content = {
-      content: value,
-      upVote: 0,
-      downVote: 0,
-    };
-    addContent({ itemTitleContent: item.title.content, newContent });
-  };
-
-  const changeContentValue = (idx: number, newContentValue: string) => {
-    const newContent: Content = {
-      ...item.contents[idx],
-      content: newContentValue,
-    };
-    changeContent({
-      itemTitleContent: item.title.content,
-      contentIndex: idx,
-      newContent,
-    });
-  };
-
-  return (
-    <>
-      <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
-        <TitleWithIcon
-          onClose={() => {}}
-          onBack={onBack}
-          withBackIcon={true}
-          withCloseIcon={false}
-          label={item.title.content}
-        ></TitleWithIcon>
-        <IconButton
-          onClick={() => alert('sound!')}
-          sx={{
-            color: (theme) => (theme.palette.dark as PaletteColor).main,
-            margitLeft: '20px',
-          }}
-        >
-          <BiVolumeFull />
-        </IconButton>
-      </Box>
-      {item.contents.map(({ content, upVote, downVote }, idx) => (
-        <ListItem
-          sx={{
-            display: 'list-item',
-            padding: 0,
-            fontSize: '12px',
-            lineHeight: '17px',
-          }}
-          key={content}
-        >
-          {itemIdxEditting === idx ? (
-            // <Input value={content} onBlur={(v) => changeContentValue(idx, v.target.value)} />
-            <DebounceInput
-              element={Input}
-              debounceTimeout={500}
-              value={content}
-              onChange={(v) => changeContentValue(idx, v.target.value)}
-              onBlur={() => setItemIdxEditting(null as unknown as number)}
-            />
-          ) : (
-            <Typography variant="body1" onClick={() => setItemIdxEditting(idx)}>
-              {content}
-            </Typography>
-          )}
-          <div>
-            <VoteButtonGroup
-              likeCount={upVote}
-              dislikeCount={downVote}
-              like={false}
-              dislike={false}
-              setDislike={() => changeContentVotes(idx, 'downVote')}
-              setLike={() => changeContentVotes(idx, 'upVote')}
-            />
-          </div>
-        </ListItem>
-      ))}
-      <Button
-        fullWidth
-        variant="contained"
-        startIcon={<FiPlus />}
-        onClick={() => setIsDialogOpened(true)}
-      >
-        {buttonText}
-      </Button>
-      <SimpleFormDialog
-        title={'Enter new Definition'}
-        isOpened={isDialogOpened}
-        handleCancel={() => setIsDialogOpened(false)}
-        handleOk={(value) => {
-          addNewContent(value);
-          setIsDialogOpened(false);
-        }}
-      />
-    </>
   );
 }
