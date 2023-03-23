@@ -62,7 +62,7 @@ const options: SqljsConnectionOptions = {
 
 export const getAppDataSource = async () => {
   await initialize();
-  new DataSource({
+  return new DataSource({
     ...options,
     location: 'graph.db',
   });

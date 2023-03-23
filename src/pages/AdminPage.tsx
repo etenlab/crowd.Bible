@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useState } from 'react';
 
@@ -26,6 +26,11 @@ export function AdminPage() {
   );
 
   const [loadResult, setLoadResult] = useState('Load finished.');
+  const [isEnabled, setIsEnabled] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsEnabled(!!nodeService);
+  }, [nodeService]);
 
   const addNewData = async () => {
     setLoadingStatus(LoadingStatus.LOADING);
@@ -69,8 +74,9 @@ export function AdminPage() {
     } catch (err) {
       console.log(err);
       setLoadResult('Error occured while loading.');
+    } finally {
+      setLoadingStatus(LoadingStatus.FINISHED);
     }
-    setLoadingStatus(LoadingStatus.FINISHED);
   };
 
   return (
@@ -80,7 +86,9 @@ export function AdminPage() {
           <IonCardTitle>Import</IonCardTitle>
         </IonCardHeader>
         <IonCardContent>
-          <IonButton onClick={addNewData}>Load</IonButton>
+          <IonButton onClick={addNewData} disabled={!isEnabled}>
+            Load
+          </IonButton>
         </IonCardContent>
       </IonCard>
       <IonLoading

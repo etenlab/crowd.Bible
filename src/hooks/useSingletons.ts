@@ -7,9 +7,9 @@ export default function useSingletons() {
   const [ds, setDs] = useState<DataSource>();
   const [singletons, setSingletons] = useState<ISingletons>();
 
-  getAppDataSource().then(() => {
-    if (ds) {
-      setDs(ds);
+  getAppDataSource().then((_ds) => {
+    if (_ds) {
+      setDs(_ds);
     }
   });
 
