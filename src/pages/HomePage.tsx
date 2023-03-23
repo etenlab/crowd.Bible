@@ -6,7 +6,7 @@ import {
   IonItemDivider,
 } from '@ionic/react';
 
-import { LinkItem, LinkItemProps } from '../components/LinkItem';
+import { LinkItem, LinkItemProps } from '@/components/LinkItem';
 
 const linkGroups = [
   {

@@ -3,7 +3,7 @@ import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
 
-import { TranslationEditor } from '../../components/TranslationEditor';
+import { TranslationEditor } from '@/components/TranslationEditor';
 
 import { mockDocument } from './TranslationPage';
 

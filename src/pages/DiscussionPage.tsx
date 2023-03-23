@@ -9,7 +9,7 @@ import {
   useColorModeContext,
 } from '@eten-lab/ui-kit';
 import { DiscussionForDev } from '@eten-lab/discussion-box';
-import { useAppContext } from '../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 
 const { Stack, IconButton } = MuiMaterial;
 

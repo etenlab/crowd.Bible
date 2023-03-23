@@ -11,7 +11,7 @@ import {
   useColorModeContext,
 } from '@eten-lab/ui-kit';
 
-import { TranslationList } from '../../components/TranslationList';
+import { TranslationList } from '@/components/TranslationList';
 
 import { mockTranslations } from './TranslationCandidatesPage';
 
@@ -54,6 +54,7 @@ export function TranslationPage() {
   const { getColor } = useColorModeContext();
   const [opened, setOpened] = useState<boolean>(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDotClick = (id: number) => {
     setOpened(true);
   };

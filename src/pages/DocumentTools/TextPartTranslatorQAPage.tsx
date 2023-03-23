@@ -7,7 +7,7 @@ import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 
 import { mockDocument } from './TranslationPage';
 
-import { useAppContext } from '../../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 
 const { LabelWithIcon, RangeSelectableTextArea, QuestionCreatorBox } =
   CrowdBibleUI;
@@ -42,6 +42,7 @@ export function TextPartTranslatorQAPage() {
     handleChangeRange({ start: null, end: null });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSave = (question: Question) => {
     alertFeedback('success', 'Your question has been created!');
     history.push('/translator-qa');

@@ -3,7 +3,7 @@ import { IonContent } from '@ionic/react';
 import { Alert } from '@eten-lab/ui-kit';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { CrowdBibleUI } from '@eten-lab/ui-kit';
-import { useAppContext } from '../../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 import { useHistory } from 'react-router';
 import { useEffect, useState } from 'react';
 const { TitleWithIcon } = CrowdBibleUI;
@@ -77,6 +77,7 @@ export const SvgTranslatedPage = () => {
 };
 
 function getWindowWidth() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { innerWidth, innerHeight } = window;
   return innerWidth;
 }

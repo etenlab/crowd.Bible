@@ -1,18 +1,18 @@
 import { DataSource } from 'typeorm';
-import { NodePropertyKeyRepository } from './repositories/node/node-property-key.repository';
-import { NodePropertyValueRepository } from './repositories/node/node-property-value.repository';
-import { NodeTypeRepository } from './repositories/node/node-type.repository';
-import { NodeRepository } from './repositories/node/node.repository';
-import { RelationshipPropertyKeyRepository } from './repositories/relationship/relationship-property-key.repository';
-import { RelationshipPropertyValueRepository } from './repositories/relationship/relationship-property-value.repository';
-import { RelationshipTypeRepository } from './repositories/relationship/relationship-type.repository';
-import { RelationshipRepository } from './repositories/relationship/relationship.repository';
-import { SyncSessionRepository } from './repositories/sync-session.repository';
-import { DbService } from './services/db.service';
-import LexiconService from './services/lexicon.service';
-import { NodeService } from './services/node.service';
-import { SeedService } from './services/seed.service';
-import { SyncService } from './services/sync.service';
+import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
+import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
+import { NodeTypeRepository } from '@/repositories/node/node-type.repository';
+import { NodeRepository } from '@/repositories/node/node.repository';
+import { RelationshipPropertyKeyRepository } from '@/repositories/relationship/relationship-property-key.repository';
+import { RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
+import { RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
+import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
+import { SyncSessionRepository } from '@/repositories/sync-session.repository';
+import { DbService } from '@/services/db.service';
+import LexiconService from '@/services/lexicon.service';
+import { NodeService } from '@/services/node.service';
+import { SeedService } from '@/services/seed.service';
+import { SyncService } from '@/services/sync.service';
 
 export interface ISingletons {
   dbService: DbService;
@@ -104,6 +104,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   };
 };
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default async (dataSource: DataSource): Promise<ISingletons> => {
   let result = _cache.get(dataSource);
   if (!result) {

@@ -5,7 +5,7 @@ import { IonContent } from '@ionic/react';
 import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 
 import { mockDocument } from './TranslationPage';
-import { FeedbackInput } from '../../components/FeedbackInput';
+import { FeedbackInput } from '@/components/FeedbackInput';
 
 const { LabelWithIcon, RangeSelectableTextArea } = CrowdBibleUI;
 const { Stack } = MuiMaterial;

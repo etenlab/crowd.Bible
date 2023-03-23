@@ -1,7 +1,7 @@
 import { NodeService } from './node.service';
-import { Node } from '../models/node/node.entity';
+import { Node } from '@/models/node/node.entity';
 import { InferType, object, Schema, string } from 'yup';
-import { NodeRepository } from 'src/repositories/node/node.repository';
+import { NodeRepository } from '@/repositories/node/node.repository';
 
 export enum LexiconNodeType {
   Lexicon = 'lexicon',

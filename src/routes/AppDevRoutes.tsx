@@ -1,7 +1,7 @@
 import { Route } from 'react-router-dom';
 
-import { SiteTextAdminPage } from '../pages/AppDev/SiteTextAdminPage';
-import { SiteTextTranslationPage } from '../pages/AppDev/SiteTextTranslationPage';
+import { SiteTextAdminPage } from '@/pages/AppDev/SiteTextAdminPage';
+import { SiteTextTranslationPage } from '@/pages/AppDev/SiteTextTranslationPage';
 
 export function AppDevRoutes() {
   return (

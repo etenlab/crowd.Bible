@@ -1,7 +1,7 @@
 import { Route } from 'react-router-dom';
 
-import { SvgTranslationPage } from '../pages/MediaTools/SvgTranslationPage';
-import { SvgTranslatedPage } from '../pages/MediaTools/SvgTranslatedPage';
+import { SvgTranslationPage } from '@/pages/MediaTools/SvgTranslationPage';
+import { SvgTranslatedPage } from '@/pages/MediaTools/SvgTranslatedPage';
 
 export function MediaToolsRoutes() {
   return (

@@ -1,7 +1,7 @@
 import { Route } from 'react-router-dom';
 
-import { FileImportPage } from '../pages/DataTools/FileImportPage';
-import { GraphViewerPage } from '../pages/DataTools/GraphViewerPage';
+import { FileImportPage } from '@/pages/DataTools/FileImportPage';
+import { GraphViewerPage } from '@/pages/DataTools/GraphViewerPage';
 
 export function DataToolsRoutes() {
   return (

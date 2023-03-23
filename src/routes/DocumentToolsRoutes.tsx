@@ -1,21 +1,21 @@
 import { Route } from 'react-router-dom';
 
-import { DocumentsListPage } from '../pages/DocumentTools/DocumentsListPage';
-import { TranslationPage } from '../pages/DocumentTools/TranslationPage';
-import { TranslationCandidatesPage } from '../pages/DocumentTools/TranslationCandidatesPage';
-import { TranslationEditPage } from '../pages/DocumentTools/TranslationEditPage';
-import { FeedbackPage } from '../pages/DocumentTools/FeedbackPage';
-import { TextPartFeedbackPage } from '../pages/DocumentTools/TextPartFeedbackPage';
-import { ChapterFeedbackPage } from '../pages/DocumentTools/ChapterFeedbackPage';
-import { VerseFeedbackPage } from '../pages/DocumentTools/VerseFeedbackPage';
-import { ReaderQAPage } from '../pages/DocumentTools/ReaderQAPage';
-import { TranslatorQAPage } from '../pages/DocumentTools/TranslatorQAPage';
-import { TextPartTranslatorQAPage } from '../pages/DocumentTools/TextPartTranslatorQAPage';
-import { ChapterTranslatorQAPage } from '../pages/DocumentTools/ChapterTranslatorQAPage';
-import { VerseTranslatorQAPage } from '../pages/DocumentTools/VerseTranslatorQAPage';
-import { CommentaryPage } from '../pages/DocumentTools/CommentaryPage';
-import { VersificationPage } from '../pages/DocumentTools/VersificationPage';
-import { AlignmentPage } from '../pages/DocumentTools/AlignmentPage';
+import { DocumentsListPage } from '@/pages/DocumentTools/DocumentsListPage';
+import { TranslationPage } from '@/pages/DocumentTools/TranslationPage';
+import { TranslationCandidatesPage } from '@/pages/DocumentTools/TranslationCandidatesPage';
+import { TranslationEditPage } from '@/pages/DocumentTools/TranslationEditPage';
+import { FeedbackPage } from '@/pages/DocumentTools/FeedbackPage';
+import { TextPartFeedbackPage } from '@/pages/DocumentTools/TextPartFeedbackPage';
+import { ChapterFeedbackPage } from '@/pages/DocumentTools/ChapterFeedbackPage';
+import { VerseFeedbackPage } from '@/pages/DocumentTools/VerseFeedbackPage';
+import { ReaderQAPage } from '@/pages/DocumentTools/ReaderQAPage';
+import { TranslatorQAPage } from '@/pages/DocumentTools/TranslatorQAPage';
+import { TextPartTranslatorQAPage } from '@/pages/DocumentTools/TextPartTranslatorQAPage';
+import { ChapterTranslatorQAPage } from '@/pages/DocumentTools/ChapterTranslatorQAPage';
+import { VerseTranslatorQAPage } from '@/pages/DocumentTools/VerseTranslatorQAPage';
+import { CommentaryPage } from '@/pages/DocumentTools/CommentaryPage';
+import { VersificationPage } from '@/pages/DocumentTools/VersificationPage';
+import { AlignmentPage } from '@/pages/DocumentTools/AlignmentPage';
 
 export function DocumentToolsRoutes() {
   return (

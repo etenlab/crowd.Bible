@@ -1,11 +1,11 @@
-import { NodePropertyKeyRepository } from '../repositories/node/node-property-key.repository';
-import { NodePropertyValueRepository } from '../repositories/node/node-property-value.repository';
-import { NodeRepository } from '../repositories/node/node.repository';
-import { RelationshipPropertyKeyRepository } from '../repositories/relationship/relationship-property-key.repository';
-import { RelationshipPropertyValueRepository } from '../repositories/relationship/relationship-property-value.repository';
-import { RelationshipRepository } from '../repositories/relationship/relationship.repository';
-import { type Node } from '../models/node/node.entity';
-import { type Relationship } from '../models/relationship/relationship.entity';
+import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
+import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
+import { NodeRepository } from '@/repositories/node/node.repository';
+import { RelationshipPropertyKeyRepository } from '@/repositories/relationship/relationship-property-key.repository';
+import { RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
+import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
+import { type Node } from '@/models/node/node.entity';
+import { type Relationship } from '@/models/relationship/relationship.entity';
 
 export class NodeService {
   constructor(
@@ -363,6 +363,7 @@ export class NodeService {
       if (!cell) {
         return null;
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       cell.propertyKeys[0].propertyValue;
 
       const updated_cell = await this.nodePropertyValueRepo.repository.save({

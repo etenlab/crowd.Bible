@@ -9,8 +9,8 @@ import {
   Button,
 } from '@eten-lab/ui-kit';
 
-import { useAppContext } from '../hooks/useAppContext';
-import { type RoleType } from '../reducers/global.reducer';
+import { useAppContext } from '@/hooks/useAppContext';
+import { type RoleType } from '@/reducers/global.reducer';
 
 const { VerticalRadioList } = CrowdBibleUI;
 const { Stack } = MuiMaterial;

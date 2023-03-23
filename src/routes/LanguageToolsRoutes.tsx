@@ -7,7 +7,7 @@ import { PhraseBookPage } from '@/pages/LanguageTools/PhraseBookPage';
 import { PhraseBookPageV2 } from '@/pages/LanguageTools/PhraseBookPageV2';
 import { LexiconPage } from '@/pages/LanguageTools/LexiconPage';
 import { GrammarPage } from '@/pages/LanguageTools/GrammarPage';
-import { DictionaryPageV2 } from '../pages/LanguageTools/DictionaryPageV2';
+import { DictionaryPageV2 } from '@/pages/LanguageTools/DictionaryPageV2';
 
 export function LanguageToolsRoutes() {
   return (

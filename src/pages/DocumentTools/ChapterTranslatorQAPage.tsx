@@ -7,7 +7,7 @@ import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 
 import { mockChapters } from './ChapterFeedbackPage';
 
-import { useAppContext } from '../../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 
 const { TitleWithIcon, VerticalRadioList, QuestionCreatorBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -35,6 +35,7 @@ export function ChapterTranslatorQAPage() {
     setSelectedChapter(null);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSave = (question: Question) => {
     alertFeedback('success', 'Your question has been created!');
     history.push('/translator-qa');

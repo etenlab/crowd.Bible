@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import {
@@ -20,7 +20,7 @@ import {
   useColorModeContext,
 } from '@eten-lab/ui-kit';
 
-import { useAppContext } from '../../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 
 const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
 
@@ -37,7 +37,7 @@ export function PageLayout({ children }: PageLayoutProps) {
     states: {
       global: { user, snack, isNewDiscussion, isNewNotification, loading },
     },
-    actions: { closeFeedback, setPrefersColorScheme, logout },
+    actions: { closeFeedback, setPrefersColorScheme },
   } = useAppContext();
 
   const [themeMode, setThemeMode] = useState<'dark' | 'light'>(() => {
@@ -51,17 +51,20 @@ export function PageLayout({ children }: PageLayoutProps) {
   const prefersDarkRef = useRef<MediaQueryList | null>(null);
   const bodyRef = useRef<HTMLElement | null>(null);
 
-  const toggleDarkTheme = (shouldToggle: boolean) => {
-    if (shouldToggle) {
-      setThemeMode('dark');
-      setColorMode('dark');
-    } else {
-      setThemeMode('light');
-      setColorMode('light');
-    }
+  const toggleDarkTheme = useCallback(
+    (shouldToggle: boolean) => {
+      if (shouldToggle) {
+        setThemeMode('dark');
+        setColorMode('dark');
+      } else {
+        setThemeMode('light');
+        setColorMode('light');
+      }
 
-    bodyRef.current?.classList.toggle('dark', shouldToggle);
-  };
+      bodyRef.current?.classList.toggle('dark', shouldToggle);
+    },
+    [setColorMode],
+  );
 
   useEffect(() => {
     bodyRef.current = window.document.body;
@@ -76,7 +79,7 @@ export function PageLayout({ children }: PageLayoutProps) {
       toggleDarkTheme(e.matches);
     });
     toggleDarkTheme(prefersDarkRef.current.matches);
-  }, [user]);
+  }, [user, toggleDarkTheme]);
 
   const handleToggleMenu = () => {
     ref.current!.toggle();

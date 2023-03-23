@@ -1,11 +1,11 @@
 import { Redirect, Route } from 'react-router-dom';
 
-import NotificationsPage from '../pages/Notifications';
-import { SettingsPage } from '../pages/SettingsPage';
-import { DiscussionPage } from '../pages/DiscussionPage';
-import { HomePage } from '../pages/HomePage';
-import { DiscussionsListPage } from '../pages/DiscussionsListPage';
-import { AdminPage } from '../pages/AdminPage';
+import NotificationsPage from '@/pages/Notifications';
+import { SettingsPage } from '@/pages/SettingsPage';
+import { DiscussionPage } from '@/pages/DiscussionPage';
+import { HomePage } from '@/pages/HomePage';
+import { DiscussionsListPage } from '@/pages/DiscussionsListPage';
+import { AdminPage } from '@/pages/AdminPage';
 
 import { DocumentToolsRoutes } from './DocumentToolsRoutes';
 import { LanguageToolsRoutes } from './LanguageToolsRoutes';

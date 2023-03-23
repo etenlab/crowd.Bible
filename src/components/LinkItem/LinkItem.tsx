@@ -1,7 +1,7 @@
 import { IonItem } from '@ionic/react';
 
 import { MuiMaterial } from '@eten-lab/ui-kit';
-import { useAppContext } from '../../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 
 const { Typography, Chip } = MuiMaterial;
 

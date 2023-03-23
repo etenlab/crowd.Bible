@@ -1,7 +1,7 @@
-import { NodePropertyKey } from '../../models';
-import { NodePropertyValue } from '../../models/node/node-property-value.entity';
-import { type DbService } from '../../services/db.service';
-import { type SyncService } from '../../services/sync.service';
+import { NodePropertyKey } from '@/models/index';
+import { NodePropertyValue } from '@/models/node/node-property-value.entity';
+import { type DbService } from '@/services/db.service';
+import { type SyncService } from '@/services/sync.service';
 
 export class NodePropertyValueRepository {
   constructor(

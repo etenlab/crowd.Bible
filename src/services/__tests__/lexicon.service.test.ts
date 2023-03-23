@@ -1,8 +1,8 @@
 import { getTestDataSource } from '../../data-source';
 import getSingletons from '../../singletons';
-import LexiconService, { Lexicon } from '../lexicon.service';
+import { Lexicon } from '../lexicon.service';
 
-describe(LexiconService, () => {
+describe('LexiconService', () => {
   const getService = () =>
     getSingletons(getTestDataSource()).then(
       ({ lexiconService }) => lexiconService,

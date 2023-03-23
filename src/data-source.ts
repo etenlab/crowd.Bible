@@ -10,7 +10,7 @@ import {
   RelationshipPropertyKey,
   RelationshipPropertyValue,
   RelationshipType,
-} from './models';
+} from '@/models/index';
 
 const options: SqljsConnectionOptions = {
   type: 'sqljs',

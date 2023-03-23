@@ -5,7 +5,7 @@ import { IonContent } from '@ionic/react';
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 
-import { useAppContext } from '../../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 
 import { mockVerses, ChapterList } from './VerseFeedbackPage';
 
@@ -36,6 +36,7 @@ function VerseTranslatorQA({ onClickCancel, onClickBack }: VerseFeedbackProps) {
     setSelectedVerse(null);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSave = (question: Question) => {
     alertFeedback('success', 'Your question has been created!');
     history.push('/translator-qa');

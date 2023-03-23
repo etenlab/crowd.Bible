@@ -9,7 +9,7 @@ import {
   setPrefersColorScheme as setPrefersColorSchemeAction,
   setConnectivity as setConnectivityAction,
   logout as logoutAction,
-} from '../reducers/global.actions';
+} from '@/reducers/global.actions';
 
 import { type ActionType } from '@/reducers/index';
 import {

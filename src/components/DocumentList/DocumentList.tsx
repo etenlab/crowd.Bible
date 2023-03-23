@@ -9,7 +9,7 @@ import {
   SearchInput,
   BiFile,
 } from '@eten-lab/ui-kit';
-import { useAppContext } from '../../hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 
 const {
   Stack,
