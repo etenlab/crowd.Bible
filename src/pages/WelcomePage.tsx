@@ -5,8 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper';
 import { Button, Typography } from '@eten-lab/ui-kit';
 
-import 'swiper/css';
-import 'swiper/css/pagination';
+import 'swiper/swiper-bundle.css';
 import '../styles.css';
 
 export function WelcomePage() {

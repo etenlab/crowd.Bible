@@ -1,17 +1,14 @@
-import { syncService } from '..';
 import { useEffect, useState } from 'react';
-import useDbService from './useDbService';
 import { type SyncService } from '@/services/sync.service';
+import useSingletons from './useSingletons';
 
 export default function useSyncService() {
-  const { service } = useDbService();
+  const singletons = useSingletons();
   const [sync, setSync] = useState<SyncService>();
 
   useEffect(() => {
-    if (service?.dataSource != null) {
-      setSync(syncService);
-    }
-  }, [service]);
+    setSync(singletons?.syncService);
+  }, [singletons]);
 
   return sync;
 }

@@ -56,6 +56,7 @@ export const SvgTranslationPage = () => {
 
   const {
     states: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       global: { translatedMap },
     },
     actions: { setTranslatedMap },
@@ -197,7 +198,7 @@ export const SvgTranslationPage = () => {
             <ButtonList
               label="Translated Maps"
               items={translatedMapsList}
-              onClick={(e) => {
+              onClick={() => {
                 history.push('/svg-translated-map');
               }}
               Icon={<BiRightArrowAlt size={25} />}
@@ -310,6 +311,7 @@ function iterateOverINode(
 }
 
 function getWindowWidth() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { innerWidth, innerHeight } = window;
   return innerWidth;
 }

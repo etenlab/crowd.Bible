@@ -1,7 +1,7 @@
-import { RelationshipPropertyKey } from '../../models';
-import { RelationshipPropertyValue } from '../../models/relationship/relationship-property-value.entity';
-import { type DbService } from '../../services/db.service';
-import { type SyncService } from '../../services/sync.service';
+import { RelationshipPropertyKey } from '@/models/index';
+import { RelationshipPropertyValue } from '@/models/relationship/relationship-property-value.entity';
+import { type DbService } from '@/services/db.service';
+import { type SyncService } from '@/services/sync.service';
 
 export class RelationshipPropertyValueRepository {
   constructor(

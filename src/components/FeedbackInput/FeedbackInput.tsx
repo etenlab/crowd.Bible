@@ -18,6 +18,7 @@ export function FeedbackInput() {
     setOptionalFeedback(newValue);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmitFeedback = (agree: 'agree' | 'disagree') => {
     alertFeedback('success', 'Your feedback has been sent!');
     history.push('/feedback');

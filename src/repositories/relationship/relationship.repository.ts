@@ -1,8 +1,8 @@
-import { Node } from '../../models/node/node.entity';
-import { RelationshipType } from '../../models';
-import { Relationship } from '../../models/relationship/relationship.entity';
-import { type DbService } from '../../services/db.service';
-import { type SyncService } from '../../services/sync.service';
+import { Node } from '@/models/node/node.entity';
+import { RelationshipType } from '@/models/index';
+import { Relationship } from '@/models/relationship/relationship.entity';
+import { type DbService } from '@/services/db.service';
+import { type SyncService } from '@/services/sync.service';
 
 export class RelationshipRepository {
   constructor(

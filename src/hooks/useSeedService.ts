@@ -1,17 +1,14 @@
-import { seedService } from '..';
 import { useEffect, useState } from 'react';
-import useDbService from './useDbService';
 import { type SeedService } from '@/services/seed.service';
+import useSingletons from './useSingletons';
 
 export default function useSeedService() {
-  const { service } = useDbService();
+  const singletons = useSingletons();
   const [sync, setSync] = useState<SeedService>();
 
   useEffect(() => {
-    if (service?.dataSource != null) {
-      setSync(seedService);
-    }
-  }, [service]);
+    setSync(singletons?.seedService);
+  }, [singletons]);
 
   return sync;
 }

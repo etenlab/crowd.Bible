@@ -4,11 +4,18 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  ignorePatterns: ['.eslintrc.js', 'config-overrides.js', 'craco.config.js'],
+  ignorePatterns: [
+    '.eslintrc.js',
+    'config-overrides.js',
+    'craco.config.js',
+    'jest.config.ts',
+  ],
   extends: [
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    'react-app',
+    'react-app/jest',
   ],
   overrides: [],
   parser: '@typescript-eslint/parser',
@@ -31,7 +38,6 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/dot-notation': 'error',
-    '@typescript-eslint/no-unused-vars': 'off',
     'prettier/prettier': [
       'error',
       {
