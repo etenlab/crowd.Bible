@@ -1,8 +1,9 @@
-import { CrowdBibleUI, Button, FiPlus } from '@eten-lab/ui-kit';
+import { MuiMaterial } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent } from '@ionic/react';
 import { useEffect, useState } from 'react';
-import { Box, Divider, Typography } from '@mui/material';
+const { Box, Divider } = MuiMaterial;
 
 const {
   TitleWithIcon,
@@ -191,7 +192,7 @@ export function PhraseBookPageV2() {
               alignItems={'center'}
             >
               <Box flex={3}>
-                <Typography variant="subtitle1" sx={{ color: '#8F8F8F' }}>
+                <Typography variant="subtitle1" color={'text.gray'}>
                   Phrase
                 </Typography>
               </Box>

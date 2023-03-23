@@ -1,25 +1,17 @@
-import {
-  Autocomplete,
-  Button,
-  FiPlus,
-  Input,
-  BiVolumeFull,
-} from '@eten-lab/ui-kit';
+import { MuiMaterial } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
-import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
-import { Box, Divider } from '@mui/material';
 import { useEffect, useState } from 'react';
-import {
-  ListItemButton,
-  ListItemText,
-  Typography,
-  ListItem,
-  IconButton,
-  PaletteColor,
-} from '@mui/material';
+const { Box, Divider } = MuiMaterial;
 
-const { FiltersAndSearch, TitleWithIcon, VoteButtonGroup } = CrowdBibleUI;
+const {
+  TitleWithIcon,
+  FiltersAndSearch,
+  ItemsClickableList,
+  SimpleFormDialog,
+  ItemContentListEdit,
+} = CrowdBibleUI;
 
 type Content = {
   content: string;
@@ -32,11 +24,18 @@ type Item = {
   contents: Content[];
 };
 
+type TUpOrDownVote = 'upVote' | 'downVote';
+
+type SetWordVotesParams = {
+  titleContent: string;
+  upOrDown: TUpOrDownVote;
+};
+
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
-const MOCK_KEY_TERMS: Array<Item> = [
+const MOCK_DICTIONARY: Array<Item> = [
   {
     title: {
-      content: 'title content title content title content',
+      content: 'Word1',
       downVote: 1,
       upVote: 2,
     },
@@ -55,7 +54,7 @@ const MOCK_KEY_TERMS: Array<Item> = [
   },
   {
     title: {
-      content: 'title content2 title content2 title content2',
+      content: 'Word2',
       downVote: 21,
       upVote: 22,
     },
@@ -86,27 +85,67 @@ const MOCK_KEY_TERMS: Array<Item> = [
 
 const PADDING = 20;
 
-const button = (
-  <Button
-    variant="contained"
-    startIcon={<FiPlus />}
-    onClick={() => alert('click!')}
-  >
-    New Word
-  </Button>
-);
-
 export function DictionaryPageV2() {
-  const [keyTerms, setKeyTerms] = useState([] as Array<Item>);
-  const [selectedTerm, setSelectedTerm] = useState(null as unknown as Item);
+  const [words, setWords] = useState([] as Array<Item>);
+  const [selectedWord, setSelectedWord] = useState(null as unknown as Item);
+  const [isDialogOpened, setIsDialogOpened] = useState(false);
 
   useEffect(() => {
-    setKeyTerms(MOCK_KEY_TERMS);
+    setWords(MOCK_DICTIONARY);
   }, []);
+
+  const changeWordVotes = ({ titleContent, upOrDown }: SetWordVotesParams) => {
+    const wordIdx = words.findIndex((w) => w.title.content === titleContent);
+    words[wordIdx].title[upOrDown] += 1;
+    setWords([...words]);
+  };
+
+  const addNewWord = (value: string) => {
+    setWords([
+      ...words,
+      {
+        title: { content: value, upVote: 0, downVote: 0 },
+        contents: [],
+      },
+    ]);
+    setIsDialogOpened(false);
+  };
+
+  const changeItemContent = ({
+    itemTitleContent, // this is title's, content (type string), i.e. value of the title of the word - using here as uniq id
+    contentIndex,
+    newContent, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
+  }: {
+    itemTitleContent: string;
+    contentIndex: number;
+    newContent: Content;
+  }) => {
+    const itemIdx = words.findIndex(
+      (w) => w.title.content === itemTitleContent,
+    );
+
+    words[itemIdx].contents[contentIndex] = newContent;
+
+    setWords([...words]);
+  };
+
+  const addItemContent = ({
+    itemTitleContent, // this is title's, content (type string), i.e. value of the title of the word - using here as uniq id
+    newContent, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
+  }: {
+    itemTitleContent: string;
+    newContent: Content;
+  }) => {
+    const itemIdx = words.findIndex(
+      (ph) => ph.title.content === itemTitleContent,
+    );
+    words[itemIdx].contents.push(newContent);
+    setWords(words);
+  };
 
   return (
     <IonContent>
-      {!selectedTerm ? (
+      {!selectedWord ? (
         <Box
           display={'flex'}
           flexDirection={'column'}
@@ -126,7 +165,7 @@ export function DictionaryPageV2() {
                 onBack={() => {}}
                 withBackIcon={false}
                 withCloseIcon={false}
-                label="Key Terms"
+                label="Dictionary"
               ></TitleWithIcon>
             </Box>
           </Box>
@@ -137,7 +176,6 @@ export function DictionaryPageV2() {
             setLanguage={(l: string) => console.log('setLanguage! ' + l)}
             setSearch={(s: string) => console.log('setSearch' + s)}
           />
-
           <Box display={'flex'} flexDirection="column" width={1}>
             <Box
               width={1}
@@ -147,8 +185,8 @@ export function DictionaryPageV2() {
               alignItems={'center'}
             >
               <Box flex={3}>
-                <Typography variant="subtitle1" sx={{ color: '#8F8F8F' }}>
-                  Phrase
+                <Typography variant="subtitle1" color={'text.gray'}>
+                  Words
                 </Typography>
               </Box>
               <Box flex={1} width={1} minWidth={'140px'}>
@@ -156,38 +194,36 @@ export function DictionaryPageV2() {
                   variant="contained"
                   startIcon={<FiPlus />}
                   fullWidth
-                  onClick={() => alert('click!!!')}
+                  onClick={() => setIsDialogOpened(true)}
                 >
                   New Word
                 </Button>
               </Box>
             </Box>
             <Divider />
-            {keyTerms.map((kt) => (
-              <Box display={'flex'} key={kt.title.content}>
-                <Box flex={4}>
-                  <ListItemButton onClick={() => setSelectedTerm(kt)}>
-                    <ListItemText primary={kt.title.content} color="dark" />
-                  </ListItemButton>
-                </Box>
-                <Box display={'flex'} flex={1}>
-                  <VoteButtonGroup
-                    item
-                    container
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="flex-end"
-                    like
-                    dislike
-                    likeCount={kt.title.upVote}
-                    dislikeCount={kt.title.downVote}
-                    setDislike={() => console.log('dis')}
-                    setLike={() => console.log('like')}
-                  ></VoteButtonGroup>
-                </Box>
-              </Box>
-            ))}
+            <ItemsClickableList
+              items={words}
+              setSelectedItem={setSelectedWord}
+              setLikeItem={(id) =>
+                changeWordVotes({
+                  titleContent: id,
+                  upOrDown: 'upVote',
+                })
+              }
+              setDislikeItem={(id) =>
+                changeWordVotes({
+                  titleContent: id,
+                  upOrDown: 'downVote',
+                })
+              }
+            ></ItemsClickableList>
           </Box>
+          <SimpleFormDialog
+            title={'Enter new Phrase'}
+            isOpened={isDialogOpened}
+            handleCancel={() => setIsDialogOpened(false)}
+            handleOk={addNewWord}
+          />
         </Box>
       ) : (
         <Box
@@ -197,45 +233,13 @@ export function DictionaryPageV2() {
           alignItems={'start'}
           padding={`${PADDING}px`}
         >
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
-            <TitleWithIcon
-              onClose={() => {}}
-              onBack={() => setSelectedTerm(null as unknown as Item)}
-              withBackIcon={true}
-              withCloseIcon={false}
-              label={selectedTerm.title.content}
-            ></TitleWithIcon>
-            <IconButton
-              onClick={() => alert('sound!')}
-              sx={{
-                color: (theme) => (theme.palette.dark as PaletteColor).main,
-                margitLeft: '20px',
-              }}
-            >
-              <BiVolumeFull />
-            </IconButton>
-          </Box>
-          {selectedTerm.contents.map(({ content, upVote, downVote }) => (
-            <ListItem
-              sx={{
-                display: 'list-item',
-                padding: 0,
-                fontSize: '12px',
-                lineHeight: '17px',
-              }}
-              key={content}
-            >
-              {content}
-              <div>
-                <VoteButtonGroup
-                  likeCount={upVote}
-                  dislikeCount={downVote}
-                  like={false}
-                  dislike={false}
-                />
-              </div>
-            </ListItem>
-          ))}
+          <ItemContentListEdit
+            item={selectedWord}
+            onBack={() => setSelectedWord(null as unknown as Item)}
+            buttonText="New Definition"
+            changeContent={changeItemContent}
+            addContent={addItemContent}
+          />
         </Box>
       )}
     </IonContent>
