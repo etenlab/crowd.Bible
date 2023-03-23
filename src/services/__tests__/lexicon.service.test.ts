@@ -4,9 +4,9 @@ import { Lexicon } from '../lexicon.service';
 
 describe('LexiconService', () => {
   const getService = () =>
-    getSingletons(getTestDataSource()).then(
-      ({ lexiconService }) => lexiconService,
-    );
+    getTestDataSource()
+      .then(getSingletons)
+      .then(({ lexiconService }) => lexiconService);
 
   describe('Core Types', () => {
     it('Creates lexica', async () => {
