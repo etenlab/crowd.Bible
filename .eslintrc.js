@@ -14,6 +14,8 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    'react-app',
+    'react-app/jest',
   ],
   overrides: [],
   parser: '@typescript-eslint/parser',
@@ -36,7 +38,6 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/dot-notation': 'error',
-    '@typescript-eslint/no-unused-vars': 'off',
     'prettier/prettier': [
       'error',
       {
