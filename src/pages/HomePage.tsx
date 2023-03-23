@@ -43,7 +43,7 @@ const linkGroups = [
   },
   {
     group: 'Media Tools',
-    linkItems: [{ to: '/svg-translation', label: 'Map translation editor' }],
+    linkItems: [{ to: '/map-list', label: 'Map translation editor' }],
   },
   {
     group: 'Data Tools',

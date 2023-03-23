@@ -24,7 +24,7 @@ type Item = {
   value: unknown;
 };
 
-const { TitleWithIcon, ButtonList } = CrowdBibleUI;
+const { TitleWithIcon } = CrowdBibleUI;
 
 const PADDING = 15;
 
@@ -293,9 +293,4 @@ function iterateOverINode(
   for (const child of node.children || []) {
     iterateOverINode(child, skipNodeNames, cb);
   }
-}
-
-function getWindowWidth() {
-  const { innerWidth, innerHeight } = window;
-  return innerWidth;
 }
