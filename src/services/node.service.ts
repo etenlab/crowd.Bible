@@ -438,24 +438,24 @@ export class NodeService {
 
   // --------- Word --------- //
 
-  async createWord(word: string, language: string): Promise<string> {
+  async createWord(word: string, langId: string): Promise<string> {
     try {
-      const word_id = await this.getWord(word, language);
+      const word_id = await this.getWord(word, langId);
       if (word_id) {
         return word_id;
       }
 
       const { node } = await this.createRelatedFromNodeFromObject(
-        language,
+        langId,
         'word',
         'word-to-language-entry',
-        {},
+        { name: word },
       );
 
       return node.id;
     } catch (err) {
       console.error(err);
-      throw new Error(`Failed to create new word '${word} - ${language}'`);
+      throw new Error(`Failed to create new word '${word} - ${langId}'`);
     }
   }
 
@@ -667,6 +667,65 @@ export class NodeService {
       );
     }
   }
+
+  //#region language
+  async createLanguage(language: string): Promise<string> {
+    try {
+      const lang_id = await this.getLanguage(language);
+      if (lang_id) {
+        return lang_id;
+      }
+
+      const node = await this.createNodeFromObject('language', {
+        name: language,
+      });
+
+      return node.id;
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to create new language '${language}'`);
+    }
+  }
+  async getLanguage(language: string): Promise<string | null> {
+    try {
+      const langNode = await this.nodeRepo.repository.findOne({
+        relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+        where: {
+          node_type: 'language',
+          propertyKeys: {
+            property_key: 'name',
+            propertyValue: {
+              property_value: JSON.stringify({ value: language }),
+            },
+          },
+        },
+      });
+
+      if (!langNode) {
+        return null;
+      }
+
+      return langNode.id;
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to get language '${language}'`);
+    }
+  }
+  async getLanguages(): Promise<Node[]> {
+    try {
+      const langNodes = await this.nodeRepo.repository.find({
+        relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+        where: {
+          node_type: 'language',
+        },
+      });
+      return langNodes;
+    } catch (err) {
+      console.error('failed to get language list::', err);
+      return [];
+    }
+  }
+  //#endregion
 }
 
 interface Document {

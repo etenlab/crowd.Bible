@@ -5,7 +5,7 @@ import {
   IonList,
   useIonAlert,
 } from '@ionic/react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { type INode, parseSync } from 'svgson';
 import { Box, Typography } from '@mui/material';
 import {
@@ -16,68 +16,90 @@ import {
   CrowdBibleUI,
   BiTrashAlt,
 } from '@eten-lab/ui-kit';
-import { useAppContext } from '@/hooks/useAppContext';
 import { nanoid } from 'nanoid';
+import useNodeServices from '@/src/hooks/useNodeServices';
+const { TitleWithIcon } = CrowdBibleUI;
 
+//#region types
 type Item = {
   label: string;
   value: unknown;
 };
 
-const { TitleWithIcon } = CrowdBibleUI;
+type FileProcessInfo = {
+  status: 'none' | 'processed';
+  words: string[];
+  fileStream: string;
+  fileName: string;
+};
 
+type Option = {
+  id: string;
+  lable: string;
+};
+//#endregion
+
+//#region data
 const PADDING = 15;
-
-const MOCK_LANGUAGE_OPTIONS = ['Language1', 'Language2'];
-const MOCK_TRANSLATED_MAPS: Item[] = [
-  { value: 1, label: 'Translated map1 based on language filter' },
-  { value: 2, label: 'Translated map2 based on language filter' },
-  { value: 3, label: 'Translated map3 based on language filter' },
-];
+const defaultFileProcessInfo: FileProcessInfo = {
+  status: 'none',
+  words: [],
+  fileStream: '',
+  fileName: '',
+};
+//#endregion
 
 export const MapListPage = () => {
-  const [originalSvg, setOriginalSvg] = useState(null as null | string);
-  const [textContents, setTextContents] = useState<string[]>([]);
+  const [langs, setLangs] = useState<Option[]>([]);
   const [translatedMapsList, setTranslatedMapsList] = useState<Item[]>([]);
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('');
+  const [selectedLang, setSelectedLang] = useState<string>('');
   const [presentAlert] = useIonAlert();
+  const { nodeService } = useNodeServices();
+  const [fileProcessInfo, setFileProcessInfo] = useState<FileProcessInfo>({
+    ...defaultFileProcessInfo,
+  });
 
-  const {
-    states: {
-      global: { translatedMap },
-    },
-    actions: { setTranslatedMap },
-  } = useAppContext();
+  useEffect(() => {
+    loadLanguages();
+  }, [nodeService]);
+
+  useEffect(() => {
+    if (fileProcessInfo.status === 'processed') {
+      const langId = langs.find((l) => l.lable === selectedLang)?.id;
+      processMapWords(fileProcessInfo.words, langId!)
+        .then(() => {
+          setTranslatedMapsList([
+            ...translatedMapsList,
+            { value: nanoid(4), label: fileProcessInfo.fileName },
+          ]);
+        })
+        .finally(() => {
+          setFileProcessInfo({ ...defaultFileProcessInfo });
+        });
+    }
+  }, [fileProcessInfo]);
 
   const fileHandler: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
-      const f = e.target.files?.[0];
-
-      if (f == null) return;
-
-      const r = new FileReader();
-
-      r.onload = function (evt: ProgressEvent<FileReader>) {
+      const file = e.target.files?.[0];
+      if (file == null) return;
+      const fileReader = new FileReader();
+      fileReader.onload = function (evt: ProgressEvent<FileReader>) {
         if (evt.target?.readyState !== 2) return;
         if (evt.target.error != null) {
           showAlert('Error while reading file. Read console for more info');
           console.error(evt.target.error);
           return;
         }
-
         const filecontent = evt.target.result;
-
         if (!filecontent) {
           showAlert('Error while reading file. Read console for more info');
           console.error('filecontent is null after reading');
           return;
         }
-
         const originalSvg = filecontent.toString();
-
         const parsed = parseSync(originalSvg);
-        const textArray = [] as string[];
-
+        const textArray: string[] = [];
         iterateOverINode(parsed, ['style'], (node) => {
           if (node.type === 'text' || node.type === 'textPath') {
             if (!node.value) return;
@@ -85,24 +107,47 @@ export const MapListPage = () => {
           }
         });
 
-        setTextContents(textArray);
-        setOriginalSvg(originalSvg);
         if (textArray.length === 0 && originalSvg) {
           showAlert('No text or textPath tags found');
         } else {
-          setTranslatedMapsList((prevList) => {
-            return [
-              ...prevList,
-              { value: nanoid(4), label: f.name?.split('.')[0] },
-            ];
+          setFileProcessInfo({
+            status: 'processed',
+            fileStream: originalSvg,
+            words: textArray,
+            fileName: file.name?.split('.')[0],
           });
         }
       };
-
-      r.readAsText(f);
+      fileReader.readAsText(file);
+      e.target.value = '';
     },
     [],
   );
+
+  const loadLanguages = async () => {
+    if (!nodeService) return;
+    const rawLangNodes = await nodeService.getLanguages();
+    const langs: Option[] = [];
+    for (const node of rawLangNodes) {
+      const strJson = node.propertyKeys.at(0)?.propertyValue?.property_value;
+      if (strJson) {
+        const valObj = JSON.parse(strJson);
+        if (valObj.value) langs.push({ id: node.id, lable: valObj.value });
+      }
+    }
+    setLangs(langs);
+  };
+
+  const processMapWords = async (words: string[], language: string) => {
+    if (!nodeService || !words.length || !language) return;
+    const wordsQueue = [];
+    for (const word of words.slice(0, 2)) {
+      wordsQueue.push(nodeService.createWord(word, language));
+    }
+    const resList = await Promise.allSettled(wordsQueue);
+    const createdWords = resList.filter((res) => res.status === 'fulfilled');
+    console.log('created words::', createdWords);
+  };
 
   const showAlert = (msg: string) => {
     presentAlert({
@@ -114,17 +159,15 @@ export const MapListPage = () => {
   };
 
   const handleApplyLanguageFilter = (value: string) => {
-    setSelectedLanguage(value);
-    setTranslatedMapsList([...MOCK_TRANSLATED_MAPS]);
+    setSelectedLang(value);
   };
 
   const handleClearLanguageFilter = () => {
-    setSelectedLanguage('');
+    setSelectedLang('');
     setTranslatedMapsList([]);
   };
 
-  console.log('translatedMapsList', translatedMapsList);
-
+  const langLabels = langs.map((l) => l.lable);
   return (
     <IonContent>
       <Box
@@ -158,12 +201,8 @@ export const MapListPage = () => {
         >
           <Box>
             <TitleWithIcon
-              onClose={() => {
-                //
-              }}
-              onBack={() => {
-                //
-              }}
+              onClose={() => {}}
+              onBack={() => {}}
               withBackIcon={false}
               withCloseIcon={false}
               label="Filter by Language"
@@ -172,8 +211,8 @@ export const MapListPage = () => {
           <Box>
             <Autocomplete
               fullWidth
-              options={MOCK_LANGUAGE_OPTIONS}
-              value={selectedLanguage}
+              options={langLabels}
+              value={selectedLang}
               onChange={(_, value) => {
                 handleApplyLanguageFilter(value || '');
               }}
@@ -208,7 +247,7 @@ export const MapListPage = () => {
           </Box>
         </Box>
 
-        {selectedLanguage ? (
+        {selectedLang ? (
           <Box
             width={'100%'}
             padding={`${PADDING}px 0 ${PADDING}px`}
@@ -248,6 +287,15 @@ export const MapListPage = () => {
               hidden
               multiple
               accept="image/svg+xml"
+              onClick={(e) => {
+                if (!selectedLang) {
+                  showAlert(
+                    'Please choose the language first and then Add Map',
+                  );
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+              }}
               onChange={fileHandler}
               type="file"
             />

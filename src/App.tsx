@@ -30,10 +30,19 @@ import { AppContextProvider } from './AppContext';
 import { PageLayout } from './components/PageLayout';
 import { RoutesGuardian } from './components/RoutesGuardian';
 import { ProtectedRoutes } from './routes/ProtectedRoutes';
+import useSeedService from './hooks/useSeedService';
+import { useEffect } from 'react';
 
 setupIonicReact();
 
 export default function App() {
+  const seedService = useSeedService();
+  useEffect(() => {
+    if (seedService) {
+      seedService.init();
+    }
+  }, [seedService]);
+
   return (
     <IonApp>
       <AppContextProvider>
