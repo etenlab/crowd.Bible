@@ -10,6 +10,12 @@ import {
   RelationshipPropertyKey,
   RelationshipPropertyValue,
   RelationshipType,
+  Discussion,
+  File,
+  Post,
+  Reaction,
+  RelationshipPostFile,
+  User,
 } from '@/models/index';
 
 const options: SqljsConnectionOptions = {
@@ -28,6 +34,12 @@ const options: SqljsConnectionOptions = {
     RelationshipType,
     RelationshipPropertyKey,
     RelationshipPropertyValue,
+    Discussion,
+    File,
+    Post,
+    Reaction,
+    RelationshipPostFile,
+    User,
   ],
   migrations: ['migrations/*.ts'],
 };

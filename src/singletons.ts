@@ -8,6 +8,8 @@ import { RelationshipPropertyValueRepository } from '@/repositories/relationship
 import { RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
 import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
 import { SyncSessionRepository } from '@/repositories/sync-session.repository';
+import { DiscussionRepository } from '@/repositories/discussion/discussion.repository';
+import { UserRepository } from '@/repositories/user.repository';
 import { DbService } from '@/services/db.service';
 import LexiconService from '@/services/lexicon.service';
 import { NodeService } from '@/services/node.service';
@@ -29,6 +31,8 @@ export interface ISingletons {
   relationshipTypeRepo: RelationshipTypeRepository;
   relationshipPropertyKeyRepo: RelationshipPropertyKeyRepository;
   relationshipPropertyValueRepo: RelationshipPropertyValueRepository;
+  discussionRepo: DiscussionRepository;
+  userRepo: UserRepository;
 }
 
 const _cache = new Map<DataSource, Promise<ISingletons>>();
@@ -63,6 +67,8 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     dbService,
     syncService,
   );
+  const discussionRepo = new DiscussionRepository(dbService);
+  const userRepo = new UserRepository(dbService);
 
   const nodeService = new NodeService(
     nodeRepo,
@@ -101,6 +107,8 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipTypeRepo,
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
+    discussionRepo,
+    userRepo,
   };
 };
 
