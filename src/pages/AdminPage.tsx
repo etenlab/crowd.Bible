@@ -33,9 +33,6 @@ export function AdminPage() {
       if (!nodeService) {
         return;
       }
-      if (!nodeService) {
-        return;
-      }
       const table = await nodeService.createTable('iso-639-3.tab');
 
       const rows = data.split('\r\n');
