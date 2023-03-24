@@ -6,7 +6,7 @@ import {
   IonSpinner,
   useIonAlert,
 } from '@ionic/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { type INode, parseSync } from 'svgson';
 import { Box, Typography } from '@mui/material';
 import {
@@ -19,13 +19,15 @@ import {
 } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
 import useNodeServices from '@/src/hooks/useNodeServices';
+import { LanguageDto } from '@/src/dtos/lang.dto';
 const { TitleWithIcon } = CrowdBibleUI;
 
 //#region types
 enum eProcessStatus {
   NONE = 'NONE',
-  PROCESSING = 'PROCESSING',
-  COMPLETED = 'COMPLETED',
+  PARSING_STARTED = 'PARSING_STARTED',
+  PARSING_COMPLETED = 'PARSING_COMPLETED',
+  COMPLETED = 'SAVED_IN_DB',
   FAILED = 'FAILED',
 }
 type MapDetail = {
@@ -33,13 +35,9 @@ type MapDetail = {
   tempId?: string;
   status: eProcessStatus;
   words?: string[];
-  fileStream?: string;
-  fileName?: string;
-};
-
-type Option = {
-  id: string;
-  lable: string;
+  map?: string;
+  name?: string;
+  langId?: string;
 };
 //#endregion
 
@@ -48,7 +46,8 @@ const PADDING = 15;
 //#endregion
 
 export const MapListPage = () => {
-  const [langs, setLangs] = useState<Option[]>([]);
+  const langIdRef = useRef('');
+  const [langs, setLangs] = useState<LanguageDto[]>([]);
   const [mapList, setMapList] = useState<MapDetail[]>([
     // { fileName: 'text name', status: eProcessStatus.FAILED },
   ]);
@@ -60,28 +59,43 @@ export const MapListPage = () => {
     loadLanguages();
   }, [nodeService]);
 
-  const setMapStatus = (id: string, partialState: Partial<MapDetail>) => {
+  useEffect(() => {
+    for (const mapState of mapList) {
+      if (mapState.status === eProcessStatus.PARSING_COMPLETED) {
+        handleMapParsingCompleted(mapState);
+      }
+    }
+  }, [mapList]);
+
+  const setMapStatus = (tempId: string, state: Partial<MapDetail>) => {
     setMapList((prevList) => {
       const clonedList = [...prevList];
-      const idx = clonedList.findIndex((m) => m.tempId === id);
+      const idx = clonedList.findIndex((m) => m.tempId === tempId);
       if (idx > -1) {
-        clonedList[idx] = { ...clonedList[idx], ...partialState };
+        clonedList[idx] = { ...clonedList[idx], ...state };
       }
       return clonedList;
     });
+  };
 
-    if (partialState.status === eProcessStatus.COMPLETED) {
-      processMapWords(partialState.words || [], selectedLang);
-      nodeService
-        ?.saveMap(selectedLang, {
-          name: partialState.fileName!,
-          map: partialState.fileStream!,
-          ext: 'svg',
-        })
-        .then((res) => {
-          console.log('map successfully saved:', res);
-        });
+  const handleMapParsingCompleted = async (argMap: MapDetail) => {
+    if (!nodeService) return;
+    let isSuccess = true;
+    try {
+      const mapSaveRes = await nodeService.saveMap(argMap.langId!, {
+        name: argMap.name!,
+        map: argMap.map!,
+        ext: 'svg',
+      });
+      console.log('map successfully saved:', mapSaveRes);
+      if (mapSaveRes) processMapWords(argMap.words!, argMap.langId!);
+      else isSuccess = false;
+    } catch (error) {
+      isSuccess = false;
     }
+    setMapStatus(argMap.tempId!, {
+      status: isSuccess ? eProcessStatus.COMPLETED : eProcessStatus.FAILED,
+    });
   };
 
   const fileHandler: React.ChangeEventHandler<HTMLInputElement> = useCallback(
@@ -94,8 +108,9 @@ export const MapListPage = () => {
           ...prevList,
           {
             tempId: id,
-            fileName: file.name?.split('.')[0],
-            status: eProcessStatus.PROCESSING,
+            name: file.name?.split('.')[0],
+            status: eProcessStatus.PARSING_STARTED,
+            langId: langIdRef.current,
           },
         ];
       });
@@ -128,8 +143,8 @@ export const MapListPage = () => {
           showAlert('No text or textPath tags found');
         } else {
           setMapStatus(id, {
-            status: eProcessStatus.COMPLETED,
-            fileStream: originalSvg,
+            status: eProcessStatus.PARSING_COMPLETED,
+            map: originalSvg,
             words: textArray,
           });
         }
@@ -154,23 +169,32 @@ export const MapListPage = () => {
 
   const loadLanguages = async () => {
     if (!nodeService) return;
-    const langNodes = await nodeService.getLanguages();
-    const langs: Option[] = [];
-    for (const node of langNodes) {
-      const strJson = node.propertyKeys.at(0)?.propertyValue?.property_value;
-      if (strJson) {
-        const valObj = JSON.parse(strJson);
-        if (valObj.value) langs.push({ id: node.id, lable: valObj.value });
-      }
-    }
-    setLangs(langs);
+    const res = await nodeService.getLanguages();
+    setLangs(res);
   };
 
-  const processMapWords = async (words: string[], language: string) => {
-    if (!nodeService || !words.length || !language) return;
+  const setMapsByLang = async (langId: string) => {
+    if (!nodeService) return;
+    const res = await nodeService.getMaps(langId);
+    setMapList(
+      res.map(
+        (m) =>
+          ({
+            id: m.id,
+            name: m.name,
+            map: m.map,
+            status: eProcessStatus.NONE,
+            words: [],
+          } as MapDetail),
+      ),
+    );
+  };
+
+  const processMapWords = async (words: string[], langId: string) => {
+    if (!nodeService || !words.length || !langId) return;
     const wordsQueue = [];
     for (const word of words) {
-      wordsQueue.push(nodeService.createWord(word, language));
+      wordsQueue.push(nodeService.createWord(word, langId));
     }
     const resList = await Promise.allSettled(wordsQueue);
     const createdWords = resList.filter((res) => res.status === 'fulfilled');
@@ -188,6 +212,11 @@ export const MapListPage = () => {
 
   const handleApplyLanguageFilter = (value: string) => {
     setSelectedLang(value);
+    const curLangDetail = langs.find((l) => l.name === value);
+    if (curLangDetail) {
+      langIdRef.current = curLangDetail.id;
+      setMapsByLang(curLangDetail.id);
+    }
   };
 
   const handleClearLanguageFilter = () => {
@@ -195,7 +224,7 @@ export const MapListPage = () => {
     setMapList([]);
   };
 
-  const langLabels = langs.map((l) => l.lable);
+  const langLabels = langs.map((l) => l.name);
   return (
     <IonContent>
       <Box
@@ -324,10 +353,11 @@ export const MapListPage = () => {
               {mapList.map((map, idx) => {
                 return (
                   <IonItem key={idx} lines="none" href="/map-detail">
-                    <IonLabel>{map.fileName}</IonLabel>
-                    {map.status === eProcessStatus.PROCESSING && (
-                      <IonSpinner></IonSpinner>
-                    )}
+                    <IonLabel>{map.name}</IonLabel>
+                    {[
+                      eProcessStatus.PARSING_STARTED,
+                      eProcessStatus.PARSING_COMPLETED,
+                    ].includes(map.status) && <IonSpinner></IonSpinner>}
                     {map.status === eProcessStatus.FAILED && (
                       <Button variant={'text'} color={'error'}>
                         Error

@@ -10,6 +10,7 @@ import { type Relationship } from '@/models/relationship/relationship.entity';
 import { type SyncService } from './sync.service';
 import { NodeTypeConst } from '../constants/node-type.constant';
 import { MapDto } from '../dtos/map.dto';
+import { LanguageDto } from '../dtos/lang.dto';
 
 export class NodeService {
   nodeRepo!: NodeRepository;
@@ -696,7 +697,7 @@ export class NodeService {
         return lang_id;
       }
 
-      const node = await this.createNodeFromObject('language', {
+      const node = await this.createNodeFromObject(NodeTypeConst.LANGUAGE, {
         name: language,
       });
 
@@ -731,7 +732,7 @@ export class NodeService {
       throw new Error(`Failed to get language '${language}'`);
     }
   }
-  async getLanguages(): Promise<Node[]> {
+  async getLanguages(): Promise<LanguageDto[]> {
     try {
       const langNodes = await this.nodeRepo.repository.find({
         relations: ['propertyKeys', 'propertyKeys.propertyValue'],
@@ -739,7 +740,15 @@ export class NodeService {
           node_type: 'language',
         },
       });
-      return langNodes;
+      const dtos: LanguageDto[] = [];
+      for (const node of langNodes) {
+        const strJson = node.propertyKeys.at(0)?.propertyValue?.property_value;
+        if (strJson) {
+          const valObj = JSON.parse(strJson);
+          if (valObj.value) dtos.push({ id: node.id, name: valObj.value });
+        }
+      }
+      return dtos;
     } catch (err) {
       console.error('failed to get language list::', err);
       return [];
@@ -760,7 +769,7 @@ export class NodeService {
       const res = await this.createRelatedFromNodeFromObject(
         langId,
         NodeTypeConst.MAP,
-        NodeTypeConst.LANGUAGE,
+        NodeTypeConst.MAP_LANG,
         mapInfo,
       );
       return res.node.id;
@@ -791,10 +800,12 @@ export class NodeService {
         const dto: MapDto = Object.create(null);
         dto.id = mapNode.id;
         for (const propertyKey of mapNode.propertyKeys) {
-          dto[propertyKey.property_key] =
-            propertyKey.propertyValue?.property_value;
+          dto[propertyKey.property_key] = JSON.parse(
+            propertyKey.propertyValue?.property_value,
+          ).value;
         }
         dto.langId = mapNode.nodeRelationships?.at(0)?.to_node_id as string;
+        dtos.push(dto);
       }
       return dtos;
     } catch (error) {

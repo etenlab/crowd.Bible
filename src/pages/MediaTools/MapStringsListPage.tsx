@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Box, Typography, Divider } from '@mui/material';
 import { Button, Input, CrowdBibleUI, Autocomplete } from '@eten-lab/ui-kit';
 import useNodeServices from '@/src/hooks/useNodeServices';
+import { LanguageDto } from '@/src/dtos/lang.dto';
 
 const { TitleWithIcon } = CrowdBibleUI;
 
@@ -17,7 +18,7 @@ const PADDING = 15;
 
 export const MapStringsListPage = () => {
   const { nodeService } = useNodeServices();
-  const [langs, setLangs] = useState<Item[]>([]);
+  const [langs, setLangs] = useState<LanguageDto[]>([]);
   const [words, setWords] = useState<Item[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
 
@@ -28,16 +29,8 @@ export const MapStringsListPage = () => {
 
   const loadLanguages = async () => {
     if (!nodeService) return;
-    const langNodes = await nodeService.getLanguages();
-    const langs: Item[] = [];
-    for (const node of langNodes) {
-      const strJson = node.propertyKeys.at(0)?.propertyValue?.property_value;
-      if (strJson) {
-        const valObj = JSON.parse(strJson);
-        if (valObj.value) langs.push({ value: node.id, label: valObj.value });
-      }
-    }
-    setLangs(langs);
+    const langDtos = await nodeService.getLanguages();
+    setLangs(langDtos);
   };
 
   const loadMapStrings = async () => {
@@ -58,7 +51,7 @@ export const MapStringsListPage = () => {
     setSelectedLanguage(value);
   };
 
-  const langLabels = langs.map((l) => l.label);
+  const langLabels = langs.map((l) => l.name);
   return (
     <IonContent>
       <Box
@@ -136,7 +129,7 @@ export const MapStringsListPage = () => {
             <Box
               key={idx}
               width={'100%'}
-              padding={`${PADDING}px 0 ${PADDING}px`}
+              padding={`10px 25px`}
               display={'flex'}
               flexDirection={'row'}
               justifyContent={'space-between'}
