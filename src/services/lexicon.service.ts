@@ -1,11 +1,15 @@
 import { NodeService } from './node.service';
-import { Node } from '@/models/node/node.entity';
 import { InferType, object, Schema, string } from 'yup';
 import { NodeRepository } from '@/repositories/node/node.repository';
-import { FindOptionsWhere } from 'typeorm';
+import { CRUDService } from './crud-service';
 
 export enum LexiconNodeType {
   Lexicon = 'lexicon',
+  LexicalCategory = 'lexical_category',
+  GramaticalCategory = 'grammatical_category',
+  Grammeme = 'grammeme',
+  Lexeme = 'lexeme',
+  WordForm = 'word_form',
 }
 
 const lexiconSchema = object({
@@ -14,103 +18,43 @@ const lexiconSchema = object({
 });
 export type Lexicon = InferType<typeof lexiconSchema>;
 
-export class CRUDService<T> {
-  constructor(
-    private readonly nodeType: string,
-    private readonly schema: Schema<T>,
-    private readonly nodeService: NodeService,
-    private readonly nodeRepo: NodeRepository,
-  ) {}
+const lexicalCategorySchema = object({});
+export type LexicalCategory = InferType<typeof lexicalCategorySchema>;
 
-  private async ofNode(node: Node): Promise<T> {
-    const props = node.propertyKeys || [];
-    const obj = props.reduce((acc, key) => {
-      let value;
-      try {
-        value = JSON.parse(key.propertyValue.property_value);
-      } catch (err) {
-        console.warn(err);
-      }
+const grammaticalCategorySchema = object({});
+export type GrammaticalCategory = InferType<typeof grammaticalCategorySchema>;
 
-      if (value && 'value' in value) {
-        return {
-          ...acc,
-          [key.property_key]: value.value,
-        };
-      } else {
-        return acc;
-      }
-    }, {});
+const grammemeSchema = object({});
+export type Grammeme = InferType<typeof grammemeSchema>;
 
-    try {
-      return this.schema.cast({ id: node.id, ...obj });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'unknown error';
-      const json = JSON.stringify(obj);
-      const desc = JSON.stringify(this.schema.describe());
-      throw new Error(
-        `Failed to cast object "${json}" to schema ${desc}: ${msg}`,
-      );
-    }
-  }
+const lexemeSchema = object({});
+export type Lexeme = InferType<typeof lexemeSchema>;
 
-  private findOptsFromWhere(opts: FindOptionsWhere<Node>) {
-    return {
-      where: opts,
-      relations: {
-        propertyKeys: {
-          propertyValue: true,
-        },
-      },
-    };
-  }
-
-  private async findNodeBy(opts: FindOptionsWhere<Node>): Promise<Node[]> {
-    return await this.nodeRepo.repository.find(this.findOptsFromWhere(opts));
-  }
-
-  private async findOneNodeBy(
-    opts: FindOptionsWhere<Node>,
-  ): Promise<Node | null> {
-    return await this.nodeRepo.repository.findOne(this.findOptsFromWhere(opts));
-  }
-
-  async create(obj: Partial<T>): Promise<T> {
-    const node = await this.nodeService.createNodeFromObject(
-      this.nodeType,
-      obj,
-    );
-
-    const entity = await this.findOneNodeBy({ id: node.id });
-    if (entity) {
-      return this.ofNode(entity);
-    } else {
-      throw new Error(
-        `Failed to create node from object: "${JSON.stringify(obj)}"`,
-      );
-    }
-  }
-
-  async findBy(opts: Partial<T>): Promise<T[]> {
-    const nodes = await this.findNodeBy(opts);
-    return Promise.all(nodes.map(this.ofNode));
-  }
-
-  async findOneBy(opts: Partial<T>): Promise<T | null> {
-    const node = await this.findOneNodeBy(opts);
-    return node ? this.ofNode(node) : null;
-  }
-}
+const wordFormSchema = object({});
+export type WordForm = InferType<typeof wordFormSchema>;
 
 export default class LexiconService {
-  public lexica: CRUDService<Lexicon>;
+  public readonly lexica: CRUDService<Lexicon>;
+  public readonly lexicalCategories: CRUDService<LexicalCategory>;
+  public readonly grammaticalCategories: CRUDService<GrammaticalCategory>;
+  public readonly grammemes: CRUDService<Grammeme>;
+  public readonly lexemes: CRUDService<Lexeme>;
+  public readonly wordForms: CRUDService<WordForm>;
 
   constructor(nodeService: NodeService, nodeRepo: NodeRepository) {
-    this.lexica = new CRUDService(
-      LexiconNodeType.Lexicon,
-      lexiconSchema,
-      nodeService,
-      nodeRepo,
+    const service = <T>(model: LexiconNodeType, schema: Schema<T>) =>
+      new CRUDService(model, schema, nodeService, nodeRepo);
+    this.lexica = service(LexiconNodeType.Lexicon, lexiconSchema);
+    this.lexicalCategories = service(
+      LexiconNodeType.LexicalCategory,
+      lexicalCategorySchema,
     );
+    this.grammaticalCategories = service(
+      LexiconNodeType.GramaticalCategory,
+      grammaticalCategorySchema,
+    );
+    this.grammemes = service(LexiconNodeType.Grammeme, grammemeSchema);
+    this.lexemes = service(LexiconNodeType.Lexeme, lexemeSchema);
+    this.wordForms = service(LexiconNodeType.WordForm, wordFormSchema);
   }
 }
