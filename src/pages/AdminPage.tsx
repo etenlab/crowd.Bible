@@ -1,5 +1,3 @@
-import React, { useEffect } from 'react';
-
 import { useState } from 'react';
 
 import {
@@ -26,11 +24,6 @@ export function AdminPage() {
   );
 
   const [loadResult, setLoadResult] = useState('Load finished.');
-  const [isEnabled, setIsEnabled] = useState<boolean>(false);
-
-  useEffect(() => {
-    setIsEnabled(!!nodeService);
-  }, [nodeService]);
 
   const addNewData = async () => {
     setLoadingStatus(LoadingStatus.LOADING);
@@ -86,9 +79,7 @@ export function AdminPage() {
           <IonCardTitle>Import</IonCardTitle>
         </IonCardHeader>
         <IonCardContent>
-          <IonButton onClick={addNewData} disabled={!isEnabled}>
-            Load
-          </IonButton>
+          <IonButton onClick={addNewData}>Load</IonButton>
         </IonCardContent>
       </IonCard>
       <IonLoading

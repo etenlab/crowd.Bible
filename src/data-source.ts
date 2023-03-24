@@ -21,24 +21,31 @@ declare global {
   }
 }
 
-let _cache: Promise<void> | null = null;
-const initialize = async () => {
-  if (!_cache) {
-    _cache = initSqlJs({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      locateFile: (file_1: any) => `https://sql.js.org/dist/${file_1}`,
-    }).then((SQL) => {
-      window.SQL = SQL;
-      window.localforage = localforage;
-      localforage.config({
-        description: 'user',
-        driver: localforage.INDEXEDDB,
-      });
-    });
-  }
+const asyncMemoize = <T>(f: () => Promise<T>): (() => Promise<T>) => {
+  let _cache: Promise<T> | null = null;
 
-  return _cache;
+  return () => {
+    if (!_cache) {
+      _cache = f();
+    }
+
+    return _cache;
+  };
 };
+
+const initialize = asyncMemoize(async () => {
+  return initSqlJs({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    locateFile: (file_1: any) => `https://sql.js.org/dist/${file_1}`,
+  }).then((SQL) => {
+    window.SQL = SQL;
+    window.localforage = localforage;
+    localforage.config({
+      description: 'user',
+      driver: localforage.INDEXEDDB,
+    });
+  });
+});
 
 const options: SqljsConnectionOptions = {
   type: 'sqljs',
@@ -60,19 +67,22 @@ const options: SqljsConnectionOptions = {
   migrations: ['migrations/*.ts'],
 };
 
-export const getAppDataSource = async () => {
+const getDataSource = (opts: SqljsConnectionOptions) => async () => {
   await initialize();
-  return new DataSource({
-    ...options,
-    location: 'graph.db',
-  });
+  return new DataSource(opts);
 };
 
-export const getTestDataSource = async () => {
-  await initialize();
-  return new DataSource({
+export const getAppDataSource = asyncMemoize(
+  getDataSource({
+    ...options,
+    location: 'graph.db',
+  }),
+);
+
+export const getTestDataSource = asyncMemoize(
+  getDataSource({
     ...options,
     location: 'test.db',
     dropSchema: true,
-  });
-};
+  }),
+);
