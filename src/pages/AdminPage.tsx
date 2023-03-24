@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { useState } from 'react';
 
 import {
@@ -35,9 +33,6 @@ export function AdminPage() {
       if (!nodeService) {
         return;
       }
-      if (!nodeService) {
-        return;
-      }
       const table = await nodeService.createTable('iso-639-3.tab');
 
       const rows = data.split('\r\n');
@@ -69,8 +64,9 @@ export function AdminPage() {
     } catch (err) {
       console.log(err);
       setLoadResult('Error occured while loading.');
+    } finally {
+      setLoadingStatus(LoadingStatus.FINISHED);
     }
-    setLoadingStatus(LoadingStatus.FINISHED);
   };
 
   return (
