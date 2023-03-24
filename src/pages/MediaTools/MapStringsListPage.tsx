@@ -1,36 +1,64 @@
 import { IonContent } from '@ionic/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Typography, Divider } from '@mui/material';
 import { Button, Input, CrowdBibleUI, Autocomplete } from '@eten-lab/ui-kit';
+import useNodeServices from '@/src/hooks/useNodeServices';
 
+const { TitleWithIcon } = CrowdBibleUI;
+
+//#region types
 type Item = {
   label: string;
   value?: string;
 };
-
-const { TitleWithIcon } = CrowdBibleUI;
+//#endregion
 
 const PADDING = 15;
-const MOCK_MAP_STRINGS: Item[] = [
-  { label: 'map string 1' },
-  { label: 'map string 2' },
-  { label: 'map string 3' },
-  { label: 'map string 4' },
-  { label: 'map string 5' },
-];
-const MOCK_LANGUAGE_OPTIONS = ['Language1', 'Language2'];
 
 export const MapStringsListPage = () => {
-  const [mapStrings, setMapStrings] = useState<Item[]>([...MOCK_MAP_STRINGS]);
-  const [languages, setLanguages] = useState<string[]>([
-    ...MOCK_LANGUAGE_OPTIONS,
-  ]);
+  const { nodeService } = useNodeServices();
+  const [langs, setLangs] = useState<Item[]>([]);
+  const [words, setWords] = useState<Item[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
+
+  useEffect(() => {
+    loadLanguages();
+    loadMapStrings();
+  }, [nodeService]);
+
+  const loadLanguages = async () => {
+    if (!nodeService) return;
+    const langNodes = await nodeService.getLanguages();
+    const langs: Item[] = [];
+    for (const node of langNodes) {
+      const strJson = node.propertyKeys.at(0)?.propertyValue?.property_value;
+      if (strJson) {
+        const valObj = JSON.parse(strJson);
+        if (valObj.value) langs.push({ value: node.id, label: valObj.value });
+      }
+    }
+    setLangs(langs);
+  };
+
+  const loadMapStrings = async () => {
+    if (!nodeService) return;
+    const wordNodes = await nodeService.getWords();
+    const words: Item[] = [];
+    for (const node of wordNodes) {
+      const strJson = node.propertyKeys.at(0)?.propertyValue?.property_value;
+      if (strJson) {
+        const valObj = JSON.parse(strJson);
+        if (valObj.value) words.push({ value: node.id, label: valObj.value });
+      }
+    }
+    setWords(words);
+  };
 
   const handleSelectLanguage = (value: string) => {
     setSelectedLanguage(value);
   };
 
+  const langLabels = langs.map((l) => l.label);
   return (
     <IonContent>
       <Box
@@ -65,12 +93,8 @@ export const MapStringsListPage = () => {
         >
           <Box flex={1} alignSelf={'center'}>
             <TitleWithIcon
-              onClose={() => {
-                //
-              }}
-              onBack={() => {
-                //
-              }}
+              onClose={() => {}}
+              onBack={() => {}}
               withBackIcon={false}
               withCloseIcon={false}
               label="Target Language"
@@ -79,7 +103,7 @@ export const MapStringsListPage = () => {
           <Box flex={1}>
             <Autocomplete
               fullWidth
-              options={languages}
+              options={langLabels}
               value={selectedLanguage}
               onChange={(_, value) => {
                 handleSelectLanguage(value || '');
@@ -107,7 +131,7 @@ export const MapStringsListPage = () => {
 
         <Divider style={{ width: '100%' }} />
 
-        {mapStrings.map((stringItem, idx) => {
+        {words.map((stringItem, idx) => {
           return (
             <Box
               key={idx}

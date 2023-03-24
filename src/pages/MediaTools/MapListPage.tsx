@@ -3,6 +3,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonSpinner,
   useIonAlert,
 } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
@@ -24,10 +25,12 @@ const { TitleWithIcon } = CrowdBibleUI;
 type Item = {
   label: string;
   value: unknown;
+  status?: 'none' | 'processing' | 'completed' | 'failed';
 };
 
 type FileProcessInfo = {
-  status: 'none' | 'processed';
+  id?: string;
+  status: 'none' | 'processing' | 'completed';
   words: string[];
   fileStream: string;
   fileName: string;
@@ -64,18 +67,26 @@ export const MapListPage = () => {
   }, [nodeService]);
 
   useEffect(() => {
-    if (fileProcessInfo.status === 'processed') {
+    if (fileProcessInfo.status === 'completed') {
       const langId = langs.find((l) => l.lable === selectedLang)?.id;
-      processMapWords(fileProcessInfo.words, langId!)
-        .then(() => {
-          setTranslatedMapsList([
-            ...translatedMapsList,
-            { value: nanoid(4), label: fileProcessInfo.fileName },
-          ]);
-        })
-        .finally(() => {
-          setFileProcessInfo({ ...defaultFileProcessInfo });
-        });
+      processMapWords(fileProcessInfo.words, langId!).finally(() => {
+        const existingMapsList = [...translatedMapsList];
+        const itemIdx = existingMapsList.findIndex(
+          (m) => m.value === fileProcessInfo.id,
+        );
+        existingMapsList[itemIdx].status = 'completed';
+        setTranslatedMapsList(existingMapsList);
+        setFileProcessInfo({ ...defaultFileProcessInfo });
+      });
+    } else if (fileProcessInfo.status === 'processing') {
+      setTranslatedMapsList([
+        ...translatedMapsList,
+        {
+          value: fileProcessInfo.id,
+          label: fileProcessInfo.fileName,
+          status: 'processing',
+        },
+      ]);
     }
   }, [fileProcessInfo]);
 
@@ -83,18 +94,23 @@ export const MapListPage = () => {
     (e) => {
       const file = e.target.files?.[0];
       if (file == null) return;
+      const id = nanoid();
+      setFileProcessInfo({
+        ...fileProcessInfo,
+        id,
+        status: 'processing',
+        fileName: file.name?.split('.')[0],
+      });
       const fileReader = new FileReader();
       fileReader.onload = function (evt: ProgressEvent<FileReader>) {
         if (evt.target?.readyState !== 2) return;
         if (evt.target.error != null) {
           showAlert('Error while reading file. Read console for more info');
-          console.error(evt.target.error);
           return;
         }
         const filecontent = evt.target.result;
         if (!filecontent) {
           showAlert('Error while reading file. Read console for more info');
-          console.error('filecontent is null after reading');
           return;
         }
         const originalSvg = filecontent.toString();
@@ -111,10 +127,11 @@ export const MapListPage = () => {
           showAlert('No text or textPath tags found');
         } else {
           setFileProcessInfo({
-            status: 'processed',
+            ...fileProcessInfo,
+            id,
+            status: 'completed',
             fileStream: originalSvg,
             words: textArray,
-            fileName: file.name?.split('.')[0],
           });
         }
       };
@@ -126,9 +143,9 @@ export const MapListPage = () => {
 
   const loadLanguages = async () => {
     if (!nodeService) return;
-    const rawLangNodes = await nodeService.getLanguages();
+    const langNodes = await nodeService.getLanguages();
     const langs: Option[] = [];
-    for (const node of rawLangNodes) {
+    for (const node of langNodes) {
       const strJson = node.propertyKeys.at(0)?.propertyValue?.property_value;
       if (strJson) {
         const valObj = JSON.parse(strJson);
@@ -141,7 +158,7 @@ export const MapListPage = () => {
   const processMapWords = async (words: string[], language: string) => {
     if (!nodeService || !words.length || !language) return;
     const wordsQueue = [];
-    for (const word of words.slice(0, 2)) {
+    for (const word of words.slice(0, 10)) {
       wordsQueue.push(nodeService.createWord(word, language));
     }
     const resList = await Promise.allSettled(wordsQueue);
@@ -309,6 +326,12 @@ export const MapListPage = () => {
                 return (
                   <IonItem key={idx} lines="none">
                     <IonLabel>{map.label}</IonLabel>
+                    {map.status === 'processing' && <IonSpinner></IonSpinner>}
+                    {map.status === 'failed' && (
+                      <Button variant={'text'} color={'error'}>
+                        Error
+                      </Button>
+                    )}
                   </IonItem>
                 );
               })}

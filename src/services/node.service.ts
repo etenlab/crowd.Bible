@@ -492,6 +492,25 @@ export class NodeService {
     }
   }
 
+  async getWords(): Promise<Node[]> {
+    try {
+      const wordNodes = await this.nodeRepo.repository.find({
+        relations: [
+          'propertyKeys',
+          'propertyKeys.propertyValue',
+          'nodeRelationships',
+        ],
+        where: {
+          node_type: 'word',
+        },
+      });
+      return wordNodes;
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to get words`);
+    }
+  }
+
   // --------- Word-Translation --------- //
 
   async createWordTranslationRelationship(
