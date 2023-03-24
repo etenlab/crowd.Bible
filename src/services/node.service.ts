@@ -7,8 +7,9 @@ import { RelationshipRepository } from '@/repositories/relationship/relationship
 import { type DbService } from './db.service';
 import { type Node } from '@/models/node/node.entity';
 import { type Relationship } from '@/models/relationship/relationship.entity';
-import { tableNodeToTable } from '@/utils/table';
 import { type SyncService } from './sync.service';
+import { NodeTypeConst } from '../constants/node-type.constant';
+import { MapDto } from '../dtos/map.dto';
 
 export class NodeService {
   nodeRepo!: NodeRepository;
@@ -687,7 +688,7 @@ export class NodeService {
     }
   }
 
-  //#region language
+  //#region language node
   async createLanguage(language: string): Promise<string> {
     try {
       const lang_id = await this.getLanguage(language);
@@ -741,6 +742,63 @@ export class NodeService {
       return langNodes;
     } catch (err) {
       console.error('failed to get language list::', err);
+      return [];
+    }
+  }
+  //#endregion
+
+  //#region map node
+  async saveMap(
+    langId: string,
+    mapInfo: {
+      name: string;
+      map: string;
+      ext: string;
+    },
+  ): Promise<string | null> {
+    try {
+      const res = await this.createRelatedFromNodeFromObject(
+        langId,
+        NodeTypeConst.MAP,
+        NodeTypeConst.LANGUAGE,
+        mapInfo,
+      );
+      return res.node.id;
+    } catch (error) {
+      console.error('failed to save map::', error);
+      return null;
+    }
+  }
+  async getMaps(langId?: string) {
+    try {
+      const mapNodes = await this.nodeRepo.repository.find({
+        relations: [
+          'propertyKeys',
+          'propertyKeys.propertyValue',
+          'nodeRelationships',
+        ],
+        where: {
+          node_type: NodeTypeConst.MAP,
+          nodeRelationships: {
+            relationship_type: NodeTypeConst.MAP_LANG,
+            to_node_id: langId,
+          },
+        },
+      });
+
+      const dtos: MapDto[] = [];
+      for (const mapNode of mapNodes) {
+        const dto: MapDto = Object.create(null);
+        dto.id = mapNode.id;
+        for (const propertyKey of mapNode.propertyKeys) {
+          dto[propertyKey.property_key] =
+            propertyKey.propertyValue?.property_value;
+        }
+        dto.langId = mapNode.nodeRelationships?.at(0)?.to_node_id as string;
+      }
+      return dtos;
+    } catch (error) {
+      console.error('failed to get maps::', error);
       return [];
     }
   }

@@ -22,18 +22,19 @@ import useNodeServices from '@/src/hooks/useNodeServices';
 const { TitleWithIcon } = CrowdBibleUI;
 
 //#region types
-type Item = {
-  label: string;
-  value: unknown;
-  status?: 'none' | 'processing' | 'completed' | 'failed';
-};
-
-type FileProcessInfo = {
+enum eProcessStatus {
+  NONE = 'NONE',
+  PROCESSING = 'PROCESSING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+}
+type MapDetail = {
   id?: string;
-  status: 'none' | 'processing' | 'completed';
-  words: string[];
-  fileStream: string;
-  fileName: string;
+  tempId?: string;
+  status: eProcessStatus;
+  words?: string[];
+  fileStream?: string;
+  fileName?: string;
 };
 
 type Option = {
@@ -44,72 +45,71 @@ type Option = {
 
 //#region data
 const PADDING = 15;
-const defaultFileProcessInfo: FileProcessInfo = {
-  status: 'none',
-  words: [],
-  fileStream: '',
-  fileName: '',
-};
 //#endregion
 
 export const MapListPage = () => {
   const [langs, setLangs] = useState<Option[]>([]);
-  const [translatedMapsList, setTranslatedMapsList] = useState<Item[]>([]);
+  const [mapList, setMapList] = useState<MapDetail[]>([
+    // { fileName: 'text name', status: eProcessStatus.FAILED },
+  ]);
   const [selectedLang, setSelectedLang] = useState<string>('');
   const [presentAlert] = useIonAlert();
   const { nodeService } = useNodeServices();
-  const [fileProcessInfo, setFileProcessInfo] = useState<FileProcessInfo>({
-    ...defaultFileProcessInfo,
-  });
 
   useEffect(() => {
     loadLanguages();
   }, [nodeService]);
 
-  useEffect(() => {
-    if (fileProcessInfo.status === 'completed') {
-      const langId = langs.find((l) => l.lable === selectedLang)?.id;
-      processMapWords(fileProcessInfo.words, langId!).finally(() => {
-        const existingMapsList = [...translatedMapsList];
-        const itemIdx = existingMapsList.findIndex(
-          (m) => m.value === fileProcessInfo.id,
-        );
-        existingMapsList[itemIdx].status = 'completed';
-        setTranslatedMapsList(existingMapsList);
-        setFileProcessInfo({ ...defaultFileProcessInfo });
-      });
-    } else if (fileProcessInfo.status === 'processing') {
-      setTranslatedMapsList([
-        ...translatedMapsList,
-        {
-          value: fileProcessInfo.id,
-          label: fileProcessInfo.fileName,
-          status: 'processing',
-        },
-      ]);
+  const setMapStatus = (id: string, partialState: Partial<MapDetail>) => {
+    setMapList((prevList) => {
+      const clonedList = [...prevList];
+      const idx = clonedList.findIndex((m) => m.tempId === id);
+      if (idx > -1) {
+        clonedList[idx] = { ...clonedList[idx], ...partialState };
+      }
+      return clonedList;
+    });
+
+    if (partialState.status === eProcessStatus.COMPLETED) {
+      processMapWords(partialState.words || [], selectedLang);
+      nodeService
+        ?.saveMap(selectedLang, {
+          name: partialState.fileName!,
+          map: partialState.fileStream!,
+          ext: 'svg',
+        })
+        .then((res) => {
+          console.log('map successfully saved:', res);
+        });
     }
-  }, [fileProcessInfo]);
+  };
 
   const fileHandler: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
       const file = e.target.files?.[0];
       if (file == null) return;
       const id = nanoid();
-      setFileProcessInfo({
-        ...fileProcessInfo,
-        id,
-        status: 'processing',
-        fileName: file.name?.split('.')[0],
+      setMapList((prevList) => {
+        return [
+          ...prevList,
+          {
+            tempId: id,
+            fileName: file.name?.split('.')[0],
+            status: eProcessStatus.PROCESSING,
+          },
+        ];
       });
       const fileReader = new FileReader();
       fileReader.onload = function (evt: ProgressEvent<FileReader>) {
         if (evt.target?.readyState !== 2) return;
         if (evt.target.error != null) {
+          setMapStatus(id, { status: eProcessStatus.FAILED });
           showAlert('Error while reading file. Read console for more info');
           return;
         }
         const filecontent = evt.target.result;
         if (!filecontent) {
+          setMapStatus(id, { status: eProcessStatus.FAILED });
           showAlert('Error while reading file. Read console for more info');
           return;
         }
@@ -124,12 +124,11 @@ export const MapListPage = () => {
         });
 
         if (textArray.length === 0 && originalSvg) {
+          setMapStatus(id, { status: eProcessStatus.FAILED });
           showAlert('No text or textPath tags found');
         } else {
-          setFileProcessInfo({
-            ...fileProcessInfo,
-            id,
-            status: 'completed',
+          setMapStatus(id, {
+            status: eProcessStatus.COMPLETED,
             fileStream: originalSvg,
             words: textArray,
           });
@@ -140,6 +139,18 @@ export const MapListPage = () => {
     },
     [],
   );
+
+  const fileUploadPreCheck = (e: Event) => {
+    let msg = '';
+    if (!selectedLang) {
+      msg = 'Please choose the language first and then Add Map';
+    }
+    if (msg) {
+      showAlert(msg);
+      e?.preventDefault();
+      e?.stopPropagation();
+    }
+  };
 
   const loadLanguages = async () => {
     if (!nodeService) return;
@@ -158,7 +169,7 @@ export const MapListPage = () => {
   const processMapWords = async (words: string[], language: string) => {
     if (!nodeService || !words.length || !language) return;
     const wordsQueue = [];
-    for (const word of words.slice(0, 10)) {
+    for (const word of words) {
       wordsQueue.push(nodeService.createWord(word, language));
     }
     const resList = await Promise.allSettled(wordsQueue);
@@ -181,7 +192,7 @@ export const MapListPage = () => {
 
   const handleClearLanguageFilter = () => {
     setSelectedLang('');
-    setTranslatedMapsList([]);
+    setMapList([]);
   };
 
   const langLabels = langs.map((l) => l.lable);
@@ -248,12 +259,8 @@ export const MapListPage = () => {
         >
           <Box flex={1} alignSelf={'center'}>
             <TitleWithIcon
-              onClose={() => {
-                //
-              }}
-              onBack={() => {
-                //
-              }}
+              onClose={() => {}}
+              onBack={() => {}}
               withBackIcon={false}
               withCloseIcon={false}
               label="Language ID"
@@ -304,30 +311,24 @@ export const MapListPage = () => {
               hidden
               multiple
               accept="image/svg+xml"
-              onClick={(e) => {
-                if (!selectedLang) {
-                  showAlert(
-                    'Please choose the language first and then Add Map',
-                  );
-                  e.preventDefault();
-                  e.stopPropagation();
-                }
-              }}
+              onClick={fileUploadPreCheck as any}
               onChange={fileHandler}
               type="file"
             />
           </Button>
         </Box>
 
-        {translatedMapsList.length > 0 ? (
+        {mapList.length > 0 ? (
           <Box width={'100%'} paddingTop={`${PADDING}px`}>
             <IonList>
-              {translatedMapsList.map((map, idx) => {
+              {mapList.map((map, idx) => {
                 return (
-                  <IonItem key={idx} lines="none">
-                    <IonLabel>{map.label}</IonLabel>
-                    {map.status === 'processing' && <IonSpinner></IonSpinner>}
-                    {map.status === 'failed' && (
+                  <IonItem key={idx} lines="none" href="/map-detail">
+                    <IonLabel>{map.fileName}</IonLabel>
+                    {map.status === eProcessStatus.PROCESSING && (
+                      <IonSpinner></IonSpinner>
+                    )}
+                    {map.status === eProcessStatus.FAILED && (
                       <Button variant={'text'} color={'error'}>
                         Error
                       </Button>
