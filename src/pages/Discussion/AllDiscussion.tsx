@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
-import { IonContent, IonHeader, IonPage } from '@ionic/react';
+import { IonContent, IonPage } from '@ionic/react';
 import { CreateDiscussion } from '@/components/dicussion/CreateDiscussion/CreateDiscussion';
 import { DiscussionList } from '@/components/dicussion/DiscussionList';
 import { Discussion } from '@/src/models/discussion.entity';
-import { Toolbar, Typography } from '@eten-lab/ui-kit';
-import './DiscussionList.css';
+import { Typography } from '@eten-lab/ui-kit';
 import { useHistory } from 'react-router';
-import AppRoutes from '../../constants/AppRoutes';
 import useSingletons from '@/src/hooks/useSingletons';
+import './DiscussionList.css';
 
 const sampleData: any[] = [
   { title: 'Discussoin Title #1', text: '', id: 1, user: Object.create(null) },
@@ -33,19 +32,6 @@ export const AllDiscussion = () => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <Toolbar
-          themeMode={'light'}
-          title="Showcase"
-          buttons={{ discussion: true, notification: true, menu: true }}
-          onClickMenuBtn={() => {}}
-          onClickDiscussionBtn={() => {}}
-          onClickNotificationBtn={() => {
-            history.push(AppRoutes.notifications);
-          }}
-          onClickThemeModeBtn={() => {}}
-        />
-      </IonHeader>
       <IonContent className="ion-padding" style={{ height: 'fit-content' }}>
         <Typography variant="h3">Discussions</Typography>
         {discussions?.length ? (

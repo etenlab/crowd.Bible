@@ -8,10 +8,9 @@ import {
   IonPage,
 } from '@ionic/react';
 import { useHistory, useParams } from 'react-router';
-import { Toolbar, Typography, DiscussionBoxUI } from '@eten-lab/ui-kit';
+import { Typography, DiscussionBoxUI } from '@eten-lab/ui-kit';
 import { arrowBack } from 'ionicons/icons';
 import './DiscussionDetail.css';
-import AppRoutes from '../../constants/AppRoutes';
 const {
   ReactionButton,
   InputButtonGroup,
@@ -32,19 +31,6 @@ const DiscussionDetail: React.FC<IProps> = () => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <Toolbar
-          title="Showcase"
-          themeMode="light"
-          buttons={{ discussion: true, notification: true, menu: true }}
-          onClickMenuBtn={() => {}}
-          onClickDiscussionBtn={() => {}}
-          onClickNotificationBtn={() => {
-            history.push(AppRoutes.notifications);
-          }}
-          onClickThemeModeBtn={() => {}}
-        />
-      </IonHeader>
       <IonContent className="ion-padding">
         <IonItem lines="none">
           <IonIcon
