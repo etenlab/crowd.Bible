@@ -13,6 +13,7 @@ import LexiconService from '@/services/lexicon.service';
 import { NodeService } from '@/services/node.service';
 import { SeedService } from '@/services/seed.service';
 import { SyncService } from '@/services/sync.service';
+import { DefinitionService } from './services/definition.service';
 
 export interface ISingletons {
   dbService: DbService;
@@ -20,6 +21,7 @@ export interface ISingletons {
   nodeService: NodeService;
   lexiconService: LexiconService;
   seedService: SeedService;
+  definitionService: DefinitionService;
 
   nodeRepo: NodeRepository;
   nodeTypeRepo: NodeTypeRepository;
@@ -83,6 +85,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
   );
+  const definitionService = new DefinitionService(nodeService, nodeRepo);
 
   const lexiconService = new LexiconService(nodeService, nodeRepo);
 
@@ -92,6 +95,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     nodeService,
     lexiconService,
     seedService,
+    definitionService,
 
     nodeRepo,
     nodeTypeRepo,

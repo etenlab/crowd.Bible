@@ -20,3 +20,16 @@ interface Word {
   id?: string;
   name: string;
 }
+
+type TStringUUID = string;
+
+type TNodeTypes = 'word' | 'definition';
+type TPropertyKeys =
+  | 'lemma'
+  | 'xlit'
+  | 'pron'
+  | 'derivation'
+  | 'strongs_def'
+  | 'kjv_def'
+  | 'strongs_id'
+  | 'text';

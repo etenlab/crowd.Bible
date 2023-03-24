@@ -4,6 +4,12 @@ import { SyncService } from '@/services/sync.service';
 import { NodeType } from '@/models/index';
 import { Node } from '@/models/node/node.entity';
 
+export interface IfindOneByPropertyValue {
+  nodeType: TNodeTypes;
+  prop: { propertyKey: TPropertyKeys; propertyValue: string };
+  onlyWithRelToNodeId?: TStringUUID;
+}
+
 export class NodeRepository {
   constructor(
     private readonly dbService: DbService,
@@ -85,5 +91,38 @@ export class NodeRepository {
         `Failed to get node by prop '${type} - prop: { key: ${prop.key}, value: ${prop.value} }'`,
       );
     }
+  }
+
+  async getAllByProp({
+    nodeType,
+    prop: { propertyKey, propertyValue },
+    onlyWithRelToNodeId,
+  }: IfindOneByPropertyValue): Promise<[Node[], number]> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const whereClause: any = {
+      node_type: nodeType,
+      propertyKeys: {
+        property_key: propertyKey,
+        propertyValue: {
+          property_value: JSON.stringify({ value: propertyValue }),
+        },
+      },
+    };
+    if (onlyWithRelToNodeId) {
+      whereClause.nodeRelationships = {
+        to_node_id: onlyWithRelToNodeId,
+      };
+    }
+
+    const found = this.repository.findAndCount({
+      relations: [
+        'propertyKeys',
+        'propertyKeys.propertyValue',
+        'nodeRelationships',
+      ],
+      where: whereClause,
+    });
+
+    return found;
   }
 }

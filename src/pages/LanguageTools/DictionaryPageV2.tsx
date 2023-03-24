@@ -3,6 +3,7 @@ import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent } from '@ionic/react';
 import { useEffect, useState } from 'react';
+import useDefinitionService from '../../hooks/useDefinitionService';
 const { Box, Divider } = MuiMaterial;
 
 const {
@@ -89,6 +90,7 @@ export function DictionaryPageV2() {
   const [words, setWords] = useState([] as Array<Item>);
   const [selectedWord, setSelectedWord] = useState(null as unknown as Item);
   const [isDialogOpened, setIsDialogOpened] = useState(false);
+  const definitionService = useDefinitionService();
 
   useEffect(() => {
     setWords(MOCK_DICTIONARY);
@@ -129,18 +131,33 @@ export function DictionaryPageV2() {
     setWords([...words]);
   };
 
-  const addItemContent = ({
+  const addDefinition = ({
     itemTitleContent, // this is title's, content (type string), i.e. value of the title of the word - using here as uniq id
-    newContent, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
+    newContent: newDefinition, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
   }: {
     itemTitleContent: string;
     newContent: Content;
   }) => {
+    // local state for testing
     const itemIdx = words.findIndex(
       (ph) => ph.title.content === itemTitleContent,
     );
-    words[itemIdx].contents.push(newContent);
-    setWords(words);
+    if (!definitionService) {
+      words[itemIdx].contents.push(newDefinition);
+      setWords(words);
+      alert(
+        'definition service is not ready yet, try in a second (TODO - disable button if not ready )',
+      );
+      return;
+    }
+
+    //use API to change appropriate node
+
+    const newDefinitionNodeId = definitionService.createDefinition(
+      newDefinition.content,
+      'someLangUUIDHere',
+    );
+    console.log('[newDefinitionNodeId]', definitionService);
   };
 
   return (
@@ -238,7 +255,7 @@ export function DictionaryPageV2() {
             onBack={() => setSelectedWord(null as unknown as Item)}
             buttonText="New Definition"
             changeContent={changeItemContent}
-            addContent={addItemContent}
+            addContent={addDefinition}
           />
         </Box>
       )}
