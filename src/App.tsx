@@ -30,6 +30,7 @@ import { AppContextProvider } from './AppContext';
 import { PageLayout } from './components/PageLayout';
 import { RoutesGuardian } from './components/RoutesGuardian';
 import { ProtectedRoutes } from './routes/ProtectedRoutes';
+import { AuthRoutes } from './routes/AuthRoutes';
 
 setupIonicReact();
 
@@ -44,14 +45,8 @@ export default function App() {
                 <Switch>
                   {/* <Route exact path="/welcome">
                     <WelcomePage />
-                  </Route>
-                  <Route exact path="/login">
-                    <LoginPage />
-                  </Route>
-                  <Route exact path="/register">
-                    <RegisterPage />
                   </Route> */}
-
+                  <AuthRoutes />
                   <RoutesGuardian>
                     <ProtectedRoutes />
                   </RoutesGuardian>
