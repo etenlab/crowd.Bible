@@ -1,8 +1,8 @@
 // import { Repository } from 'typeorm';
-import { NodeType } from '../../models';
-import { Node } from '../../models/node/node.entity';
-import { type DbService } from '../../services/db.service';
-import { type SyncService } from '../../services/sync.service';
+import { DbService } from '@/services/db.service';
+import { SyncService } from '@/services/sync.service';
+import { NodeType } from '@/models/index';
+import { Node } from '@/models/node/node.entity';
 
 export class NodeRepository {
   constructor(

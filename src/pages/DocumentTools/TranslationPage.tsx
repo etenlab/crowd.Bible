@@ -54,6 +54,7 @@ export function TranslationPage() {
   const { getColor } = useColorModeContext();
   const [opened, setOpened] = useState<boolean>(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDotClick = (id: number) => {
     setOpened(true);
   };

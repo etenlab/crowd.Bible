@@ -77,6 +77,7 @@ export const SvgTranslatedPage = () => {
 };
 
 function getWindowWidth() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { innerWidth, innerHeight } = window;
   return innerWidth;
 }

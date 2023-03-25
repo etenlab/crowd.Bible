@@ -1,4 +1,4 @@
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
@@ -21,9 +21,9 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 import './styles.css';
-// import { WelcomePage } from './pages/WelcomePage';
-// import { LoginPage } from './pages/LoginPage';
-// import { RegisterPage } from './pages/RegisterPage';
+// import { WelcomePage } from '@/pages/WelcomePage';
+// import { LoginPage } from '@/pages/LoginPage';
+// import { RegisterPage } from '@/pages/RegisterPage';
 
 import { ThemeProvider } from '@eten-lab/ui-kit';
 import { AppContextProvider } from './AppContext';

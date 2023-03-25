@@ -74,10 +74,15 @@ export function ReaderQAPage() {
   };
 
   const handleSaveQuestion = ({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     normal,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     agreeOrDisagree,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     trueOrFalse,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     chooseOne,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     multiselect,
   }: {
     normal?: string;

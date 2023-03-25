@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const { aliasWebpack } = require('react-app-alias');
+const { aliasWebpack, aliasJest } = require('react-app-alias');
 
 function mainOverride(config) {
   const fallback = config.resolve.fallback || {};
@@ -45,3 +45,5 @@ module.exports = function override(config) {
   config = pathAliasOverride(config);
   return config;
 };
+
+module.exports.jest = aliasJest(options);
