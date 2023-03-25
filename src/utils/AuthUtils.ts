@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function decodeToken(str: string) {
   str = str.split('.')[1];
 

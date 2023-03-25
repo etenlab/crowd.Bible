@@ -1,8 +1,5 @@
 import { Route } from 'react-router-dom';
 
-import { SiteTextAdminPage } from '@/pages/AppDev/SiteTextAdminPage';
-import { SiteTextTranslationPage } from '@/pages/AppDev/SiteTextTranslationPage';
-
 import { LoginPage } from '@/pages/LoginPage';
 import { RegisterPage } from '@/pages/RegisterPage';
 
