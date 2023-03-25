@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
@@ -78,6 +79,7 @@ export function LoginPage() {
               userEmail: token.email,
               role: 'translator',
             });
+            history.push('/home');
           });
       } catch (error: any) {
         console.log(error.message);
