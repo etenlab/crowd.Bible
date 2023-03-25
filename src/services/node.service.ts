@@ -11,6 +11,8 @@ import { type SyncService } from './sync.service';
 import { NodeTypeConst } from '../constants/node-type.constant';
 import { MapDto } from '../dtos/map.dto';
 import { LanguageDto } from '../dtos/lang.dto';
+import { MapMapper } from '../mappers/map.mapper';
+import { FindOptionsWhere } from 'typeorm';
 
 export class NodeService {
   nodeRepo!: NodeRepository;
@@ -440,7 +442,11 @@ export class NodeService {
 
   // --------- Word --------- //
 
-  async createWord(word: string, langId: string): Promise<string> {
+  async createWord(
+    word: string,
+    langId: string,
+    mapId?: string,
+  ): Promise<string> {
     try {
       const word_id = await this.getWord(word, langId);
       if (word_id) {
@@ -449,10 +455,21 @@ export class NodeService {
 
       const { node } = await this.createRelatedFromNodeFromObject(
         langId,
-        'word',
-        'word-to-language-entry',
+        NodeTypeConst.WORD,
+        NodeTypeConst.WORD_TO_LANG,
         { name: word },
       );
+
+      if (node.id && mapId) {
+        this.createRelationshipFromObject(
+          NodeTypeConst.WORD_MAP,
+          {},
+          node.id,
+          mapId,
+        ).then((res) => {
+          console.log('WORD_TO_MAP', res);
+        });
+      }
 
       return node.id;
     } catch (err) {
@@ -494,8 +511,16 @@ export class NodeService {
     }
   }
 
-  async getWords(): Promise<Node[]> {
+  async getWords(query?: { mapId?: string; langId?: string }): Promise<Node[]> {
     try {
+      const relationshipWhere: FindOptionsWhere<Relationship> =
+        Object.create(null);
+      if (query) {
+        if (query.mapId) {
+          relationshipWhere.relationship_type = NodeTypeConst.WORD_MAP;
+          relationshipWhere.to_node_id = query.mapId;
+        }
+      }
       const wordNodes = await this.nodeRepo.repository.find({
         relations: [
           'propertyKeys',
@@ -504,6 +529,7 @@ export class NodeService {
         ],
         where: {
           node_type: 'word',
+          nodeRelationships: relationshipWhere,
         },
       });
       return wordNodes;
@@ -778,6 +804,26 @@ export class NodeService {
       return null;
     }
   }
+  async getMap(mapId: string): Promise<MapDto | null> {
+    try {
+      const langNode = await this.nodeRepo.repository.findOne({
+        relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+        where: {
+          id: mapId,
+          node_type: NodeTypeConst.MAP,
+        },
+      });
+
+      if (!langNode) {
+        return null;
+      }
+
+      return MapMapper.entityToDto(langNode);
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to get map detail '${mapId}'`);
+    }
+  }
   async getMaps(langId?: string) {
     try {
       const mapNodes = await this.nodeRepo.repository.find({
@@ -795,18 +841,7 @@ export class NodeService {
         },
       });
 
-      const dtos: MapDto[] = [];
-      for (const mapNode of mapNodes) {
-        const dto: MapDto = Object.create(null);
-        dto.id = mapNode.id;
-        for (const propertyKey of mapNode.propertyKeys) {
-          dto[propertyKey.property_key] = JSON.parse(
-            propertyKey.propertyValue?.property_value,
-          ).value;
-        }
-        dto.langId = mapNode.nodeRelationships?.at(0)?.to_node_id as string;
-        dtos.push(dto);
-      }
+      const dtos = mapNodes.map((node) => MapMapper.entityToDto(node));
       return dtos;
     } catch (error) {
       console.error('failed to get maps::', error);

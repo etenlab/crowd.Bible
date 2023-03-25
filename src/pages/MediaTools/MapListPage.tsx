@@ -88,8 +88,10 @@ export const MapListPage = () => {
         ext: 'svg',
       });
       console.log('map successfully saved:', mapSaveRes);
-      if (mapSaveRes) processMapWords(argMap.words!, argMap.langId!);
-      else isSuccess = false;
+      if (mapSaveRes) {
+        setMapStatus(argMap.tempId!, { id: mapSaveRes! });
+        processMapWords(argMap.words!, argMap.langId!, mapSaveRes);
+      } else isSuccess = false;
     } catch (error) {
       isSuccess = false;
     }
@@ -190,11 +192,15 @@ export const MapListPage = () => {
     );
   };
 
-  const processMapWords = async (words: string[], langId: string) => {
+  const processMapWords = async (
+    words: string[],
+    langId: string,
+    mapId?: string,
+  ) => {
     if (!nodeService || !words.length || !langId) return;
     const wordsQueue = [];
-    for (const word of words) {
-      wordsQueue.push(nodeService.createWord(word, langId));
+    for (const word of words.slice(0, 5)) {
+      wordsQueue.push(nodeService.createWord(word, langId, mapId));
     }
     const resList = await Promise.allSettled(wordsQueue);
     const createdWords = resList.filter((res) => res.status === 'fulfilled');
@@ -352,7 +358,12 @@ export const MapListPage = () => {
             <IonList>
               {mapList.map((map, idx) => {
                 return (
-                  <IonItem key={idx} lines="none" href="/map-detail">
+                  <IonItem
+                    key={idx}
+                    lines="none"
+                    href={`/map-detail/${map.id}`}
+                    disabled={!map.id}
+                  >
                     <IonLabel>{map.name}</IonLabel>
                     {[
                       eProcessStatus.PARSING_STARTED,

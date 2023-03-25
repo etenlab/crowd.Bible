@@ -4,6 +4,7 @@ import { SvgTranslationPage } from '@/pages/MediaTools/SvgTranslationPage';
 import { SvgTranslatedPage } from '@/pages/MediaTools/SvgTranslatedPage';
 import { MapListPage } from '@/pages/MediaTools/MapListPage';
 import { MapStringsListPage } from '@/pages/MediaTools/MapStringsListPage';
+import { MapDetailPage } from '../pages/MediaTools/MapDetailPage';
 
 export function MediaToolsRoutes() {
   return (
@@ -16,6 +17,9 @@ export function MediaToolsRoutes() {
       </Route>
       <Route exact path="/map-list">
         <MapListPage />
+      </Route>
+      <Route exact path="/map-detail/:id">
+        <MapDetailPage />
       </Route>
       <Route exact path="/map-strings-list">
         <MapStringsListPage />
