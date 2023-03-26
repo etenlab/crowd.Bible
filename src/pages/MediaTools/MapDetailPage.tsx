@@ -46,7 +46,7 @@ export const MapDetailPage = () => {
       if (!nodeService) return;
       const [mapRes, mapWordsRes] = await Promise.allSettled([
         nodeService.getMap(id),
-        nodeService.getWords({ mapId: id }),
+        nodeService.getMapWords(id),
       ]);
       if (mapRes.status === 'fulfilled' && mapRes.value) {
         setMapDetail({

@@ -12,7 +12,7 @@ import { NodeTypeConst } from '../constants/node-type.constant';
 import { MapDto } from '../dtos/map.dto';
 import { LanguageDto } from '../dtos/lang.dto';
 import { MapMapper } from '../mappers/map.mapper';
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, Not } from 'typeorm';
 
 export class NodeService {
   nodeRepo!: NodeRepository;
@@ -511,16 +511,8 @@ export class NodeService {
     }
   }
 
-  async getWords(query?: { mapId?: string; langId?: string }): Promise<Node[]> {
+  async getWords(relQuery?: FindOptionsWhere<Relationship>): Promise<Node[]> {
     try {
-      const relationshipWhere: FindOptionsWhere<Relationship> =
-        Object.create(null);
-      if (query) {
-        if (query.mapId) {
-          relationshipWhere.relationship_type = NodeTypeConst.WORD_MAP;
-          relationshipWhere.to_node_id = query.mapId;
-        }
-      }
       const wordNodes = await this.nodeRepo.repository.find({
         relations: [
           'propertyKeys',
@@ -529,7 +521,7 @@ export class NodeService {
         ],
         where: {
           node_type: 'word',
-          nodeRelationships: relationshipWhere,
+          nodeRelationships: relQuery,
         },
       });
       return wordNodes;
@@ -537,6 +529,21 @@ export class NodeService {
       console.error(err);
       throw new Error(`Failed to get words`);
     }
+  }
+
+  async getMapWords(mapId: string) {
+    return this.getWords({
+      to_node_id: mapId,
+      relationship_type: NodeTypeConst.WORD_MAP,
+    });
+  }
+
+  async getUnTranslatedWords(langId: string) {
+    console.log('getUnTranslatedWords', langId);
+    return this.getWords({
+      to_node_id: Not(langId),
+      relationship_type: NodeTypeConst.WORD_TO_LANG,
+    });
   }
 
   // --------- Word-Translation --------- //

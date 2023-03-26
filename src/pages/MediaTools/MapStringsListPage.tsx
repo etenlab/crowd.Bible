@@ -1,30 +1,37 @@
-import { IonContent } from '@ionic/react';
-import { useEffect, useState } from 'react';
+import { IonContent, useIonAlert } from '@ionic/react';
+import { useEffect, useRef, useState } from 'react';
 import { Box, Typography, Divider } from '@mui/material';
 import { Button, Input, CrowdBibleUI, Autocomplete } from '@eten-lab/ui-kit';
 import useNodeServices from '@/src/hooks/useNodeServices';
 import { LanguageDto } from '@/src/dtos/lang.dto';
+import { WordDto } from '@/src/dtos/word.dto';
+import { WordMapper } from '@/src/mappers/word.mapper';
+import { NodeTypeConst } from '@/src/constants/node-type.constant';
 
 const { TitleWithIcon } = CrowdBibleUI;
 
 //#region types
 type Item = {
-  label: string;
-  value?: string;
-};
+  langId?: string;
+  translation?: string;
+  translatedWordId?: string;
+  translationLangId?: string;
+} & WordDto;
 //#endregion
 
 const PADDING = 15;
 
 export const MapStringsListPage = () => {
+  const langIdRef = useRef('');
   const { nodeService } = useNodeServices();
+  const [presentAlert] = useIonAlert();
   const [langs, setLangs] = useState<LanguageDto[]>([]);
   const [words, setWords] = useState<Item[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
 
   useEffect(() => {
     loadLanguages();
-    loadMapStrings();
+    // loadMapStrings();
   }, [nodeService]);
 
   const loadLanguages = async () => {
@@ -36,19 +43,61 @@ export const MapStringsListPage = () => {
   const loadMapStrings = async () => {
     if (!nodeService) return;
     const wordNodes = await nodeService.getWords();
-    const words: Item[] = [];
-    for (const node of wordNodes) {
-      const strJson = node.propertyKeys.at(0)?.propertyValue?.property_value;
-      if (strJson) {
-        const valObj = JSON.parse(strJson);
-        if (valObj.value) words.push({ value: node.id, label: valObj.value });
-      }
-    }
+    const words: Item[] = wordNodes.map((w) => WordMapper.entityToDto(w));
     setWords(words);
   };
 
   const handleSelectLanguage = (value: string) => {
     setSelectedLanguage(value);
+    const id = langs.find((l) => l.name === value)?.id;
+    if (id) {
+      langIdRef.current = id;
+      getWordsBasedOnLang(id);
+    }
+  };
+
+  const getWordsBasedOnLang = async (langId: string) => {
+    if (!nodeService) return;
+    const res = await nodeService.getUnTranslatedWords(langId);
+    console.log(res);
+    setWords(res.map((w) => WordMapper.entityToDto(w)));
+  };
+
+  const onTranslationCapture = (
+    idx: number,
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>,
+  ) => {
+    const value = e.target.value?.trim();
+    if (!value) return;
+    const stateCopy = [...words];
+    stateCopy[idx] = {
+      ...stateCopy[idx],
+      translation: value,
+      translationLangId: langIdRef.current,
+    };
+    storeTranslation(stateCopy[idx]);
+  };
+
+  const storeTranslation = async (word: Item) => {
+    if (!nodeService) return;
+    const translatedWordId = await nodeService.createWord(
+      word.translation!,
+      word.translationLangId!,
+    );
+    nodeService
+      .createWordTranslationRelationship(word.id, translatedWordId)
+      .then((res) => {
+        console.log('word translation created', res);
+      });
+  };
+
+  const showAlert = (msg: string) => {
+    presentAlert({
+      header: 'Alert',
+      subHeader: 'Important Message!',
+      message: msg,
+      buttons: ['Ok'],
+    });
   };
 
   const langLabels = langs.map((l) => l.name);
@@ -124,22 +173,35 @@ export const MapStringsListPage = () => {
 
         <Divider style={{ width: '100%' }} />
 
-        {words.map((stringItem, idx) => {
+        {words.map((word, idx) => {
           return (
             <Box
               key={idx}
               width={'100%'}
-              padding={`10px 25px`}
+              padding={`10px 0px`}
               display={'flex'}
               flexDirection={'row'}
               justifyContent={'space-between'}
               gap={`${PADDING}px`}
             >
               <Box flex={1} alignSelf={'center'}>
-                <Typography variant="h6">{stringItem.label}</Typography>
+                <Typography variant="h6">{word.name}</Typography>
               </Box>
               <Box flex={1}>
-                <Input fullWidth label=""></Input>
+                <Input
+                  fullWidth
+                  label=""
+                  onClick={(e) => {
+                    if (!langIdRef.current) {
+                      showAlert('Please choose target language!');
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }
+                  }}
+                  onBlur={(e) => {
+                    onTranslationCapture(idx, e);
+                  }}
+                />
               </Box>
             </Box>
           );
