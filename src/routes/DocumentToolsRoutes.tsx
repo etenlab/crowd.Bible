@@ -1,4 +1,4 @@
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import { DocumentsListPage } from '@/pages/DocumentTools/DocumentsListPage';
 import { TranslationPage } from '@/pages/DocumentTools/TranslationPage';
@@ -19,7 +19,7 @@ import { AlignmentPage } from '@/pages/DocumentTools/AlignmentPage';
 
 export function DocumentToolsRoutes() {
   return (
-    <>
+    <Switch>
       <Route exact path="/documents-list">
         <DocumentsListPage />
       </Route>
@@ -74,6 +74,6 @@ export function DocumentToolsRoutes() {
       <Route exact path="/alignment">
         <AlignmentPage />
       </Route>
-    </>
+    </Switch>
   );
 }
