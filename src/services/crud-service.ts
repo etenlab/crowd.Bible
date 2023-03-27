@@ -1,10 +1,15 @@
 import { NodeService } from './node.service';
 import { Node } from '@/models/node/node.entity';
-import { Schema } from 'yup';
+import { InferType, object, reach, Schema, string } from 'yup';
 import { NodeRepository } from '@/repositories/node/node.repository';
 import { FindOptionsWhere } from 'typeorm';
 
-export class CRUDService<T> {
+export const baseSchema = object({
+  id: string().uuid().required(),
+});
+export type BaseType = InferType<typeof baseSchema>;
+
+export class CRUDService<T extends BaseType> {
   constructor(
     private readonly nodeType: string,
     private readonly schema: Schema<T>,
@@ -33,7 +38,7 @@ export class CRUDService<T> {
     }, {});
 
     try {
-      return this.schema.cast({ id: node.id, ...obj });
+      return this.schema.cast({ id: node.id, ...obj }, { stripUnknown: true });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'unknown error';
       const json = JSON.stringify(obj);
@@ -55,6 +60,17 @@ export class CRUDService<T> {
     };
   }
 
+  private validatePartial(obj: Partial<T>) {
+    const validators = Object.keys(obj).reduce((acc, key: string) => {
+      try {
+        return { ...acc, [key]: reach(this.schema, key) };
+      } catch {
+        return acc;
+      }
+    }, {});
+    return object(validators).cast(obj, { stripUnknown: true });
+  }
+
   private async findNodeBy(opts: FindOptionsWhere<Node>): Promise<Node[]> {
     return await this.nodeRepo.repository.find(this.findOptsFromWhere(opts));
   }
@@ -68,7 +84,7 @@ export class CRUDService<T> {
   async create(obj: Partial<T>): Promise<T> {
     const node = await this.nodeService.createNodeFromObject(
       this.nodeType,
-      obj,
+      this.validatePartial(obj),
     );
 
     const entity = await this.findOneNodeBy({ id: node.id });
