@@ -12,7 +12,7 @@ import { NodeTypeConst } from '../constants/node-type.constant';
 import { MapDto } from '../dtos/map.dto';
 import { LanguageDto } from '../dtos/lang.dto';
 import { MapMapper } from '../mappers/map.mapper';
-import { FindOptionsWhere, Not } from 'typeorm';
+import { FindOptionsWhere, In } from 'typeorm';
 
 export class NodeService {
   nodeRepo!: NodeRepository;
@@ -511,13 +511,19 @@ export class NodeService {
     }
   }
 
-  async getWords(relQuery?: FindOptionsWhere<Relationship>): Promise<Node[]> {
+  async getWords(
+    relQuery?:
+      | FindOptionsWhere<Relationship>
+      | FindOptionsWhere<Relationship>[],
+    additionalRelations: string[] = [],
+  ): Promise<Node[]> {
     try {
       const wordNodes = await this.nodeRepo.repository.find({
         relations: [
           'propertyKeys',
           'propertyKeys.propertyValue',
           'nodeRelationships',
+          ...additionalRelations,
         ],
         where: {
           node_type: 'word',
@@ -540,10 +546,21 @@ export class NodeService {
 
   async getUnTranslatedWords(langId: string) {
     console.log('getUnTranslatedWords', langId);
-    return this.getWords({
-      to_node_id: Not(langId),
-      relationship_type: NodeTypeConst.WORD_TO_LANG,
-    });
+    return this.getWords(
+      [
+        {
+          relationship_type: In([NodeTypeConst.WORD_MAP]),
+        },
+      ],
+      [
+        'nodeRelationships.fromNode',
+        'nodeRelationships.fromNode.nodeRelationships',
+        'nodeRelationships.fromNode.nodeRelationships.toNode',
+        'nodeRelationships.fromNode.nodeRelationships.toNode.propertyKeys',
+        'nodeRelationships.fromNode.nodeRelationships.toNode.propertyKeys.propertyValue',
+        'nodeRelationships.fromNode.nodeRelationships.toNode.nodeRelationships',
+      ],
+    );
   }
 
   // --------- Word-Translation --------- //

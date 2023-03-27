@@ -90,7 +90,7 @@ export const MapListPage = () => {
       console.log('map successfully saved:', mapSaveRes);
       if (mapSaveRes) {
         setMapStatus(argMap.tempId!, { id: mapSaveRes! });
-        processMapWords(argMap.words!, argMap.langId!, mapSaveRes);
+        await processMapWords(argMap.words!, argMap.langId!, mapSaveRes);
       } else isSuccess = false;
     } catch (error) {
       isSuccess = false;

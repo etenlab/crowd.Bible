@@ -13,6 +13,8 @@ export class WordMapper {
         ).value;
       }
     }
+    // for (const relNode of node.nodeRelationships) {
+    // }
     return dto;
   }
 }

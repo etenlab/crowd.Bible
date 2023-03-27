@@ -1,5 +1,5 @@
 import { IonContent, useIonAlert } from '@ionic/react';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography, Divider } from '@mui/material';
 import { Button, Input, CrowdBibleUI, Autocomplete } from '@eten-lab/ui-kit';
 import useNodeServices from '@/src/hooks/useNodeServices';
@@ -59,8 +59,46 @@ export const MapStringsListPage = () => {
   const getWordsBasedOnLang = async (langId: string) => {
     if (!nodeService) return;
     const res = await nodeService.getUnTranslatedWords(langId);
-    console.log(res);
-    setWords(res.map((w) => WordMapper.entityToDto(w)));
+    console.log('rawNode', res);
+    const wordList: Item[] = [];
+    for (const node of res) {
+      const wordInfo: Item = Object.create(null);
+      wordInfo.id = node.id;
+      for (const pk of node.propertyKeys) {
+        wordInfo[pk.property_key] = undefined;
+        if (pk.propertyValue && pk.propertyValue.property_value) {
+          wordInfo[pk.property_key] = JSON.parse(
+            pk.propertyValue.property_value,
+          ).value;
+        }
+      }
+      for (const relNode of node.nodeRelationships?.at(0)?.fromNode
+        ?.nodeRelationships || []) {
+        if (relNode.relationship_type === NodeTypeConst.WORD_TO_LANG) {
+          wordInfo.langId = relNode.to_node_id;
+        }
+        if (relNode.relationship_type === NodeTypeConst.WORD_TO_TRANSLATION) {
+          const translationNode = relNode.toNode.nodeRelationships?.find(
+            (nr) => nr.relationship_type === NodeTypeConst.WORD_TO_LANG,
+          );
+          if (translationNode) {
+            if (translationNode.to_node_id === langIdRef.current) {
+              wordInfo.translationLangId = translationNode.to_node_id;
+              const jsonStrValue = relNode.toNode.propertyKeys.find(
+                (pk) => pk.property_key === 'name',
+              )?.propertyValue?.property_value;
+              if (jsonStrValue) {
+                wordInfo.translation = JSON.parse(jsonStrValue).value;
+              }
+              wordInfo.translatedWordId = relNode.toNode.id;
+            }
+          }
+        }
+      }
+      wordList.push(wordInfo);
+    }
+    console.log('formatted wordList', wordList);
+    setWords(wordList);
   };
 
   const onTranslationCapture = (
@@ -190,7 +228,18 @@ export const MapStringsListPage = () => {
               <Box flex={1}>
                 <Input
                   fullWidth
-                  label=""
+                  label={
+                    word.langId === langIdRef.current
+                      ? 'Already in target language'
+                      : ''
+                  }
+                  value={word.translation || ''}
+                  onChange={(e) => {
+                    const clonedList = [...words];
+                    clonedList[idx].translation = e.target.value;
+                    setWords(clonedList);
+                  }}
+                  disabled={word.langId === langIdRef.current}
                   onClick={(e) => {
                     if (!langIdRef.current) {
                       showAlert('Please choose target language!');
