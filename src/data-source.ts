@@ -10,6 +10,7 @@ import {
   RelationshipPropertyKey,
   RelationshipPropertyValue,
   RelationshipType,
+  Vote,
 } from '@/models/index';
 import initSqlJs, { SqlJsStatic } from 'sql.js';
 import localforage from 'localforage';
@@ -63,6 +64,7 @@ const options: SqljsConnectionOptions = {
     RelationshipType,
     RelationshipPropertyKey,
     RelationshipPropertyValue,
+    Vote,
   ],
   migrations: ['migrations/*.ts'],
 };

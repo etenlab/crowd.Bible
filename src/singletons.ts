@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+
 import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
 import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
 import { NodeTypeRepository } from '@/repositories/node/node-type.repository';
@@ -8,6 +9,8 @@ import { RelationshipPropertyValueRepository } from '@/repositories/relationship
 import { RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
 import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
 import { SyncSessionRepository } from '@/repositories/sync-session.repository';
+import { VoteRepository } from '@/repositories/vote/vote.repository';
+
 import { DbService } from '@/services/db.service';
 import LexiconService from '@/services/lexicon.service';
 import { NodeService } from '@/services/node.service';
@@ -29,6 +32,7 @@ export interface ISingletons {
   relationshipTypeRepo: RelationshipTypeRepository;
   relationshipPropertyKeyRepo: RelationshipPropertyKeyRepository;
   relationshipPropertyValueRepo: RelationshipPropertyValueRepository;
+  voteRepo: VoteRepository;
 }
 
 const _cache = new Map<DataSource, Promise<ISingletons>>();
@@ -63,6 +67,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     dbService,
     syncService,
   );
+  const voteRepo = new VoteRepository(dbService, syncService);
 
   const nodeService = new NodeService(
     nodeRepo,
@@ -71,6 +76,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipRepo,
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
+    voteRepo,
   );
 
   const seedService = new SeedService(
@@ -101,6 +107,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipTypeRepo,
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
+    voteRepo,
   };
 };
 
