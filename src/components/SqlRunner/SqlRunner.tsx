@@ -3,20 +3,58 @@ import {
   MuiMaterial,
   Typography,
   useColorModeContext,
+  FiX,
 } from '@eten-lab/ui-kit';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
-const { Box, Tabs, Tab } = MuiMaterial;
+import Editor from 'react-simple-code-editor';
+const { Box, Tabs, Tab, IconButton } = MuiMaterial;
+
+type TSqls = {
+  lastCreatedIdx: number;
+  data: Array<{
+    name: string;
+    body: string;
+    result?: string;
+  }>;
+};
+
+const startingDefaultSqls: TSqls = {
+  lastCreatedIdx: 1,
+  data: [
+    { name: 'SQL0', body: 'select * from node' },
+    { name: 'SQL1', body: 'select * from node1' },
+  ],
+};
 
 export function SqlRunner({ onClose }: { onClose: () => void }) {
   const { getColor } = useColorModeContext();
-  const [dimensions, setDimensions] = useState({ w: 200, h: 200 });
-  const [selectetTab, setSelectetTab] = useState(0);
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setSelectetTab(newValue);
+  const [dimensions, setDimensions] = useState({ w: 400, h: 300 });
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [sqls, setSqls] = useState(startingDefaultSqls);
+  const handleTabChange = (
+    event: React.SyntheticEvent,
+    selectedIdx: number,
+  ) => {
+    if (selectedIdx > sqls.data.length - 1) {
+      const newSqlData = {
+        name: `SQL${sqls.lastCreatedIdx + 1}`,
+        body: '',
+      };
+      sqls.data.push(newSqlData);
+      sqls.lastCreatedIdx += 1;
+      setSqls({ ...sqls });
+    }
+    setSelectedTab(selectedIdx);
   };
+
+  const handleCloseTab = (idx: number) => {
+    sqls.data.splice(idx, 1);
+    setSqls({ ...sqls });
+  };
+
   const style = {
     display: 'flex',
     alignItems: 'flex-start',
@@ -50,29 +88,46 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
               }}
               flexDirection={'column'}
             >
-              <Box flexDirection={'row'} alignContent="space-between">
-                <Typography className="draggable-header">SqlRunner</Typography>
-                <Button onClick={onClose}>Close</Button>
+              <Box
+                display="flex"
+                flexDirection={'row'}
+                alignContent="space-between"
+              >
+                <Typography flex={1} className="draggable-header">
+                  SqlRunner
+                </Typography>
+                <Button onClick={onClose} sx={{ padding: 0 }}>
+                  Close
+                </Button>
               </Box>
               <Box>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                  <Tabs value={selectetTab} onChange={handleTabChange}>
-                    <Tab label="Item One" />
-                    <Tab label="Item Two" />
-                    <Tab label="Item Three" />
+                  <Tabs value={selectedTab} onChange={handleTabChange}>
+                    {sqls.data.map((sql, idx) => (
+                      <Tab
+                        key={idx}
+                        label={
+                          <span>
+                            {sql.name}
+                            <IconButton
+                              component="div"
+                              onClick={() => handleCloseTab(idx)}
+                            >
+                              <FiX />
+                            </IconButton>
+                          </span>
+                        }
+                        sx={{ padding: 0 }}
+                      />
+                    ))}
+                    <Tab label=" + Add New" key={-1} sx={{ padding: 0 }} />
                   </Tabs>
                 </Box>
+
                 <SqlWindow
-                  selectedTab={selectetTab}
-                  thisTabIndex={0}
-                ></SqlWindow>
-                <SqlWindow
-                  selectedTab={selectetTab}
-                  thisTabIndex={1}
-                ></SqlWindow>
-                <SqlWindow
-                  selectedTab={selectetTab}
-                  thisTabIndex={2}
+                  sqls={sqls}
+                  setSqls={setSqls}
+                  selectedIdx={selectedTab}
                 ></SqlWindow>
               </Box>
             </Box>
@@ -85,11 +140,35 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
 }
 
 function SqlWindow({
-  selectedTab,
-  thisTabIndex,
+  sqls,
+  selectedIdx,
+  setSqls,
 }: {
-  selectedTab: number;
-  thisTabIndex: number;
+  sqls: TSqls;
+  selectedIdx: number;
+  setSqls: (sqls: TSqls) => void;
 }) {
-  return <Typography>Some sql here</Typography>;
+  const handleValueChange = (value: string) => {
+    sqls.data[selectedIdx].body = value;
+    setSqls({ ...sqls });
+  };
+
+  return (
+    <>
+      <Editor
+        value={sqls.data[selectedIdx]?.body}
+        onValueChange={(v) => handleValueChange(v)}
+        highlight={(code) => code}
+        padding={10}
+        style={{
+          fontFamily: '"Fira code", "Fira Mono", monospace',
+          fontSize: 12,
+        }}
+      />
+      {sqls.data[selectedIdx]?.body && (
+        <Button onClick={() => alert('run!')}>Run</Button>
+      )}
+      {sqls.data[selectedIdx]?.result && <table> results table</table>}
+    </>
+  );
 }
