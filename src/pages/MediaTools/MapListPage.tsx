@@ -200,8 +200,11 @@ export const MapListPage = () => {
   ) => {
     if (!nodeService || !words.length || !langId) return;
     const wordsQueue = [];
-    for (const word of words.slice(0, 5)) {
-      wordsQueue.push(nodeService.createWord(word, langId, mapId));
+    for (const word of words) {
+      const trimedWord = word.trim();
+      if (trimedWord) {
+        wordsQueue.push(nodeService.createWord(trimedWord, langId, mapId));
+      }
     }
     const resList = await Promise.allSettled(wordsQueue);
     const createdWords = resList.filter((res) => res.status === 'fulfilled');
@@ -369,7 +372,11 @@ export const MapListPage = () => {
                     {[
                       eProcessStatus.PARSING_STARTED,
                       eProcessStatus.PARSING_COMPLETED,
-                    ].includes(map.status) && <IonSpinner></IonSpinner>}
+                    ].includes(map.status) && (
+                      <Button variant={'text'} color={'blue-primary'}>
+                        Processing...
+                      </Button>
+                    )}
                     {map.status === eProcessStatus.FAILED && (
                       <Button variant={'text'} color={'error'}>
                         Error
