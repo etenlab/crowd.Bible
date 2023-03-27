@@ -1,10 +1,4 @@
-import {
-  IonChip,
-  IonContent,
-  IonLoading,
-  useIonLoading,
-  useIonRouter,
-} from '@ionic/react';
+import { IonChip, IonContent, useIonLoading, useIonRouter } from '@ionic/react';
 import { Box } from '@mui/material';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { CrowdBibleUI, Typography } from '@eten-lab/ui-kit';
@@ -55,7 +49,7 @@ export const MapDetailPage = () => {
             mapWordsRes.status === 'fulfilled'
               ? mapWordsRes.value.map((w) => WordMapper.entityToDto(w))
               : [],
-          map: decodeURIComponent(mapRes.value.map),
+          map: mapRes.value.map,
         });
       } else {
         router.goBack();
@@ -93,9 +87,7 @@ export const MapDetailPage = () => {
                 <img
                   width={`${windowWidth - PADDING}px`}
                   height={'auto'}
-                  src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                    mapDetail.map,
-                  )}`}
+                  src={`data:image/svg+xml;base64,${mapDetail.map}`}
                   alt="Original map"
                 />
               </TransformComponent>

@@ -144,9 +144,10 @@ export const MapListPage = () => {
           setMapStatus(id, { status: eProcessStatus.FAILED });
           showAlert('No text or textPath tags found');
         } else {
+          const base64Svg = Buffer.from(originalSvg, 'utf8').toString('base64');
           setMapStatus(id, {
             status: eProcessStatus.PARSING_COMPLETED,
-            map: originalSvg,
+            map: base64Svg,
             words: textArray,
           });
         }
