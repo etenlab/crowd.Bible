@@ -5,11 +5,12 @@ import {
   useColorModeContext,
   FiX,
 } from '@eten-lab/ui-kit';
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
 import Editor from 'react-simple-code-editor';
+import useSingletons from '../../hooks/useSingletons';
 const { Box, Tabs, Tab, IconButton } = MuiMaterial;
 
 type TSqls = {
@@ -17,19 +18,23 @@ type TSqls = {
   data: Array<{
     name: string;
     body: string;
-    result?: string;
+    result?: ReactNode;
   }>;
 };
 
 const startingDefaultSqls: TSqls = {
   lastCreatedIdx: 1,
   data: [
-    { name: 'SQL0', body: 'select * from node' },
-    { name: 'SQL1', body: 'select * from node1' },
+    {
+      name: 'SQL0',
+      body: 'SELECT tbl_name from sqlite_master WHERE type = "table"',
+    },
+    { name: 'SQL1', body: 'select * from node' },
   ],
 };
 
 export function SqlRunner({ onClose }: { onClose: () => void }) {
+  const singletons = useSingletons();
   const { getColor } = useColorModeContext();
   const [dimensions, setDimensions] = useState({ w: 400, h: 300 });
   const [selectedTab, setSelectedTab] = useState(0);
@@ -63,6 +68,20 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
     background: '#f0f0f0',
   };
   const nodeRef = React.useRef(null);
+
+  const runSql = (sqlIdxToRun: number) => {
+    singletons?.dbService.dataSource.query(sqls.data[sqlIdxToRun].body).then(
+      (fulfilled) => {
+        sqls.data[sqlIdxToRun].result = parseAsTable(fulfilled);
+        setSqls({ ...sqls });
+      },
+      (rejected) => {
+        sqls.data[sqlIdxToRun].result = JSON.stringify(rejected.stack);
+        setSqls({ ...sqls });
+      },
+    );
+  };
+
   return (
     <>
       {createPortal(
@@ -126,8 +145,9 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
 
                 <SqlWindow
                   sqls={sqls}
-                  setSqls={setSqls}
                   selectedIdx={selectedTab}
+                  setSqls={setSqls}
+                  runSql={runSql}
                 ></SqlWindow>
               </Box>
             </Box>
@@ -143,10 +163,12 @@ function SqlWindow({
   sqls,
   selectedIdx,
   setSqls,
+  runSql,
 }: {
   sqls: TSqls;
   selectedIdx: number;
   setSqls: (sqls: TSqls) => void;
+  runSql: (idxtoRun: number) => void;
 }) {
   const handleValueChange = (value: string) => {
     sqls.data[selectedIdx].body = value;
@@ -166,9 +188,41 @@ function SqlWindow({
         }}
       />
       {sqls.data[selectedIdx]?.body && (
-        <Button onClick={() => alert('run!')}>Run</Button>
+        <Button onClick={() => runSql(selectedIdx)}>Run</Button>
       )}
-      {sqls.data[selectedIdx]?.result && <table> results table</table>}
+
+      {sqls.data[selectedIdx]?.result && (
+        <Box overflow={'auto'}>{sqls.data[selectedIdx]?.result}</Box>
+      )}
     </>
+  );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function parseAsTable(sqlResponce: Array<any>): ReactNode {
+  const headers = Object.keys(sqlResponce[0]);
+  return (
+    <table>
+      <thead>
+        <tr>
+          {headers.map((header, i) => (
+            <th key={i} style={{ border: 'solid 1px gray' }}>
+              {header}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {sqlResponce.map((resp, i) => (
+          <tr key={i}>
+            {headers.map((header, ih) => (
+              <td key={ih} style={{ border: 'solid 1px gray' }}>
+                {resp[header]}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
