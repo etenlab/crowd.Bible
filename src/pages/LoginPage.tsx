@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
+import axios from 'axios';
 
 import {
   Button,
@@ -13,9 +15,13 @@ import { useFormik } from 'formik';
 import { useAppContext } from '@/hooks/useAppContext';
 import * as Yup from 'yup';
 
+import * as querystring from 'qs';
+import { decodeToken } from '@/utils/AuthUtils';
+
 // import axios from "axios";
 
 const { Box } = MuiMaterial;
+// const querystring = await import('qs');
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -28,6 +34,7 @@ const validationSchema = Yup.object().shape({
 
 export function LoginPage() {
   const [show, setShow] = useState<boolean>(false);
+
   const history = useHistory();
   const {
     actions: { setUser },
@@ -42,30 +49,43 @@ export function LoginPage() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      // const url = `${process.env.REACT_APP_DATABASE_API_URL}/users/login`;
-      // const queryParams = { realm: process.env.REACT_APP_REALM_NAME };
-      // const headers = { "Content-Type": "application/json" };
-      // const requestBody = {
-      //   email: values.email,
-      //   password: values.password,
-      // };
+      console.log(values.email);
+      console.log(values.password);
 
-      // try {
-      //   const result = await axios.post(url, requestBody, {
-      //     params: queryParams,
-      //     headers: headers,
-      //   });
+      const keycloakUrl = `${process.env.REACT_APP_KEYCLOAK_URL}/realms/showcase/protocol/openid-connect`;
+      try {
+        await axios
+          .post(
+            `${keycloakUrl}/token`,
+            querystring.stringify({
+              client_id: 'showcase-auth', // process.env.REACT_APP_KEYCLOAK_CLIENT_ID,
+              // client_secret: process.env.REACT_APP_KEYCLOAK_CLIENT_SECRET,
+              username: values.email,
+              password: values.password,
+              grant_type: 'password', //'client_credentials'
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+            },
+          )
+          .then(async (response) => {
+            console.log('response.data.access_token');
+            const token: any = decodeToken(response.data.access_token);
+            console.log(token.email);
+            setUser({
+              userId: 1,
+              userEmail: token.email,
+              role: 'translator',
+            });
+            history.push('/home');
+          });
+      } catch (error: any) {
+        console.log(error.message);
+      }
 
-      // } catch (err) {
-      //   console.log(err);
-      // }
-
-      setUser({
-        userId: 1,
-        userEmail: values.email!,
-        role: 'translator',
-      });
-      history.push('/home');
+      // history.push('/home');
     },
   });
 
