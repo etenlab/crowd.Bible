@@ -21,6 +21,7 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { SqlRunner } from '../SqlRunner';
 
 const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
 
@@ -80,6 +81,8 @@ export function PageLayout({ children }: PageLayoutProps) {
     });
     toggleDarkTheme(prefersDarkRef.current.matches);
   }, [user, toggleDarkTheme]);
+
+  const [isSqlRunnerShown, setIsSqlRunnerShown] = useState(false);
 
   const handleToggleMenu = () => {
     ref.current!.toggle();
@@ -174,9 +177,11 @@ export function PageLayout({ children }: PageLayoutProps) {
                 onClickThemeModeBtn={handleToogleTheme}
                 isNewDiscussion={isNewDiscussion}
                 isNewNotification={isNewNotification}
-                onClickDiscussionBtn={() => {
-                  history.push('/discussions-list');
-                }}
+                onClickDiscussionBtn={() => setIsSqlRunnerShown(true)}
+                // temporary, for sqlRunner testing
+                // onClickDiscussionBtn={() => {
+                //   history.push('/discussions-list');
+                // }}
                 onClickNotificationBtn={() => {
                   history.push('/notifications');
                 }}
@@ -218,6 +223,11 @@ export function PageLayout({ children }: PageLayoutProps) {
                 <CircularProgress color="inherit" />
               </div>
               <div>LOADING</div>
+              {isSqlRunnerShown && (
+                <SqlRunner
+                  onClose={() => setIsSqlRunnerShown(!isSqlRunnerShown)}
+                />
+              )}
             </Stack>
           </Backdrop>
         </IonContent>
