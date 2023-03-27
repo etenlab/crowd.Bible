@@ -1,4 +1,5 @@
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
+// import { IonRouterOutlet } from '@ionic/react';
 
 import NotificationsPage from '@/pages/Notifications';
 import { SettingsPage } from '@/pages/SettingsPage';
@@ -16,28 +17,30 @@ import { AppDevRoutes } from './AppDevRoutes';
 export function ProtectedRoutes() {
   return (
     <>
-      <Route exact path="/home">
-        <HomePage />
-      </Route>
+      <Switch>
+        <Route exact path="/home">
+          <HomePage />
+        </Route>
 
-      <Route exact path="/discussion/table-name/:table_name/row/:row">
-        <DiscussionPage />
-      </Route>
-      <Route exact path="/discussions-list">
-        <DiscussionsListPage />
-      </Route>
+        <Route exact path="/discussion/table-name/:table_name/row/:row">
+          <DiscussionPage />
+        </Route>
+        <Route exact path="/discussions-list">
+          <DiscussionsListPage />
+        </Route>
 
-      <Route exact path="/notifications">
-        <NotificationsPage />
-      </Route>
+        <Route exact path="/notifications">
+          <NotificationsPage />
+        </Route>
 
-      <Route exact path="/settings">
-        <SettingsPage />
-      </Route>
+        <Route exact path="/settings">
+          <SettingsPage />
+        </Route>
 
-      <Route exact path="/admin">
-        <AdminPage />
-      </Route>
+        <Route exact path="/admin">
+          <AdminPage />
+        </Route>
+      </Switch>
 
       <DocumentToolsRoutes />
 

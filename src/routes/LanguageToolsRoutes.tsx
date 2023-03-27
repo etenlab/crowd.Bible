@@ -1,4 +1,4 @@
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import { DictionaryPage } from '@/pages/LanguageTools/DictionaryPage';
 import { BilingualDictionaryPage } from '@/pages/LanguageTools/BilingualDictionaryPage';
@@ -11,7 +11,7 @@ import { DictionaryPageV2 } from '@/pages/LanguageTools/DictionaryPageV2';
 
 export function LanguageToolsRoutes() {
   return (
-    <>
+    <Switch>
       <Route exact path="/dictionary">
         <DictionaryPage />
       </Route>
@@ -36,6 +36,6 @@ export function LanguageToolsRoutes() {
       <Route exact path="/grammar">
         <GrammarPage />
       </Route>
-    </>
+    </Switch>
   );
 }
