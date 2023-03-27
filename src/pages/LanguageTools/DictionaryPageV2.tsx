@@ -131,7 +131,7 @@ export function DictionaryPageV2() {
     setWords([...words]);
   };
 
-  const addDefinition = ({
+  const addDefinition = async ({
     itemTitleContent, // this is title's, content (type string), i.e. value of the title of the word - using here as uniq id
     newContent: newDefinition, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
   }: {
@@ -153,11 +153,11 @@ export function DictionaryPageV2() {
 
     //use API to change appropriate node
 
-    const newDefinitionNodeId = definitionService.createDefinition(
+    const newDefinitionNodeId = await definitionService.createDefinition(
       newDefinition.content,
       'someLangUUIDHere',
     );
-    console.log('[newDefinitionNodeId]', definitionService);
+    console.log('[newDefinitionNodeId]', newDefinitionNodeId);
   };
 
   return (
