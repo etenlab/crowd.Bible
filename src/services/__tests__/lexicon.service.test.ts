@@ -62,12 +62,6 @@ describe('LexiconService', () => {
       const found = await service.findOneBy({ id: created.id });
       expect(found).toMatchObject(created);
     });
-
-    it.todo('Creates lexical categories');
-    it.todo('Creates grammatical categories');
-    it.todo('Creates grammemes');
-    it.todo('Creates lexemes');
-    it.todo('Creates word forms');
   });
 
   describe('Relationships', () => {
