@@ -3,14 +3,12 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonSpinner,
   useIonAlert,
 } from '@ionic/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { type INode, parseSync } from 'svgson';
 import { Box, Typography } from '@mui/material';
 import {
-  Alert,
   Autocomplete,
   Button,
   Input,
@@ -56,16 +54,75 @@ export const MapListPage = () => {
   const nodeService = useNodeServices();
 
   useEffect(() => {
+    const loadLanguages = async () => {
+      if (!nodeService) return;
+      const res = await nodeService.getLanguages();
+      setLangs(res);
+    };
     loadLanguages();
   }, [nodeService]);
 
   useEffect(() => {
     for (const mapState of mapList) {
       if (mapState.status === eProcessStatus.PARSING_COMPLETED) {
+        const processMapWords = async (
+          words: string[],
+          langId: string,
+          mapId?: string,
+        ) => {
+          if (!nodeService || !words.length || !langId) return;
+          const wordsQueue = [];
+          for (const word of words) {
+            const trimedWord = word.trim();
+            if (trimedWord) {
+              wordsQueue.push(
+                nodeService.createWord(trimedWord, langId, mapId),
+              );
+            }
+          }
+          const resList = await Promise.allSettled(wordsQueue);
+          const createdWords = resList.filter(
+            (res) => res.status === 'fulfilled',
+          );
+          console.log('created words::', createdWords);
+        };
+        const handleMapParsingCompleted = async (argMap: MapDetail) => {
+          if (!nodeService) return;
+          const newState: Partial<MapDetail> = {
+            status: eProcessStatus.COMPLETED,
+          };
+          try {
+            const mapId = await nodeService.saveMap(argMap.langId!, {
+              name: argMap.name!,
+              map: argMap.map!,
+              ext: 'svg',
+            });
+            console.log('map successfully saved:', mapId);
+            if (mapId) {
+              newState.id = mapId;
+              await processMapWords(argMap.words!, argMap.langId!, mapId);
+            } else newState.status = eProcessStatus.FAILED;
+          } catch (error) {
+            newState.status = eProcessStatus.FAILED;
+          }
+          setMapStatus(argMap.tempId!, newState);
+        };
         handleMapParsingCompleted(mapState);
       }
     }
-  }, [mapList]);
+  }, [mapList, nodeService]);
+
+  const showAlert = useCallback(
+    (msg: string) => {
+      presentAlert({
+        header: 'Alert',
+        subHeader: 'Important Message!',
+        message: msg,
+        buttons: ['Ok'],
+      });
+    },
+    [presentAlert],
+  );
 
   const setMapStatus = (tempId: string, state: Partial<MapDetail>) => {
     setMapList((prevList) => {
@@ -76,26 +133,6 @@ export const MapListPage = () => {
       }
       return clonedList;
     });
-  };
-
-  const handleMapParsingCompleted = async (argMap: MapDetail) => {
-    if (!nodeService) return;
-    const newState: Partial<MapDetail> = { status: eProcessStatus.COMPLETED };
-    try {
-      const mapId = await nodeService.saveMap(argMap.langId!, {
-        name: argMap.name!,
-        map: argMap.map!,
-        ext: 'svg',
-      });
-      console.log('map successfully saved:', mapId);
-      if (mapId) {
-        newState.id = mapId;
-        await processMapWords(argMap.words!, argMap.langId!, mapId);
-      } else newState.status = eProcessStatus.FAILED;
-    } catch (error) {
-      newState.status = eProcessStatus.FAILED;
-    }
-    setMapStatus(argMap.tempId!, newState);
   };
 
   const fileHandler: React.ChangeEventHandler<HTMLInputElement> = useCallback(
@@ -153,10 +190,10 @@ export const MapListPage = () => {
       fileReader.readAsText(file);
       e.target.value = '';
     },
-    [],
+    [showAlert],
   );
 
-  const fileUploadPreCheck = (e: Event) => {
+  const fileUploadPreCheck = (e: MouseEvent<HTMLInputElement>) => {
     let msg = '';
     if (!selectedLang) {
       msg = 'Please choose the language first and then Add Map';
@@ -166,12 +203,6 @@ export const MapListPage = () => {
       e?.preventDefault();
       e?.stopPropagation();
     }
-  };
-
-  const loadLanguages = async () => {
-    if (!nodeService) return;
-    const res = await nodeService.getLanguages();
-    setLangs(res);
   };
 
   const setMapsByLang = async (langId: string) => {
@@ -189,33 +220,6 @@ export const MapListPage = () => {
           } as MapDetail),
       ),
     );
-  };
-
-  const processMapWords = async (
-    words: string[],
-    langId: string,
-    mapId?: string,
-  ) => {
-    if (!nodeService || !words.length || !langId) return;
-    const wordsQueue = [];
-    for (const word of words) {
-      const trimedWord = word.trim();
-      if (trimedWord) {
-        wordsQueue.push(nodeService.createWord(trimedWord, langId, mapId));
-      }
-    }
-    const resList = await Promise.allSettled(wordsQueue);
-    const createdWords = resList.filter((res) => res.status === 'fulfilled');
-    console.log('created words::', createdWords);
-  };
-
-  const showAlert = (msg: string) => {
-    presentAlert({
-      header: 'Alert',
-      subHeader: 'Important Message!',
-      message: msg,
-      buttons: ['Ok'],
-    });
   };
 
   const handleApplyLanguageFilter = (value: string) => {
@@ -348,7 +352,7 @@ export const MapListPage = () => {
               hidden
               multiple
               accept="image/svg+xml"
-              onClick={fileUploadPreCheck as any}
+              onClick={fileUploadPreCheck}
               onChange={fileHandler}
               type="file"
             />
