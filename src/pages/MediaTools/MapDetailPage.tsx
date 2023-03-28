@@ -12,14 +12,14 @@ const { TitleWithIcon } = CrowdBibleUI;
 const PADDING = 20;
 export const MapDetailPage = () => {
   const router = useIonRouter();
-  const [present, dismiss] = useIonLoading();
+  const [present] = useIonLoading();
   const { id } = useParams<{ id: string }>();
   const [windowWidth, setWindowWidth] = useState(getWindowWidth());
   const [mapDetail, setMapDetail] = useState<MapDto>();
   const nodeService = useNodeServices();
 
   useEffect(() => {
-    present({ message: 'Loading...', duration: 1000 });
+    if (present) present({ message: 'Loading...', duration: 1000 });
     function handleWindowResize() {
       setWindowWidth(getWindowWidth());
     }
@@ -27,37 +27,36 @@ export const MapDetailPage = () => {
     return () => {
       window.removeEventListener('resize', handleWindowResize);
     };
-  }, []);
+  }, [present]);
 
   useEffect(() => {
     if (nodeService && id) {
+      const getMapDetail = async (id: string) => {
+        try {
+          if (!nodeService) return;
+          const [mapRes, mapWordsRes] = await Promise.allSettled([
+            nodeService.getMap(id),
+            nodeService.getMapWords(id),
+          ]);
+          if (mapRes.status === 'fulfilled' && mapRes.value) {
+            setMapDetail({
+              ...mapRes.value,
+              words:
+                mapWordsRes.status === 'fulfilled'
+                  ? mapWordsRes.value.map((w) => WordMapper.entityToDto(w))
+                  : [],
+              map: mapRes.value.map,
+            });
+          } else {
+            router.goBack();
+          }
+        } catch (error) {
+          router.goBack();
+        }
+      };
       getMapDetail(id);
     }
-  }, [nodeService, id]);
-
-  const getMapDetail = async (id: string) => {
-    try {
-      if (!nodeService) return;
-      const [mapRes, mapWordsRes] = await Promise.allSettled([
-        nodeService.getMap(id),
-        nodeService.getMapWords(id),
-      ]);
-      if (mapRes.status === 'fulfilled' && mapRes.value) {
-        setMapDetail({
-          ...mapRes.value,
-          words:
-            mapWordsRes.status === 'fulfilled'
-              ? mapWordsRes.value.map((w) => WordMapper.entityToDto(w))
-              : [],
-          map: mapRes.value.map,
-        });
-      } else {
-        router.goBack();
-      }
-    } catch (error) {
-      router.goBack();
-    }
-  };
+  }, [nodeService, id, router]);
 
   if (!mapDetail) {
     return <></>;
@@ -110,6 +109,6 @@ export const MapDetailPage = () => {
 };
 
 function getWindowWidth() {
-  const { innerWidth, innerHeight } = window;
+  const { innerWidth } = window;
   return innerWidth;
 }

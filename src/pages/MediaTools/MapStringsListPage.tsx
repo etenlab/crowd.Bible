@@ -5,7 +5,6 @@ import { Button, Input, CrowdBibleUI, Autocomplete } from '@eten-lab/ui-kit';
 import useNodeServices from '@/src/hooks/useNodeServices';
 import { LanguageDto } from '@/src/dtos/lang.dto';
 import { WordDto } from '@/src/dtos/word.dto';
-import { WordMapper } from '@/src/mappers/word.mapper';
 import { NodeTypeConst } from '@/src/constants/node-type.constant';
 
 const { TitleWithIcon } = CrowdBibleUI;
@@ -30,22 +29,20 @@ export const MapStringsListPage = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
 
   useEffect(() => {
+    const loadLanguages = async () => {
+      if (!nodeService) return;
+      const langDtos = await nodeService.getLanguages();
+      setLangs(langDtos);
+    };
     loadLanguages();
-    // loadMapStrings();
   }, [nodeService]);
 
-  const loadLanguages = async () => {
-    if (!nodeService) return;
-    const langDtos = await nodeService.getLanguages();
-    setLangs(langDtos);
-  };
-
-  const loadMapStrings = async () => {
-    if (!nodeService) return;
-    const wordNodes = await nodeService.getWords();
-    const words: Item[] = wordNodes.map((w) => WordMapper.entityToDto(w));
-    setWords(words);
-  };
+  // const loadMapStrings = async () => {
+  //   if (!nodeService) return;
+  //   const wordNodes = await nodeService.getWords();
+  //   const words: Item[] = wordNodes.map((w) => WordMapper.entityToDto(w));
+  //   setWords(words);
+  // };
 
   const handleSelectLanguage = (value: string) => {
     setSelectedLanguage(value);
