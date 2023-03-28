@@ -1,4 +1,3 @@
-// import { Repository } from 'typeorm';
 import { NodeType } from '@/models/node/node-type.entity';
 import { type DbService } from '@/services/db.service';
 import { type SyncService } from '@/services/sync.service';

@@ -1,4 +1,5 @@
-// import { Repository } from 'typeorm';
+import { FindOptionsWhere } from 'typeorm';
+
 import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
 import { NodeType } from '@/models/index';
@@ -18,7 +19,8 @@ export class NodeRepository {
     let nodeType = await this.dbService.dataSource
       .getRepository(NodeType)
       .findOneBy({ type_name });
-    if (nodeType == null) {
+
+    if (nodeType === null) {
       nodeType = await this.dbService.dataSource
         .getRepository(NodeType)
         .save({ type_name });
@@ -52,57 +54,75 @@ export class NodeRepository {
     return nodes;
   }
 
-  async readNode(node_id: string): Promise<Node> {
+  async readNode(node_id: Nanoid): Promise<Node | null> {
     const node = await this.repository.findOneBy({ id: node_id });
-    if (!node) {
-      throw new Error(`Failed to find node: ${node_id}`);
-    }
+
     return node;
   }
 
   async getNodeByProp(
     type: string,
     prop: { key: string; value: unknown },
+    relationship?: {
+      relationship_type?: string;
+      from_node_id?: Nanoid;
+      to_node_id?: Nanoid;
+    },
   ): Promise<Node | null> {
-    try {
-      const node = await this.repository.findOne({
-        relations: ['propertyKeys', 'propertyKeys.propertyValue'],
-        where: {
-          node_type: type,
-          propertyKeys: {
-            property_key: prop.key,
-            propertyValue: {
-              property_value: JSON.stringify({ value: prop.value }),
-            },
-          },
+    const relationsArray = ['propertyKeys', 'propertyKeys.propertyValue'];
+    const whereObj: FindOptionsWhere<Node> = {
+      node_type: type,
+      propertyKeys: {
+        property_key: prop.key,
+        propertyValue: {
+          property_value: JSON.stringify({ value: prop.value }),
         },
-      });
-      return node;
-    } catch (err) {
-      console.error(err);
-      throw new Error(
-        `Failed to get node by prop '${type} - prop: { key: ${prop.key}, value: ${prop.value} }'`,
-      );
+      },
+    };
+
+    if (relationship) {
+      relationsArray.push('nodeRelationships');
+      whereObj.nodeRelationships = {};
+
+      if (relationship.relationship_type) {
+        whereObj.nodeRelationships.relationship_type =
+          relationship.relationship_type;
+      }
+
+      if (relationship.from_node_id) {
+        whereObj.nodeRelationships.from_node_id = relationship.from_node_id;
+      }
+
+      if (relationship.to_node_id) {
+        whereObj.nodeRelationships.to_node_id = relationship.to_node_id;
+      }
     }
+
+    const node = await this.repository.findOne({
+      relations: relationsArray,
+      where: whereObj,
+    });
+
+    return node;
   }
 
   async getNodesByProps(
     type: string,
     props: { key: string; value: unknown }[],
-  ): Promise<NanoidType[]> {
-    try {
-      const conditionStr = props
-        .map(
-          ({ key, value }) => `(
-        pk.property_key = '${key}' 
-        and pv.property_value = '${JSON.stringify({
-          value: value,
-        })}'
-      )`,
-        )
-        .join(' or ');
+  ): Promise<Nanoid[]> {
+    const conditionStr = props
+      .map(
+        ({ key, value }) =>
+          `(
+              pk.property_key = '${key}' 
+              and pv.property_value = '${JSON.stringify({
+                value: value,
+              })}'
+            )`,
+      )
+      .join(' or ');
 
-      const sqlStr = `
+    const sqlStr = `
         select 
           node.id
         from 
@@ -125,15 +145,12 @@ export class NodeRepository {
           node.node_type = '${type}';
       `;
 
-      const nodes: [{ id: NanoidType }] = await this.repository.query(sqlStr);
+    const nodes: [{ id: Nanoid }] = await this.repository.query(sqlStr);
 
-      if (!nodes) {
-        return [];
-      }
-
-      return nodes.map(({ id }) => id);
-    } catch (err) {
-      throw new Error(`Failed to getNodesByProps`);
+    if (!nodes) {
+      return [];
     }
+
+    return nodes.map(({ id }) => id);
   }
 }
