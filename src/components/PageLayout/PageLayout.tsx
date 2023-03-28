@@ -18,9 +18,11 @@ import {
   MuiMaterial,
   Alert,
   useColorModeContext,
+  Button,
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { SqlRunner } from '../SqlRunner';
 
 const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
 
@@ -80,6 +82,8 @@ export function PageLayout({ children }: PageLayoutProps) {
     });
     toggleDarkTheme(prefersDarkRef.current.matches);
   }, [user, toggleDarkTheme]);
+
+  const [isSqlRunnerShown, setIsSqlRunnerShown] = useState(false);
 
   const handleToggleMenu = () => {
     ref.current!.toggle();
@@ -160,6 +164,14 @@ export function PageLayout({ children }: PageLayoutProps) {
             <LinkItem to="/settings" label="Settings" />
             <LinkItem to="/admin" label="Admin" />
             <LinkItem to="/home" label="Logout" />
+            <Button
+              onClick={() => {
+                setIsSqlRunnerShown(!isSqlRunnerShown);
+                ref.current!.toggle();
+              }}
+            >
+              Sql Runner
+            </Button>
           </IonList>
         </IonContent>
       </IonMenu>
@@ -218,6 +230,11 @@ export function PageLayout({ children }: PageLayoutProps) {
                 <CircularProgress color="inherit" />
               </div>
               <div>LOADING</div>
+              {isSqlRunnerShown && (
+                <SqlRunner
+                  onClose={() => setIsSqlRunnerShown(!isSqlRunnerShown)}
+                />
+              )}
             </Stack>
           </Backdrop>
         </IonContent>

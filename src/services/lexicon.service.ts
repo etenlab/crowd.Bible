@@ -1,68 +1,83 @@
 import { NodeService } from './node.service';
-import { Node } from '@/models/node/node.entity';
 import { InferType, object, Schema, string } from 'yup';
 import { NodeRepository } from '@/repositories/node/node.repository';
+import { baseSchema, BaseType, CRUDService } from './crud-service';
 
 export enum LexiconNodeType {
   Lexicon = 'lexicon',
+  LexicalCategory = 'lexical_category',
+  GramaticalCategory = 'grammatical_category',
+  Grammeme = 'grammeme',
+  Lexeme = 'lexeme',
+  WordForm = 'word_form',
 }
 
-const lexiconSchema = object({
-  id: string().uuid().required(),
-  name: string().min(1).required(),
-});
+const lexiconSchema = baseSchema.concat(
+  object({
+    name: string().min(1).required(),
+  }),
+);
 export type Lexicon = InferType<typeof lexiconSchema>;
 
-export class CRUDService<T> {
-  constructor(
-    private readonly nodeType: string,
-    private readonly schema: Schema<T>,
-    private readonly nodeService: NodeService,
-    private readonly nodeRepo: NodeRepository,
-  ) {}
+const lexicalCategorySchema = baseSchema.concat(
+  object({
+    name: string().min(1).required(),
+  }),
+);
+export type LexicalCategory = InferType<typeof lexicalCategorySchema>;
 
-  private async ofNode(node: Node): Promise<T> {
-    const props = node.propertyKeys || [];
-    const obj = props.reduce(
-      (acc, key) => ({
-        ...acc,
-        [key.property_key]: key.propertyValue.property_value,
-      }),
-      {},
-    );
+const grammaticalCategorySchema = baseSchema.concat(
+  object({
+    name: string().min(1).required(),
+  }),
+);
+export type GrammaticalCategory = InferType<typeof grammaticalCategorySchema>;
 
-    return this.schema.cast(obj);
-  }
+const grammemeSchema = baseSchema.concat(
+  object({
+    name: string().min(1).required(),
+  }),
+);
+export type Grammeme = InferType<typeof grammemeSchema>;
 
-  async create(obj: Partial<T>): Promise<T> {
-    const node = await this.nodeService.createNodeFromObject(
-      this.nodeType,
-      obj,
-    );
+const lexemeSchema = baseSchema.concat(
+  object({
+    lemma: string().min(1).required(),
+  }),
+);
+export type Lexeme = InferType<typeof lexemeSchema>;
 
-    return this.ofNode(node);
-  }
-
-  async findBy(opts: Partial<T>): Promise<T[]> {
-    const nodes = await this.nodeRepo.repository.findBy(opts);
-    return Promise.all(nodes.map(this.ofNode));
-  }
-
-  async findOneBy(opts: Partial<T>): Promise<T | null> {
-    const node = await this.nodeRepo.repository.findOneBy(opts);
-    return node ? this.ofNode(node) : null;
-  }
-}
+const wordFormSchema = baseSchema.concat(
+  object({
+    text: string().min(1).required(),
+  }),
+);
+export type WordForm = InferType<typeof wordFormSchema>;
 
 export default class LexiconService {
-  public lexica: CRUDService<Lexicon>;
+  public readonly lexica: CRUDService<Lexicon>;
+  public readonly lexicalCategories: CRUDService<LexicalCategory>;
+  public readonly grammaticalCategories: CRUDService<GrammaticalCategory>;
+  public readonly grammemes: CRUDService<Grammeme>;
+  public readonly lexemes: CRUDService<Lexeme>;
+  public readonly wordForms: CRUDService<WordForm>;
 
   constructor(nodeService: NodeService, nodeRepo: NodeRepository) {
-    this.lexica = new CRUDService(
-      LexiconNodeType.Lexicon,
-      lexiconSchema,
-      nodeService,
-      nodeRepo,
+    const service = <T extends BaseType>(
+      model: LexiconNodeType,
+      schema: Schema<T>,
+    ) => new CRUDService(model, schema, nodeService, nodeRepo);
+    this.lexica = service(LexiconNodeType.Lexicon, lexiconSchema);
+    this.lexicalCategories = service(
+      LexiconNodeType.LexicalCategory,
+      lexicalCategorySchema,
     );
+    this.grammaticalCategories = service(
+      LexiconNodeType.GramaticalCategory,
+      grammaticalCategorySchema,
+    );
+    this.grammemes = service(LexiconNodeType.Grammeme, grammemeSchema);
+    this.lexemes = service(LexiconNodeType.Lexeme, lexemeSchema);
+    this.wordForms = service(LexiconNodeType.WordForm, wordFormSchema);
   }
 }
