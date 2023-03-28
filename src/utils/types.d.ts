@@ -3,7 +3,7 @@ declare module '*.tab' {
   export default value;
 }
 
-type TableNameType =
+type TablesName =
   | 'nodes'
   | 'node_property_keys'
   | 'node_property_values'
@@ -11,15 +11,15 @@ type TableNameType =
   | 'relationship_property_keys'
   | 'relationship_property_values';
 
-type NanoidType = string;
+type Nanoid = string;
 
-type BallotEntryTargetType = {
-  tableName: TableNameType;
-  rowId: NanoidType;
+type BallotEntryTarget = {
+  tableName: TablesName;
+  rowId: Nanoid;
 };
 
 type VotesStatsRow = {
-  ballot_entry_id: NanoidType;
+  ballot_entry_id: Nanoid;
   up: number;
   down: number;
 };
