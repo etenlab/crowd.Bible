@@ -36,7 +36,7 @@ const startingDefaultSqls: TSqls = {
 export function SqlRunner({ onClose }: { onClose: () => void }) {
   const singletons = useSingletons();
   const { getColor } = useColorModeContext();
-  const [dimensions, setDimensions] = useState({ w: 400, h: 300 });
+  const [dimensions, setDimensions] = useState({ w: 500, h: 600 });
   const [selectedTab, setSelectedTab] = useState(0);
   const [sqls, setSqls] = useState(startingDefaultSqls);
   const handleTabChange = (
@@ -60,13 +60,6 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
     setSqls({ ...sqls });
   };
 
-  const style = {
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'left',
-    border: 'solid 1px #ddd',
-    background: '#f0f0f0',
-  };
   const nodeRef = React.useRef(null);
 
   const runSql = (sqlIdxToRun: number) => {
@@ -87,7 +80,13 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
       {createPortal(
         <Draggable nodeRef={nodeRef} handle=".draggable-header">
           <Resizable
-            style={style}
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'left',
+              border: 'solid 1px #ddd',
+              background: '#f0f0f0',
+            }}
             size={{ width: dimensions.w, height: dimensions.h }}
             onResizeStop={(e, direction, ref, d) => {
               setDimensions({
@@ -101,11 +100,10 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
               display={'flex'}
               width={dimensions.w + 'px'}
               height={dimensions.h + 'px'}
-              sx={{
-                position: 'absolute',
-                border: `1px solid ${getColor('gray')}`,
-              }}
+              position={'absolute'}
+              border={`1px solid ${getColor('gray')}`}
               flexDirection={'column'}
+              overflow={'scroll'}
             >
               <Box
                 display="flex"
@@ -124,6 +122,7 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
                   <Tabs value={selectedTab} onChange={handleTabChange}>
                     {sqls.data.map((sql, idx) => (
                       <Tab
+                        sx={{ padding: 0, margin: 0 }}
                         key={idx}
                         label={
                           <span>
@@ -136,7 +135,6 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
                             </IconButton>
                           </span>
                         }
-                        sx={{ padding: 0 }}
                       />
                     ))}
                     <Tab label=" + Add New" key={-1} sx={{ padding: 0 }} />
@@ -148,6 +146,7 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
                   selectedIdx={selectedTab}
                   setSqls={setSqls}
                   runSql={runSql}
+                  dimensions={{ w: 0, h: 0 }}
                 ></SqlWindow>
               </Box>
             </Box>
@@ -164,11 +163,13 @@ function SqlWindow({
   selectedIdx,
   setSqls,
   runSql,
+  dimensions,
 }: {
   sqls: TSqls;
   selectedIdx: number;
   setSqls: (sqls: TSqls) => void;
   runSql: (idxtoRun: number) => void;
+  dimensions: { w: number; h: number };
 }) {
   const handleValueChange = (value: string) => {
     sqls.data[selectedIdx].body = value;
@@ -176,30 +177,37 @@ function SqlWindow({
   };
 
   return (
-    <>
-      <Editor
-        value={sqls.data[selectedIdx]?.body}
-        onValueChange={(v) => handleValueChange(v)}
-        highlight={(code) => code}
-        padding={10}
-        style={{
-          fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: 12,
-        }}
-      />
+    <Box display={'flex'} flexDirection={'column'} height={'100px'}>
+      <Box>
+        <Editor
+          value={sqls.data[selectedIdx]?.body}
+          onValueChange={(v) => handleValueChange(v)}
+          highlight={(code) => code}
+          padding={10}
+          style={{
+            fontFamily: '"Fira code", "Fira Mono", monospace',
+            fontSize: 12,
+          }}
+        />
+      </Box>
       {sqls.data[selectedIdx]?.body && (
         <Button onClick={() => runSql(selectedIdx)}>Run</Button>
       )}
 
-      {sqls.data[selectedIdx]?.result && (
-        <Box overflow={'auto'}>{sqls.data[selectedIdx]?.result}</Box>
-      )}
-    </>
+      <Box
+      // height={dimensions?.h || 500}
+      // width={dimensions?.w || 300}
+      // overflow={'scroll'}
+      >
+        {sqls.data[selectedIdx]?.result && sqls.data[selectedIdx]?.result}
+      </Box>
+    </Box>
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function parseAsTable(sqlResponce: Array<any>): ReactNode {
+export function parseAsTable(
+  sqlResponce: Array<{ [key: string]: string }>,
+): ReactNode {
   const headers = Object.keys(sqlResponce[0]);
   return (
     <table>
