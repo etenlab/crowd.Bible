@@ -181,6 +181,12 @@ export class NodeService {
     rowId: NanoidType,
   ): Promise<NanoidType> {
     try {
+      const elections = await this.listElections(tableName, rowId);
+
+      if (elections && elections.length > 0) {
+        throw new Error('Already exists the same election!');
+      }
+
       const electionNode = await this.createNodeFromObject(
         constants.ELECTION_NODE_TYPE,
         {
@@ -290,7 +296,7 @@ export class NodeService {
         constrains,
       );
 
-      if (!nodes || nodes.length > 0) {
+      if (nodes && nodes.length > 0) {
         throw new Error('Already exists the ballot-entry at this election');
       }
 
