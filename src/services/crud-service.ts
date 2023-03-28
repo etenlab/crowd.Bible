@@ -1,6 +1,14 @@
 import { NodeService } from './node.service';
 import { Node } from '@/models/node/node.entity';
-import { InferType, object, reach, Schema, string } from 'yup';
+import {
+  InferType,
+  object,
+  reach,
+  Schema,
+  SchemaFieldDescription,
+  SchemaObjectDescription,
+  string,
+} from 'yup';
 import { NodeRepository } from '@/repositories/node/node.repository';
 import { FindOptionsWhere } from 'typeorm';
 
@@ -60,11 +68,21 @@ export class CRUDService<T extends BaseType> {
     };
   }
 
+  private schemaKeys(): (keyof T)[] {
+    const descr = this.schema.describe();
+    if (descr.type === 'object') {
+      const objDescr = descr as SchemaObjectDescription;
+      return Object.keys(objDescr.fields) as (keyof T)[];
+    } else {
+      return [];
+    }
+  }
+
   private validatePartial(obj: Partial<T>) {
-    const validators = Object.keys(obj).reduce((acc, key: string) => {
-      try {
-        return { ...acc, [key]: reach(this.schema, key) };
-      } catch {
+    const validators = this.schemaKeys().reduce((acc, key: keyof T) => {
+      if (key in obj) {
+        return { ...acc, [key]: reach(this.schema, String(key)) };
+      } else {
         return acc;
       }
     }, {});
