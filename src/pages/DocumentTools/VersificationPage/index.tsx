@@ -14,14 +14,11 @@ import {
 } from './graphql';
 import { BookListPage } from './BookListPage';
 import { BookPage } from './BookPage';
-import { Bible, VersificationConfig } from './types';
+import { Bible } from './types';
 
 type VersificationContextType = {
   bibles: Bible[];
-  onIdentifierAdd(params: {
-    identifier: string;
-    config: VersificationConfig;
-  }): void;
+  onIdentifierAdd(id: number, value: string): void;
 };
 
 const VersificationContext = createContext<VersificationContextType>(null!);
@@ -41,19 +38,10 @@ export function VersificationPage() {
       .then((response) => setBibles(response.data.data.nodesByNodeType));
   }, []);
 
-  function handleIdentifierAdd({
-    identifier,
-    config,
-  }: {
-    identifier: string;
-    config: VersificationConfig;
-  }) {
+  function handleIdentifierAdd(id: number, value: string) {
     axios
       .post(process.env.REACT_APP_GRAPHQL_URL!, {
-        query: buildCreateNodePropertyValueMutation(
-          config.node_property_key_id,
-          identifier,
-        ),
+        query: buildCreateNodePropertyValueMutation(id, value),
       })
       .then(() => fetchBibles());
   }

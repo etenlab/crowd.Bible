@@ -67,7 +67,7 @@ export function DocumentToolsRoutes() {
         <CommentaryPage />
       </Route>
 
-      <Route exact path="/versification">
+      <Route path="/versification">
         <VersificationPage />
       </Route>
 

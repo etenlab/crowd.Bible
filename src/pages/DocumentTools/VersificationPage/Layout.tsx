@@ -25,7 +25,7 @@ export function Layout({
       <HeadingBox
         breadcrumb={breadcrumb}
         {...(backRoute && {
-          onClick: () => history.push(backRoute),
+          onBack: () => history.push(backRoute),
         })}
       >
         {headerContent}
