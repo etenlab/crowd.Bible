@@ -5,12 +5,12 @@ import {
   useColorModeContext,
   FiX,
 } from '@eten-lab/ui-kit';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useCallback, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
-import Editor from 'react-simple-code-editor';
 import useSingletons from '../../hooks/useSingletons';
+import { SqlWindow } from './SqlWindow';
 const { Box, Tabs, Tab, IconButton } = MuiMaterial;
 
 const PADDING = 20;
@@ -44,21 +44,21 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
   const [dimensions, setDimensions] = useState({ w: 500, h: 600 });
   const [selectedTab, setSelectedTab] = useState(0);
   const [sqls, setSqls] = useState(startingDefaultSqls);
-  const handleTabChange = (
-    event: React.SyntheticEvent,
-    selectedIdx: number,
-  ) => {
-    if (selectedIdx > sqls.data.length - 1) {
-      const newSqlData = {
-        name: `SQL${sqls.lastCreatedIdx + 1}`,
-        body: '',
-      };
-      sqls.data.push(newSqlData);
-      sqls.lastCreatedIdx += 1;
-      setSqls({ ...sqls });
-    }
-    setSelectedTab(selectedIdx);
-  };
+  const handleTabChange = useCallback(
+    (event: React.SyntheticEvent, selectedIdx: number) => {
+      if (selectedIdx > sqls.data.length - 1) {
+        const newSqlData = {
+          name: `SQL${sqls.lastCreatedIdx + 1}`,
+          body: '',
+        };
+        sqls.data.push(newSqlData);
+        sqls.lastCreatedIdx += 1;
+        setSqls({ ...sqls });
+      }
+      setSelectedTab(selectedIdx);
+    },
+    [sqls],
+  );
 
   const handleCloseTab = (idx: number) => {
     sqls.data.splice(idx, 1);
@@ -67,21 +67,28 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
 
   const nodeRef = React.useRef(null);
 
-  const runSql = (sqlIdxToRun: number) => {
-    if (!singletons?.dbService?.dataSource) {
-      throw new Error('no singletons.dbService.dataSource found');
-    }
-    singletons.dbService.dataSource.query(sqls.data[sqlIdxToRun].body).then(
-      (fulfilled) => {
-        sqls.data[sqlIdxToRun].result = ParseAsTableComopnent(fulfilled);
-        setSqls({ ...sqls });
-      },
-      (rejected) => {
-        sqls.data[sqlIdxToRun].result = JSON.stringify(rejected.stack);
-        setSqls({ ...sqls });
-      },
-    );
-  };
+  const runSql = useCallback(
+    (sqlIdxToRun: number) => {
+      if (!singletons?.dbService?.dataSource) {
+        throw new Error('no singletons.dbService.dataSource found');
+      }
+      singletons.dbService.dataSource.query(sqls.data[sqlIdxToRun].body).then(
+        (fulfilled) => {
+          sqls.data[sqlIdxToRun].result = TableFromResponce({
+            sqlResponce: fulfilled,
+          });
+          setSqls({ ...sqls });
+        },
+        (rejected) => {
+          sqls.data[sqlIdxToRun].result = (
+            <span>{JSON.stringify(rejected.stack)}</span>
+          );
+          setSqls({ ...sqls });
+        },
+      );
+    },
+    [singletons?.dbService?.dataSource, sqls],
+  );
 
   return (
     <>
@@ -176,67 +183,18 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
   );
 }
 
-function SqlWindow({
-  sqls,
-  selectedIdx,
-  setSqls,
-  runSql,
-  tableSize,
+export function TableFromResponce({
+  sqlResponce,
 }: {
-  sqls: TSqls;
-  selectedIdx: number;
-  setSqls: (sqls: TSqls) => void;
-  runSql: (idxtoRun: number) => void;
-  tableSize: { w: number; h: number };
+  sqlResponce: Array<{ [key: string]: string }>;
 }) {
-  const handleValueChange = (value: string) => {
-    sqls.data[selectedIdx].body = value;
-    setSqls({ ...sqls });
-  };
-
-  return (
-    <Box
-      display={'flex'}
-      flexDirection={'column'}
-      alignItems={'start'}
-      height={`${tableSize?.h || 500}px`}
-      width={`${tableSize?.w || 500}px`}
-    >
-      <Box width={'100%'}>
-        <Editor
-          value={sqls.data[selectedIdx]?.body}
-          onValueChange={(v) => handleValueChange(v)}
-          highlight={(code) => code}
-          padding={10}
-          ignoreTabKey={true}
-          style={{
-            fontFamily: '"Fira code", "Fira Mono", monospace',
-            fontSize: 12,
-          }}
-        />
-      </Box>
-      {sqls.data[selectedIdx]?.body && (
-        <Button onClick={() => runSql(selectedIdx)}>Run</Button>
-      )}
-
-      <Box height={'100%'} width={'100%'} overflow={'scroll'}>
-        {sqls.data[selectedIdx]?.result && sqls.data[selectedIdx]?.result}
-      </Box>
-    </Box>
-  );
-}
-
-export function ParseAsTableComopnent(
-  sqlResponce: Array<{ [key: string]: string }>,
-): ReactNode {
-  const { getColor } = useColorModeContext();
   const headers = sqlResponce[0] ? Object.keys(sqlResponce[0]) : [];
   return (
     <table>
       <thead>
         <tr>
           {headers.map((header, i) => (
-            <th key={i} style={{ border: 'solid 1px gray' }}>
+            <th key={i} style={{ border: `solid 1px gray` }}>
               {header}
             </th>
           ))}
@@ -246,7 +204,7 @@ export function ParseAsTableComopnent(
         {sqlResponce.map((resp, i) => (
           <tr key={i}>
             {headers.map((header, ih) => (
-              <td key={ih} style={{ border: `solid 1px ${getColor('gray')}` }}>
+              <td key={ih} style={{ border: `solid 1px gray` }}>
                 {resp[header]}
               </td>
             ))}
