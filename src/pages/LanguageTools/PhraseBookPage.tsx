@@ -1,9 +1,10 @@
-import { Autocomplete, Button, FiPlus, Input } from '@eten-lab/ui-kit';
+import { MuiMaterial } from '@eten-lab/ui-kit';
+import { Button, FiPlus } from '@eten-lab/ui-kit';
 import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import { IonContent } from '@ionic/react';
-import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
-const { TitleWithIcon, WordTable } = CrowdBibleUI;
+const { FiltersAndSearch, TitleWithIcon, WordTable } = CrowdBibleUI;
+const { Box } = MuiMaterial;
 
 type Content = {
   content: string;
@@ -97,30 +98,14 @@ export function PhraseBookPage() {
           </Box>
         </Box>
 
-        <Box
-          width={'100%'}
-          padding={`${PADDING}px 0 ${PADDING}px`}
-          display={'flex'}
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          gap={`${PADDING}px`}
-        >
-          <Box flex={1}>
-            <Autocomplete
-              fullWidth
-              options={MOCK_ETHNOLOGUE_OPTIONS}
-              label="Ethnologue"
-            ></Autocomplete>
-          </Box>
-          <Box flex={1}>
-            <Input fullWidth label="Language ID"></Input>
-          </Box>
-        </Box>
+        <FiltersAndSearch
+          ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
+          setEthnologue={() => console.log('setEthnologue!')}
+          setLanguage={(l: string) => console.log('setLanguage! ' + l)}
+          setSearch={(s: string) => console.log('setSearch' + s)}
+        />
 
         <Box display={'flex'} flexDirection="column" width={1}>
-          <Box width={1} paddingBottom={`${PADDING}px`}>
-            <Input fullWidth label="Search..."></Input>
-          </Box>
           <WordTable
             items={phrases}
             label_1="Phrase"

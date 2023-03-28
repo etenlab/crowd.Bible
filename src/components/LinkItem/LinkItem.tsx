@@ -1,7 +1,7 @@
 import { IonItem } from '@ionic/react';
 
-import { MuiMaterial, useColorModeContext } from '@eten-lab/ui-kit';
-import { useAppContext } from '@/src/hooks/useAppContext';
+import { MuiMaterial } from '@eten-lab/ui-kit';
+import { useAppContext } from '@/hooks/useAppContext';
 
 const { Typography, Chip } = MuiMaterial;
 
@@ -17,9 +17,6 @@ export function LinkItem({ to, label, onlineOnly = false }: LinkItemProps) {
       global: { connectivity },
     },
   } = useAppContext();
-  const { getColor } = useColorModeContext();
-
-  // console.log(onlineOnly);
 
   const disabled = connectivity === false && onlineOnly === true ? true : false;
   const chipComponent = disabled ? (
@@ -31,8 +28,6 @@ export function LinkItem({ to, label, onlineOnly = false }: LinkItemProps) {
       sx={{ marginLeft: 2 }}
     />
   ) : null;
-
-  // console.log(disabled);
 
   return (
     <IonItem routerLink={to} disabled={disabled}>

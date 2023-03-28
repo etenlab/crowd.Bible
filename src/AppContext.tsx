@@ -9,9 +9,9 @@ import {
   type FeedbackType,
   type PrefersColorSchemeType,
   TranslatedMap,
-} from './reducers/global.reducer';
+} from '@/reducers/global.reducer';
 
-import { useGlobal } from './hooks/useGlobal';
+import { useGlobal } from '@/hooks/useGlobal';
 
 export interface ContextType {
   states: {
@@ -60,7 +60,7 @@ export function AppContextProvider({ children }: AppProviderProps) {
     window.addEventListener('online', () => {
       setConnectivity(true);
     });
-  }, []);
+  }, [setConnectivity]);
 
   const value = {
     states: { global: state.global },

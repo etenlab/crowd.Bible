@@ -1,4 +1,4 @@
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import { SvgTranslationPage } from '@/pages/MediaTools/SvgTranslationPage';
 import { SvgTranslatedPage } from '@/pages/MediaTools/SvgTranslatedPage';
@@ -8,7 +8,7 @@ import { MapDetailPage } from '../pages/MediaTools/MapDetailPage';
 
 export function MediaToolsRoutes() {
   return (
-    <>
+    <Switch>
       <Route exact path="/svg-translation">
         <SvgTranslationPage />
       </Route>
@@ -24,6 +24,6 @@ export function MediaToolsRoutes() {
       <Route exact path="/map-strings-list">
         <MapStringsListPage />
       </Route>
-    </>
+    </Switch>
   );
 }

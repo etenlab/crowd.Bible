@@ -16,7 +16,7 @@ export const MapDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [windowWidth, setWindowWidth] = useState(getWindowWidth());
   const [mapDetail, setMapDetail] = useState<MapDto>();
-  const { nodeService } = useNodeServices();
+  const nodeService = useNodeServices();
 
   useEffect(() => {
     present({ message: 'Loading...', duration: 1000 });

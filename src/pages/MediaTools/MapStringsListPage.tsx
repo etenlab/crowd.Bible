@@ -23,7 +23,7 @@ const PADDING = 15;
 
 export const MapStringsListPage = () => {
   const langIdRef = useRef('');
-  const { nodeService } = useNodeServices();
+  const nodeService = useNodeServices();
   const [presentAlert] = useIonAlert();
   const [langs, setLangs] = useState<LanguageDto[]>([]);
   const [words, setWords] = useState<Item[]>([]);

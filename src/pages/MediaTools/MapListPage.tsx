@@ -53,7 +53,7 @@ export const MapListPage = () => {
   ]);
   const [selectedLang, setSelectedLang] = useState<string>('');
   const [presentAlert] = useIonAlert();
-  const { nodeService } = useNodeServices();
+  const nodeService = useNodeServices();
 
   useEffect(() => {
     loadLanguages();
@@ -80,24 +80,22 @@ export const MapListPage = () => {
 
   const handleMapParsingCompleted = async (argMap: MapDetail) => {
     if (!nodeService) return;
-    let isSuccess = true;
+    const newState: Partial<MapDetail> = { status: eProcessStatus.COMPLETED };
     try {
-      const mapSaveRes = await nodeService.saveMap(argMap.langId!, {
+      const mapId = await nodeService.saveMap(argMap.langId!, {
         name: argMap.name!,
         map: argMap.map!,
         ext: 'svg',
       });
-      console.log('map successfully saved:', mapSaveRes);
-      if (mapSaveRes) {
-        setMapStatus(argMap.tempId!, { id: mapSaveRes! });
-        await processMapWords(argMap.words!, argMap.langId!, mapSaveRes);
-      } else isSuccess = false;
+      console.log('map successfully saved:', mapId);
+      if (mapId) {
+        newState.id = mapId;
+        await processMapWords(argMap.words!, argMap.langId!, mapId);
+      } else newState.status = eProcessStatus.FAILED;
     } catch (error) {
-      isSuccess = false;
+      newState.status = eProcessStatus.FAILED;
     }
-    setMapStatus(argMap.tempId!, {
-      status: isSuccess ? eProcessStatus.COMPLETED : eProcessStatus.FAILED,
-    });
+    setMapStatus(argMap.tempId!, newState);
   };
 
   const fileHandler: React.ChangeEventHandler<HTMLInputElement> = useCallback(
