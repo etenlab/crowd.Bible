@@ -18,6 +18,7 @@ import {
   MuiMaterial,
   Alert,
   useColorModeContext,
+  Button,
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
@@ -163,6 +164,14 @@ export function PageLayout({ children }: PageLayoutProps) {
             <LinkItem to="/settings" label="Settings" />
             <LinkItem to="/admin" label="Admin" />
             <LinkItem to="/home" label="Logout" />
+            <Button
+              onClick={() => {
+                setIsSqlRunnerShown(!isSqlRunnerShown);
+                ref.current!.toggle();
+              }}
+            >
+              Sql Runner
+            </Button>
           </IonList>
         </IonContent>
       </IonMenu>
@@ -177,11 +186,9 @@ export function PageLayout({ children }: PageLayoutProps) {
                 onClickThemeModeBtn={handleToogleTheme}
                 isNewDiscussion={isNewDiscussion}
                 isNewNotification={isNewNotification}
-                onClickDiscussionBtn={() => setIsSqlRunnerShown(true)}
-                // temporary, for sqlRunner testing
-                // onClickDiscussionBtn={() => {
-                //   history.push('/discussions-list');
-                // }}
+                onClickDiscussionBtn={() => {
+                  history.push('/discussions-list');
+                }}
                 onClickNotificationBtn={() => {
                   history.push('/notifications');
                 }}

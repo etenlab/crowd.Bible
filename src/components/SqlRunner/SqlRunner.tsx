@@ -13,6 +13,11 @@ import Editor from 'react-simple-code-editor';
 import useSingletons from '../../hooks/useSingletons';
 const { Box, Tabs, Tab, IconButton } = MuiMaterial;
 
+const PADDING = 20;
+const PADDING_SMALL = PADDING / 2;
+const REDUCE_TABLE_HEIGHT = 75;
+const BORDER_W = 1;
+
 type TSqls = {
   lastCreatedIdx: number;
   data: Array<{
@@ -63,9 +68,12 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
   const nodeRef = React.useRef(null);
 
   const runSql = (sqlIdxToRun: number) => {
-    singletons?.dbService.dataSource.query(sqls.data[sqlIdxToRun].body).then(
+    if (!singletons?.dbService?.dataSource) {
+      throw new Error('no singletons.dbService.dataSource found');
+    }
+    singletons.dbService.dataSource.query(sqls.data[sqlIdxToRun].body).then(
       (fulfilled) => {
-        sqls.data[sqlIdxToRun].result = parseAsTable(fulfilled);
+        sqls.data[sqlIdxToRun].result = ParseAsTableComopnent(fulfilled);
         setSqls({ ...sqls });
       },
       (rejected) => {
@@ -103,7 +111,6 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
               position={'absolute'}
               border={`1px solid ${getColor('gray')}`}
               flexDirection={'column'}
-              overflow={'scroll'}
             >
               <Box
                 display="flex"
@@ -129,7 +136,11 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
                             {sql.name}
                             <IconButton
                               component="div"
-                              onClick={() => handleCloseTab(idx)}
+                              onClick={() =>
+                                window.confirm('Close?')
+                                  ? handleCloseTab(idx)
+                                  : null
+                              }
                             >
                               <FiX />
                             </IconButton>
@@ -146,7 +157,14 @@ export function SqlRunner({ onClose }: { onClose: () => void }) {
                   selectedIdx={selectedTab}
                   setSqls={setSqls}
                   runSql={runSql}
-                  dimensions={{ w: 0, h: 0 }}
+                  tableSize={{
+                    w: dimensions.w - PADDING_SMALL - 2 * BORDER_W,
+                    h:
+                      dimensions.h -
+                      REDUCE_TABLE_HEIGHT -
+                      PADDING_SMALL -
+                      2 * BORDER_W,
+                  }}
                 ></SqlWindow>
               </Box>
             </Box>
@@ -163,13 +181,13 @@ function SqlWindow({
   selectedIdx,
   setSqls,
   runSql,
-  dimensions,
+  tableSize,
 }: {
   sqls: TSqls;
   selectedIdx: number;
   setSqls: (sqls: TSqls) => void;
   runSql: (idxtoRun: number) => void;
-  dimensions: { w: number; h: number };
+  tableSize: { w: number; h: number };
 }) {
   const handleValueChange = (value: string) => {
     sqls.data[selectedIdx].body = value;
@@ -177,13 +195,20 @@ function SqlWindow({
   };
 
   return (
-    <Box display={'flex'} flexDirection={'column'} height={'100px'}>
-      <Box>
+    <Box
+      display={'flex'}
+      flexDirection={'column'}
+      alignItems={'start'}
+      height={`${tableSize?.h || 500}px`}
+      width={`${tableSize?.w || 500}px`}
+    >
+      <Box width={'100%'}>
         <Editor
           value={sqls.data[selectedIdx]?.body}
           onValueChange={(v) => handleValueChange(v)}
           highlight={(code) => code}
           padding={10}
+          ignoreTabKey={true}
           style={{
             fontFamily: '"Fira code", "Fira Mono", monospace',
             fontSize: 12,
@@ -194,21 +219,18 @@ function SqlWindow({
         <Button onClick={() => runSql(selectedIdx)}>Run</Button>
       )}
 
-      <Box
-      // height={dimensions?.h || 500}
-      // width={dimensions?.w || 300}
-      // overflow={'scroll'}
-      >
+      <Box height={'100%'} width={'100%'} overflow={'scroll'}>
         {sqls.data[selectedIdx]?.result && sqls.data[selectedIdx]?.result}
       </Box>
     </Box>
   );
 }
 
-export function parseAsTable(
+export function ParseAsTableComopnent(
   sqlResponce: Array<{ [key: string]: string }>,
 ): ReactNode {
-  const headers = Object.keys(sqlResponce[0]);
+  const { getColor } = useColorModeContext();
+  const headers = sqlResponce[0] ? Object.keys(sqlResponce[0]) : [];
   return (
     <table>
       <thead>
@@ -224,7 +246,7 @@ export function parseAsTable(
         {sqlResponce.map((resp, i) => (
           <tr key={i}>
             {headers.map((header, ih) => (
-              <td key={ih} style={{ border: 'solid 1px gray' }}>
+              <td key={ih} style={{ border: `solid 1px ${getColor('gray')}` }}>
                 {resp[header]}
               </td>
             ))}
