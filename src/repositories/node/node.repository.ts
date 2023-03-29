@@ -3,10 +3,12 @@ import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
 import { NodeType } from '@/models/index';
 import { Node } from '@/models/node/node.entity';
+import { NodeTypeConst } from '../../constants/node-type.constant';
+import { TNodesKeysConst } from '../../constants/node-property-keys.constant';
 
 export interface IfindOneByPropertyValue {
-  nodeType: TNodeTypes;
-  prop: { propertyKey: TPropertyKeys; propertyValue: string };
+  nodeType: NodeTypeConst;
+  prop: { propertyKey: TNodesKeysConst; propertyValue: string };
   onlyWithRelToNodeId?: TStringUUID;
 }
 

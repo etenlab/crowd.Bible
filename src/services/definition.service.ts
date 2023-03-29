@@ -1,12 +1,8 @@
+import { DefinitionNodesKeysConst } from '../constants/node-property-keys.constant';
 import { NodeTypeConst } from '../constants/node-type.constant';
-import { NodeType } from '../models';
 import { NodeRepository } from '../repositories/node/node.repository';
 import { NodeService } from './node.service';
 
-export enum DefinitionNodeKeys {
-  ID = 'id',
-  TEXT = 'text',
-}
 export type VotableContent = {
   content: string;
   upVote: number;
@@ -32,7 +28,7 @@ export class DefinitionService {
       const [definitionNodes, count] = await this.nodeRepo.getAllByProp({
         nodeType: 'definition',
         prop: {
-          propertyKey: DefinitionNodeKeys.TEXT,
+          propertyKey: DefinitionNodesKeysConst.TEXT,
           propertyValue: definitionValue,
         },
         onlyWithRelToNodeId: languageNodeId,
@@ -68,7 +64,7 @@ export class DefinitionService {
       languageNodeId,
       'definition',
       'definition-to-language-entry',
-      { [DefinitionNodeKeys.TEXT]: definitionValue },
+      { [DefinitionNodesKeysConst.TEXT]: definitionValue },
     );
 
     return node.id;
@@ -87,7 +83,7 @@ export class DefinitionService {
     const vc: VotableContent[] = definitions.map((d) => ({
       content: this.nodeService.getNodePropertyValue(
         d,
-        DefinitionNodeKeys.TEXT,
+        DefinitionNodesKeysConst.TEXT,
       ),
       upVote: 0,
       downVote: 0,
