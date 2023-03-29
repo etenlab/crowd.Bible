@@ -1,7 +1,10 @@
 import { NodeRepository } from '../repositories/node/node.repository';
 import { NodeService } from './node.service';
 
-const PROP_KEY_FOR_DEFINITION_TEXT = 'text';
+export enum DefinitionNodeKeys {
+  ID = 'id',
+  TEXT = 'text',
+}
 
 export class DefinitionService {
   constructor(
@@ -9,7 +12,7 @@ export class DefinitionService {
     private readonly nodeRepo: NodeRepository,
   ) {}
 
-  async getFirstDefinitionNodeID(
+  async getFirstDefinitionNodeId(
     definitionValue: string,
     languageNodeId: TStringUUID,
   ): Promise<TStringUUID | null> {
@@ -17,7 +20,7 @@ export class DefinitionService {
       const [definitionNodes, count] = await this.nodeRepo.getAllByProp({
         nodeType: 'definition',
         prop: {
-          propertyKey: PROP_KEY_FOR_DEFINITION_TEXT,
+          propertyKey: DefinitionNodeKeys.TEXT,
           propertyValue: definitionValue,
         },
         onlyWithRelToNodeId: languageNodeId,
@@ -31,7 +34,7 @@ export class DefinitionService {
     } catch (err) {
       console.error(err);
       throw new Error(
-        `Failed to get getFirstDefinitionNodeID '${definitionValue} - ${languageNodeId}'`,
+        `Failed to get getFirstDefinitionNodeId '${definitionValue} - ${languageNodeId}'`,
       );
     }
   }
@@ -40,7 +43,7 @@ export class DefinitionService {
     definitionValue: string,
     languageNodeId: TStringUUID,
   ): Promise<TStringUUID> {
-    const existingDefinitionUUID = await this.getFirstDefinitionNodeID(
+    const existingDefinitionUUID = await this.getFirstDefinitionNodeId(
       definitionValue,
       languageNodeId,
     );
@@ -53,7 +56,7 @@ export class DefinitionService {
       languageNodeId,
       'definition',
       'definition-to-language-entry',
-      { [PROP_KEY_FOR_DEFINITION_TEXT]: definitionValue },
+      { [DefinitionNodeKeys.TEXT]: definitionValue },
     );
 
     return node.id;
