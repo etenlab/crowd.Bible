@@ -2,15 +2,7 @@ import { GraphSecondLayerService } from './graph-second-layer.service';
 import { InferType, object, Schema, string } from 'yup';
 import { NodeRepository } from '@/repositories/node/node.repository';
 import { baseSchema, BaseType, CRUDService } from './crud-service';
-
-export enum LexiconNodeType {
-  Lexicon = 'lexicon',
-  LexicalCategory = 'lexical_category',
-  GramaticalCategory = 'grammatical_category',
-  Grammeme = 'grammeme',
-  Lexeme = 'lexeme',
-  WordForm = 'word_form',
-}
+import { NodeTypeConst } from '@/constants/graph.constant';
 
 const lexiconSchema = baseSchema.concat(
   object({
@@ -66,21 +58,25 @@ export class LexiconService {
     secondLayerService: GraphSecondLayerService,
     nodeRepo: NodeRepository,
   ) {
-    const service = <T extends BaseType>(
-      model: LexiconNodeType,
-      schema: Schema<T>,
-    ) => new CRUDService(model, schema, secondLayerService, nodeRepo);
-    this.lexica = service(LexiconNodeType.Lexicon, lexiconSchema);
+    const service = <T extends BaseType>(model: string, schema: Schema<T>) =>
+      new CRUDService(model, schema, secondLayerService, nodeRepo);
+
+    this.lexica = service(NodeTypeConst.LEXICON, lexiconSchema);
+
     this.lexicalCategories = service(
-      LexiconNodeType.LexicalCategory,
+      NodeTypeConst.LEXICAL_CATEGORY,
       lexicalCategorySchema,
     );
+
     this.grammaticalCategories = service(
-      LexiconNodeType.GramaticalCategory,
+      NodeTypeConst.GRAMATICAL_CATEGORY,
       grammaticalCategorySchema,
     );
-    this.grammemes = service(LexiconNodeType.Grammeme, grammemeSchema);
-    this.lexemes = service(LexiconNodeType.Lexeme, lexemeSchema);
-    this.wordForms = service(LexiconNodeType.WordForm, wordFormSchema);
+
+    this.grammemes = service(NodeTypeConst.GRAMMEME, grammemeSchema);
+
+    this.lexemes = service(NodeTypeConst.LEXEME, lexemeSchema);
+
+    this.wordForms = service(NodeTypeConst.WORD_FORM, wordFormSchema);
   }
 }

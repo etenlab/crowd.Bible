@@ -7,10 +7,15 @@ import { NodeRepository } from '@/repositories/node/node.repository';
 import { type Node } from '@/models/node/node.entity';
 import { type Relationship } from '@/models/relationship/relationship.entity';
 
-import { NodeTypeConst } from '../constants/node-type.constant';
 import { MapDto } from '../dtos/map.dto';
 import { LanguageDto } from '../dtos/lang.dto';
 import { MapMapper } from '../mappers/map.mapper';
+
+import {
+  NodeTypeConst,
+  RelationshipTypeConst,
+  PropertyKeyConst,
+} from '@/constants/graph.constant';
 
 export class GraphThirdLayerService {
   constructor(
@@ -22,7 +27,7 @@ export class GraphThirdLayerService {
   // -------- Document --------- //
   async createDocument(name: string): Promise<Document> {
     const document = await this.secondLayerService.createNodeFromObject(
-      'document',
+      NodeTypeConst.DOCUMENT,
       {
         name,
       },
@@ -35,10 +40,13 @@ export class GraphThirdLayerService {
   }
 
   async getDocument(name: string): Promise<Document | null> {
-    const document = await this.firstLayerService.getNodeByProp('document', {
-      key: 'name',
-      value: name,
-    });
+    const document = await this.firstLayerService.getNodeByProp(
+      NodeTypeConst.DOCUMENT,
+      {
+        key: PropertyKeyConst.NAME,
+        value: name,
+      },
+    );
 
     if (document == null) {
       return null;
@@ -64,7 +72,7 @@ export class GraphThirdLayerService {
 
     const { node } =
       await this.secondLayerService.createRelatedFromNodeFromObject(
-        NodeTypeConst.WORD_TO_LANG,
+        RelationshipTypeConst.WORD_TO_LANG,
         {},
         NodeTypeConst.WORD,
         { name: word },
@@ -73,7 +81,7 @@ export class GraphThirdLayerService {
 
     if (mapId) {
       await this.secondLayerService.createRelationshipFromObject(
-        NodeTypeConst.WORD_MAP,
+        RelationshipTypeConst.WORD_MAP,
         {},
         node.id,
         mapId,
@@ -85,9 +93,9 @@ export class GraphThirdLayerService {
 
   async getWord(word: string, language: Nanoid): Promise<Nanoid | null> {
     const wordNode = await this.firstLayerService.getNodeByProp(
-      'word',
+      NodeTypeConst.WORD,
       {
-        key: 'name',
+        key: PropertyKeyConst.NAME,
         value: word,
       },
       {
@@ -116,7 +124,7 @@ export class GraphThirdLayerService {
         ...additionalRelations,
       ],
       where: {
-        node_type: 'word',
+        node_type: NodeTypeConst.WORD,
         nodeRelationships: relQuery,
       },
     });
@@ -127,7 +135,7 @@ export class GraphThirdLayerService {
   async getMapWords(mapId: Nanoid) {
     return this.getWords({
       to_node_id: mapId,
-      relationship_type: NodeTypeConst.WORD_MAP,
+      relationship_type: RelationshipTypeConst.WORD_MAP,
     });
   }
 
@@ -136,7 +144,7 @@ export class GraphThirdLayerService {
     return this.getWords(
       [
         {
-          relationship_type: In([NodeTypeConst.WORD_MAP]),
+          relationship_type: In([RelationshipTypeConst.WORD_MAP]),
         },
       ],
       [
@@ -158,7 +166,7 @@ export class GraphThirdLayerService {
     const translation = await this.firstLayerService.findRelationship(
       from,
       to,
-      'word-to-translation',
+      RelationshipTypeConst.WORD_TO_TRANSLATION,
     );
 
     if (translation) {
@@ -167,7 +175,7 @@ export class GraphThirdLayerService {
 
     const new_translation =
       await this.secondLayerService.createRelationshipFromObject(
-        'word-to-translation',
+        RelationshipTypeConst.WORD_TO_TRANSLATION,
         {},
         from,
         to,
@@ -185,9 +193,9 @@ export class GraphThirdLayerService {
     language: Nanoid,
   ): Promise<Node> {
     const word_sequence = await this.secondLayerService.createNodeFromObject(
-      'word-sequence',
+      NodeTypeConst.WORD_SEQUENCE,
       {
-        'import-uid': import_uid,
+        [PropertyKeyConst.IMPORT_UID]: import_uid,
       },
     );
 
@@ -196,7 +204,7 @@ export class GraphThirdLayerService {
     for (const [i, word] of words.entries()) {
       const new_word_id = await this.createWord(word, language);
       await this.secondLayerService.createRelationshipFromObject(
-        'word-sequence-to-word',
+        RelationshipTypeConst.WORD_SEQUENCE_TO_WORD,
         { position: i + 1 },
         word_sequence.id,
         new_word_id,
@@ -204,21 +212,21 @@ export class GraphThirdLayerService {
     }
 
     await this.secondLayerService.createRelationshipFromObject(
-      'word-sequenece-to-language-entry',
+      RelationshipTypeConst.WORD_SEQUENCE_TO_LANGUAGE_ENTRY,
       {},
       word_sequence.id,
       language,
     );
 
     await this.secondLayerService.createRelationshipFromObject(
-      'word-sequence-to-document',
+      RelationshipTypeConst.WORD_SEQUENCE_TO_DOCUMENT,
       {},
       word_sequence.id,
       document,
     );
 
     await this.secondLayerService.createRelationshipFromObject(
-      'word-sequence-to-creator',
+      RelationshipTypeConst.WORD_SEQUENCE_TO_CREATOR,
       {},
       word_sequence.id,
       creator,
@@ -247,7 +255,9 @@ export class GraphThirdLayerService {
     const words: string[] = [];
 
     word_sequence.nodeRelationships.forEach((rel) => {
-      if (rel.relationship_type === 'word-sequence-to-word') {
+      if (
+        rel.relationship_type === RelationshipTypeConst.WORD_SEQUENCE_TO_WORD
+      ) {
         words.push(
           JSON.parse(
             rel.toNode.propertyKeys.find((key) => key.property_key === 'word')
@@ -264,7 +274,7 @@ export class GraphThirdLayerService {
   async appendWordSequence(from: Nanoid, to: Nanoid): Promise<Relationship> {
     const word_sequence_connection =
       await this.secondLayerService.createRelationshipFromObject(
-        'word-sequence-to-word-sequence',
+        RelationshipTypeConst.WORD_SEQUENCE_TO_WORD_SEQUENCE,
         {},
         from,
         to,
@@ -275,7 +285,7 @@ export class GraphThirdLayerService {
 
   async getWordSequence(text: string): Promise<Nanoid[]> {
     const word_sequences = await this.nodeRepo.listAllNodesByType(
-      'word-sequence',
+      NodeTypeConst.WORD_SEQUENCE,
     );
     const filtered_word_sequences = await Promise.all(
       word_sequences.filter(async (word_sequence) => {
@@ -295,7 +305,7 @@ export class GraphThirdLayerService {
     const translation = await this.firstLayerService.findRelationship(
       from,
       to,
-      'word-sequence-to-translation',
+      RelationshipTypeConst.WORD_SEQUENCE_TO_TRANSLATION,
     );
 
     if (translation) {
@@ -304,7 +314,7 @@ export class GraphThirdLayerService {
 
     const new_translation =
       await this.secondLayerService.createRelationshipFromObject(
-        'word-sequence-to-translation',
+        RelationshipTypeConst.WORD_SEQUENCE_TO_TRANSLATION,
         {},
         from,
         to,
@@ -335,9 +345,9 @@ export class GraphThirdLayerService {
     const langNode = await this.nodeRepo.repository.findOne({
       relations: ['propertyKeys', 'propertyKeys.propertyValue'],
       where: {
-        node_type: 'language',
+        node_type: NodeTypeConst.LANGUAGE,
         propertyKeys: {
-          property_key: 'name',
+          property_key: PropertyKeyConst.NAME,
           propertyValue: {
             property_value: JSON.stringify({ value: language }),
           },
@@ -356,7 +366,7 @@ export class GraphThirdLayerService {
     const langNodes = await this.nodeRepo.repository.find({
       relations: ['propertyKeys', 'propertyKeys.propertyValue'],
       where: {
-        node_type: 'language',
+        node_type: NodeTypeConst.LANGUAGE,
       },
     });
 

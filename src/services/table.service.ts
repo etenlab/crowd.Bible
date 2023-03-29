@@ -1,6 +1,11 @@
 import { GraphSecondLayerService } from './graph-second-layer.service';
 import { NodeRepository } from '@/repositories/node/node.repository';
 import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
+import {
+  NodeTypeConst,
+  RelationshipTypeConst,
+  PropertyKeyConst,
+} from '@/constants/graph.constant';
 
 export class TableService {
   constructor(
@@ -15,7 +20,7 @@ export class TableService {
     }
 
     const new_table = await this.secondLayerService.createNodeFromObject(
-      'table',
+      NodeTypeConst.TABLE,
       {
         name,
       },
@@ -25,8 +30,8 @@ export class TableService {
   }
 
   async getTable(name: string): Promise<Nanoid | null> {
-    const table = await this.nodeRepo.getNodeByProp('table', {
-      key: 'name',
+    const table = await this.nodeRepo.getNodeByProp(NodeTypeConst.TABLE, {
+      key: PropertyKeyConst.NAME,
       value: name,
     });
 
@@ -39,16 +44,17 @@ export class TableService {
 
   async createColumn(table: Nanoid, column_name: string): Promise<Nanoid> {
     const column_id = await this.getColumn(table, column_name);
+
     if (column_id) {
       return column_id;
     }
 
     const { node } =
       await this.secondLayerService.createRelatedToNodeFromObject(
-        'table-to-column',
+        RelationshipTypeConst.TABLE_TO_COLUMN,
         {},
         table,
-        'table-column',
+        NodeTypeConst.TABLE_COLUMN,
         { name: column_name },
       );
 
@@ -63,9 +69,9 @@ export class TableService {
         'nodeRelationships',
       ],
       where: {
-        node_type: 'table-column',
+        node_type: NodeTypeConst.TABLE_COLUMN,
         propertyKeys: {
-          property_key: 'name',
+          property_key: PropertyKeyConst.NAME,
           propertyValue: {
             property_value: JSON.stringify({ value: column_name }),
           },
@@ -86,10 +92,10 @@ export class TableService {
   async createRow(table: Nanoid): Promise<Nanoid> {
     const { node } =
       await this.secondLayerService.createRelatedToNodeFromObject(
-        'table-to-row',
+        RelationshipTypeConst.TABLE_TO_ROW,
         {},
         table,
-        'table-row',
+        NodeTypeConst.TABLE_ROW,
         {},
       );
     return node.id;
@@ -105,20 +111,21 @@ export class TableService {
     value: unknown,
   ): Promise<Nanoid> {
     const cell = await this.secondLayerService.createNodeFromObject(
-      'table-cell',
+      NodeTypeConst.TABLE_CELL,
       {
         data: value,
       },
     );
 
     await this.secondLayerService.createRelationshipFromObject(
-      'table-column-to-cell',
+      RelationshipTypeConst.TABLE_COLUMN_TO_CELL,
       {},
       column,
       cell.id,
     );
+
     await this.secondLayerService.createRelationshipFromObject(
-      'table-row-to-cell',
+      RelationshipTypeConst.TABLE_ROW_TO_CELL,
       {},
       row,
       cell.id,
@@ -138,7 +145,7 @@ export class TableService {
         propertyKeys: true,
       },
       where: {
-        node_type: 'table-cell',
+        node_type: NodeTypeConst.TABLE_CELL,
         nodeRelationships: [{ from_node_id: column }, { from_node_id: row }],
       },
     });
@@ -165,7 +172,7 @@ export class TableService {
         propertyKeys: true,
       },
       where: {
-        node_type: 'table-cell',
+        node_type: NodeTypeConst.TABLE_CELL,
         nodeRelationships: [{ from_node_id: column }, { from_node_id: row }],
       },
     });

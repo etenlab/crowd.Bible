@@ -1,7 +1,11 @@
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 import { VoteRepository } from '@/repositories/vote/vote.repository';
-import * as constants from '@/utils/constants';
+import {
+  NodeTypeConst,
+  RelationshipTypeConst,
+  PropertyKeyConst,
+} from '@/constants/graph.constant';
 
 export class VotingService {
   constructor(
@@ -18,10 +22,10 @@ export class VotingService {
     }
 
     const electionNode = await this.secondLayerService.createNodeFromObject(
-      constants.ELECTION_NODE_TYPE,
+      NodeTypeConst.ELECTION,
       {
-        [constants.TABLE_NAME]: tableName,
-        [constants.ROW_ID]: rowId,
+        [PropertyKeyConst.TABLE_NAME]: tableName,
+        [PropertyKeyConst.ROW_ID]: rowId,
       },
     );
 
@@ -31,17 +35,17 @@ export class VotingService {
   async listElections(tableName: TablesName, rowId: Nanoid): Promise<Nanoid[]> {
     const constrains: { key: string; value: unknown }[] = [
       {
-        key: constants.TABLE_NAME,
+        key: PropertyKeyConst.TABLE_NAME,
         value: tableName,
       },
       {
-        key: constants.ROW_ID,
+        key: PropertyKeyConst.ROW_ID,
         value: rowId,
       },
     ];
 
     return this.firstLayerService.getNodesByProps(
-      constants.ELECTION_NODE_TYPE,
+      NodeTypeConst.ELECTION,
       constrains,
     );
   }
@@ -53,7 +57,7 @@ export class VotingService {
       {
         id: electionId,
         nodeRelationships: {
-          relationship_type: constants.ELECTION_TO_BALLOT_ENTRY_REL_TYPE,
+          relationship_type: RelationshipTypeConst.ELECTION_TO_BALLOT_ENTRY,
         },
       },
     );
@@ -84,21 +88,21 @@ export class VotingService {
   ): Promise<Nanoid> {
     const constrains: { key: string; value: unknown }[] = [
       {
-        key: constants.TABLE_NAME,
+        key: PropertyKeyConst.TABLE_NAME,
         value: ballotEntryTarget.tableName,
       },
       {
-        key: constants.ROW_ID,
+        key: PropertyKeyConst.ROW_ID,
         value: ballotEntryTarget.rowId,
       },
       {
-        key: constants.ELECTION_ID,
+        key: PropertyKeyConst.ELECTION_ID,
         value: electionId,
       },
     ];
 
     const nodes = await this.firstLayerService.getNodesByProps(
-      constants.BALLOT_ENTRY_NODE_TYPE,
+      NodeTypeConst.BALLOT_ENTRY,
       constrains,
     );
 
@@ -108,14 +112,14 @@ export class VotingService {
 
     const { node } =
       await this.secondLayerService.createRelatedToNodeFromObject(
-        constants.ELECTION_TO_BALLOT_ENTRY_REL_TYPE,
+        RelationshipTypeConst.ELECTION_TO_BALLOT_ENTRY,
         {},
         electionId,
-        constants.BALLOT_ENTRY_NODE_TYPE,
+        NodeTypeConst.BALLOT_ENTRY,
         {
-          [constants.TABLE_NAME]: ballotEntryTarget.tableName,
-          [constants.ROW_ID]: ballotEntryTarget.rowId,
-          [constants.ELECTION_ID]: electionId,
+          [PropertyKeyConst.TABLE_NAME]: ballotEntryTarget.tableName,
+          [PropertyKeyConst.ROW_ID]: ballotEntryTarget.rowId,
+          [PropertyKeyConst.ELECTION_ID]: electionId,
         },
       );
 

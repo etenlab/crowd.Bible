@@ -5,7 +5,7 @@ import { Button, Input, CrowdBibleUI, Autocomplete } from '@eten-lab/ui-kit';
 import { useSingletons } from '@/src/hooks/useSingletons';
 import { LanguageDto } from '@/src/dtos/lang.dto';
 import { WordDto } from '@/src/dtos/word.dto';
-import { NodeTypeConst } from '@/src/constants/node-type.constant';
+import { RelationshipTypeConst } from '@/src/constants/graph.constant';
 
 const { TitleWithIcon } = CrowdBibleUI;
 
@@ -73,12 +73,15 @@ export const MapStringsListPage = () => {
       }
       for (const relNode of node.nodeRelationships?.at(0)?.fromNode
         ?.nodeRelationships || []) {
-        if (relNode.relationship_type === NodeTypeConst.WORD_TO_LANG) {
+        if (relNode.relationship_type === RelationshipTypeConst.WORD_TO_LANG) {
           wordInfo.langId = relNode.to_node_id;
         }
-        if (relNode.relationship_type === NodeTypeConst.WORD_TO_TRANSLATION) {
+        if (
+          relNode.relationship_type ===
+          RelationshipTypeConst.WORD_TO_TRANSLATION
+        ) {
           const translationNode = relNode.toNode.nodeRelationships?.find(
-            (nr) => nr.relationship_type === NodeTypeConst.WORD_TO_LANG,
+            (nr) => nr.relationship_type === RelationshipTypeConst.WORD_TO_LANG,
           );
           if (translationNode) {
             if (translationNode.to_node_id === langIdRef.current) {
