@@ -108,9 +108,10 @@ export class VotingService {
 
     const { node } =
       await this.secondLayerService.createRelatedToNodeFromObject(
+        constants.ELECTION_TO_BALLOT_ENTRY_REL_TYPE,
+        {},
         electionId,
         constants.BALLOT_ENTRY_NODE_TYPE,
-        constants.ELECTION_TO_BALLOT_ENTRY_REL_TYPE,
         {
           [constants.TABLE_NAME]: ballotEntryTarget.tableName,
           [constants.ROW_ID]: ballotEntryTarget.rowId,

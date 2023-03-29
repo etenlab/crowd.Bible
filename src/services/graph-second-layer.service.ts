@@ -50,19 +50,21 @@ export class GraphSecondLayerService {
   }
 
   async createRelatedFromNodeFromObject(
+    rel_type_name: string,
+    rel_obj: object,
     node_type_name: string,
     obj: object,
-    rel_type_name: string,
     to_node_id: Nanoid,
   ): Promise<{
     relationship: Relationship;
     node: Node;
   }> {
     const from_node = await this.createNodeFromObject(node_type_name, obj);
-    const relationship = await this.firstLayerService.createRelationship(
+    const relationship = await this.createRelationshipFromObject(
+      rel_type_name,
+      rel_obj,
       from_node.id,
       to_node_id,
-      rel_type_name,
     );
 
     return {
@@ -72,8 +74,9 @@ export class GraphSecondLayerService {
   }
 
   async createRelatedToNodeFromObject(
-    from_node_id: Nanoid,
     rel_type_name: string,
+    rel_obj: object,
+    from_node_id: Nanoid,
     node_type_name: string,
     obj: object,
   ): Promise<{
@@ -81,10 +84,11 @@ export class GraphSecondLayerService {
     node: Node;
   }> {
     const to_node = await this.createNodeFromObject(node_type_name, obj);
-    const relationship = await this.firstLayerService.createRelationship(
+    const relationship = await this.createRelationshipFromObject(
+      rel_type_name,
+      rel_obj,
       from_node_id,
       to_node.id,
-      rel_type_name,
     );
 
     return {

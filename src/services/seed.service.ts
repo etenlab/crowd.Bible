@@ -6,8 +6,17 @@ import { type RelationshipPropertyKeyRepository } from '@/repositories/relations
 import { type RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
 import { type RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
 import { type RelationshipRepository } from '@/repositories/relationship/relationship.repository';
+import { nanoid } from 'nanoid';
 
+const DATA_SEEDED = 'DATA_SEEDED';
 export class SeedService {
+  private get dataSeeded() {
+    return localStorage.getItem(DATA_SEEDED) === 'true';
+  }
+  private set dataSeeded(val: boolean) {
+    localStorage.setItem(DATA_SEEDED, val + '');
+  }
+
   constructor(
     private readonly nodeRepository: NodeRepository,
     private readonly nodeTypeRepository: NodeTypeRepository,
@@ -18,6 +27,18 @@ export class SeedService {
     private readonly relationshipPropertyKeyRepository: RelationshipPropertyKeyRepository,
     private readonly relationshipPropertyValueRepository: RelationshipPropertyValueRepository,
   ) {}
+
+  async init() {
+    try {
+      if (this.dataSeeded) return;
+      console.log('*** data seeding started ***');
+      await Promise.allSettled([this.seedLanguages()]);
+      console.log('*** data seeding completed ***');
+      this.dataSeeded = true;
+    } catch (error) {
+      console.log('seeding failed::', error);
+    }
+  }
 
   async createNodesAndRelationship() {
     // random string of length 10
@@ -61,5 +82,45 @@ export class SeedService {
       relationshipPropKey!,
       Math.random().toString(36).substring(2, 10),
     );
+  }
+
+  async seedLanguages(langs?: string[]) {
+    try {
+      const langNodes = await this.nodeRepository.repository.find({
+        relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+        where: {
+          node_type: 'language',
+        },
+      });
+
+      if (langNodes.length) return;
+
+      const langList = langs && langs.length > 0 ? langs : [];
+      if (!langList.length) {
+        for (let index = 0; index < 10; index++) {
+          langList.push(`language_${nanoid(4)}`);
+        }
+      }
+
+      for (const lang of langList) {
+        const langNode = await this.nodeRepository.createNode('language');
+        for (const [key, value] of Object.entries({ name: lang })) {
+          const property_key_id =
+            await this.nodePropertyKeyRepository.getNodePropertyKey(
+              langNode.id,
+              key,
+            );
+          if (property_key_id) {
+            await this.nodePropertyValueRepository.setNodePropertyValue(
+              property_key_id,
+              value,
+            );
+          }
+        }
+      }
+    } catch (error) {
+      console.error('failed to seed languages::', error);
+      throw new Error('failed to seed languages');
+    }
   }
 }

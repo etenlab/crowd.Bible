@@ -1,9 +1,16 @@
+import { FindOptionsWhere, In } from 'typeorm';
+
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 import { NodeRepository } from '@/repositories/node/node.repository';
 
 import { type Node } from '@/models/node/node.entity';
 import { type Relationship } from '@/models/relationship/relationship.entity';
+
+import { NodeTypeConst } from '../constants/node-type.constant';
+import { MapDto } from '../dtos/map.dto';
+import { LanguageDto } from '../dtos/lang.dto';
+import { MapMapper } from '../mappers/map.mapper';
 
 export class GraphThirdLayerService {
   constructor(
@@ -44,8 +51,12 @@ export class GraphThirdLayerService {
   }
 
   // --------- Word --------- //
-  async createWord(word: string, language: Nanoid): Promise<Nanoid> {
-    const word_id = await this.getWord(word, language);
+  async createWord(
+    word: string,
+    langId: Nanoid,
+    mapId?: Nanoid,
+  ): Promise<Nanoid> {
+    const word_id = await this.getWord(word, langId);
 
     if (word_id) {
       return word_id;
@@ -53,11 +64,21 @@ export class GraphThirdLayerService {
 
     const { node } =
       await this.secondLayerService.createRelatedFromNodeFromObject(
-        'word',
+        NodeTypeConst.WORD_TO_LANG,
+        {},
+        NodeTypeConst.WORD,
         { name: word },
-        'word-to-language-entry',
-        language,
+        langId,
       );
+
+    if (mapId) {
+      await this.secondLayerService.createRelationshipFromObject(
+        NodeTypeConst.WORD_MAP,
+        {},
+        node.id,
+        mapId,
+      );
+    }
 
     return node.id;
   }
@@ -79,6 +100,54 @@ export class GraphThirdLayerService {
     }
 
     return wordNode.id;
+  }
+
+  async getWords(
+    relQuery?:
+      | FindOptionsWhere<Relationship>
+      | FindOptionsWhere<Relationship>[],
+    additionalRelations: string[] = [],
+  ): Promise<Node[]> {
+    const wordNodes = await this.nodeRepo.repository.find({
+      relations: [
+        'propertyKeys',
+        'propertyKeys.propertyValue',
+        'nodeRelationships',
+        ...additionalRelations,
+      ],
+      where: {
+        node_type: 'word',
+        nodeRelationships: relQuery,
+      },
+    });
+
+    return wordNodes;
+  }
+
+  async getMapWords(mapId: Nanoid) {
+    return this.getWords({
+      to_node_id: mapId,
+      relationship_type: NodeTypeConst.WORD_MAP,
+    });
+  }
+
+  async getUnTranslatedWords(langId: Nanoid) {
+    // console.log('getUnTranslatedWords', langId);
+    return this.getWords(
+      [
+        {
+          relationship_type: In([NodeTypeConst.WORD_MAP]),
+        },
+      ],
+      [
+        'nodeRelationships.fromNode',
+        'nodeRelationships.fromNode.nodeRelationships',
+        'nodeRelationships.fromNode.nodeRelationships.toNode',
+        'nodeRelationships.fromNode.nodeRelationships.toNode.propertyKeys',
+        'nodeRelationships.fromNode.nodeRelationships.toNode.propertyKeys.propertyValue',
+        'nodeRelationships.fromNode.nodeRelationships.toNode.nodeRelationships',
+      ],
+    );
   }
 
   // --------- Word-Translation --------- //
@@ -219,7 +288,6 @@ export class GraphThirdLayerService {
   }
 
   // --------- Word-Sequence-Translation --------- //
-
   async createWordSequenceTranslationRelationship(
     from: Nanoid,
     to: Nanoid,
@@ -243,6 +311,123 @@ export class GraphThirdLayerService {
       );
 
     return new_translation.id;
+  }
+
+  // --------- region language node --------- //
+  async createLanguage(language: Nanoid): Promise<Nanoid> {
+    const lang_id = await this.getLanguage(language);
+
+    if (lang_id) {
+      return lang_id;
+    }
+
+    const node = await this.secondLayerService.createNodeFromObject(
+      NodeTypeConst.LANGUAGE,
+      {
+        name: language,
+      },
+    );
+
+    return node.id;
+  }
+
+  async getLanguage(language: Nanoid): Promise<Nanoid | null> {
+    const langNode = await this.nodeRepo.repository.findOne({
+      relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+      where: {
+        node_type: 'language',
+        propertyKeys: {
+          property_key: 'name',
+          propertyValue: {
+            property_value: JSON.stringify({ value: language }),
+          },
+        },
+      },
+    });
+
+    if (!langNode) {
+      return null;
+    }
+
+    return langNode.id;
+  }
+
+  async getLanguages(): Promise<LanguageDto[]> {
+    const langNodes = await this.nodeRepo.repository.find({
+      relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+      where: {
+        node_type: 'language',
+      },
+    });
+
+    const dtos: LanguageDto[] = [];
+
+    for (const node of langNodes) {
+      const strJson = node.propertyKeys.at(0)?.propertyValue?.property_value;
+
+      if (strJson) {
+        const valObj = JSON.parse(strJson);
+
+        if (valObj.value) dtos.push({ id: node.id, name: valObj.value });
+      }
+    }
+
+    return dtos;
+  }
+
+  // --------- region map node --------- //
+  async saveMap(
+    langId: Nanoid,
+    mapInfo: {
+      name: string;
+      map: string;
+      ext: string;
+    },
+  ): Promise<Nanoid | null> {
+    const res = await this.secondLayerService.createRelatedFromNodeFromObject(
+      NodeTypeConst.MAP_LANG,
+      {},
+      NodeTypeConst.MAP,
+      mapInfo,
+      langId,
+    );
+    return res.node.id;
+  }
+
+  async getMap(mapId: Nanoid): Promise<MapDto | null> {
+    const langNode = await this.nodeRepo.repository.findOne({
+      relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+      where: {
+        id: mapId,
+        node_type: NodeTypeConst.MAP,
+      },
+    });
+
+    if (!langNode) {
+      return null;
+    }
+
+    return MapMapper.entityToDto(langNode);
+  }
+
+  async getMaps(langId?: Nanoid) {
+    const mapNodes = await this.nodeRepo.repository.find({
+      relations: [
+        'propertyKeys',
+        'propertyKeys.propertyValue',
+        'nodeRelationships',
+      ],
+      where: {
+        node_type: NodeTypeConst.MAP,
+        nodeRelationships: {
+          relationship_type: NodeTypeConst.MAP_LANG,
+          to_node_id: langId,
+        },
+      },
+    });
+
+    const dtos = mapNodes.map((node) => MapMapper.entityToDto(node));
+    return dtos;
   }
 }
 

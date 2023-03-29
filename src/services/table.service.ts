@@ -45,9 +45,10 @@ export class TableService {
 
     const { node } =
       await this.secondLayerService.createRelatedToNodeFromObject(
+        'table-to-column',
+        {},
         table,
         'table-column',
-        'table-to-column',
         { name: column_name },
       );
 
@@ -85,9 +86,10 @@ export class TableService {
   async createRow(table: Nanoid): Promise<Nanoid> {
     const { node } =
       await this.secondLayerService.createRelatedToNodeFromObject(
+        'table-to-row',
+        {},
         table,
         'table-row',
-        'table-to-row',
         {},
       );
     return node.id;
