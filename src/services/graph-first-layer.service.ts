@@ -38,13 +38,13 @@ export class GraphFirstLayerService {
     return this.nodeTypeRepo.listNodeTypes();
   }
 
-  async createNode(type_name: string): Promise<Node> {
-    return this.nodeRepo.createNode(type_name);
-  }
-
   // node
   async listAllNodesByType(type_name: string): Promise<Node[]> {
     return this.nodeRepo.listAllNodesByType(type_name);
+  }
+
+  async createNode(type_name: string): Promise<Node> {
+    return this.nodeRepo.createNode(type_name);
   }
 
   async readNode(
@@ -98,11 +98,15 @@ export class GraphFirstLayerService {
 
   // relationship
   async createRelationship(
-    node_1: Nanoid,
-    node_2: Nanoid,
+    from_node_id: Nanoid,
+    to_node_id: Nanoid,
     type_name: string,
   ): Promise<Relationship> {
-    return this.relationshipRepo.createRelationship(node_1, node_2, type_name);
+    return this.relationshipRepo.createRelationship(
+      from_node_id,
+      to_node_id,
+      type_name,
+    );
   }
 
   async findRelationship(

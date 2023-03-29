@@ -107,7 +107,7 @@ export class TableService {
 
   async createCell(
     column: Nanoid,
-    row: string,
+    row: Nanoid,
     value: unknown,
   ): Promise<Nanoid> {
     const cell = await this.secondLayerService.createNodeFromObject(

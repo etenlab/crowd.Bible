@@ -18,7 +18,7 @@ export class VotingService {
     const elections = await this.listElections(tableName, rowId);
 
     if (elections && elections.length > 0) {
-      throw new Error('Already exists the same election!');
+      return elections[0];
     }
 
     const electionNode = await this.secondLayerService.createNodeFromObject(
@@ -107,7 +107,7 @@ export class VotingService {
     );
 
     if (nodes && nodes.length > 0) {
-      throw new Error('Already exists the ballot-entry at this election');
+      return nodes[0];
     }
 
     const { node } =
