@@ -3,27 +3,19 @@ import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent } from '@ionic/react';
 import { useEffect, useState } from 'react';
+import { LanguageDto } from '../../dtos/lang.dto';
 import useDefinitionService from '../../hooks/useDefinitionService';
+import useNodeServices from '../../hooks/useNodeServices';
+import { FiltersAndSearch } from '../../local-ui-kit/FiltersAndSearch';
+import { VotableContent, VotableItem } from '../../services/definition.service';
 const { Box, Divider } = MuiMaterial;
 
 const {
   TitleWithIcon,
-  FiltersAndSearch,
   ItemsClickableList,
   SimpleFormDialog,
   ItemContentListEdit,
 } = CrowdBibleUI;
-
-type Content = {
-  content: string;
-  upVote: number;
-  downVote: number;
-};
-
-type Item = {
-  title: Content;
-  contents: Content[];
-};
 
 type TUpOrDownVote = 'upVote' | 'downVote';
 
@@ -33,7 +25,8 @@ type SetWordVotesParams = {
 };
 
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
-const MOCK_DICTIONARY: Array<Item> = [
+
+const MOCK_VOTABLE_CONTENT_SAMPLE: Array<VotableItem> = [
   {
     title: {
       content: 'Word1',
@@ -87,14 +80,42 @@ const MOCK_DICTIONARY: Array<Item> = [
 const PADDING = 20;
 
 export function DictionaryPageV2() {
-  const [words, setWords] = useState([] as Array<Item>);
-  const [selectedWord, setSelectedWord] = useState(null as unknown as Item);
+  const [selectedWord, setSelectedWord] = useState<VotableItem | null>(null);
   const [isDialogOpened, setIsDialogOpened] = useState(false);
+  const nodeService = useNodeServices();
   const definitionService = useDefinitionService();
+  const [words, setWords] = useState<VotableItem[]>([]);
+
+  const [selectedLanguageId, setSelectedLanguageId] = useState<
+    string | null | undefined
+  >(null);
+  const [langs, setLangs] = useState<LanguageDto[]>([]);
+
+  const handleSelectLanguage = (value: string): void => {
+    const id = langs.find((l) => l.name === value)?.id;
+    setSelectedLanguageId(id);
+  };
 
   useEffect(() => {
-    setWords(MOCK_DICTIONARY);
-  }, []);
+    const loadLanguages = async () => {
+      if (!nodeService) return;
+      const langDtos = await nodeService.getLanguages();
+      setLangs(langDtos);
+    };
+    loadLanguages();
+  }, [nodeService]);
+
+  useEffect(() => {
+    if (!definitionService) return;
+    if (!selectedLanguageId) return;
+    const loadWords = async () => {
+      const words: VotableItem[] =
+        await definitionService.getWordsAsVotableItems(selectedLanguageId);
+      setWords(words);
+    };
+
+    loadWords();
+  }, [definitionService, selectedLanguageId]);
 
   const changeWordVotes = ({ titleContent, upOrDown }: SetWordVotesParams) => {
     const wordIdx = words.findIndex((w) => w.title.content === titleContent);
@@ -120,7 +141,7 @@ export function DictionaryPageV2() {
   }: {
     itemTitleContent: string;
     contentIndex: number;
-    newContent: Content;
+    newContent: VotableContent;
   }) => {
     const itemIdx = words.findIndex(
       (w) => w.title.content === itemTitleContent,
@@ -136,7 +157,7 @@ export function DictionaryPageV2() {
     newContent: newDefinition, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
   }: {
     itemTitleContent: string;
-    newContent: Content;
+    newContent: VotableContent;
   }) => {
     // local state for testing
     const itemIdx = words.findIndex(
@@ -189,8 +210,9 @@ export function DictionaryPageV2() {
 
           <FiltersAndSearch
             ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
+            languageOptions={langs.map((l) => l.name)}
             setEthnologue={() => console.log('setEthnologue!')}
-            setLanguage={(l: string) => console.log('setLanguage! ' + l)}
+            setLanguage={handleSelectLanguage}
             setSearch={(s: string) => console.log('setSearch' + s)}
           />
           <Box display={'flex'} flexDirection="column" width={1}>
@@ -252,7 +274,7 @@ export function DictionaryPageV2() {
         >
           <ItemContentListEdit
             item={selectedWord}
-            onBack={() => setSelectedWord(null as unknown as Item)}
+            onBack={() => setSelectedWord(null as unknown as VotableItem)}
             buttonText="New Definition"
             changeContent={changeItemContent}
             addContent={addDefinition}

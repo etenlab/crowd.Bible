@@ -6,4 +6,6 @@ export class NodeTypeConst {
   static readonly WORD_TO_TRANSLATION = 'word-to-translation';
   static readonly WORD_MAP = 'word-map';
   static readonly MAP_LANG = 'map-language';
+  static readonly DEFINITION = 'definition';
+  static readonly WORD_TO_DEFINITION = 'word-to-definition';
 }

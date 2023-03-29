@@ -12,6 +12,7 @@ import { NodeType } from './node-type.entity';
 import { NodePropertyKey } from './node-property-key.entity';
 import { Relationship } from '../relationship/relationship.entity';
 import { Syncable } from '../Syncable';
+import { NodeTypeConst } from '../../constants/node-type.constant';
 
 @Entity()
 export class Node extends Syncable {
@@ -31,7 +32,7 @@ export class Node extends Syncable {
   nodeType!: NodeType;
 
   @Column('varchar')
-  node_type!: string;
+  node_type!: NodeTypeConst;
 
   @OneToMany(
     () => NodePropertyKey,

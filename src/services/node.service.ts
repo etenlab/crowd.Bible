@@ -175,6 +175,25 @@ export class NodeService {
     }
   }
 
+  /**
+   * Finds Nodes' property with given name and returns its value
+   * @param node <Node> instance of Node with preloaded realtions node.propertyKeys and node.poropertyKeys[].propertyValue
+   * @param propertyName <string> property name to find
+   * @returns <any> property value
+   */
+  getNodePropertyValue(node: Node, propertyName: string): any {
+    if (!node.propertyKeys?.length || node.propertyKeys?.length < 1) {
+      return null;
+    }
+    const propertyIdx = node.propertyKeys.findIndex(
+      (pk) => pk.property_key === propertyName,
+    );
+
+    const resJson = node.propertyKeys[propertyIdx].propertyValue.property_value;
+    const res = JSON.parse(resJson).value;
+    return res;
+  }
+
   // Layer 3
 
   // --------- Table --------- //
@@ -499,8 +518,22 @@ export class NodeService {
       | FindOptionsWhere<Relationship>[],
     additionalRelations: string[] = [],
   ): Promise<Node[]> {
+    return this.getNodesOfType(
+      NodeTypeConst.WORD,
+      relQuery,
+      additionalRelations,
+    );
+  }
+
+  async getNodesOfType(
+    type: NodeTypeConst,
+    relQuery?:
+      | FindOptionsWhere<Relationship>
+      | FindOptionsWhere<Relationship>[],
+    additionalRelations: string[] = [],
+  ): Promise<Node[]> {
     try {
-      const wordNodes = await this.nodeRepo.repository.find({
+      const foundNodes = await this.nodeRepo.repository.find({
         relations: [
           'propertyKeys',
           'propertyKeys.propertyValue',
@@ -508,14 +541,14 @@ export class NodeService {
           ...additionalRelations,
         ],
         where: {
-          node_type: 'word',
+          node_type: type,
           nodeRelationships: relQuery,
         },
       });
-      return wordNodes;
+      return foundNodes;
     } catch (err) {
       console.error(err);
-      throw new Error(`Failed to get words`);
+      throw new Error(`Failed to get nodes by type ${type}`);
     }
   }
 
