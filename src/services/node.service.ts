@@ -6,6 +6,11 @@ import { RelationshipPropertyValueRepository } from '@/repositories/relationship
 import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
 import { type Node } from '@/models/node/node.entity';
 import { type Relationship } from '@/models/relationship/relationship.entity';
+import { NodeTypeConst } from '../constants/node-type.constant';
+import { MapDto } from '../dtos/map.dto';
+import { LanguageDto } from '../dtos/lang.dto';
+import { MapMapper } from '../mappers/map.mapper';
+import { FindOptionsWhere, In } from 'typeorm';
 
 export class NodeService {
   constructor(
@@ -419,24 +424,39 @@ export class NodeService {
 
   // --------- Word --------- //
 
-  async createWord(word: string, language: string): Promise<string> {
+  async createWord(
+    word: string,
+    langId: string,
+    mapId?: string,
+  ): Promise<string> {
     try {
-      const word_id = await this.getWord(word, language);
+      const word_id = await this.getWord(word, langId);
       if (word_id) {
         return word_id;
       }
 
       const { node } = await this.createRelatedFromNodeFromObject(
-        language,
-        'word',
-        'word-to-language-entry',
-        {},
+        langId,
+        NodeTypeConst.WORD,
+        NodeTypeConst.WORD_TO_LANG,
+        { name: word },
       );
+
+      if (node.id && mapId) {
+        this.createRelationshipFromObject(
+          NodeTypeConst.WORD_MAP,
+          {},
+          node.id,
+          mapId,
+        ).then((res) => {
+          console.log('WORD_TO_MAP', res);
+        });
+      }
 
       return node.id;
     } catch (err) {
       console.error(err);
-      throw new Error(`Failed to create new word '${word} - ${language}'`);
+      throw new Error(`Failed to create new word '${word} - ${langId}'`);
     }
   }
 
@@ -471,6 +491,58 @@ export class NodeService {
       console.error(err);
       throw new Error(`Failed to get word '${word} - ${language}'`);
     }
+  }
+
+  async getWords(
+    relQuery?:
+      | FindOptionsWhere<Relationship>
+      | FindOptionsWhere<Relationship>[],
+    additionalRelations: string[] = [],
+  ): Promise<Node[]> {
+    try {
+      const wordNodes = await this.nodeRepo.repository.find({
+        relations: [
+          'propertyKeys',
+          'propertyKeys.propertyValue',
+          'nodeRelationships',
+          ...additionalRelations,
+        ],
+        where: {
+          node_type: 'word',
+          nodeRelationships: relQuery,
+        },
+      });
+      return wordNodes;
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to get words`);
+    }
+  }
+
+  async getMapWords(mapId: string) {
+    return this.getWords({
+      to_node_id: mapId,
+      relationship_type: NodeTypeConst.WORD_MAP,
+    });
+  }
+
+  async getUnTranslatedWords(langId: string) {
+    console.log('getUnTranslatedWords', langId);
+    return this.getWords(
+      [
+        {
+          relationship_type: In([NodeTypeConst.WORD_MAP]),
+        },
+      ],
+      [
+        'nodeRelationships.fromNode',
+        'nodeRelationships.fromNode.nodeRelationships',
+        'nodeRelationships.fromNode.nodeRelationships.toNode',
+        'nodeRelationships.fromNode.nodeRelationships.toNode.propertyKeys',
+        'nodeRelationships.fromNode.nodeRelationships.toNode.propertyKeys.propertyValue',
+        'nodeRelationships.fromNode.nodeRelationships.toNode.nodeRelationships',
+      ],
+    );
   }
 
   // --------- Word-Translation --------- //
@@ -648,6 +720,141 @@ export class NodeService {
       );
     }
   }
+
+  //#region language node
+  async createLanguage(language: string): Promise<string> {
+    try {
+      const lang_id = await this.getLanguage(language);
+      if (lang_id) {
+        return lang_id;
+      }
+
+      const node = await this.createNodeFromObject(NodeTypeConst.LANGUAGE, {
+        name: language,
+      });
+
+      return node.id;
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to create new language '${language}'`);
+    }
+  }
+  async getLanguage(language: string): Promise<string | null> {
+    try {
+      const langNode = await this.nodeRepo.repository.findOne({
+        relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+        where: {
+          node_type: 'language',
+          propertyKeys: {
+            property_key: 'name',
+            propertyValue: {
+              property_value: JSON.stringify({ value: language }),
+            },
+          },
+        },
+      });
+
+      if (!langNode) {
+        return null;
+      }
+
+      return langNode.id;
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to get language '${language}'`);
+    }
+  }
+  async getLanguages(): Promise<LanguageDto[]> {
+    try {
+      const langNodes = await this.nodeRepo.repository.find({
+        relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+        where: {
+          node_type: 'language',
+        },
+      });
+      const dtos: LanguageDto[] = [];
+      for (const node of langNodes) {
+        const strJson = node.propertyKeys.at(0)?.propertyValue?.property_value;
+        if (strJson) {
+          const valObj = JSON.parse(strJson);
+          if (valObj.value) dtos.push({ id: node.id, name: valObj.value });
+        }
+      }
+      return dtos;
+    } catch (err) {
+      console.error('failed to get language list::', err);
+      return [];
+    }
+  }
+  //#endregion
+
+  //#region map node
+  async saveMap(
+    langId: string,
+    mapInfo: {
+      name: string;
+      map: string;
+      ext: string;
+    },
+  ): Promise<string | null> {
+    try {
+      const res = await this.createRelatedFromNodeFromObject(
+        langId,
+        NodeTypeConst.MAP,
+        NodeTypeConst.MAP_LANG,
+        mapInfo,
+      );
+      return res.node.id;
+    } catch (error) {
+      console.error('failed to save map::', error);
+      return null;
+    }
+  }
+  async getMap(mapId: string): Promise<MapDto | null> {
+    try {
+      const langNode = await this.nodeRepo.repository.findOne({
+        relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+        where: {
+          id: mapId,
+          node_type: NodeTypeConst.MAP,
+        },
+      });
+
+      if (!langNode) {
+        return null;
+      }
+
+      return MapMapper.entityToDto(langNode);
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to get map detail '${mapId}'`);
+    }
+  }
+  async getMaps(langId?: string) {
+    try {
+      const mapNodes = await this.nodeRepo.repository.find({
+        relations: [
+          'propertyKeys',
+          'propertyKeys.propertyValue',
+          'nodeRelationships',
+        ],
+        where: {
+          node_type: NodeTypeConst.MAP,
+          nodeRelationships: {
+            relationship_type: NodeTypeConst.MAP_LANG,
+            to_node_id: langId,
+          },
+        },
+      });
+
+      const dtos = mapNodes.map((node) => MapMapper.entityToDto(node));
+      return dtos;
+    } catch (error) {
+      console.error('failed to get maps::', error);
+      return [];
+    }
+  }
+  //#endregion
 }
 
 interface Document {

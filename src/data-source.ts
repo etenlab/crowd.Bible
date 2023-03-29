@@ -51,7 +51,7 @@ const options: SqljsConnectionOptions = {
   type: 'sqljs',
   autoSave: true,
   useLocalForage: true,
-  logging: false,
+  logging: ['error', 'query', 'schema'],
   synchronize: true,
   migrationsRun: true,
   entities: [
