@@ -1,4 +1,4 @@
-import { NodeService } from './node.service';
+import { GraphSecondLayerService } from './graph-second-layer.service';
 import { InferType, object, Schema, string } from 'yup';
 import { NodeRepository } from '@/repositories/node/node.repository';
 import { baseSchema, BaseType, CRUDService } from './crud-service';
@@ -54,7 +54,7 @@ const wordFormSchema = baseSchema.concat(
 );
 export type WordForm = InferType<typeof wordFormSchema>;
 
-export default class LexiconService {
+export class LexiconService {
   public readonly lexica: CRUDService<Lexicon>;
   public readonly lexicalCategories: CRUDService<LexicalCategory>;
   public readonly grammaticalCategories: CRUDService<GrammaticalCategory>;
@@ -62,11 +62,14 @@ export default class LexiconService {
   public readonly lexemes: CRUDService<Lexeme>;
   public readonly wordForms: CRUDService<WordForm>;
 
-  constructor(nodeService: NodeService, nodeRepo: NodeRepository) {
+  constructor(
+    secondLayerService: GraphSecondLayerService,
+    nodeRepo: NodeRepository,
+  ) {
     const service = <T extends BaseType>(
       model: LexiconNodeType,
       schema: Schema<T>,
-    ) => new CRUDService(model, schema, nodeService, nodeRepo);
+    ) => new CRUDService(model, schema, secondLayerService, nodeRepo);
     this.lexica = service(LexiconNodeType.Lexicon, lexiconSchema);
     this.lexicalCategories = service(
       LexiconNodeType.LexicalCategory,

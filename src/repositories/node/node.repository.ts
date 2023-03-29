@@ -54,10 +54,32 @@ export class NodeRepository {
     return nodes;
   }
 
-  async readNode(node_id: Nanoid): Promise<Node | null> {
-    const node = await this.repository.findOneBy({ id: node_id });
-
-    return node;
+  async readNode(
+    node_id: Nanoid,
+    relations?: string[],
+    whereObj?: FindOptionsWhere<Node>,
+  ): Promise<Node | null> {
+    if (relations) {
+      if (whereObj) {
+        return this.repository.findOne({
+          relations,
+          where: whereObj,
+        });
+      } else {
+        return this.repository.findOne({
+          relations,
+          where: {
+            id: node_id,
+          },
+        });
+      }
+    } else {
+      return this.repository.findOne({
+        where: {
+          id: node_id,
+        },
+      });
+    }
   }
 
   async getNodeByProp(

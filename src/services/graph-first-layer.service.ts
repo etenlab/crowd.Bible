@@ -1,3 +1,5 @@
+import { FindOptionsWhere } from 'typeorm';
+
 import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
 import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
 import { NodeRepository } from '@/repositories/node/node.repository';
@@ -45,8 +47,12 @@ export class GraphFirstLayerService {
     return this.nodeRepo.listAllNodesByType(type_name);
   }
 
-  async readNode(node_id: Nanoid): Promise<Node | null> {
-    return this.nodeRepo.readNode(node_id);
+  async readNode(
+    node_id: Nanoid,
+    relations?: string[],
+    whereObj?: FindOptionsWhere<Node>,
+  ): Promise<Node | null> {
+    return this.nodeRepo.readNode(node_id, relations, whereObj);
   }
 
   async getNodeByProp(

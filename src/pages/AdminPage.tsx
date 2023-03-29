@@ -11,13 +11,13 @@ import {
   IonToast,
 } from '@ionic/react';
 
-import useNodeServices from '@/hooks/useNodeServices';
+import { useSingletons } from '@/hooks/useSingletons';
 
 import txtfile from '@/utils/iso-639-3.tab';
 import { LoadingStatus } from '../enums';
 
 export function AdminPage() {
-  const nodeService = useNodeServices();
+  const singletons = useSingletons();
 
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>(
     LoadingStatus.INITIAL,
@@ -30,10 +30,10 @@ export function AdminPage() {
     try {
       const res = await fetch(txtfile);
       const data = await res.text();
-      if (!nodeService) {
+      if (!singletons) {
         return;
       }
-      const table = await nodeService.createTable('iso-639-3.tab');
+      const table = await singletons.tableService.createTable('iso-639-3.tab');
 
       const rows = data.split('\r\n');
       const columns = rows.shift()?.split('\t');
@@ -44,16 +44,16 @@ export function AdminPage() {
       const col_ids = [],
         row_ids = [];
       for (const col of columns) {
-        col_ids.push(await nodeService.createColumn(table, col));
+        col_ids.push(await singletons.tableService.createColumn(table, col));
       }
       console.log(col_ids);
 
       for (const row of rows) {
-        const row_id = await nodeService.createRow(table);
+        const row_id = await singletons.tableService.createRow(table);
         row_ids.push(row_id);
         const cells = row.split('\t');
         for (const [index, col_id] of col_ids.entries()) {
-          const cell_id = await nodeService.createCell(
+          const cell_id = await singletons.tableService.createCell(
             col_id,
             row_id,
             cells[index],

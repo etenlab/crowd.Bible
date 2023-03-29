@@ -13,7 +13,7 @@ export class RelationshipPropertyKeyRepository {
     return this.dbService.dataSource.getRepository(RelationshipPropertyKey);
   }
 
-  async createRelationshipPropertyKey(
+  private async createRelationshipPropertyKey(
     rel_id: Nanoid,
     key_name: string,
   ): Promise<Nanoid> {

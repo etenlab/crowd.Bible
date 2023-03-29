@@ -41,24 +41,23 @@ export class SeedService {
       relationshipType,
     );
 
-    const nodePropKey =
-      await this.nodePropertyKeyRepository.createNodePropertyKey(
-        node1.id,
-        Math.random().toString(36).substring(2, 10),
-      );
+    const nodePropKey = await this.nodePropertyKeyRepository.getNodePropertyKey(
+      node1.id,
+      Math.random().toString(36).substring(2, 10),
+    );
 
-    await this.nodePropertyValueRepository.createNodePropertyValue(
-      nodePropKey!,
+    await this.nodePropertyValueRepository.setNodePropertyValue(
+      nodePropKey,
       Math.random().toString(36).substring(2, 10),
     );
 
     const relationshipPropKey =
-      await this.relationshipPropertyKeyRepository.createRelationshipPropertyKey(
+      await this.relationshipPropertyKeyRepository.getRelationshipPropertyKey(
         relationship!.id,
         Math.random().toString(36).substring(2, 10),
       );
 
-    await this.relationshipPropertyValueRepository.createRelationshipPropertyValue(
+    await this.relationshipPropertyValueRepository.setRelationshipPropertyValue(
       relationshipPropKey!,
       Math.random().toString(36).substring(2, 10),
     );

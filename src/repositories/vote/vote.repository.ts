@@ -78,7 +78,7 @@ export class VoteRepository {
   }
 
   //TODO: define VoteStat
-  async getVotesStats(ballot_entry_id: NanoidType): Promise<VotesStatsRow> {
+  async getVotesStats(ballot_entry_id: Nanoid): Promise<VotesStatsRow> {
     const result: VotesStatsRow[] = await this.repository.query(`
     SELECT 
       v.ballot_entry_id, 

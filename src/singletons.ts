@@ -12,17 +12,27 @@ import { SyncSessionRepository } from '@/repositories/sync-session.repository';
 import { VoteRepository } from '@/repositories/vote/vote.repository';
 
 import { DbService } from '@/services/db.service';
-import LexiconService from '@/services/lexicon.service';
-import { NodeService } from '@/services/node.service';
 import { SeedService } from '@/services/seed.service';
 import { SyncService } from '@/services/sync.service';
+
+import { GraphFirstLayerService } from '@/services/graph-first-layer.service';
+import { GraphSecondLayerService } from '@/src/services/graph-second-layer.service';
+import { GraphThirdLayerService } from './services/graph-third-layer.service';
+import { TableService } from '@/services/table.service';
+import { VotingService } from '@/services/voting.service';
+import { LexiconService } from '@/services/lexicon.service';
 
 export interface ISingletons {
   dbService: DbService;
   syncService: SyncService;
-  nodeService: NodeService;
-  lexiconService: LexiconService;
   seedService: SeedService;
+
+  graphFirstLayerService: GraphFirstLayerService;
+  graphSecondLayerService: GraphSecondLayerService;
+  graphThirdLayerService: GraphThirdLayerService;
+  tableService: TableService;
+  votingService: VotingService;
+  lexiconService: LexiconService;
 
   nodeRepo: NodeRepository;
   nodeTypeRepo: NodeTypeRepository;
@@ -69,16 +79,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   );
   const voteRepo = new VoteRepository(dbService, syncService);
 
-  const nodeService = new NodeService(
-    nodeRepo,
-    nodePropertyKeyRepo,
-    nodePropertyValueRepo,
-    relationshipRepo,
-    relationshipPropertyKeyRepo,
-    relationshipPropertyValueRepo,
-    voteRepo,
-  );
-
   const seedService = new SeedService(
     nodeRepo,
     nodeTypeRepo,
@@ -90,14 +90,52 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipPropertyValueRepo,
   );
 
-  const lexiconService = new LexiconService(nodeService, nodeRepo);
+  const graphFirstLayerService = new GraphFirstLayerService(
+    nodeTypeRepo,
+    nodeRepo,
+    nodePropertyKeyRepo,
+    nodePropertyValueRepo,
+    relationshipTypeRepo,
+    relationshipRepo,
+    relationshipPropertyKeyRepo,
+    relationshipPropertyValueRepo,
+  );
+
+  const graphSecondLayerService = new GraphSecondLayerService(
+    graphFirstLayerService,
+  );
+
+  const graphThirdLayerService = new GraphThirdLayerService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+    nodeRepo,
+  );
+
+  const tableService = new TableService(
+    graphSecondLayerService,
+    nodeRepo,
+    nodePropertyValueRepo,
+  );
+
+  const votingService = new VotingService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+    voteRepo,
+  );
+
+  const lexiconService = new LexiconService(graphSecondLayerService, nodeRepo);
 
   return {
     dbService,
     syncService,
-    nodeService,
-    lexiconService,
     seedService,
+
+    graphFirstLayerService,
+    graphSecondLayerService,
+    graphThirdLayerService,
+    tableService,
+    votingService,
+    lexiconService,
 
     nodeRepo,
     nodeTypeRepo,
