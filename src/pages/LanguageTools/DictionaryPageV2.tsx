@@ -2,19 +2,20 @@ import { MuiMaterial } from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent } from '@ionic/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { LanguageDto } from '../../dtos/lang.dto';
-import useDefinitionService from '../../hooks/useDefinitionService';
-import useNodeServices from '../../hooks/useNodeServices';
+import { useDefinitionService } from '../../hooks/useDefinitionService';
 import { FiltersAndSearch } from '../../local-ui-kit/FiltersAndSearch';
+import { ItemContentListEdit } from '../../local-ui-kit/ItemContentListEdit';
+import { ItemsClickableList } from '../../local-ui-kit/ItemsClickableList';
 import { VotableContent, VotableItem } from '../../services/definition.service';
 const { Box, Divider } = MuiMaterial;
 
 const {
   TitleWithIcon,
-  ItemsClickableList,
+  // ItemsClickableList,
+  // ItemContentListEdit,
   SimpleFormDialog,
-  ItemContentListEdit,
 } = CrowdBibleUI;
 
 type TUpOrDownVote = 'upVote' | 'downVote';
@@ -26,23 +27,26 @@ type SetWordVotesParams = {
 
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
 
-const MOCK_VOTABLE_CONTENT_SAMPLE: Array<VotableItem> = [
+const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
   {
     title: {
       content: 'Word1',
       downVote: 1,
       upVote: 2,
+      id: '12341234',
     },
     contents: [
       {
         content: 'some content1',
         upVote: 10,
         downVote: 11,
+        id: '12341235',
       },
       {
         content: 'some content11',
         upVote: 10,
         downVote: 11,
+        id: '12341236',
       },
     ],
   },
@@ -51,12 +55,14 @@ const MOCK_VOTABLE_CONTENT_SAMPLE: Array<VotableItem> = [
       content: 'Word2',
       downVote: 21,
       upVote: 22,
+      id: '12341237',
     },
     contents: [
       {
         content: 'some content4',
         upVote: 30,
         downVote: 31,
+        id: '12341238',
       },
     ],
   },
@@ -66,12 +72,14 @@ const MOCK_VOTABLE_CONTENT_SAMPLE: Array<VotableItem> = [
         'title content3 title content3 title content3 title content 3title content3',
       downVote: 31,
       upVote: 32,
+      id: '12341239',
     },
     contents: [
       {
         content: 'some content4',
         upVote: 30,
         downVote: 31,
+        id: '12341240',
       },
     ],
   },
@@ -82,7 +90,6 @@ const PADDING = 20;
 export function DictionaryPageV2() {
   const [selectedWord, setSelectedWord] = useState<VotableItem | null>(null);
   const [isDialogOpened, setIsDialogOpened] = useState(false);
-  const nodeService = useNodeServices();
   const definitionService = useDefinitionService();
   const [words, setWords] = useState<VotableItem[]>([]);
 
@@ -98,12 +105,12 @@ export function DictionaryPageV2() {
 
   useEffect(() => {
     const loadLanguages = async () => {
-      if (!nodeService) return;
-      const langDtos = await nodeService.getLanguages();
+      if (!definitionService) return;
+      const langDtos = await definitionService.getLanguages();
       setLangs(langDtos);
     };
     loadLanguages();
-  }, [nodeService]);
+  }, [definitionService]);
 
   useEffect(() => {
     if (!definitionService) return;
@@ -113,7 +120,6 @@ export function DictionaryPageV2() {
         await definitionService.getWordsAsVotableItems(selectedLanguageId);
       setWords(words);
     };
-
     loadWords();
   }, [definitionService, selectedLanguageId]);
 
@@ -123,62 +129,76 @@ export function DictionaryPageV2() {
     setWords([...words]);
   };
 
-  const addNewWord = (value: string) => {
-    setWords([
-      ...words,
-      {
-        title: { content: value, upVote: 0, downVote: 0 },
-        contents: [],
-      },
-    ]);
-    setIsDialogOpened(false);
-  };
+  const addWord = useCallback(
+    async (word: string) => {
+      if (!definitionService || !selectedLanguageId) {
+        throw new Error(
+          `!definitionService || !selectedLanguageId when addNewWord`,
+        );
+      }
+      const newWordNodeId = await definitionService.createWord(
+        word,
+        selectedLanguageId,
+      );
+      setWords([
+        ...words,
+        {
+          title: {
+            content: word,
+            upVote: 0,
+            downVote: 0,
+            id: newWordNodeId,
+          },
+          contents: [],
+        },
+      ]);
+      setIsDialogOpened(false);
+    },
+    [selectedLanguageId, definitionService, words],
+  );
 
-  const changeItemContent = ({
-    itemTitleContent, // this is title's, content (type string), i.e. value of the title of the word - using here as uniq id
-    contentIndex,
-    newContent, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
-  }: {
-    itemTitleContent: string;
-    contentIndex: number;
-    newContent: VotableContent;
-  }) => {
-    const itemIdx = words.findIndex(
-      (w) => w.title.content === itemTitleContent,
-    );
-
-    words[itemIdx].contents[contentIndex] = newContent;
-
-    setWords([...words]);
-  };
+  const changeDefinition = useCallback(
+    ({
+      contentIndex,
+      newContent,
+    }: {
+      contentIndex: number;
+      newContent: VotableContent;
+    }) => {
+      if (!selectedWord?.title?.id) {
+        throw new Error(`There is no selected word to change definition`);
+      }
+      const wordIdx = words.findIndex(
+        (w) => w.title.id === selectedWord?.title.id,
+      );
+      words[wordIdx].contents[contentIndex] = newContent;
+      setWords([...words]);
+    },
+    [selectedWord?.title.id, words],
+  );
 
   const addDefinition = async ({
-    itemTitleContent, // this is title's, content (type string), i.e. value of the title of the word - using here as uniq id
-    newContent: newDefinition, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
+    newContent,
   }: {
-    itemTitleContent: string;
     newContent: VotableContent;
   }) => {
-    // local state for testing
-    const itemIdx = words.findIndex(
-      (ph) => ph.title.content === itemTitleContent,
-    );
     if (!definitionService) {
-      words[itemIdx].contents.push(newDefinition);
-      setWords(words);
-      alert(
-        'definition service is not ready yet, try in a second (TODO - disable button if not ready )',
-      );
-      return;
+      throw new Error(`!definitionService when addDefinition`);
     }
-
-    //use API to change appropriate node
-
+    if (!selectedWord?.title?.id) {
+      throw new Error(`There is no selected word to add definition`);
+    }
+    const wordNodeId = selectedWord?.title?.id;
     const newDefinitionNodeId = await definitionService.createDefinition(
-      newDefinition.content,
-      'someLangUUIDHere',
+      newContent.content,
+      wordNodeId,
     );
-    console.log('[newDefinitionNodeId]', newDefinitionNodeId);
+    const wordIdx = words.findIndex((word) => word.title.id === wordNodeId);
+    words[wordIdx].contents.push({
+      ...newContent,
+      id: newDefinitionNodeId,
+    });
+    setWords(words);
   };
 
   return (
@@ -261,7 +281,7 @@ export function DictionaryPageV2() {
             title={'Enter new Phrase'}
             isOpened={isDialogOpened}
             handleCancel={() => setIsDialogOpened(false)}
-            handleOk={addNewWord}
+            handleOk={addWord}
           />
         </Box>
       ) : (
@@ -276,7 +296,7 @@ export function DictionaryPageV2() {
             item={selectedWord}
             onBack={() => setSelectedWord(null as unknown as VotableItem)}
             buttonText="New Definition"
-            changeContent={changeItemContent}
+            changeContent={changeDefinition}
             addContent={addDefinition}
           />
         </Box>

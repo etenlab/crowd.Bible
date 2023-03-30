@@ -15,6 +15,7 @@ import { type Node } from '@/models/node/node.entity';
 
 import { RelationshipType } from '@/models/relationship/relationship-type.entity';
 import { type Relationship } from '@/models/relationship/relationship.entity';
+import { NodeTypeConst } from '../constants/graph.constant';
 
 export class GraphFirstLayerService {
   constructor(
@@ -150,4 +151,37 @@ export class GraphFirstLayerService {
       key_value,
     );
   }
+
+  async getNodesOfType(
+    type: NodeTypeConst,
+    relQuery?:
+      | FindOptionsWhere<Relationship>
+      | FindOptionsWhere<Relationship>[],
+    additionalRelations: string[] = [],
+  ): Promise<Node[]> {
+    try {
+      const foundNodes = await this.nodeRepo.repository.find({
+        relations: [
+          'propertyKeys',
+          'propertyKeys.propertyValue',
+          'nodeRelationships',
+          ...additionalRelations,
+        ],
+        where: {
+          node_type: type,
+          nodeRelationships: relQuery,
+        },
+      });
+      return foundNodes;
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to get nodes by type ${type}`);
+    }
+  }
+
+  // async getAllNodesByProp(
+  //   params: IfindOneByPropertyValue,
+  // ): Promise<[Node[], number]> {
+  //   return this.nodeRepo.getAllByProp(params);
+  // }
 }

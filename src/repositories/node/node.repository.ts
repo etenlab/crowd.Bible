@@ -4,14 +4,6 @@ import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
 import { NodeType } from '@/models/index';
 import { Node } from '@/models/node/node.entity';
-import { NodeTypeConst } from '../../constants/node-type.constant';
-import { TNodesKeysConst } from '../../constants/node-property-keys.constant';
-
-export interface IfindOneByPropertyValue {
-  nodeType: NodeTypeConst;
-  prop: { propertyKey: TNodesKeysConst; propertyValue: string };
-  onlyWithRelToNodeId?: TStringUUID;
-}
 
 export class NodeRepository {
   constructor(
@@ -182,38 +174,5 @@ export class NodeRepository {
     }
 
     return nodes.map(({ id }) => id);
-  }
-
-  async getAllByProp({
-    nodeType,
-    prop: { propertyKey, propertyValue },
-    onlyWithRelToNodeId,
-  }: IfindOneByPropertyValue): Promise<[Node[], number]> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const whereClause: any = {
-      node_type: nodeType,
-      propertyKeys: {
-        property_key: propertyKey,
-        propertyValue: {
-          property_value: JSON.stringify({ value: propertyValue }),
-        },
-      },
-    };
-    if (onlyWithRelToNodeId) {
-      whereClause.nodeRelationships = {
-        to_node_id: onlyWithRelToNodeId,
-      };
-    }
-
-    const found = this.repository.findAndCount({
-      relations: [
-        'propertyKeys',
-        'propertyKeys.propertyValue',
-        'nodeRelationships',
-      ],
-      where: whereClause,
-    });
-
-    return found;
   }
 }

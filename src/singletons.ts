@@ -102,7 +102,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
   );
-  const definitionService = new DefinitionService(nodeService, nodeRepo);
 
   const graphSecondLayerService = new GraphSecondLayerService(
     graphFirstLayerService,
@@ -124,6 +123,12 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     graphFirstLayerService,
     graphSecondLayerService,
     voteRepo,
+  );
+
+  const definitionService = new DefinitionService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+    graphThirdLayerService,
   );
 
   const lexiconService = new LexiconService(graphSecondLayerService, nodeRepo);

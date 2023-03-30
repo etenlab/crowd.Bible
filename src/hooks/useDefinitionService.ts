@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import useSingletons from './useSingletons';
 import { DefinitionService } from '@/services/definition.service';
+import { useSingletons } from './useSingletons';
 
-export default function useDefinitionService() {
+export function useDefinitionService() {
   const singletons = useSingletons();
   const [defSrv, setDefinitionService] = useState<DefinitionService>();
 

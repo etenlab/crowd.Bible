@@ -12,7 +12,7 @@ import { NodeType } from './node-type.entity';
 import { NodePropertyKey } from './node-property-key.entity';
 import { Relationship } from '../relationship/relationship.entity';
 import { Syncable } from '../Syncable';
-import { NodeTypeConst } from '../../constants/node-type.constant';
+import { NodeTypeConst } from '../../constants/graph.constant';
 
 @Entity({ name: 'node' })
 export class Node extends Syncable {
