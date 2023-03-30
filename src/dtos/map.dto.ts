@@ -1,4 +1,4 @@
-import { LanguageDto } from './lang.dto';
+import { LanguageDto } from './language.dto';
 import { WordDto } from './word.dto';
 
 export interface MapDto {
@@ -9,5 +9,5 @@ export interface MapDto {
   langId: string;
   lang?: LanguageDto;
   words?: WordDto[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
