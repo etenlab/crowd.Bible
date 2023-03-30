@@ -2,6 +2,7 @@ import { GraphFirstLayerService } from './graph-first-layer.service';
 
 import { type Node } from '@/models/node/node.entity';
 import { type Relationship } from '@/models/relationship/relationship.entity';
+import { PropertyKeyConst } from '../constants/graph.constant';
 
 export class GraphSecondLayerService {
   constructor(private readonly firstLayerService: GraphFirstLayerService) {}
@@ -137,5 +138,19 @@ export class GraphSecondLayerService {
     }
 
     return rel;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getNodePropertyValue(node: Node, propertyName: PropertyKeyConst): any {
+    if (!node.propertyKeys?.length || node.propertyKeys?.length < 1) {
+      return null;
+    }
+    const propertyIdx = node.propertyKeys.findIndex(
+      (pk) => pk.property_key === propertyName,
+    );
+
+    const resJson = node.propertyKeys[propertyIdx].propertyValue.property_value;
+    const res = JSON.parse(resJson).value;
+    return res;
   }
 }

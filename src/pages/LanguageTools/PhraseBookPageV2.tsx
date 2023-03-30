@@ -13,15 +13,16 @@ const {
   ItemContentListEdit,
 } = CrowdBibleUI;
 
-type Content = {
+type VotableContent = {
   content: string;
   upVote: number;
   downVote: number;
+  id: string | null;
 };
 
-type Item = {
-  title: Content;
-  contents: Content[];
+type VotableItem = {
+  title: VotableContent;
+  contents: VotableContent[];
 };
 
 type TUpOrDownVote = 'upVote' | 'downVote';
@@ -31,38 +32,44 @@ type SetPhraseVotesParams = {
   upOrDown: TUpOrDownVote;
 };
 
+const MOCK_LANGUAGE_OPTIONS = ['lang1', 'lang2'];
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
-const MOCK_PHRASES: Array<Item> = [
+const MOCK_PHRASES: Array<VotableItem> = [
   {
     title: {
-      content: 'title content title content title content',
+      content: 'Word1',
       downVote: 1,
       upVote: 2,
+      id: '12341234',
     },
     contents: [
       {
         content: 'some content1',
         upVote: 10,
         downVote: 11,
+        id: '12341235',
       },
       {
         content: 'some content11',
         upVote: 10,
         downVote: 11,
+        id: '12341236',
       },
     ],
   },
   {
     title: {
-      content: 'title content2 title content2 title content2',
+      content: 'Word2',
       downVote: 21,
       upVote: 22,
+      id: '12341237',
     },
     contents: [
       {
         content: 'some content4',
         upVote: 30,
         downVote: 31,
+        id: '12341238',
       },
     ],
   },
@@ -72,12 +79,14 @@ const MOCK_PHRASES: Array<Item> = [
         'title content3 title content3 title content3 title content 3title content3',
       downVote: 31,
       upVote: 32,
+      id: '12341239',
     },
     contents: [
       {
         content: 'some content4',
         upVote: 30,
         downVote: 31,
+        id: '12341240',
       },
     ],
   },
@@ -86,8 +95,10 @@ const MOCK_PHRASES: Array<Item> = [
 const PADDING = 20;
 
 export function PhraseBookPageV2() {
-  const [phrases, setPhrases] = useState([] as Array<Item>);
-  const [selectedPhrase, setSelectedPhrase] = useState(null as unknown as Item);
+  const [phrases, setPhrases] = useState([] as Array<VotableItem>);
+  const [selectedPhrase, setSelectedPhrase] = useState(
+    null as unknown as VotableItem,
+  );
   const [isDialogOpened, setIsDialogOpened] = useState(false);
 
   useEffect(() => {
@@ -109,7 +120,7 @@ export function PhraseBookPageV2() {
     setPhrases([
       ...phrases,
       {
-        title: { content: value, upVote: 0, downVote: 0 },
+        title: { content: value, upVote: 0, downVote: 0, id: null },
         contents: [],
       },
     ]);
@@ -117,33 +128,23 @@ export function PhraseBookPageV2() {
   };
 
   const changePhraseContent = ({
-    itemTitleContent, // this is title's, content (type string), i.e. value of the title of the phrase - using here as uniq id
     contentIndex,
-    newContent, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
+    newContent,
   }: {
-    itemTitleContent: string;
     contentIndex: number;
-    newContent: Content;
+    newContent: VotableContent;
   }) => {
     const phraseIdx = phrases.findIndex(
-      (ph) => ph.title.content === itemTitleContent,
+      (ph) => ph.title.id === selectedPhrase.title.id,
     );
-
-    // const newPhrases = [...phrases];
     phrases[phraseIdx].contents[contentIndex] = newContent;
 
     setPhrases([...phrases]);
   };
 
-  const addPhraseContent = ({
-    itemTitleContent, // this is title's, content (type string), i.e. value of the title of the phrase - using here as uniq id
-    newContent, // this is another content (type Content), i.e. content of the Item. Don't mix up these 'contents'.
-  }: {
-    itemTitleContent: string;
-    newContent: Content;
-  }) => {
+  const addPhraseContent = ({ newContent }: { newContent: VotableContent }) => {
     const phraseIdx = phrases.findIndex(
-      (ph) => ph.title.content === itemTitleContent,
+      (ph) => ph.title.id === selectedPhrase.title.id,
     );
     // const newPhrases = [...phrases];
     phrases[phraseIdx].contents.push(newContent);
@@ -178,6 +179,7 @@ export function PhraseBookPageV2() {
           </Box>
 
           <FiltersAndSearch
+            languageOptions={MOCK_LANGUAGE_OPTIONS}
             ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
             setEthnologue={() => console.log('setEthnologue!')}
             setLanguage={(l: string) => console.log('setLanguage! ' + l)}
@@ -242,7 +244,7 @@ export function PhraseBookPageV2() {
         >
           <ItemContentListEdit
             item={selectedPhrase}
-            onBack={() => setSelectedPhrase(null as unknown as Item)}
+            onBack={() => setSelectedPhrase(null as unknown as VotableItem)}
             buttonText="New Definition"
             changeContent={changePhraseContent}
             addContent={addPhraseContent}
