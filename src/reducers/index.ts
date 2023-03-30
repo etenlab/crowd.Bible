@@ -3,6 +3,11 @@ import {
   initialState as globalInitialState,
   reducer as globalReducer,
 } from './global.reducer';
+import {
+  type StateType as DocumentToolsStateType,
+  initialState as DocumentToolsInitialState,
+  reducer as documentToolsReducer,
+} from './documentTools.reducer';
 
 export interface ActionType<T> {
   type: string;
@@ -11,17 +16,29 @@ export interface ActionType<T> {
 
 export interface StateType {
   global: GlobalStateType;
+  documentTools: DocumentToolsStateType;
 }
 
 export const initialState = {
   global: globalInitialState,
+  documentTools: DocumentToolsInitialState,
 };
 
 const CROWD_BIBLE_STATE = 'CROWD_BIBLE_STATE';
 
 export function persistStore(state: StateType) {
   try {
-    window.localStorage.setItem(CROWD_BIBLE_STATE, JSON.stringify(state));
+    window.localStorage.setItem(
+      CROWD_BIBLE_STATE,
+      JSON.stringify({
+        ...state,
+        global: {
+          ...state.global,
+          singletons: null,
+          loading: false,
+        },
+      }),
+    );
   } catch (err) {
     console.log(err);
   }
@@ -60,6 +77,7 @@ export function reducer(
 
   const newState = {
     global: globalReducer(state.global, action),
+    documentTools: documentToolsReducer(state.documentTools, action),
   };
 
   persistStore(newState);
