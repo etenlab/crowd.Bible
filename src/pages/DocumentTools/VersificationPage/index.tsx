@@ -6,14 +6,10 @@ import {
   useEffect,
   useState,
 } from 'react';
-import axios from 'axios';
 
-import {
-  buildNodesByNodeTypeQuery,
-  buildCreateNodePropertyValueMutation,
-} from './graphql';
 import { BookListPage } from './BookListPage';
 import { BookPage } from './BookPage';
+import { fakeData } from './fakeData';
 import { Bible } from './types';
 
 type VersificationContextType = {
@@ -31,19 +27,13 @@ export function VersificationPage() {
   const [bibles, setBibles] = useState<Bible[]>([]);
 
   const fetchBibles = useCallback(() => {
-    axios
-      .post(process.env.REACT_APP_GRAPHQL_URL!, {
-        query: buildNodesByNodeTypeQuery('bible'),
-      })
-      .then((response) => setBibles(response.data.data.nodesByNodeType));
+    setBibles([fakeData]);
   }, []);
 
   function handleIdentifierAdd(id: number, value: string) {
-    axios
-      .post(process.env.REACT_APP_GRAPHQL_URL!, {
-        query: buildCreateNodePropertyValueMutation(id, value),
-      })
-      .then(() => fetchBibles());
+    alert(
+      `Add chapter or verse identifier "${value}" for node_property_key_id "${id}"`,
+    );
   }
 
   useEffect(() => {
