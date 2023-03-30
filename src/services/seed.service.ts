@@ -62,24 +62,23 @@ export class SeedService {
       relationshipType,
     );
 
-    const nodePropKey =
-      await this.nodePropertyKeyRepository.createNodePropertyKey(
-        node1.id,
-        Math.random().toString(36).substring(2, 10),
-      );
+    const nodePropKey = await this.nodePropertyKeyRepository.getNodePropertyKey(
+      node1.id,
+      Math.random().toString(36).substring(2, 10),
+    );
 
-    await this.nodePropertyValueRepository.createNodePropertyValue(
-      nodePropKey!,
+    await this.nodePropertyValueRepository.setNodePropertyValue(
+      nodePropKey,
       Math.random().toString(36).substring(2, 10),
     );
 
     const relationshipPropKey =
-      await this.relationshipPropertyKeyRepository.createRelationshipPropertyKey(
+      await this.relationshipPropertyKeyRepository.getRelationshipPropertyKey(
         relationship!.id,
         Math.random().toString(36).substring(2, 10),
       );
 
-    await this.relationshipPropertyValueRepository.createRelationshipPropertyValue(
+    await this.relationshipPropertyValueRepository.setRelationshipPropertyValue(
       relationshipPropKey!,
       Math.random().toString(36).substring(2, 10),
     );
@@ -107,12 +106,12 @@ export class SeedService {
         const langNode = await this.nodeRepository.createNode('language');
         for (const [key, value] of Object.entries({ name: lang })) {
           const property_key_id =
-            await this.nodePropertyKeyRepository.createNodePropertyKey(
+            await this.nodePropertyKeyRepository.getNodePropertyKey(
               langNode.id,
               key,
             );
           if (property_key_id) {
-            await this.nodePropertyValueRepository.createNodePropertyValue(
+            await this.nodePropertyValueRepository.setNodePropertyValue(
               property_key_id,
               value,
             );

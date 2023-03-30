@@ -10,7 +10,7 @@ import { nanoid } from 'nanoid';
 import { NodePropertyKey } from './node-property-key.entity';
 import { Syncable } from '../Syncable';
 
-@Entity()
+@Entity({ name: 'node_property_value' })
 export class NodePropertyValue extends Syncable {
   @PrimaryColumn('uuid', { type: 'varchar', length: 21, unique: true })
   id!: string;

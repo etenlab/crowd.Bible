@@ -2,10 +2,10 @@ import { IonContent, useIonAlert } from '@ionic/react';
 import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography, Divider } from '@mui/material';
 import { Button, Input, CrowdBibleUI, Autocomplete } from '@eten-lab/ui-kit';
-import useNodeServices from '@/src/hooks/useNodeServices';
+import { useSingletons } from '@/src/hooks/useSingletons';
 import { LanguageDto } from '@/src/dtos/lang.dto';
 import { WordDto } from '@/src/dtos/word.dto';
-import { NodeTypeConst } from '@/src/constants/node-type.constant';
+import { RelationshipTypeConst } from '@/src/constants/graph.constant';
 
 const { TitleWithIcon } = CrowdBibleUI;
 
@@ -22,7 +22,7 @@ const PADDING = 15;
 
 export const MapStringsListPage = () => {
   const langIdRef = useRef('');
-  const nodeService = useNodeServices();
+  const singletons = useSingletons();
   const [presentAlert] = useIonAlert();
   const [langs, setLangs] = useState<LanguageDto[]>([]);
   const [words, setWords] = useState<Item[]>([]);
@@ -30,12 +30,12 @@ export const MapStringsListPage = () => {
 
   useEffect(() => {
     const loadLanguages = async () => {
-      if (!nodeService) return;
-      const langDtos = await nodeService.getLanguages();
+      if (!singletons) return;
+      const langDtos = await singletons.graphThirdLayerService.getLanguages();
       setLangs(langDtos);
     };
     loadLanguages();
-  }, [nodeService]);
+  }, [singletons]);
 
   // const loadMapStrings = async () => {
   //   if (!nodeService) return;
@@ -54,8 +54,10 @@ export const MapStringsListPage = () => {
   };
 
   const getWordsBasedOnLang = async (langId: string) => {
-    if (!nodeService) return;
-    const res = await nodeService.getUnTranslatedWords(langId);
+    if (!singletons) return;
+    const res = await singletons.graphThirdLayerService.getUnTranslatedWords(
+      langId,
+    );
     console.log('rawNode', res);
     const wordList: Item[] = [];
     for (const node of res) {
@@ -71,12 +73,15 @@ export const MapStringsListPage = () => {
       }
       for (const relNode of node.nodeRelationships?.at(0)?.fromNode
         ?.nodeRelationships || []) {
-        if (relNode.relationship_type === NodeTypeConst.WORD_TO_LANG) {
+        if (relNode.relationship_type === RelationshipTypeConst.WORD_TO_LANG) {
           wordInfo.langId = relNode.to_node_id;
         }
-        if (relNode.relationship_type === NodeTypeConst.WORD_TO_TRANSLATION) {
+        if (
+          relNode.relationship_type ===
+          RelationshipTypeConst.WORD_TO_TRANSLATION
+        ) {
           const translationNode = relNode.toNode.nodeRelationships?.find(
-            (nr) => nr.relationship_type === NodeTypeConst.WORD_TO_LANG,
+            (nr) => nr.relationship_type === RelationshipTypeConst.WORD_TO_LANG,
           );
           if (translationNode) {
             if (translationNode.to_node_id === langIdRef.current) {
@@ -114,12 +119,12 @@ export const MapStringsListPage = () => {
   };
 
   const storeTranslation = async (word: Item) => {
-    if (!nodeService) return;
-    const translatedWordId = await nodeService.createWord(
+    if (!singletons) return;
+    const translatedWordId = await singletons.graphThirdLayerService.createWord(
       word.translation!,
       word.translationLangId!,
     );
-    nodeService
+    singletons.graphThirdLayerService
       .createWordTranslationRelationship(word.id, translatedWordId)
       .then((res) => {
         console.log('word translation created', res);

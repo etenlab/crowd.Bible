@@ -12,7 +12,7 @@ import { Relationship } from './relationship.entity';
 import { RelationshipPropertyValue } from './relationship-property-value.entity';
 import { Syncable } from '../Syncable';
 
-@Entity()
+@Entity({ name: 'relationship_property_key' })
 export class RelationshipPropertyKey extends Syncable {
   @PrimaryColumn('uuid', { type: 'varchar', length: 21, unique: true })
   id!: string;

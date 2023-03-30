@@ -7,6 +7,7 @@ import { Relationship } from './relationship/relationship.entity';
 import { RelationshipType } from './relationship/relationship-type.entity';
 import { RelationshipPropertyKey } from './relationship/relationship-property-key.entity';
 import { RelationshipPropertyValue } from './relationship/relationship-property-value.entity';
+import { Vote } from './vote/vote.entity';
 
 export {
   Node,
@@ -17,4 +18,5 @@ export {
   RelationshipType,
   RelationshipPropertyKey,
   RelationshipPropertyValue,
+  Vote,
 };

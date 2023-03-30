@@ -16,7 +16,7 @@ import {
   BiTrashAlt,
 } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
-import useNodeServices from '@/src/hooks/useNodeServices';
+import { useSingletons } from '@/src/hooks/useSingletons';
 import { LanguageDto } from '@/src/dtos/lang.dto';
 const { TitleWithIcon } = CrowdBibleUI;
 
@@ -51,16 +51,16 @@ export const MapListPage = () => {
   ]);
   const [selectedLang, setSelectedLang] = useState<string>('');
   const [presentAlert] = useIonAlert();
-  const nodeService = useNodeServices();
+  const singletons = useSingletons();
 
   useEffect(() => {
     const loadLanguages = async () => {
-      if (!nodeService) return;
-      const res = await nodeService.getLanguages();
+      if (!singletons) return;
+      const res = await singletons.graphThirdLayerService.getLanguages();
       setLangs(res);
     };
     loadLanguages();
-  }, [nodeService]);
+  }, [singletons]);
 
   useEffect(() => {
     for (const mapState of mapList) {
@@ -70,13 +70,17 @@ export const MapListPage = () => {
           langId: string,
           mapId?: string,
         ) => {
-          if (!nodeService || !words.length || !langId) return;
+          if (!singletons || !words.length || !langId) return;
           const wordsQueue = [];
           for (const word of words) {
             const trimedWord = word.trim();
             if (trimedWord) {
               wordsQueue.push(
-                nodeService.createWord(trimedWord, langId, mapId),
+                singletons.graphThirdLayerService.createWord(
+                  trimedWord,
+                  langId,
+                  mapId,
+                ),
               );
             }
           }
@@ -87,16 +91,19 @@ export const MapListPage = () => {
           console.log('created words::', createdWords);
         };
         const handleMapParsingCompleted = async (argMap: MapDetail) => {
-          if (!nodeService) return;
+          if (!singletons) return;
           const newState: Partial<MapDetail> = {
             status: eProcessStatus.COMPLETED,
           };
           try {
-            const mapId = await nodeService.saveMap(argMap.langId!, {
-              name: argMap.name!,
-              map: argMap.map!,
-              ext: 'svg',
-            });
+            const mapId = await singletons.graphThirdLayerService.saveMap(
+              argMap.langId!,
+              {
+                name: argMap.name!,
+                map: argMap.map!,
+                ext: 'svg',
+              },
+            );
             console.log('map successfully saved:', mapId);
             if (mapId) {
               newState.id = mapId;
@@ -110,7 +117,7 @@ export const MapListPage = () => {
         handleMapParsingCompleted(mapState);
       }
     }
-  }, [mapList, nodeService]);
+  }, [mapList, singletons]);
 
   const showAlert = useCallback(
     (msg: string) => {
@@ -206,8 +213,8 @@ export const MapListPage = () => {
   };
 
   const setMapsByLang = async (langId: string) => {
-    if (!nodeService) return;
-    const res = await nodeService.getMaps(langId);
+    if (!singletons) return;
+    const res = await singletons.graphThirdLayerService.getMaps(langId);
     setMapList(
       res.map(
         (m) =>

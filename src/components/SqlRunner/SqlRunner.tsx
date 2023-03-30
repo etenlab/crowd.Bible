@@ -9,7 +9,7 @@ import React, { ReactNode, useCallback, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
-import useSingletons from '../../hooks/useSingletons';
+import { useSingletons } from '@/hooks/useSingletons';
 import { SqlWindow } from './SqlWindow';
 const { Box, Tabs, Tab, IconButton } = MuiMaterial;
 

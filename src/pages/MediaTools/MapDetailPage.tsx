@@ -4,7 +4,7 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { CrowdBibleUI, Typography } from '@eten-lab/ui-kit';
 import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
-import useNodeServices from '@/src/hooks/useNodeServices';
+import { useSingletons } from '@/src/hooks/useSingletons';
 import { MapDto } from '@/src/dtos/map.dto';
 import { WordMapper } from '@/src/mappers/word.mapper';
 const { TitleWithIcon } = CrowdBibleUI;
@@ -16,7 +16,7 @@ export const MapDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [windowWidth, setWindowWidth] = useState(getWindowWidth());
   const [mapDetail, setMapDetail] = useState<MapDto>();
-  const nodeService = useNodeServices();
+  const singletons = useSingletons();
 
   useEffect(() => {
     if (present) present({ message: 'Loading...', duration: 1000 });
@@ -30,13 +30,13 @@ export const MapDetailPage = () => {
   }, [present]);
 
   useEffect(() => {
-    if (nodeService && id) {
+    if (singletons && id) {
       const getMapDetail = async (id: string) => {
         try {
-          if (!nodeService) return;
+          if (!singletons.graphThirdLayerService) return;
           const [mapRes, mapWordsRes] = await Promise.allSettled([
-            nodeService.getMap(id),
-            nodeService.getMapWords(id),
+            singletons.graphThirdLayerService.getMap(id),
+            singletons.graphThirdLayerService.getMapWords(id),
           ]);
           if (mapRes.status === 'fulfilled' && mapRes.value) {
             setMapDetail({
@@ -56,7 +56,7 @@ export const MapDetailPage = () => {
       };
       getMapDetail(id);
     }
-  }, [nodeService, id, router]);
+  }, [singletons, id, router]);
 
   if (!mapDetail) {
     return <></>;
