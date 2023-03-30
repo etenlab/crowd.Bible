@@ -85,7 +85,7 @@ export class DefinitionService {
     const definitionNodes = await this.graphFirstLayerService.getNodesOfType(
       NodeTypeConst.DEFINITION,
       {
-        to_node_id: wordNodeId,
+        from_node_id: wordNodeId,
         relationship_type: RelationshipTypeConst.WORD_TO_DEFINITION,
       },
     );
@@ -113,6 +113,7 @@ export class DefinitionService {
         content: this.graphSecondLayerService.getNodePropertyValue(w, 'name'),
         upVote: 0, //TODO: 0 is a mocked value, replace it when voting is ready
         downVote: 0, //TODO: 0 is a mocked value, replace it when voting is ready
+        id: w.id,
       } as VotableContent,
       contents: await this.getDefinitionsAsVotableContent(w.id),
     }));

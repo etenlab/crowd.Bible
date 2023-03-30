@@ -278,7 +278,7 @@ export function DictionaryPageV2() {
             ></ItemsClickableList>
           </Box>
           <SimpleFormDialog
-            title={'Enter new Phrase'}
+            title={'Enter new Word'}
             isOpened={isDialogOpened}
             handleCancel={() => setIsDialogOpened(false)}
             handleOk={addWord}
