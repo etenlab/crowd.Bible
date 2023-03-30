@@ -25,6 +25,8 @@ type SetWordVotesParams = {
 
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
 
+// use as sample and for debugging purposes
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
   {
     title: {
