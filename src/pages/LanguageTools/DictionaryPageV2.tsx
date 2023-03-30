@@ -1,7 +1,7 @@
 import { MuiMaterial } from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
-import { IonContent } from '@ionic/react';
+import { IonContent, useIonAlert } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
 import { LanguageDto } from '../../dtos/lang.dto';
 import { useDefinitionService } from '../../hooks/useDefinitionService';
@@ -92,6 +92,7 @@ export function DictionaryPageV2() {
   const [isDialogOpened, setIsDialogOpened] = useState(false);
   const definitionService = useDefinitionService();
   const [words, setWords] = useState<VotableItem[]>([]);
+  const [presentAlert] = useIonAlert();
 
   const [selectedLanguageId, setSelectedLanguageId] = useState<
     string | null | undefined
@@ -201,6 +202,19 @@ export function DictionaryPageV2() {
     setWords(words);
   };
 
+  const handleAddWordButtonClick = useCallback(() => {
+    if (!selectedLanguageId) {
+      presentAlert({
+        header: 'Alert',
+        subHeader: 'No Language selected!',
+        message: 'Before adding a word, select language',
+        buttons: ['Ok'],
+      });
+      return;
+    }
+    setIsDialogOpened(true);
+  }, [presentAlert, selectedLanguageId]);
+
   return (
     <IonContent>
       {!selectedWord ? (
@@ -253,7 +267,7 @@ export function DictionaryPageV2() {
                   variant="contained"
                   startIcon={<FiPlus />}
                   fullWidth
-                  onClick={() => setIsDialogOpened(true)}
+                  onClick={handleAddWordButtonClick}
                 >
                   New Word
                 </Button>

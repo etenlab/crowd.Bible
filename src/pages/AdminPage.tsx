@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import {
   IonButton,
@@ -15,6 +15,7 @@ import { useSingletons } from '@/hooks/useSingletons';
 
 import txtfile from '@/utils/iso-639-3.tab';
 import { LoadingStatus } from '../enums';
+import useSeedService from '../hooks/useSeedService';
 
 export function AdminPage() {
   const singletons = useSingletons();
@@ -24,6 +25,7 @@ export function AdminPage() {
   );
 
   const [loadResult, setLoadResult] = useState('Load finished.');
+  const seedService = useSeedService();
 
   const addNewData = async () => {
     setLoadingStatus(LoadingStatus.LOADING);
@@ -69,6 +71,12 @@ export function AdminPage() {
     }
   };
 
+  const seedData = useCallback(async () => {
+    if (seedService) {
+      await seedService.seedLanguages();
+    }
+  }, [seedService]);
+
   return (
     <IonContent>
       <IonCard>
@@ -77,6 +85,14 @@ export function AdminPage() {
         </IonCardHeader>
         <IonCardContent>
           <IonButton onClick={addNewData}>Load</IonButton>
+        </IonCardContent>
+      </IonCard>
+      <IonCard>
+        <IonCardHeader>
+          <IonCardTitle>Seed some random data</IonCardTitle>
+        </IonCardHeader>
+        <IonCardContent>
+          {seedService && <IonButton onClick={seedData}>Seed</IonButton>}
         </IonCardContent>
       </IonCard>
       <IonLoading
