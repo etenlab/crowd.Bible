@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+
 import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
 import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
 import { NodeTypeRepository } from '@/repositories/node/node-type.repository';
@@ -8,20 +9,32 @@ import { RelationshipPropertyValueRepository } from '@/repositories/relationship
 import { RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
 import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
 import { SyncSessionRepository } from '@/repositories/sync-session.repository';
+import { VoteRepository } from '@/repositories/vote/vote.repository';
+
 import { DbService } from '@/services/db.service';
-import LexiconService from '@/services/lexicon.service';
-import { NodeService } from '@/services/node.service';
 import { SeedService } from '@/services/seed.service';
 import { SyncService } from '@/services/sync.service';
 import { DefinitionService } from './services/definition.service';
 
+import { GraphFirstLayerService } from '@/services/graph-first-layer.service';
+import { GraphSecondLayerService } from '@/src/services/graph-second-layer.service';
+import { GraphThirdLayerService } from './services/graph-third-layer.service';
+import { TableService } from '@/services/table.service';
+import { VotingService } from '@/services/voting.service';
+import { LexiconService } from '@/services/lexicon.service';
+
 export interface ISingletons {
   dbService: DbService;
   syncService: SyncService;
-  nodeService: NodeService;
-  lexiconService: LexiconService;
   seedService: SeedService;
   definitionService: DefinitionService;
+
+  graphFirstLayerService: GraphFirstLayerService;
+  graphSecondLayerService: GraphSecondLayerService;
+  graphThirdLayerService: GraphThirdLayerService;
+  tableService: TableService;
+  votingService: VotingService;
+  lexiconService: LexiconService;
 
   nodeRepo: NodeRepository;
   nodeTypeRepo: NodeTypeRepository;
@@ -31,6 +44,7 @@ export interface ISingletons {
   relationshipTypeRepo: RelationshipTypeRepository;
   relationshipPropertyKeyRepo: RelationshipPropertyKeyRepository;
   relationshipPropertyValueRepo: RelationshipPropertyValueRepository;
+  voteRepo: VoteRepository;
 }
 
 const _cache = new Map<DataSource, Promise<ISingletons>>();
@@ -65,15 +79,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     dbService,
     syncService,
   );
-
-  const nodeService = new NodeService(
-    nodeRepo,
-    nodePropertyKeyRepo,
-    nodePropertyValueRepo,
-    relationshipRepo,
-    relationshipPropertyKeyRepo,
-    relationshipPropertyValueRepo,
-  );
+  const voteRepo = new VoteRepository(dbService, syncService);
 
   const seedService = new SeedService(
     nodeRepo,
@@ -85,17 +91,55 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
   );
+
+  const graphFirstLayerService = new GraphFirstLayerService(
+    nodeTypeRepo,
+    nodeRepo,
+    nodePropertyKeyRepo,
+    nodePropertyValueRepo,
+    relationshipTypeRepo,
+    relationshipRepo,
+    relationshipPropertyKeyRepo,
+    relationshipPropertyValueRepo,
+  );
   const definitionService = new DefinitionService(nodeService, nodeRepo);
 
-  const lexiconService = new LexiconService(nodeService, nodeRepo);
+  const graphSecondLayerService = new GraphSecondLayerService(
+    graphFirstLayerService,
+  );
+
+  const graphThirdLayerService = new GraphThirdLayerService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+    nodeRepo,
+  );
+
+  const tableService = new TableService(
+    graphSecondLayerService,
+    nodeRepo,
+    nodePropertyValueRepo,
+  );
+
+  const votingService = new VotingService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+    voteRepo,
+  );
+
+  const lexiconService = new LexiconService(graphSecondLayerService, nodeRepo);
 
   return {
     dbService,
     syncService,
-    nodeService,
-    lexiconService,
     seedService,
     definitionService,
+
+    graphFirstLayerService,
+    graphSecondLayerService,
+    graphThirdLayerService,
+    tableService,
+    votingService,
+    lexiconService,
 
     nodeRepo,
     nodeTypeRepo,
@@ -105,6 +149,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipTypeRepo,
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
+    voteRepo,
   };
 };
 

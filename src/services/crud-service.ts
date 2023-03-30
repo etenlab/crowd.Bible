@@ -1,4 +1,4 @@
-import { NodeService } from './node.service';
+import { GraphSecondLayerService } from './graph-second-layer.service';
 import { Node } from '@/models/node/node.entity';
 import { InferType, object, reach, Schema, string } from 'yup';
 import { NodeRepository } from '@/repositories/node/node.repository';
@@ -13,7 +13,7 @@ export class CRUDService<T extends BaseType> {
   constructor(
     private readonly nodeType: string,
     private readonly schema: Schema<T>,
-    private readonly nodeService: NodeService,
+    private readonly secondLayerService: GraphSecondLayerService,
     private readonly nodeRepo: NodeRepository,
   ) {}
 
@@ -82,7 +82,7 @@ export class CRUDService<T extends BaseType> {
   }
 
   async create(obj: Partial<T>): Promise<T> {
-    const node = await this.nodeService.createNodeFromObject(
+    const node = await this.secondLayerService.createNodeFromObject(
       this.nodeType,
       this.validatePartial(obj),
     );

@@ -13,17 +13,16 @@ export class NodePropertyValueRepository {
     return this.dbService.dataSource.getRepository(NodePropertyValue);
   }
 
-  async createNodePropertyValue(
-    key_id: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    key_value: any,
-  ): Promise<string | null> {
+  private async createNodePropertyValue(
+    key_id: Nanoid,
+    key_value: unknown,
+  ): Promise<Nanoid> {
     const node_property_key = await this.dbService.dataSource
       .getRepository(NodePropertyKey)
       .findOneBy({ id: key_id });
 
-    if (node_property_key == null) {
-      return null;
+    if (node_property_key === null) {
+      throw new Error(`Not exists property key by given #key_id='${key_id}'`);
     }
 
     const new_property_value_instance = this.repository.create({
@@ -39,5 +38,35 @@ export class NodePropertyValueRepository {
     );
 
     return node_property_value.id;
+  }
+
+  async setNodePropertyValue(
+    key_id: Nanoid,
+    key_value: unknown,
+  ): Promise<Nanoid> {
+    const node_property_key = await this.dbService.dataSource
+      .getRepository(NodePropertyKey)
+      .findOneBy({ id: key_id });
+
+    if (node_property_key === null) {
+      throw new Error(`Not exists property key by given #key_id='${key_id}'`);
+    }
+
+    const nodePropertyValue = await this.repository.findOne({
+      where: {
+        node_property_key_id: key_id,
+      },
+    });
+
+    if (nodePropertyValue) {
+      await this.repository.update(nodePropertyValue.id, {
+        property_value: JSON.stringify({ value: key_value }),
+        sync_layer: this.syncService.syncLayer,
+      });
+
+      return nodePropertyValue.id;
+    } else {
+      return this.createNodePropertyValue(key_id, key_value);
+    }
   }
 }
