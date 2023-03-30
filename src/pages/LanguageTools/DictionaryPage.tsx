@@ -16,7 +16,7 @@ type Item = {
   title: Content;
   contents: Content[];
 };
-
+const MOCK_LANGUAGE_OPTIONS = ['lang1', 'lang2'];
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
 const MOCK_DICTIONARY: Array<Item> = [
   {
@@ -100,6 +100,7 @@ export function DictionaryPage() {
 
         <FiltersAndSearch
           ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
+          languageOptions={MOCK_LANGUAGE_OPTIONS}
           setEthnologue={() => console.log('setEthnologue!')}
           setLanguage={(l: string) => console.log('setLanguage! ' + l)}
           setSearch={(s: string) => console.log('setSearch' + s)}

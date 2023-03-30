@@ -5,17 +5,15 @@ import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
 import { LanguageDto } from '../../dtos/lang.dto';
 import { useDefinitionService } from '../../hooks/useDefinitionService';
-import { FiltersAndSearch } from '../../local-ui-kit/FiltersAndSearch';
-import { ItemContentListEdit } from '../../local-ui-kit/ItemContentListEdit';
-import { ItemsClickableList } from '../../local-ui-kit/ItemsClickableList';
 import { VotableContent, VotableItem } from '../../services/definition.service';
 const { Box, Divider } = MuiMaterial;
 
 const {
   TitleWithIcon,
-  // ItemsClickableList,
-  // ItemContentListEdit,
+  ItemsClickableList,
+  ItemContentListEdit,
   SimpleFormDialog,
+  FiltersAndSearch,
 } = CrowdBibleUI;
 
 type TUpOrDownVote = 'upVote' | 'downVote';
