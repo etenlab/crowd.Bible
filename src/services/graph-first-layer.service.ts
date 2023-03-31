@@ -1,4 +1,4 @@
-import { FindOptionsWhere, Like } from 'typeorm';
+import { FindOptionsWhere } from 'typeorm';
 
 import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
 import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
