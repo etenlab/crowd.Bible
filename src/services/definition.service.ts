@@ -82,13 +82,11 @@ export class DefinitionService {
   async getDefinitionsAsVotableContent(
     wordNodeId: string,
   ): Promise<Array<VotableContent>> {
-    const definitionNodes = await this.graphFirstLayerService.getNodesOfType(
-      NodeTypeConst.DEFINITION,
-      {
+    const definitionNodes =
+      await this.graphFirstLayerService.getNodesByTypeAndRelatedNodes({
+        type: NodeTypeConst.DEFINITION,
         from_node_id: wordNodeId,
-        relationship_type: RelationshipTypeConst.WORD_TO_DEFINITION,
-      },
-    );
+      });
     const vc: VotableContent[] = definitionNodes.map((definitionNode) => ({
       content: this.graphSecondLayerService.getNodePropertyValue(
         definitionNode,

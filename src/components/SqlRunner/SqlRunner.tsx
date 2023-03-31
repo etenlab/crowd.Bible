@@ -59,11 +59,19 @@ where n.id='uNHTLw6ZFy9mhz7-Wsxij'
     {
       name: 'SQL4',
       body: `
---=========select all relationships from nodeId=================
-select * from relationship rs where 
-  rs.relationship_type='word-to-definition' and 
-  rs.from_node_id = 'yfrxVpjlR1Vyon_towTs0'
---============================================================
+--=== Get info on nodes (relations TO this node, and info of this node's properties) ======
+select node.id as "nodeId", r.id as "rId", r.from_node_id, r.to_node_id, nFrom.node_type as "nFromType", nTo.node_type as "nToType", npk.property_key, npv.property_value
+from node 
+-- can adjust here direction of relations - to the node or from
+left join relationship r on r.to_node_id = node.id
+
+left join node nFrom on r.from_node_id = nFrom.id
+left join node nTo on r.To_node_id = nTo.id
+left join node_property_key npk on npk.node_id = node.id
+left join node_property_value npv on npv.node_property_key_id = npk.id
+
+where node.node_type='definition'
+--===========================================================================================
 `,
     },
     {

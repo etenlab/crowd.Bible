@@ -42,4 +42,7 @@ export class Node extends Syncable {
 
   @OneToMany(() => Relationship, (relationship) => relationship.fromNode)
   nodeRelationships: Relationship[] | undefined;
+
+  @OneToMany(() => Relationship, (relationship) => relationship.toNode)
+  toNodeRelationships: Relationship[] | undefined;
 }

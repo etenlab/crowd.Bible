@@ -1,4 +1,4 @@
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, Like } from 'typeorm';
 
 import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
 import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
@@ -152,36 +152,47 @@ export class GraphFirstLayerService {
     );
   }
 
-  async getNodesOfType(
-    type: NodeTypeConst,
-    relQuery?:
-      | FindOptionsWhere<Relationship>
-      | FindOptionsWhere<Relationship>[],
-    additionalRelations: string[] = [],
-  ): Promise<Node[]> {
+  async getNodesByTypeAndRelatedNodes({
+    type,
+    from_node_id,
+    to_node_id,
+  }: getNodesByTypeAndRelatedNodesParams): Promise<Node[]> {
     try {
-      const foundNodes = await this.nodeRepo.repository.find({
-        relations: [
-          'propertyKeys',
-          'propertyKeys.propertyValue',
-          'nodeRelationships',
-          ...additionalRelations,
-        ],
-        where: {
-          node_type: type,
-          nodeRelationships: relQuery,
-        },
-      });
+      const foundNodesQB = await this.nodeRepo.repository
+        .createQueryBuilder('node')
+        .leftJoinAndSelect('node.propertyKeys', 'propertyKeys')
+        .leftJoinAndSelect('propertyKeys.propertyValue', 'propertyValue')
+        .leftJoinAndSelect('node.nodeRelationships', 'nodeRelationships')
+        .leftJoinAndSelect('node.toNodeRelationships', 'toNodeRelationships')
+        .where('node.node_type = :type', { type });
+
+      from_node_id &&
+        foundNodesQB.andWhere(
+          'toNodeRelationships.from_node_id = :from_node_id',
+          {
+            from_node_id,
+          },
+        );
+
+      to_node_id &&
+        foundNodesQB.andWhere('nodeRelationships.to_node_id = :to_node_id', {
+          to_node_id,
+        });
+
+      console.log(foundNodesQB.getSql());
+
+      const foundNodes = foundNodesQB.getMany();
+
       return foundNodes;
     } catch (err) {
       console.error(err);
       throw new Error(`Failed to get nodes by type ${type}`);
     }
   }
+}
 
-  // async getAllNodesByProp(
-  //   params: IfindOneByPropertyValue,
-  // ): Promise<[Node[], number]> {
-  //   return this.nodeRepo.getAllByProp(params);
-  // }
+interface getNodesByTypeAndRelatedNodesParams {
+  type: NodeTypeConst;
+  from_node_id?: Nanoid;
+  to_node_id?: Nanoid;
 }

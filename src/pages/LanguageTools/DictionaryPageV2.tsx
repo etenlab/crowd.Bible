@@ -199,7 +199,8 @@ export function DictionaryPageV2() {
       ...newContent,
       id: newDefinitionNodeId,
     });
-    setWords(words);
+    setWords([...words]);
+    setSelectedWord(words[wordIdx]);
   };
 
   const handleAddWordButtonClick = useCallback(() => {
