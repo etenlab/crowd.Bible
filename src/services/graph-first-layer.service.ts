@@ -178,12 +178,7 @@ export class GraphFirstLayerService {
         foundNodesQB.andWhere('nodeRelationships.to_node_id = :to_node_id', {
           to_node_id,
         });
-
-      console.log(foundNodesQB.getSql());
-
-      const foundNodes = foundNodesQB.getMany();
-
-      return foundNodes;
+      return foundNodesQB.getMany();
     } catch (err) {
       console.error(err);
       throw new Error(`Failed to get nodes by type ${type}`);

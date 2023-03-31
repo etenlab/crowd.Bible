@@ -122,4 +122,13 @@ export class DefinitionService {
   async getLanguages(): Promise<LanguageDto[]> {
     return this.graphThirdLayerService.getLanguages();
   }
+
+  async updateDefinition(
+    definitionNodeId: Nanoid,
+    newDefinitionValue: string,
+  ): Promise<void> {
+    this.graphSecondLayerService.updateNodeObject(definitionNodeId, {
+      [PropertyKeyConst.TEXT]: newDefinitionValue,
+    });
+  }
 }

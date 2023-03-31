@@ -137,6 +137,17 @@ export function DictionaryPageV2() {
           `!definitionService || !selectedLanguageId when addNewWord`,
         );
       }
+      const existingWord = words.find((w) => w.title.content === word);
+      if (existingWord) {
+        presentAlert({
+          header: 'Alert',
+          subHeader: 'Such a word already exists!',
+          message: 'Use existing word to add a new definition, if you want to.',
+          buttons: ['Ok'],
+        });
+        setIsDialogOpened(false);
+        return;
+      }
       const newWordNodeId = await definitionService.createWord(
         word,
         selectedLanguageId,
@@ -155,11 +166,11 @@ export function DictionaryPageV2() {
       ]);
       setIsDialogOpened(false);
     },
-    [selectedLanguageId, definitionService, words],
+    [definitionService, selectedLanguageId, words, presentAlert],
   );
 
   const changeDefinition = useCallback(
-    ({
+    async ({
       contentIndex,
       newContent,
     }: {
@@ -167,41 +178,68 @@ export function DictionaryPageV2() {
       newContent: VotableContent;
     }) => {
       if (!selectedWord?.title?.id) {
-        throw new Error(`There is no selected word to change definition`);
+        throw new Error(
+          `!selectedWord?.title?.id: There is no selected word to change definition`,
+        );
+      }
+      if (!definitionService) {
+        throw new Error(
+          `!definitionService: Definition service is not present`,
+        );
+      }
+      if (!newContent.id) {
+        throw new Error(`!newContent.id: Definition doesn't have an id`);
       }
       const wordIdx = words.findIndex(
         (w) => w.title.id === selectedWord?.title.id,
       );
+      await definitionService.updateDefinition(
+        newContent.id,
+        newContent.content,
+      );
       words[wordIdx].contents[contentIndex] = newContent;
       setWords([...words]);
     },
-    [selectedWord?.title.id, words],
+    [definitionService, selectedWord?.title.id, words],
   );
 
-  const addDefinition = async ({
-    newContent,
-  }: {
-    newContent: VotableContent;
-  }) => {
-    if (!definitionService) {
-      throw new Error(`!definitionService when addDefinition`);
-    }
-    if (!selectedWord?.title?.id) {
-      throw new Error(`There is no selected word to add definition`);
-    }
-    const wordNodeId = selectedWord?.title?.id;
-    const newDefinitionNodeId = await definitionService.createDefinition(
-      newContent.content,
-      wordNodeId,
-    );
-    const wordIdx = words.findIndex((word) => word.title.id === wordNodeId);
-    words[wordIdx].contents.push({
-      ...newContent,
-      id: newDefinitionNodeId,
-    });
-    setWords([...words]);
-    setSelectedWord(words[wordIdx]);
-  };
+  const addDefinition = useCallback(
+    async ({ newContent }: { newContent: VotableContent }) => {
+      if (!definitionService) {
+        throw new Error(`!definitionService when addDefinition`);
+      }
+      if (!selectedWord?.title?.id) {
+        throw new Error(`There is no selected word to add definition`);
+      }
+      const wordNodeId = selectedWord?.title?.id;
+      const newDefinitionNodeId = await definitionService.createDefinition(
+        newContent.content,
+        wordNodeId,
+      );
+      const wordIdx = words.findIndex((word) => word.title.id === wordNodeId);
+      const existingDefinition = words[wordIdx].contents.find(
+        (d) => d.content === newContent.content,
+      );
+      if (existingDefinition) {
+        presentAlert({
+          header: 'Alert',
+          subHeader: 'Such a definition of the word already exists!',
+          message:
+            'You can vote for the existing definition or enter another one.',
+          buttons: ['Ok'],
+        });
+        setIsDialogOpened(false);
+        return;
+      }
+      words[wordIdx].contents.push({
+        ...newContent,
+        id: newDefinitionNodeId,
+      });
+      setSelectedWord(words[wordIdx]);
+      setWords([...words]);
+    },
+    [definitionService, presentAlert, selectedWord?.title?.id, words],
+  );
 
   const handleAddWordButtonClick = useCallback(() => {
     if (!selectedLanguageId) {
