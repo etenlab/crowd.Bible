@@ -31,17 +31,62 @@ const startingDefaultSqls: TSqls = {
   lastCreatedIdx: 1,
   data: [
     {
-      name: 'SQL0',
+      name: 'All tables',
       body: 'SELECT tbl_name from sqlite_master WHERE type = "table"',
     },
-    { name: 'SQL1', body: 'select * from node' },
+    { name: 'All nodes', body: 'select * from node' },
+    {
+      name: 'All word nodes',
+      body: `
+--==========select all words and its values===================
+select npv.*, npk.*, n.* from node_property_value npv
+join node_property_key npk on npv.node_property_key_id = npk.id
+join node n on n.id = npk.node_id
+where n.node_type='word'
+--============================================================`,
+    },
+    {
+      name: 'SQL3',
+      body: `
+--===========select all property values of nodeId==============
+select npv.*, npk.*, n.* from node_property_value npv
+join node_property_key npk on npv.node_property_key_id = npk.id
+join node n on n.id = npk.node_id
+where n.id='uNHTLw6ZFy9mhz7-Wsxij'
+--=============================================================
+`,
+    },
+    {
+      name: 'SQL4',
+      body: `
+--=========select all relationships from nodeId=================
+select * from relationship rs where 
+  rs.relationship_type='word-to-definition' and 
+  rs.from_node_id = 'yfrxVpjlR1Vyon_towTs0'
+--============================================================
+`,
+    },
+    {
+      name: 'SQL5',
+      body: `
+--===========select related node types of relations===========
+select rs.*, nf.node_type as 'fromNodeType', nt.node_type as 'toNodeType'
+from relationship rs
+join node nf on rs.from_node_id=nf.id
+join node nt on rs.to_node_id=nt.id
+where 
+  rs.relationship_type='word-to-definition' and 
+  rs.from_node_id = 'yfrxVpjlR1Vyon_towTs0'
+--============================================================
+`,
+    },
   ],
 };
 
 export function SqlRunner({ onClose }: { onClose: () => void }) {
   const singletons = useSingletons();
   const { getColor } = useColorModeContext();
-  const [dimensions, setDimensions] = useState({ w: 500, h: 600 });
+  const [dimensions, setDimensions] = useState({ w: 800, h: 600 });
   const [selectedTab, setSelectedTab] = useState(0);
   const [sqls, setSqls] = useState(startingDefaultSqls);
   const handleTabChange = useCallback(
