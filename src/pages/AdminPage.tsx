@@ -71,9 +71,11 @@ export function AdminPage() {
     }
   };
 
-  const seedData = useCallback(async () => {
+  const seedLandgData = useCallback(async () => {
     if (seedService) {
+      setLoadingStatus(LoadingStatus.LOADING);
       await seedService.seedLanguages();
+      setLoadingStatus(LoadingStatus.FINISHED);
     }
   }, [seedService]);
 
@@ -92,7 +94,9 @@ export function AdminPage() {
           <IonCardTitle>Seed some random data</IonCardTitle>
         </IonCardHeader>
         <IonCardContent>
-          {seedService && <IonButton onClick={seedData}>Seed</IonButton>}
+          {seedService && (
+            <IonButton onClick={seedLandgData}>Seed Languages</IonButton>
+          )}
         </IonCardContent>
       </IonCard>
       <IonLoading
