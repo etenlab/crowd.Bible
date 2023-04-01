@@ -142,16 +142,22 @@ export function AdminPage() {
         </IonCardHeader>
         <IonCardContent>
           <IonButton
+            className="text-transform-none"
             onClick={doSyncIn}
             disabled={syncInLoadingStatus === LoadingStatus.LOADING}
           >
-            Sync In
+            {syncInLoadingStatus === LoadingStatus.LOADING
+              ? 'Syncing In...'
+              : 'Sync In'}
           </IonButton>
           <IonButton
+            className="text-transform-none"
             onClick={doSyncOut}
             disabled={syncOutLoadingStatus === LoadingStatus.LOADING}
           >
-            Sync Out
+            {syncOutLoadingStatus === LoadingStatus.LOADING
+              ? 'Syncing Out...'
+              : 'Sync Out'}
           </IonButton>
         </IonCardContent>
       </IonCard>
