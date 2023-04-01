@@ -23,6 +23,11 @@ export function AdminPage() {
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>(
     LoadingStatus.INITIAL,
   );
+  const [syncInLoadingStatus, setSyncInLoadingStatus] = useState<LoadingStatus>(
+    LoadingStatus.INITIAL,
+  );
+  const [syncOutLoadingStatus, setSyncOutLoadingStatus] =
+    useState<LoadingStatus>(LoadingStatus.INITIAL);
 
   const [loadResult, setLoadResult] = useState('Load finished.');
   const seedService = useSeedService();
@@ -71,6 +76,30 @@ export function AdminPage() {
     }
   };
 
+  const doSyncOut = async () => {
+    if (!singletons?.syncService) return;
+    setSyncOutLoadingStatus(LoadingStatus.LOADING);
+    try {
+      const syncOutRes = await singletons.syncService.syncOut();
+      console.log('syncOutRes', syncOutRes);
+    } catch (error) {
+    } finally {
+      setSyncOutLoadingStatus(LoadingStatus.FINISHED);
+    }
+  };
+
+  const doSyncIn = async () => {
+    if (!singletons?.syncService) return;
+    setSyncInLoadingStatus(LoadingStatus.LOADING);
+    try {
+      const syncInRes = await singletons.syncService.syncIn();
+      console.log('syncInRes', syncInRes);
+    } catch (error) {
+    } finally {
+      setSyncInLoadingStatus(LoadingStatus.FINISHED);
+    }
+  };
+
   const seedLandgData = useCallback(async () => {
     if (seedService) {
       setLoadingStatus(LoadingStatus.LOADING);
@@ -97,6 +126,25 @@ export function AdminPage() {
           {seedService && (
             <IonButton onClick={seedLandgData}>Seed Languages</IonButton>
           )}
+        </IonCardContent>
+      </IonCard>
+      <IonCard>
+        <IonCardHeader>
+          <IonCardTitle>Sync Data</IonCardTitle>
+        </IonCardHeader>
+        <IonCardContent>
+          <IonButton
+            onClick={doSyncIn}
+            disabled={syncInLoadingStatus === LoadingStatus.LOADING}
+          >
+            Sync In
+          </IonButton>
+          <IonButton
+            onClick={doSyncOut}
+            disabled={syncOutLoadingStatus === LoadingStatus.LOADING}
+          >
+            Sync Out
+          </IonButton>
         </IonCardContent>
       </IonCard>
       <IonLoading
