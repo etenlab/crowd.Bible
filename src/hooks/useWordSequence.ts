@@ -35,7 +35,7 @@ export function useWordSequence() {
       isOrigin = false,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at createWordSequence');
         return null;
       }
 
@@ -85,7 +85,7 @@ export function useWordSequence() {
       range: { start: number; end: number },
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at createSubWordSequence');
         return null;
       }
 
@@ -130,7 +130,7 @@ export function useWordSequence() {
   const createTranslation = useCallback(
     async (wordSequenceId: Nanoid, translationText: string) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at createTranslation');
         return null;
       }
 
@@ -165,7 +165,7 @@ export function useWordSequence() {
           return null;
         }
 
-        await singletons.graphThirdLayerService.createWordTranslationRelationship(
+        await singletons.graphThirdLayerService.createWordSequenceTranslationRelationship(
           wordSequence.id,
           translationWordSequenceId,
         );
@@ -228,7 +228,10 @@ export function useWordSequence() {
   const listTranslationsByDocumentId = useCallback(
     async (documentId: Nanoid, userId?: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(
+          'error',
+          'Internal Error! at listTranslationsByDocumentId',
+        );
         return [];
       }
 
@@ -258,7 +261,10 @@ export function useWordSequence() {
   const listMyTranslationsByDocumentId = useCallback(
     async (documentId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(
+          'error',
+          'Internal Error! at listMyTranslationsByDocumentId',
+        );
         return [];
       }
 
@@ -303,7 +309,10 @@ export function useWordSequence() {
   const listTranslationsByWordSequenceId = useCallback(
     async (wordSequenceId: Nanoid, userId?: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(
+          'error',
+          'Internal Error! at listTranslationsByWordSequenceId',
+        );
         return [];
       }
 
@@ -333,7 +342,10 @@ export function useWordSequence() {
   const listMyTranslationsByWordSequenceId = useCallback(
     async (wordSequenceId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(
+          'error',
+          'Internal Error! at listMyTranslationsByWordSequenceId',
+        );
         return [];
       }
 
@@ -378,7 +390,7 @@ export function useWordSequence() {
   const getText = useCallback(
     async (wordSequenceId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at getText');
         return [];
       }
 
@@ -410,23 +422,14 @@ export function useWordSequence() {
       withSubWordSequence = false,
     ): Promise<WordSequenceDto | WordSequenceWithSubDto | null> => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(
+          'error',
+          'Internal Error! at getOriginWordSequenceByDocumentId',
+        );
         return null;
       }
 
       try {
-        const documentNode = await singletons.graphFirstLayerService.readNode(
-          documentId,
-        );
-
-        if (!documentNode) {
-          alertFeedback(
-            'error',
-            'Not exists a document with given document id!',
-          );
-          return null;
-        }
-
         return singletons.graphThirdLayerService.getOriginWordSequenceByDocumentId(
           documentId,
           withSubWordSequence,
@@ -445,7 +448,7 @@ export function useWordSequence() {
       wordSequenceId: Nanoid,
     ): Promise<WordSequenceDto | WordSequenceWithSubDto | null> => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at getWordSequenceById');
         return null;
       }
 

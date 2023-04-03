@@ -12,7 +12,7 @@ export function useLanguage() {
   const getLanguage = useCallback(
     async (language: string) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at getLanguage');
         return [];
       }
 
@@ -35,7 +35,7 @@ export function useLanguage() {
   const createLanguage = useCallback(
     async (lanaguageName: string) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at createLanguage');
         return null;
       }
 
@@ -63,7 +63,7 @@ export function useLanguage() {
 
   const getLanguages = useCallback(async () => {
     if (!singletons) {
-      alertFeedback('error', 'Internal Error!');
+      alertFeedback('error', 'Internal Error! at getLanguages');
       return [];
     }
 

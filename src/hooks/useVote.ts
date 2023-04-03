@@ -12,7 +12,7 @@ export function useVote() {
   const listElections = useCallback(
     async (tableName: TablesName, rowId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at listElections');
         return [];
       }
 
@@ -30,7 +30,7 @@ export function useVote() {
   const getElectionFull = useCallback(
     async (electionId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at getElectionFull');
         return [];
       }
 
@@ -48,7 +48,7 @@ export function useVote() {
   const createElection = useCallback(
     async (tableName: TablesName, rowId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at createElection');
         return null;
       }
 
@@ -73,7 +73,7 @@ export function useVote() {
   const addBallotEntry = useCallback(
     async (electionId: Nanoid, ballotEntryTarget: BallotEntryTarget) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at addBallotEntry');
         return null;
       }
 
@@ -98,7 +98,7 @@ export function useVote() {
   const addVote = useCallback(
     async (ballotEntryId: Nanoid, vote: boolean | null) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at addVote');
         return null;
       }
 
@@ -133,7 +133,7 @@ export function useVote() {
   const toggleVote = useCallback(
     async (ballotEntryId: Nanoid, vote: boolean | null) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at toggleVote');
         return null;
       }
 
@@ -173,7 +173,7 @@ export function useVote() {
   const getVotesStats = useCallback(
     async (ballotEntryId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at getVotesStats');
         return null;
       }
 
@@ -191,7 +191,7 @@ export function useVote() {
   const getBallotEntryId = useCallback(
     async (electionId: Nanoid, ballotEntryTarget: BallotEntryTarget) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at getBallotEntryId');
         return null;
       }
 

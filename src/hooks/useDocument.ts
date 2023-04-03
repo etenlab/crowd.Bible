@@ -11,7 +11,7 @@ export function useDocument() {
 
   const listDocument = useCallback(async () => {
     if (!singletons) {
-      alertFeedback('error', 'Internal Error!');
+      alertFeedback('error', 'Internal Error! at listDocument');
       return [];
     }
 
@@ -27,7 +27,7 @@ export function useDocument() {
   const getDocument = useCallback(
     async (name: string) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at getDocument');
         return [];
       }
 
@@ -50,7 +50,7 @@ export function useDocument() {
   const createDocument = useCallback(
     async (name: string) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback('error', 'Internal Error! at createDocument');
         return null;
       }
 
