@@ -7,9 +7,19 @@ import { NodeRepository } from '@/repositories/node/node.repository';
 import { type Node } from '@/models/node/node.entity';
 import { type Relationship } from '@/models/relationship/relationship.entity';
 
-import { MapDto } from '../dtos/map.dto';
-import { LanguageDto } from '../dtos/lang.dto';
-import { MapMapper } from '../mappers/map.mapper';
+import { MapDto } from '@/dtos/map.dto';
+import { LanguageDto } from '@/dtos/language.dto';
+import { DocumentDto } from '@/dtos/document.dto';
+import { UserDto } from '@/dtos/user.dto';
+import {
+  WordSequenceDto,
+  WordSequenceWithSubDto,
+} from '@/dtos/word-sequence.dto';
+
+import { MapMapper } from '@/mappers/map.mapper';
+import { DocumentMapper } from '@/mappers/document.mapper';
+import { LanguageMapper } from '@/mappers/language.mapper';
+import { WordSequenceMapper } from '@/mappers/word-sequence.mapper';
 
 import {
   NodeTypeConst,
@@ -24,9 +34,54 @@ export class GraphThirdLayerService {
     private readonly nodeRepo: NodeRepository,
   ) {}
 
+  async createUser(email: string): Promise<UserDto> {
+    const user = await this.getUser(email);
+
+    if (user) {
+      return user;
+    }
+
+    const newUser = await this.secondLayerService.createNodeFromObject(
+      NodeTypeConst.USER,
+      {
+        email,
+      },
+    );
+
+    return {
+      id: newUser.id,
+      email,
+    };
+  }
+
+  async getUser(email: string): Promise<UserDto | null> {
+    const user = await this.firstLayerService.getNodeByProp(
+      NodeTypeConst.DOCUMENT,
+      {
+        key: PropertyKeyConst.EMAIL,
+        value: email,
+      },
+    );
+
+    if (user == null) {
+      return null;
+    }
+
+    return {
+      id: user.id,
+      email,
+    };
+  }
+
   // -------- Document --------- //
-  async createDocument(name: string): Promise<Document> {
-    const document = await this.secondLayerService.createNodeFromObject(
+  async createDocument(name: string): Promise<DocumentDto> {
+    const document = await this.getDocument(name);
+
+    if (document) {
+      return document;
+    }
+
+    const newDocument = await this.secondLayerService.createNodeFromObject(
       NodeTypeConst.DOCUMENT,
       {
         name,
@@ -34,12 +89,12 @@ export class GraphThirdLayerService {
     );
 
     return {
-      id: document.id,
+      id: newDocument.id,
       name,
     };
   }
 
-  async getDocument(name: string): Promise<Document | null> {
+  async getDocument(name: string): Promise<DocumentDto | null> {
     const document = await this.firstLayerService.getNodeByProp(
       NodeTypeConst.DOCUMENT,
       {
@@ -56,6 +111,14 @@ export class GraphThirdLayerService {
       id: document.id,
       name,
     };
+  }
+
+  async listDocument(): Promise<DocumentDto[]> {
+    const documents = await this.firstLayerService.listAllNodesByType(
+      NodeTypeConst.DOCUMENT,
+    );
+
+    return documents.map(DocumentMapper.entityToDto);
   }
 
   // --------- Word --------- //
@@ -191,24 +254,39 @@ export class GraphThirdLayerService {
     creator: Nanoid,
     import_uid: string,
     language: Nanoid,
+    isOrigin = false,
+    withWordsRelationship = true,
   ): Promise<Node> {
+    const user = await this.firstLayerService.readNode(creator);
+
+    if (!user) {
+      throw new Error('Not exists given creator');
+    }
+
     const word_sequence = await this.secondLayerService.createNodeFromObject(
       NodeTypeConst.WORD_SEQUENCE,
       {
+        [PropertyKeyConst.WORD_SEQUENCE]: text,
+        [PropertyKeyConst.DOCUMENT_ID]: document,
+        [PropertyKeyConst.CREATOR_ID]: creator,
         [PropertyKeyConst.IMPORT_UID]: import_uid,
+        [PropertyKeyConst.LANGUAGE_ID]: language,
+        [PropertyKeyConst.IS_ORIGIN]: isOrigin,
       },
     );
 
-    const words = text.split(' ');
+    if (withWordsRelationship) {
+      const words = text.split(' ');
 
-    for (const [i, word] of words.entries()) {
-      const new_word_id = await this.createWord(word, language);
-      await this.secondLayerService.createRelationshipFromObject(
-        RelationshipTypeConst.WORD_SEQUENCE_TO_WORD,
-        { position: i + 1 },
-        word_sequence.id,
-        new_word_id,
-      );
+      for (const [i, word] of words.entries()) {
+        const new_word_id = await this.createWord(word, language);
+        await this.secondLayerService.createRelationshipFromObject(
+          RelationshipTypeConst.WORD_SEQUENCE_TO_WORD,
+          { position: i + 1 },
+          word_sequence.id,
+          new_word_id,
+        );
+      }
     }
 
     await this.secondLayerService.createRelationshipFromObject(
@@ -229,45 +307,147 @@ export class GraphThirdLayerService {
       RelationshipTypeConst.WORD_SEQUENCE_TO_CREATOR,
       {},
       word_sequence.id,
-      creator,
+      user.id,
     );
 
     return word_sequence;
   }
 
-  async getText(word_sequence_id: Nanoid): Promise<Nanoid | null> {
-    const word_sequence = await this.nodeRepo.repository.findOne({
-      relations: [
+  async createSubWordSequence(
+    parentWordSequenceId: Nanoid,
+    subText: string,
+    position: number,
+    len: number,
+    creator: Nanoid,
+  ): Promise<Node> {
+    const user = await this.firstLayerService.readNode(creator);
+
+    if (!user) {
+      throw new Error('Not exists given creator');
+    }
+
+    const parentWordSequence = await this.getWordSequenceById(
+      parentWordSequenceId,
+    );
+
+    if (parentWordSequence === null) {
+      throw new Error('Not Exists given parentWordSequenceId!');
+    }
+
+    const subWordSequence = await this.secondLayerService.createNodeFromObject(
+      NodeTypeConst.WORD_SEQUENCE,
+      {
+        [PropertyKeyConst.WORD_SEQUENCE]: subText,
+        [PropertyKeyConst.DOCUMENT_ID]: parentWordSequence.documentId,
+        [PropertyKeyConst.CREATOR_ID]: user.id,
+        [PropertyKeyConst.IMPORT_UID]: parentWordSequence.importUid,
+        [PropertyKeyConst.LANGUAGE_ID]: parentWordSequence.languageId,
+        [PropertyKeyConst.IS_ORIGIN]: parentWordSequence.isOrigin,
+      },
+    );
+
+    await this.secondLayerService.createRelationshipFromObject(
+      RelationshipTypeConst.WORD_SEQUENCE_TO_SUB_WORD_SEQUENCE,
+      {
+        [PropertyKeyConst.POSITION]: position,
+        [PropertyKeyConst.LENGTH]: len,
+      },
+      parentWordSequence.id,
+      subWordSequence.id,
+    );
+
+    return subWordSequence;
+  }
+
+  async getOriginWordSequenceByDocumentId(
+    documentId: Nanoid,
+    withSubWordSequence = false,
+  ): Promise<WordSequenceDto | WordSequenceWithSubDto | null> {
+    const document = await this.firstLayerService.readNode(documentId);
+
+    if (!document) {
+      throw new Error('Not exists such documentId!');
+    }
+
+    const wordSequence = await this.firstLayerService.readNode(
+      '',
+      [
+        'propertyKeys',
+        'propertyKeys.propertyValue',
+        'nodeRelationships',
+        'nodeRelationships.toNode',
+      ],
+      {
+        node_type: NodeTypeConst.WORD_SEQUENCE,
+        propertyKeys: {
+          property_key: PropertyKeyConst.IS_ORIGIN,
+          propertyValue: {
+            property_value: JSON.stringify({ value: true }),
+          },
+        },
+        nodeRelationships: {
+          relationship_type: RelationshipTypeConst.WORD_SEQUENCE_TO_DOCUMENT,
+          toNode: {
+            id: documentId,
+          },
+        },
+      },
+    );
+
+    if (wordSequence === null) {
+      return null;
+    }
+
+    if (withSubWordSequence === false) {
+      return WordSequenceMapper.entityToDto(wordSequence);
+    }
+
+    const wordSequenceAgain = await this.firstLayerService.readNode(
+      wordSequence.id,
+      [
+        'propertyKeys',
+        'propertyKeys.propertyValue',
+        'nodeRelationships',
+        'nodeRelationships.toNode',
+      ],
+    );
+
+    return WordSequenceMapper.entityToDtoWithSubSequence(wordSequenceAgain!);
+  }
+
+  async getWordSequenceById(
+    word_sequence_id: Nanoid,
+  ): Promise<WordSequenceDto | null> {
+    const word_sequence = await this.firstLayerService.readNode(
+      word_sequence_id,
+      ['propertyKeys', 'propertyKeys.propertyValue'],
+    );
+
+    if (word_sequence === null) {
+      return null;
+    }
+
+    return WordSequenceMapper.entityToDto(word_sequence);
+  }
+
+  async getText(word_sequence_id: Nanoid): Promise<string | null> {
+    const word_sequence = await this.firstLayerService.readNode(
+      word_sequence_id,
+      [
+        'propertyKeys',
+        'propertyKeys.propertyValue',
         'nodeRelationships',
         'nodeRelationships.toNode',
         'nodeRelationships.toNode.propertyKeys',
         'nodeRelationships.toNode.propertyKeys.propertyValue',
       ],
-      where: {
-        node_id: word_sequence_id,
-      },
-    });
+    );
 
-    if (word_sequence == null || word_sequence.nodeRelationships == null) {
+    if (word_sequence === null) {
       return null;
     }
 
-    const words: string[] = [];
-
-    word_sequence.nodeRelationships.forEach((rel) => {
-      if (
-        rel.relationship_type === RelationshipTypeConst.WORD_SEQUENCE_TO_WORD
-      ) {
-        words.push(
-          JSON.parse(
-            rel.toNode.propertyKeys.find((key) => key.property_key === 'word')
-              ?.propertyValue.property_value ?? '',
-          ).value,
-        );
-      }
-    });
-
-    return words.join(' ');
+    return WordSequenceMapper.entityToDto(word_sequence).wordSequence;
   }
 
   // --------- Word-Sequence-Connection --------- //
@@ -320,11 +500,99 @@ export class GraphThirdLayerService {
         to,
       );
 
+    await this.secondLayerService.updateNodeObject(to, {
+      [PropertyKeyConst.ORIGINAL_WORD_SEQUENCE_ID]: from,
+    });
+
     return new_translation.id;
   }
 
+  async listTranslationsByDocumentId(
+    documentId: Nanoid,
+    languageId: Nanoid,
+    userId?: Nanoid,
+  ) {
+    const constrains = [
+      {
+        key: PropertyKeyConst.DOCUMENT_ID,
+        value: documentId,
+      },
+      { key: PropertyKeyConst.LANGUAGE_ID, value: languageId },
+    ];
+
+    if (userId) {
+      constrains.push({ key: PropertyKeyConst.CREATOR_ID, value: userId });
+    }
+
+    const wordSequenceIds = await this.firstLayerService.getNodesByProps(
+      NodeTypeConst.WORD_SEQUENCE,
+      constrains,
+    );
+
+    const translations = [];
+
+    for (const id of wordSequenceIds) {
+      const wordSequenceDto = await this.getWordSequenceById(id);
+
+      if (!wordSequenceDto) {
+        continue;
+      }
+
+      if (!wordSequenceDto.originalWordSequenceId) {
+        continue;
+      }
+
+      translations.push(wordSequenceDto);
+    }
+
+    return translations;
+  }
+
+  async listTranslationsByWordSequenceId(
+    wordSequenceId: Nanoid,
+    languageId: Nanoid,
+    userId?: Nanoid,
+  ) {
+    const languageNode = await this.firstLayerService.readNode(languageId);
+
+    if (!languageNode) {
+      throw new Error('Not exists lanaguage with given Id!');
+    }
+
+    const constrains = [
+      {
+        key: PropertyKeyConst.ORIGINAL_WORD_SEQUENCE_ID,
+        value: wordSequenceId,
+      },
+      { key: PropertyKeyConst.LANGUAGE_ID, value: languageId },
+    ];
+
+    if (userId) {
+      constrains.push({ key: PropertyKeyConst.CREATOR_ID, value: userId });
+    }
+
+    const wordSequenceIds = await this.firstLayerService.getNodesByProps(
+      NodeTypeConst.WORD_SEQUENCE,
+      constrains,
+    );
+
+    const translations = [];
+
+    for (const id of wordSequenceIds) {
+      const wordSequenceDto = await this.getWordSequenceById(id);
+
+      if (!wordSequenceDto) {
+        continue;
+      }
+
+      translations.push(wordSequenceDto);
+    }
+
+    return translations;
+  }
+
   // --------- region language node --------- //
-  async createLanguage(language: Nanoid): Promise<Nanoid> {
+  async createLanguage(language: string): Promise<Nanoid> {
     const lang_id = await this.getLanguage(language);
 
     if (lang_id) {
@@ -341,19 +609,11 @@ export class GraphThirdLayerService {
     return node.id;
   }
 
-  async getLanguage(language: Nanoid): Promise<Nanoid | null> {
-    const langNode = await this.nodeRepo.repository.findOne({
-      relations: ['propertyKeys', 'propertyKeys.propertyValue'],
-      where: {
-        node_type: NodeTypeConst.LANGUAGE,
-        propertyKeys: {
-          property_key: PropertyKeyConst.NAME,
-          propertyValue: {
-            property_value: JSON.stringify({ value: language }),
-          },
-        },
-      },
-    });
+  async getLanguage(name: string): Promise<Nanoid | null> {
+    const langNode = await this.firstLayerService.getNodeByProp(
+      NodeTypeConst.LANGUAGE,
+      { key: PropertyKeyConst.NAME, value: name },
+    );
 
     if (!langNode) {
       return null;
@@ -363,26 +623,11 @@ export class GraphThirdLayerService {
   }
 
   async getLanguages(): Promise<LanguageDto[]> {
-    const langNodes = await this.nodeRepo.repository.find({
-      relations: ['propertyKeys', 'propertyKeys.propertyValue'],
-      where: {
-        node_type: NodeTypeConst.LANGUAGE,
-      },
-    });
+    const langNodes = await this.firstLayerService.listAllNodesByType(
+      NodeTypeConst.LANGUAGE,
+    );
 
-    const dtos: LanguageDto[] = [];
-
-    for (const node of langNodes) {
-      const strJson = node.propertyKeys.at(0)?.propertyValue?.property_value;
-
-      if (strJson) {
-        const valObj = JSON.parse(strJson);
-
-        if (valObj.value) dtos.push({ id: node.id, name: valObj.value });
-      }
-    }
-
-    return dtos;
+    return langNodes.map(LanguageMapper.entityToDto);
   }
 
   // --------- region map node --------- //
@@ -439,9 +684,4 @@ export class GraphThirdLayerService {
     const dtos = mapNodes.map((node) => MapMapper.entityToDto(node));
     return dtos;
   }
-}
-
-interface Document {
-  id?: string;
-  name: string;
 }
