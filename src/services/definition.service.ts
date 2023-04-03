@@ -29,7 +29,7 @@ export class DefinitionService {
 
   async createDefinition(
     definitionText: string,
-    wordId: string,
+    forNodeId: Nanoid,
   ): Promise<Nanoid> {
     const existingDefinitionNode =
       await this.graphFirstLayerService.getNodeByProp(
@@ -38,6 +38,7 @@ export class DefinitionService {
           key: PropertyKeyConst.TEXT,
           value: definitionText,
         },
+        { from_node_id: forNodeId },
       );
 
     if (existingDefinitionNode?.id) {
@@ -48,7 +49,7 @@ export class DefinitionService {
       await this.graphSecondLayerService.createRelatedToNodeFromObject(
         RelationshipTypeConst.WORD_TO_DEFINITION,
         {},
-        wordId,
+        forNodeId,
         NodeTypeConst.DEFINITION,
         { [PropertyKeyConst.TEXT]: definitionText },
       );
