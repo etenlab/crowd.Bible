@@ -24,6 +24,8 @@ export class NodeTypeConst {
   static readonly MAP_LANG = 'map-language';
 
   static readonly USER = 'user';
+  static readonly DEFINITION = 'definition';
+  static readonly PHRASE = 'phrase';
 }
 
 export class RelationshipTypeConst {
@@ -47,6 +49,10 @@ export class RelationshipTypeConst {
   static readonly WORD_SEQUENCE_TO_TRANSLATION = 'word-sequence-to-translation';
   static readonly WORD_SEQUENCE_TO_SUB_WORD_SEQUENCE =
     'word-sequence-to-sub-word-sequence';
+
+  static readonly WORD_TO_DEFINITION = 'word-to-definition';
+  static readonly PHRASE_TO_DEFINITION = 'phrase-to-definition';
+  static readonly PHRASE_TO_LANG = 'phrase-to-language-entry';
 }
 
 export class PropertyKeyConst {
@@ -68,4 +74,5 @@ export class PropertyKeyConst {
   static readonly LENGTH = 'length';
 
   static readonly ORIGINAL_WORD_SEQUENCE_ID = 'original-word-sequence-id';
+  static readonly TEXT = 'text';
 }

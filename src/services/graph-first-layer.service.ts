@@ -15,6 +15,7 @@ import { type Node } from '@/models/node/node.entity';
 
 import { RelationshipType } from '@/models/relationship/relationship-type.entity';
 import { type Relationship } from '@/models/relationship/relationship.entity';
+import { NodeTypeConst } from '../constants/graph.constant';
 
 export class GraphFirstLayerService {
   constructor(
@@ -150,4 +151,43 @@ export class GraphFirstLayerService {
       key_value,
     );
   }
+
+  async getNodesByTypeAndRelatedNodes({
+    type,
+    from_node_id,
+    to_node_id,
+  }: getNodesByTypeAndRelatedNodesParams): Promise<Node[]> {
+    try {
+      const foundNodesQB = await this.nodeRepo.repository
+        .createQueryBuilder('node')
+        .leftJoinAndSelect('node.propertyKeys', 'propertyKeys')
+        .leftJoinAndSelect('propertyKeys.propertyValue', 'propertyValue')
+        .leftJoinAndSelect('node.nodeRelationships', 'nodeRelationships')
+        .leftJoinAndSelect('node.toNodeRelationships', 'toNodeRelationships')
+        .where('node.node_type = :type', { type });
+
+      from_node_id &&
+        foundNodesQB.andWhere(
+          'toNodeRelationships.from_node_id = :from_node_id',
+          {
+            from_node_id,
+          },
+        );
+
+      to_node_id &&
+        foundNodesQB.andWhere('nodeRelationships.to_node_id = :to_node_id', {
+          to_node_id,
+        });
+      return foundNodesQB.getMany();
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to get nodes by type ${type}`);
+    }
+  }
+}
+
+interface getNodesByTypeAndRelatedNodesParams {
+  type: NodeTypeConst;
+  from_node_id?: Nanoid;
+  to_node_id?: Nanoid;
 }

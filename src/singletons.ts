@@ -14,6 +14,7 @@ import { VoteRepository } from '@/repositories/vote/vote.repository';
 import { DbService } from '@/services/db.service';
 import { SeedService } from '@/services/seed.service';
 import { SyncService } from '@/services/sync.service';
+import { DefinitionService } from './services/definition.service';
 
 import { GraphFirstLayerService } from '@/services/graph-first-layer.service';
 import { GraphSecondLayerService } from '@/src/services/graph-second-layer.service';
@@ -26,6 +27,7 @@ export interface ISingletons {
   dbService: DbService;
   syncService: SyncService;
   seedService: SeedService;
+  definitionService: DefinitionService;
 
   graphFirstLayerService: GraphFirstLayerService;
   graphSecondLayerService: GraphSecondLayerService;
@@ -123,12 +125,19 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     voteRepo,
   );
 
+  const definitionService = new DefinitionService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+    graphThirdLayerService,
+  );
+
   const lexiconService = new LexiconService(graphSecondLayerService, nodeRepo);
 
   return {
     dbService,
     syncService,
     seedService,
+    definitionService,
 
     graphFirstLayerService,
     graphSecondLayerService,
