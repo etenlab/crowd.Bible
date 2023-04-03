@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography, Divider } from '@mui/material';
 import { Button, Input, CrowdBibleUI, Autocomplete } from '@eten-lab/ui-kit';
 import { useSingletons } from '@/src/hooks/useSingletons';
-import { LanguageDto } from '@/src/dtos/lang.dto';
+import { LanguageDto } from '@/src/dtos/language.dto';
 import { WordDto } from '@/src/dtos/word.dto';
 import { RelationshipTypeConst } from '@/src/constants/graph.constant';
 

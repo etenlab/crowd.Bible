@@ -37,7 +37,14 @@ export function PageLayout({ children }: PageLayoutProps) {
 
   const {
     states: {
-      global: { user, snack, isNewDiscussion, isNewNotification, loading },
+      global: {
+        user,
+        snack,
+        isNewDiscussion,
+        isNewNotification,
+        loading,
+        singletons,
+      },
     },
     actions: { closeFeedback, setPrefersColorScheme },
   } = useAppContext();
@@ -127,6 +134,8 @@ export function PageLayout({ children }: PageLayoutProps) {
       break;
     }
   }
+
+  const isLoading = loading || !singletons;
 
   return (
     <>
@@ -224,7 +233,7 @@ export function PageLayout({ children }: PageLayoutProps) {
             </Alert>
           </Snackbar>
 
-          <Backdrop sx={{ color: '#fff', zIndex: 1000 }} open={loading}>
+          <Backdrop sx={{ color: '#fff', zIndex: 1000 }} open={isLoading}>
             <Stack justifyContent="center">
               <div style={{ margin: 'auto' }}>
                 <CircularProgress color="inherit" />
