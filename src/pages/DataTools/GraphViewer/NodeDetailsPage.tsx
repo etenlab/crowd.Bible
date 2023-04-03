@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { IonContent } from '@ionic/react';
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { useSingletons } from '@/src/hooks/useSingletons';
+import { useGlobal } from '@/src/hooks/useGlobal';
+import { initialState, reducer } from '@/src/reducers';
 
 const { NodeDetails, TitleWithIcon } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -12,18 +14,15 @@ interface INodeDetailsPageProps {
 }
 
 export function NodeDetailsPage({ nodeId, setNodeId }: INodeDetailsPageProps) {
-  console.log(nodeId);
-  const [isLoading, setIsLoading] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { setLoadingState } = useGlobal({ dispatch });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [node, setNode] = useState<any>(null);
   const singletons = useSingletons();
 
   useEffect(() => {
-    setIsLoading(true);
-
     const searchNode = async () => {
       if (singletons) {
-        console.log('qwqwerqwerqwer');
         const filtered_node = await singletons.nodeRepo.repository.findOne({
           relations: [
             'propertyKeys',
@@ -120,13 +119,14 @@ export function NodeDetailsPage({ nodeId, setNodeId }: INodeDetailsPageProps) {
       }
       return null;
     };
+    setLoadingState(true);
     searchNode()
       .then((filtered_node) => {
         setNode(filtered_node);
       })
       .catch((err) => console.log(err))
-      .finally(() => setIsLoading(false));
-  }, [singletons, setIsLoading, nodeId]);
+      .finally(() => setLoadingState(false));
+  }, [singletons, setLoadingState, nodeId]);
 
   return (
     <IonContent>
@@ -140,7 +140,7 @@ export function NodeDetailsPage({ nodeId, setNodeId }: INodeDetailsPageProps) {
           }}
           onBack={() => {}}
         />
-        <NodeDetails node={node} isLoading={isLoading} setNodeId={setNodeId} />
+        <NodeDetails node={node} setNodeId={setNodeId} />
       </Stack>
     </IonContent>
   );

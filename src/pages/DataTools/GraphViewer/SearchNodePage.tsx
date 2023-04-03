@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { IonContent } from '@ionic/react';
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { useSingletons } from '@/src/hooks/useSingletons';
 import { Like } from 'typeorm';
+import { useGlobal } from '@/src/hooks/useGlobal';
+import { initialState, reducer } from '@/src/reducers';
 
 const { SearchNode, TitleWithIcon } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -12,7 +14,8 @@ interface ISearchNodePageProps {
 }
 
 export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { setLoadingState } = useGlobal({ dispatch });
   const [search, setSearch] = useState('');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [nodes, setNodes] = useState<any>([]);
@@ -23,10 +26,17 @@ export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
       setNodes([]);
       return;
     }
-    setIsLoading(true);
+    setLoadingState(true);
 
     const searchNode = async () => {
       if (singletons) {
+        const table_id = await singletons.tableService.createTable('table_1');
+        const col_id = await singletons.tableService.createColumn(
+          table_id,
+          'col-1',
+        );
+        const row_id = await singletons.tableService.createRow(table_id);
+        await singletons.tableService.createCell(col_id, row_id, 'cell-1-1');
         const nodes = await singletons.nodeRepo.repository.find({
           relations: [
             'propertyKeys',
@@ -73,8 +83,8 @@ export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
         setNodes(filtered_nodes);
       })
       .catch((err) => console.log(err))
-      .finally(() => setIsLoading(false));
-  }, [search, singletons, setIsLoading]);
+      .finally(() => setLoadingState(false));
+  }, [search, setLoadingState, singletons]);
 
   return (
     <IonContent>
@@ -90,7 +100,6 @@ export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
         />
         <SearchNode
           nodes={nodes}
-          isLoading={isLoading}
           setNodeId={setNodeId}
           search={search}
           setSearch={setSearch}
