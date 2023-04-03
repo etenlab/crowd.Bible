@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useHistory } from 'react-router';
+import { useState, useEffect } from 'react';
 
 import {
   Tabs,
@@ -9,90 +8,60 @@ import {
   useColorModeContext,
   Checkbox,
   BiMessageRounded,
-  BiDislike,
-  BiLike,
   FiPlus,
+  VoteButton,
 } from '@eten-lab/ui-kit';
+
+import { Link } from '@/components/Link';
+
+import { useWordSequence } from '@/src/hooks/useWordSequence';
+import { useVote } from '@/src/hooks/useVote';
+
+import { WordSequenceWithVote } from '@/dtos/word-sequence.dto';
 
 const { Stack, Divider, IconButton } = MuiMaterial;
 
-function Voting({ voted, unvoted }: { voted: number; unvoted: number }) {
-  const { getColor } = useColorModeContext();
+function Voting({
+  vote,
+  onChangeVote,
+}: {
+  vote: VotesStatsRow;
+  onChangeVote(): void;
+}) {
+  const { toggleVote } = useVote();
+
+  const handleToggleVote = (voteValue: boolean) => {
+    toggleVote(vote.ballot_entry_id, voteValue);
+    onChangeVote();
+  };
 
   return (
     <Stack direction="row" gap="20px">
-      <span
-        style={{
-          display: 'inline-flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '5px',
-          borderRadius: '4px',
-          background: getColor('light-green'),
-          color: getColor('green'),
-          fontSize: '16px',
-        }}
-      >
-        <BiLike style={{ fontSize: '18px' }} />
-        {voted}
-      </span>
-      <span
-        style={{
-          display: 'inline-flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '5px',
-          borderRadius: '4px',
-          background: getColor('light-red'),
-          color: getColor('red'),
-          fontSize: '16px',
-        }}
-      >
-        <BiDislike style={{ fontSize: '18px' }} />
-        {unvoted}
-      </span>
+      <VoteButton count={vote.up} onClick={() => handleToggleVote(true)} />
+      <VoteButton
+        isLike={false}
+        count={vote.down}
+        onClick={() => handleToggleVote(false)}
+      />
     </Stack>
   );
-}
-
-export function OpenDiscussion() {
-  const { getColor } = useColorModeContext();
-  return (
-    <span
-      style={{
-        padding: '5px',
-        paddingBottom: 0,
-        borderRadius: '4px',
-        background: getColor('light-blue'),
-        color: getColor('gray'),
-        fontSize: '24px',
-      }}
-    >
-      <BiMessageRounded />
-    </span>
-  );
-}
-
-export interface TranslationType {
-  id: number;
-  text: string;
-  voted: number;
-  unvoted: number;
 }
 
 function Translation({
   translation,
   isCheckbox,
+  onChangeVote,
 }: {
-  translation: TranslationType;
+  translation: WordSequenceWithVote;
   isCheckbox: boolean;
+  onChangeVote: (translationId: Nanoid, ballotEntryId: Nanoid) => void;
 }) {
-  const { id, text, voted, unvoted } = translation;
-  const history = useHistory();
+  const { id, wordSequence, vote } = translation;
+
   const { getColor } = useColorModeContext();
 
   const handleClickDiscussionButton = () => {
-    history.push(`/discussion/table-name/${text}/row/${id}`);
+    // history.push(`/discussion/table-name/${text}/row/${id}`);
   };
 
   const checkbox = isCheckbox ? <Checkbox sx={{ marginLeft: '-9px' }} /> : null;
@@ -110,16 +79,18 @@ function Translation({
             variant="body3"
             sx={{ padding: '9px 0', color: getColor('dark') }}
           >
-            {text}
+            {wordSequence}
           </Typography>
           <Stack
             direction="row"
             justifyContent="space-between"
             alignItems="center"
           >
-            <Voting voted={voted} unvoted={unvoted} />
-            {/* <OpenDiscussion />
-             */}
+            <Voting
+              vote={vote}
+              onChangeVote={() => onChangeVote(id, vote.ballot_entry_id)}
+            />
+
             <IconButton onClick={handleClickDiscussionButton}>
               <BiMessageRounded
                 style={{
@@ -140,23 +111,98 @@ function Translation({
 }
 
 interface TranslationListProps {
-  translations: TranslationType[];
+  documentId: Nanoid | null;
+  wordSequenceId: Nanoid | null;
   isCheckbox?: boolean;
 }
 
 export function TranslationList({
-  translations,
+  documentId,
+  wordSequenceId,
   isCheckbox = true,
 }: TranslationListProps) {
-  const [currentTab, setCurrentTab] = useState<string>('all');
-  const history = useHistory();
+  const {
+    listTranslationsByDocumentId,
+    listTranslationsByWordSequenceId,
+    listMyTranslationsByDocumentId,
+    listMyTranslationsByWordSequenceId,
+  } = useWordSequence();
+  const { getVotesStats } = useVote();
+  const [currentTab, setCurrentTab] = useState<'all' | 'mine'>('all');
+  const [translations, setTranslations] = useState<WordSequenceWithVote[]>([]);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+  useEffect(() => {
+    if (!documentId) {
+      return;
+    }
+
+    if (!wordSequenceId) {
+      if (currentTab === 'all') {
+        listTranslationsByDocumentId(documentId).then(setTranslations);
+      } else if (currentTab === 'mine') {
+        listMyTranslationsByDocumentId(documentId).then(setTranslations);
+      }
+    } else {
+      if (currentTab === 'all') {
+        listTranslationsByWordSequenceId(wordSequenceId).then(setTranslations);
+      } else if (currentTab === 'mine') {
+        listMyTranslationsByWordSequenceId(wordSequenceId).then(
+          setTranslations,
+        );
+      }
+    }
+  }, [
+    documentId,
+    wordSequenceId,
+    currentTab,
+    listTranslationsByDocumentId,
+    listTranslationsByWordSequenceId,
+    listMyTranslationsByWordSequenceId,
+    listMyTranslationsByDocumentId,
+  ]);
+
+  const handleTabChange = (
+    _event: React.SyntheticEvent,
+    newValue: 'all' | 'mine',
+  ) => {
     setCurrentTab(newValue);
   };
 
-  const handleClickAddMyTranslation = () => {
-    history.push('/translation-edit');
+  const addMyTranslationComponent =
+    currentTab === 'mine' ? (
+      <Link to={`/translation-edit/${documentId}/${wordSequenceId}`}>
+        <Button
+          variant="contained"
+          startIcon={<FiPlus />}
+          fullWidth
+          sx={{ margin: '10px 0' }}
+        >
+          Add My Translation
+        </Button>
+      </Link>
+    ) : null;
+
+  const handleChangeVote = async (
+    translationId: Nanoid,
+    ballotEntryId: Nanoid,
+  ) => {
+    const vote = await getVotesStats(ballotEntryId);
+
+    if (!vote) {
+      return;
+    }
+
+    setTranslations((translations) =>
+      translations.map((translation) => {
+        if (translation.id === translationId) {
+          return {
+            ...translation,
+            vote,
+          };
+        }
+        return translation;
+      }),
+    );
   };
 
   return (
@@ -169,17 +215,7 @@ export function TranslationList({
         value={currentTab}
         onChange={handleTabChange}
       />
-      {currentTab === 'mine' ? (
-        <Button
-          variant="contained"
-          startIcon={<FiPlus />}
-          fullWidth
-          onClick={handleClickAddMyTranslation}
-          sx={{ margin: '10px 0' }}
-        >
-          Add My Translation
-        </Button>
-      ) : null}
+      {addMyTranslationComponent}
 
       <Stack sx={{ flexGrow: 1, overflowY: 'auto' }}>
         {translations.map((item) => (
@@ -187,6 +223,7 @@ export function TranslationList({
             key={item.id}
             translation={item}
             isCheckbox={isCheckbox}
+            onChangeVote={handleChangeVote}
           />
         ))}
       </Stack>

@@ -1,5 +1,5 @@
-import { useState, type MouseEvent } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useState, useEffect, useMemo, type MouseEvent } from 'react';
+import { useParams } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
 
 import {
@@ -12,14 +12,15 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { TranslationList } from '@/components/TranslationList';
+import { Link } from '@/components/Link';
 
-import { mockTranslations } from './TranslationCandidatesPage';
+import { useWordSequence } from '@/hooks/useWordSequence';
+import { useAppContext } from '@/hooks/useAppContext';
+
+import { WordSequenceWithSubDto } from '@/dtos/word-sequence.dto';
 
 const { DotsText } = CrowdBibleUI;
 const { Stack, Backdrop } = MuiMaterial;
-
-export const mockDocument =
-  '1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 3. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 4. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 5. From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. 6. Ut enim ad minim veniam, quis nostrud exercitation. 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 3. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 4. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 5. From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. 6. Ut enim ad minim veniam, quis nostrud exercitation.';
 
 export const mockRanges = [
   {
@@ -49,31 +50,67 @@ export const mockRanges = [
   },
 ];
 
-export function TranslationPage() {
-  const history = useHistory();
-  const { getColor } = useColorModeContext();
-  const [opened, setOpened] = useState<boolean>(false);
+export const mockDocument =
+  '1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 3. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 4. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 5. From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. 6. Ut enim ad minim veniam, quis nostrud exercitation. 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 3. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 4. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 5. From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. 6. Ut enim ad minim veniam, quis nostrud exercitation.';
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleDotClick = (id: number) => {
-    setOpened(true);
+export function TranslationPage() {
+  const { documentId } = useParams<{ documentId: Nanoid }>();
+  const { getColor } = useColorModeContext();
+  const { getOriginWordSequenceByDocumentId } = useWordSequence();
+  const {
+    states: {
+      global: { singletons },
+    },
+  } = useAppContext();
+
+  const [wordSequenceId, setWordSequenceId] = useState<Nanoid | null>(null);
+  const [originalWordSequence, setOriginalWordSequence] =
+    useState<WordSequenceWithSubDto | null>(null);
+
+  useEffect(() => {
+    if (singletons && documentId) {
+      getOriginWordSequenceByDocumentId(documentId).then((wordSequence) => {
+        setOriginalWordSequence(wordSequence as WordSequenceWithSubDto | null);
+      });
+    }
+  }, [documentId, singletons, getOriginWordSequenceByDocumentId]);
+
+  const handleDotClick = (id: unknown) => {
+    setWordSequenceId(id as Nanoid);
   };
 
   const handleClose = () => {
-    setOpened(false);
+    setWordSequenceId(null);
   };
 
   const handleCancelBubbling = (event: MouseEvent<HTMLElement>) => {
     event.stopPropagation();
   };
 
-  const handleGoToEditPage = () => {
-    history.push('/translation-edit');
-  };
+  const origin = useMemo(() => {
+    if (!originalWordSequence) {
+      return {
+        text: '',
+        ranges: [],
+      };
+    }
 
-  const handleGoToTranslationCandidatesPage = () => {
-    history.push('/translation-candidates');
-  };
+    return {
+      text: originalWordSequence.wordSequence,
+      ranges: originalWordSequence.subSequences.map(
+        ({ id, position, len }) => ({
+          id,
+          start: position,
+          end: position + len - 1,
+        }),
+      ),
+    };
+  }, [originalWordSequence]);
+
+  const backdropOpened = wordSequenceId ? true : false;
+  const goToEditorLink = wordSequenceId
+    ? `/translation-edit/${documentId}/${wordSequenceId}`
+    : `/translation-edit/${documentId}`;
 
   return (
     <IonContent>
@@ -89,33 +126,31 @@ export function TranslationPage() {
           Original
         </Typography>
         <DotsText
-          text={mockDocument}
-          ranges={mockRanges}
+          text={origin.text}
+          ranges={origin.ranges}
           onSelect={handleDotClick}
           dotColor="blue-primary"
           selectedColor="light-blue"
         />
-        <Button
-          variant="contained"
-          startIcon={<FiPlus />}
-          fullWidth
-          onClick={handleGoToEditPage}
-          sx={{ margin: '10px 0' }}
-        >
-          Add My Translation
-        </Button>
-        <Button
-          variant="text"
-          fullWidth
-          onClick={handleGoToTranslationCandidatesPage}
-          sx={{ margin: '10px 0' }}
-          endIcon
-        >
-          Go To Translation List
-        </Button>
+        <Link to={goToEditorLink}>
+          <Button
+            variant="contained"
+            startIcon={<FiPlus />}
+            fullWidth
+            sx={{ margin: '10px 0' }}
+          >
+            Add My Translation
+          </Button>
+        </Link>
+
+        <Link to="/translation-candidates">
+          <Button variant="text" fullWidth sx={{ margin: '10px 0' }} endIcon>
+            Go To Translation List
+          </Button>
+        </Link>
       </Stack>
       <Backdrop
-        open={opened}
+        open={backdropOpened}
         onClick={handleClose}
         sx={{
           alignItems: 'flex-end',
@@ -133,7 +168,11 @@ export function TranslationPage() {
           }}
           onClick={handleCancelBubbling}
         >
-          <TranslationList translations={mockTranslations} isCheckbox={false} />
+          <TranslationList
+            documentId={documentId}
+            wordSequenceId={wordSequenceId}
+            isCheckbox={false}
+          />
         </Stack>
       </Backdrop>
     </IonContent>
