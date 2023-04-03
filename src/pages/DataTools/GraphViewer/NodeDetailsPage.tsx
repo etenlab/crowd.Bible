@@ -14,6 +14,7 @@ interface INodeDetailsPageProps {
 export function NodeDetailsPage({ nodeId, setNodeId }: INodeDetailsPageProps) {
   console.log(nodeId);
   const [isLoading, setIsLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [node, setNode] = useState<any>(null);
   const singletons = useSingletons();
 

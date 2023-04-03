@@ -14,6 +14,7 @@ interface ISearchNodePageProps {
 export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [nodes, setNodes] = useState<any>([]);
   const singletons = useSingletons();
 
