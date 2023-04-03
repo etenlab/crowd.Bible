@@ -37,11 +37,6 @@ interface TableCell {
   data?: any;
 }
 
-interface Document {
-  id?: string;
-  name: string;
-}
-
 interface Word {
   id?: string;
   name: string;
