@@ -58,6 +58,21 @@ export class VoteRepository {
     return vote;
   }
 
+  async getVote(ballotEntryId: Nanoid, userId: Nanoid): Promise<Vote | null> {
+    const vote = await this.repository.findOne({
+      where: {
+        ballot_entry_id: ballotEntryId,
+        user_id: userId,
+      },
+    });
+
+    if (!vote) {
+      return null;
+    }
+
+    return vote;
+  }
+
   async readVoteByBallotEntry(ballot_entry_id: string): Promise<Vote> {
     const vote = await this.repository.findOne({
       where: {
@@ -77,7 +92,6 @@ export class VoteRepository {
     return votes;
   }
 
-  //TODO: define VoteStat
   async getVotesStats(ballot_entry_id: Nanoid): Promise<VotesStatsRow> {
     const result: VotesStatsRow[] = await this.repository.query(`
     SELECT 

@@ -5,6 +5,7 @@ import {
   type PrefersColorSchemeType,
   TranslatedMap,
 } from './global.reducer';
+import { type ISingletons } from '@/src/singletons';
 
 export const actions = {
   ALERT_FEEDBACK: 'ALERT_FEEDBACK',
@@ -15,6 +16,8 @@ export const actions = {
   SET_TRANSLATED_MAP: 'SET_TRANSLATED_MAP',
   SET_CONNECTIVITY: 'SET_CONNECTIVITY',
   LOGOUT: 'LOGOUT',
+  SET_LOGING_STATE: 'SET_LOGING_STATE',
+  SET_SINGLETONS: 'SET_SINGLETONS',
 };
 
 export function setUser(user: IUser) {
@@ -73,5 +76,19 @@ export function logout() {
   return {
     type: actions.LOGOUT,
     payload: null,
+  };
+}
+
+export function setLoadingState(state: boolean) {
+  return {
+    type: actions.SET_LOGING_STATE,
+    payload: state,
+  };
+}
+
+export function setSingletons(singletons: ISingletons | null) {
+  return {
+    type: actions.SET_SINGLETONS,
+    payload: singletons,
   };
 }

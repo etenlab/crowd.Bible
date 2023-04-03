@@ -82,6 +82,16 @@ export class NodeRepository {
     }
   }
 
+  async findOne(
+    relations: string[],
+    whereObj: FindOptionsWhere<Node>,
+  ): Promise<Node | null> {
+    return this.repository.findOne({
+      relations,
+      where: whereObj,
+    });
+  }
+
   async getNodeByProp(
     type: string,
     prop: { key: string; value: unknown },
@@ -146,25 +156,25 @@ export class NodeRepository {
 
     const sqlStr = `
         select 
-          node.id
+          nodes.id
         from 
-          node 
+          nodes 
           inner join (
             select 
               pk.id, 
               pk.node_id, 
               count(pk.property_key) as property_keys
             from 
-              node_property_key as pk 
-              left join node_property_value as pv on pk.id = pv.node_property_key_id 
+              node_property_keys as pk 
+              left join node_property_values as pv on pk.id = pv.node_property_key_id 
             where ${conditionStr}
             group by 
               pk.node_id 
             having 
               count(pk.property_key) = ${props.length}
-          ) as npk on node.id = npk.node_id 
+          ) as npk on nodes.id = npk.node_id 
         where 
-          node.node_type = '${type}';
+          nodes.node_type = '${type}';
       `;
 
     const nodes: [{ id: Nanoid }] = await this.repository.query(sqlStr);

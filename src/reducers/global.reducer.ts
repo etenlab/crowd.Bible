@@ -1,5 +1,6 @@
 import { actions } from './global.actions';
 import { type ActionType } from '.';
+import { type ISingletons } from '@/src/singletons';
 
 export type FeedbackType = 'success' | 'error' | 'info' | 'warning';
 
@@ -34,6 +35,7 @@ export interface StateType {
   isNewDiscussion: boolean;
   isNewNotification: boolean;
   translatedMap: TranslatedMap;
+  singletons: ISingletons | null;
 }
 
 const initialSnact: SnackType = {
@@ -55,6 +57,7 @@ export const initialState: StateType = {
   isNewDiscussion: false,
   isNewNotification: false,
   translatedMap: initialTranslatedMap,
+  singletons: null,
 };
 
 export function reducer(
@@ -133,6 +136,18 @@ export function reducer(
       return {
         ...prevState,
         user: null,
+      };
+    }
+    case actions.SET_LOGING_STATE: {
+      return {
+        ...prevState,
+        loading: action.payload as boolean,
+      };
+    }
+    case actions.SET_SINGLETONS: {
+      return {
+        ...prevState,
+        singletons: action.payload as ISingletons,
       };
     }
     default: {

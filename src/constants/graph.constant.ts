@@ -23,6 +23,7 @@ export class NodeTypeConst {
   static readonly LANGUAGE = 'language';
   static readonly MAP_LANG = 'map-language';
 
+  static readonly USER = 'user';
   static readonly DEFINITION = 'definition';
   static readonly PHRASE = 'phrase';
 }
@@ -46,6 +47,8 @@ export class RelationshipTypeConst {
   static readonly WORD_SEQUENCE_TO_WORD_SEQUENCE =
     'word-sequence-to-word-sequence';
   static readonly WORD_SEQUENCE_TO_TRANSLATION = 'word-sequence-to-translation';
+  static readonly WORD_SEQUENCE_TO_SUB_WORD_SEQUENCE =
+    'word-sequence-to-sub-word-sequence';
 
   static readonly WORD_TO_DEFINITION = 'word-to-definition';
   static readonly PHRASE_TO_DEFINITION = 'phrase-to-definition';
@@ -54,11 +57,22 @@ export class RelationshipTypeConst {
 
 export class PropertyKeyConst {
   static readonly NAME = 'name';
+  static readonly EMAIL = 'email';
 
   static readonly TABLE_NAME = 'table_name';
   static readonly ROW_ID = 'row_id';
   static readonly ELECTION_ID = 'election_id';
 
   static readonly IMPORT_UID = 'import-uid';
+  static readonly WORD_SEQUENCE = 'word_sequence';
+
+  static readonly IS_ORIGIN = 'is_origin';
+  static readonly CREATOR_ID = 'creator_id';
+  static readonly DOCUMENT_ID = 'document_id';
+  static readonly LANGUAGE_ID = 'language_id';
+  static readonly POSITION = 'position';
+  static readonly LENGTH = 'length';
+
+  static readonly ORIGINAL_WORD_SEQUENCE_ID = 'original-word-sequence-id';
   static readonly TEXT = 'text';
 }

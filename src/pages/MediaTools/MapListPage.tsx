@@ -17,7 +17,7 @@ import {
 } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
 import { useSingletons } from '@/src/hooks/useSingletons';
-import { LanguageDto } from '@/src/dtos/lang.dto';
+import { LanguageDto } from '@/src/dtos/language.dto';
 const { TitleWithIcon } = CrowdBibleUI;
 
 //#region types
