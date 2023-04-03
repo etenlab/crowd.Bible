@@ -26,7 +26,9 @@ export class SeedService {
     private readonly relationshipTypeRepository: RelationshipTypeRepository,
     private readonly relationshipPropertyKeyRepository: RelationshipPropertyKeyRepository,
     private readonly relationshipPropertyValueRepository: RelationshipPropertyValueRepository,
-  ) {}
+  ) {
+    this.init();
+  }
 
   async init() {
     try {

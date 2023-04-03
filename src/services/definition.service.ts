@@ -3,7 +3,7 @@ import {
   PropertyKeyConst,
   RelationshipTypeConst,
 } from '../constants/graph.constant';
-import { LanguageDto } from '../dtos/lang.dto';
+import { LanguageDto } from '@/dtos/language.dto';
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 import { GraphThirdLayerService } from './graph-third-layer.service';

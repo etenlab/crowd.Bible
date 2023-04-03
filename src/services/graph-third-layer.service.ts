@@ -56,7 +56,7 @@ export class GraphThirdLayerService {
 
   async getUser(email: string): Promise<UserDto | null> {
     const user = await this.firstLayerService.getNodeByProp(
-      NodeTypeConst.DOCUMENT,
+      NodeTypeConst.USER,
       {
         key: PropertyKeyConst.EMAIL,
         value: email,
@@ -398,19 +398,21 @@ export class GraphThirdLayerService {
       return null;
     }
 
-    if (withSubWordSequence === false) {
-      return WordSequenceMapper.entityToDto(wordSequence);
-    }
-
     const wordSequenceAgain = await this.firstLayerService.readNode(
       wordSequence.id,
       [
         'propertyKeys',
         'propertyKeys.propertyValue',
         'nodeRelationships',
+        'nodeRelationships.propertyKeys',
+        'nodeRelationships.propertyKeys.propertyValue',
         'nodeRelationships.toNode',
       ],
     );
+
+    if (withSubWordSequence === false) {
+      return WordSequenceMapper.entityToDto(wordSequenceAgain!);
+    }
 
     return WordSequenceMapper.entityToDtoWithSubSequence(wordSequenceAgain!);
   }

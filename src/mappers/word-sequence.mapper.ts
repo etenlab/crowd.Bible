@@ -64,8 +64,9 @@ export class WordSequenceMapper {
       entity,
     ) as WordSequenceWithSubDto;
 
+    dto.subSequences = [];
+
     if (!entity.nodeRelationships) {
-      dto.subSequences = [];
       return dto;
     }
     entity.nodeRelationships.forEach((rel) => {
