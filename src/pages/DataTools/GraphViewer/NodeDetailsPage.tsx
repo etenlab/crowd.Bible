@@ -39,7 +39,7 @@ export function NodeDetailsPage({ nodeId, setNodeId }: INodeDetailsPageProps) {
             id: nodeId,
           },
         });
-        console.log(filtered_node);
+
         if (!filtered_node) {
           return null;
         }
@@ -109,14 +109,6 @@ export function NodeDetailsPage({ nodeId, setNodeId }: INodeDetailsPageProps) {
           }
         }
 
-        console.log({
-          ...filtered_node,
-          upVotes: 25,
-          downVotes: 12,
-          posts: [],
-          propertyKeys: nodePropertyKeys,
-          nodeRelationships: new_relationships,
-        });
         return {
           ...filtered_node,
           upVotes: 25,
@@ -130,7 +122,6 @@ export function NodeDetailsPage({ nodeId, setNodeId }: INodeDetailsPageProps) {
     };
     searchNode()
       .then((filtered_node) => {
-        console.log(filtered_node);
         setNode(filtered_node);
       })
       .catch((err) => console.log(err))

@@ -41,7 +41,7 @@ export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
             },
           },
         });
-        console.log(nodes);
+
         const new_nodes = [];
         for (const node of nodes) {
           const propertyKeys = node.propertyKeys.map((property_key) => {
@@ -70,7 +70,6 @@ export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
     };
     searchNode()
       .then((filtered_nodes) => {
-        console.log(filtered_nodes);
         setNodes(filtered_nodes);
       })
       .catch((err) => console.log(err))
