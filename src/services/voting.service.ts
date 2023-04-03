@@ -1,6 +1,9 @@
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 import { VoteRepository } from '@/repositories/vote/vote.repository';
+
+import { Vote } from '@/models/vote/vote.entity';
+
 import {
   NodeTypeConst,
   RelationshipTypeConst,
@@ -63,7 +66,7 @@ export class VotingService {
     );
 
     if (!election) {
-      return [];
+      throw new Error('Not Exists a Election by Eleciton Id!');
     }
 
     if (!election.nodeRelationships) {
@@ -126,6 +129,39 @@ export class VotingService {
     return node.id;
   }
 
+  async getBallotEntryId(
+    electionId: Nanoid,
+    ballotEntryTarget: BallotEntryTarget,
+  ): Promise<Nanoid | null> {
+    const election = await this.firstLayerService.readNode(electionId);
+
+    if (!election) {
+      throw new Error('Not Exists such electionId!');
+    }
+
+    const ballots = await this.firstLayerService.getNodesByProps(
+      NodeTypeConst.BALLOT_ENTRY,
+      [
+        { key: PropertyKeyConst.ELECTION_ID, value: electionId },
+        {
+          key: PropertyKeyConst.TABLE_NAME,
+          value: ballotEntryTarget.tableName,
+        },
+        { key: PropertyKeyConst.ROW_ID, value: ballotEntryTarget.rowId },
+      ],
+    );
+
+    if (ballots.length === 0) {
+      return null;
+    }
+
+    return ballots[0];
+  }
+
+  async getVotesStats(ballot_entry_id: Nanoid): Promise<VotesStatsRow> {
+    return this.voteRepo.getVotesStats(ballot_entry_id);
+  }
+
   async addVote(
     ballotEntryId: Nanoid,
     userId: Nanoid,
@@ -138,5 +174,9 @@ export class VotingService {
     });
 
     return newVote.id;
+  }
+
+  async getVote(ballotEntryId: Nanoid, userId: Nanoid): Promise<Vote | null> {
+    return this.voteRepo.getVote(ballotEntryId, userId);
   }
 }
