@@ -27,40 +27,21 @@ export class DefinitionService {
     private readonly graphThirdLayerService: GraphThirdLayerService,
   ) {}
 
-  async getDefinitionIdByText(definitionText: string): Promise<Nanoid | null> {
-    try {
-      const existingDefinitionNode =
-        await this.graphFirstLayerService.getNodeByProp(
-          NodeTypeConst.DEFINITION,
-          {
-            key: PropertyKeyConst.TEXT,
-            value: definitionText,
-          },
-        );
-
-      if (!existingDefinitionNode) {
-        return null;
-      }
-
-      return existingDefinitionNode.id;
-    } catch (err) {
-      console.error(err);
-      throw new Error(
-        `Failed to get getFirstDefinitionByText '${definitionText}'`,
-      );
-    }
-  }
-
   async createDefinition(
     definitionText: string,
     wordId: string,
   ): Promise<Nanoid> {
-    const existingDefinitionId = await this.getDefinitionIdByText(
-      definitionText,
-    );
+    const existingDefinitionNode =
+      await this.graphFirstLayerService.getNodeByProp(
+        NodeTypeConst.DEFINITION,
+        {
+          key: PropertyKeyConst.TEXT,
+          value: definitionText,
+        },
+      );
 
-    if (existingDefinitionId) {
-      return existingDefinitionId;
+    if (existingDefinitionNode?.id) {
+      return existingDefinitionNode.id;
     }
 
     const { node } =
@@ -77,6 +58,29 @@ export class DefinitionService {
 
   async createWord(word: string, langId: Nanoid): Promise<Nanoid> {
     return this.graphThirdLayerService.createWord(word, langId);
+  }
+
+  async createPhrase(phrase: string, langId: Nanoid): Promise<Nanoid> {
+    const existingPhraseNode = await this.graphFirstLayerService.getNodeByProp(
+      NodeTypeConst.PHRASE,
+      {
+        key: PropertyKeyConst.TEXT,
+        value: phrase,
+      },
+    );
+    if (existingPhraseNode?.id) {
+      return existingPhraseNode.id;
+    }
+
+    const { node } =
+      await this.graphSecondLayerService.createRelatedFromNodeFromObject(
+        RelationshipTypeConst.PHRASE_TO_LANG,
+        {},
+        NodeTypeConst.PHRASE,
+        { name: phrase },
+        langId,
+      );
+    return node.id;
   }
 
   async getDefinitionsAsVotableContent(
@@ -99,21 +103,43 @@ export class DefinitionService {
     return vc;
   }
 
+  async getPhrasesAsVotableItems(
+    langNodeId: string,
+  ): Promise<Array<VotableItem>> {
+    const phraseNodes =
+      await this.graphFirstLayerService.getNodesByTypeAndRelatedNodes({
+        type: NodeTypeConst.PHRASE,
+        to_node_id: langNodeId,
+      });
+
+    const viPromises = phraseNodes.map(async (pn) => ({
+      title: {
+        content: this.graphSecondLayerService.getNodePropertyValue(pn, 'name'),
+        upVote: 0, //TODO: 0 is a mocked value, replace it when voting is ready
+        downVote: 0, //TODO: 0 is a mocked value, replace it when voting is ready
+        id: pn.id,
+      } as VotableContent,
+      contents: await this.getDefinitionsAsVotableContent(pn.id),
+    }));
+    const vi = await Promise.all(viPromises);
+    return vi;
+  }
+
   async getWordsAsVotableItems(
     langNodeId: string,
   ): Promise<Array<VotableItem>> {
-    const words = await this.graphThirdLayerService.getWords({
+    const wordNodes = await this.graphThirdLayerService.getWords({
       to_node_id: langNodeId,
       relationship_type: RelationshipTypeConst.WORD_TO_LANG,
     });
-    const viPromises = words.map(async (w) => ({
+    const viPromises = wordNodes.map(async (wn) => ({
       title: {
-        content: this.graphSecondLayerService.getNodePropertyValue(w, 'name'),
+        content: this.graphSecondLayerService.getNodePropertyValue(wn, 'name'),
         upVote: 0, //TODO: 0 is a mocked value, replace it when voting is ready
         downVote: 0, //TODO: 0 is a mocked value, replace it when voting is ready
-        id: w.id,
+        id: wn.id,
       } as VotableContent,
-      contents: await this.getDefinitionsAsVotableContent(w.id),
+      contents: await this.getDefinitionsAsVotableContent(wn.id),
     }));
     const vi = await Promise.all(viPromises);
     return vi;

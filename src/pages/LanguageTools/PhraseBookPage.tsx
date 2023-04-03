@@ -1,29 +1,20 @@
 import { MuiMaterial } from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
-import { IonContent } from '@ionic/react';
-import { useEffect, useState } from 'react';
+import { IonContent, useIonAlert } from '@ionic/react';
+import { useCallback, useEffect, useState } from 'react';
+import { LanguageDto } from '../../dtos/lang.dto';
+import { useDefinitionService } from '../../hooks/useDefinitionService';
+import { VotableContent, VotableItem } from '../../services/definition.service';
 const { Box, Divider } = MuiMaterial;
 
 const {
   TitleWithIcon,
-  FiltersAndSearch,
   ItemsClickableList,
-  SimpleFormDialog,
   ItemContentListEdit,
+  SimpleFormDialog,
+  FiltersAndSearch,
 } = CrowdBibleUI;
-
-type VotableContent = {
-  content: string;
-  upVote: number;
-  downVote: number;
-  id: string | null;
-};
-
-type VotableItem = {
-  title: VotableContent;
-  contents: VotableContent[];
-};
 
 type TUpOrDownVote = 'upVote' | 'downVote';
 
@@ -32,12 +23,14 @@ type SetPhraseVotesParams = {
   upOrDown: TUpOrDownVote;
 };
 
-const MOCK_LANGUAGE_OPTIONS = ['lang1', 'lang2'];
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
-const MOCK_PHRASES: Array<VotableItem> = [
+
+// use as sample and for debugging purposes
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
   {
     title: {
-      content: 'Word1',
+      content: 'Phrase1',
       downVote: 1,
       upVote: 2,
       id: '12341234',
@@ -59,7 +52,7 @@ const MOCK_PHRASES: Array<VotableItem> = [
   },
   {
     title: {
-      content: 'Word2',
+      content: 'Phrase2',
       downVote: 21,
       upVote: 22,
       id: '12341237',
@@ -95,61 +88,181 @@ const MOCK_PHRASES: Array<VotableItem> = [
 const PADDING = 20;
 
 export function PhraseBookPage() {
-  const [phrases, setPhrases] = useState([] as Array<VotableItem>);
-  const [selectedPhrase, setSelectedPhrase] = useState(
-    null as unknown as VotableItem,
+  const [selectedPhrase, setSelectedPhrase] = useState<VotableItem | null>(
+    null,
   );
   const [isDialogOpened, setIsDialogOpened] = useState(false);
+  const definitionService = useDefinitionService();
+  const [phrases, setPhrases] = useState<VotableItem[]>([]);
+  const [presentAlert] = useIonAlert();
+
+  const [selectedLanguageId, setSelectedLanguageId] = useState<
+    string | null | undefined
+  >(null);
+  const [langs, setLangs] = useState<LanguageDto[]>([]);
+
+  const handleSelectLanguage = (value: string): void => {
+    const id = langs.find((l) => l.name === value)?.id;
+    setSelectedLanguageId(id);
+  };
 
   useEffect(() => {
-    setPhrases(MOCK_PHRASES);
-  }, []);
+    const loadLanguages = async () => {
+      if (!definitionService) return;
+      const langDtos = await definitionService.getLanguages();
+      setLangs(langDtos);
+    };
+    loadLanguages();
+  }, [definitionService]);
+
+  useEffect(() => {
+    if (!definitionService) return;
+    if (!selectedLanguageId) return;
+    const loadPhrases = async () => {
+      const phrases: VotableItem[] =
+        await definitionService.getPhrasesAsVotableItems(selectedLanguageId);
+      setPhrases(phrases);
+    };
+    loadPhrases();
+  }, [definitionService, selectedLanguageId]);
 
   const changePhraseVotes = ({
     titleContent,
     upOrDown,
   }: SetPhraseVotesParams) => {
     const phraseIdx = phrases.findIndex(
-      (ph) => ph.title.content === titleContent,
+      (w) => w.title.content === titleContent,
     );
     phrases[phraseIdx].title[upOrDown] += 1;
     setPhrases([...phrases]);
   };
 
-  const addNewPhrase = (value: string) => {
-    setPhrases([
-      ...phrases,
-      {
-        title: { content: value, upVote: 0, downVote: 0, id: null },
-        contents: [],
-      },
-    ]);
-    setIsDialogOpened(false);
-  };
+  const addPhrase = useCallback(
+    async (phrase: string) => {
+      if (!definitionService || !selectedLanguageId) {
+        throw new Error(
+          `!definitionService || !selectedLanguageId when addNewPhrase`,
+        );
+      }
+      const existingPhrase = phrases.find((w) => w.title.content === phrase);
+      if (existingPhrase) {
+        presentAlert({
+          header: 'Alert',
+          subHeader: 'Such a phrase already exists!',
+          message:
+            'Use existing phrase to add a new definition, if you want to.',
+          buttons: ['Ok'],
+        });
+        setIsDialogOpened(false);
+        return;
+      }
+      const newPhraseNodeId = await definitionService.createPhrase(
+        phrase,
+        selectedLanguageId,
+      );
+      setPhrases([
+        ...phrases,
+        {
+          title: {
+            content: phrase,
+            upVote: 0,
+            downVote: 0,
+            id: newPhraseNodeId,
+          },
+          contents: [],
+        },
+      ]);
+      setIsDialogOpened(false);
+    },
+    [definitionService, selectedLanguageId, phrases, presentAlert],
+  );
 
-  const changePhraseContent = ({
-    contentIndex,
-    newContent,
-  }: {
-    contentIndex: number;
-    newContent: VotableContent;
-  }) => {
-    const phraseIdx = phrases.findIndex(
-      (ph) => ph.title.id === selectedPhrase.title.id,
-    );
-    phrases[phraseIdx].contents[contentIndex] = newContent;
+  const changeDefinition = useCallback(
+    async ({
+      contentIndex,
+      newContent,
+    }: {
+      contentIndex: number;
+      newContent: VotableContent;
+    }) => {
+      if (!selectedPhrase?.title?.id) {
+        throw new Error(
+          `!selectedPhrase?.title?.id: There is no selected phrase to change definition`,
+        );
+      }
+      if (!definitionService) {
+        throw new Error(
+          `!definitionService: Definition service is not present`,
+        );
+      }
+      if (!newContent.id) {
+        throw new Error(`!newContent.id: Definition doesn't have an id`);
+      }
+      const phraseIdx = phrases.findIndex(
+        (w) => w.title.id === selectedPhrase?.title.id,
+      );
+      await definitionService.updateDefinition(
+        newContent.id,
+        newContent.content,
+      );
+      phrases[phraseIdx].contents[contentIndex] = newContent;
+      setPhrases([...phrases]);
+    },
+    [definitionService, selectedPhrase?.title.id, phrases],
+  );
 
-    setPhrases([...phrases]);
-  };
+  const addDefinition = useCallback(
+    async ({ newContent }: { newContent: VotableContent }) => {
+      if (!definitionService) {
+        throw new Error(`!definitionService when addDefinition`);
+      }
+      if (!selectedPhrase?.title?.id) {
+        throw new Error(`There is no selected phrase to add definition`);
+      }
+      const phraseNodeId = selectedPhrase?.title?.id;
+      const newDefinitionNodeId = await definitionService.createDefinition(
+        newContent.content,
+        phraseNodeId,
+      );
+      const phraseIdx = phrases.findIndex(
+        (phrase) => phrase.title.id === phraseNodeId,
+      );
+      const existingDefinition = phrases[phraseIdx].contents.find(
+        (d) => d.content === newContent.content,
+      );
+      if (existingDefinition) {
+        presentAlert({
+          header: 'Alert',
+          subHeader: 'Such a definition of the phrase already exists!',
+          message:
+            'You can vote for the existing definition or enter another one.',
+          buttons: ['Ok'],
+        });
+        setIsDialogOpened(false);
+        return;
+      }
+      phrases[phraseIdx].contents.push({
+        ...newContent,
+        id: newDefinitionNodeId,
+      });
+      setSelectedPhrase(phrases[phraseIdx]);
+      setPhrases([...phrases]);
+    },
+    [definitionService, presentAlert, selectedPhrase?.title?.id, phrases],
+  );
 
-  const addPhraseContent = ({ newContent }: { newContent: VotableContent }) => {
-    const phraseIdx = phrases.findIndex(
-      (ph) => ph.title.id === selectedPhrase.title.id,
-    );
-    // const newPhrases = [...phrases];
-    phrases[phraseIdx].contents.push(newContent);
-    setPhrases(phrases);
-  };
+  const handleAddPhraseButtonClick = useCallback(() => {
+    if (!selectedLanguageId) {
+      presentAlert({
+        header: 'Alert',
+        subHeader: 'No Language selected!',
+        message: 'Before adding a phrase, select language',
+        buttons: ['Ok'],
+      });
+      return;
+    }
+    setIsDialogOpened(true);
+  }, [presentAlert, selectedLanguageId]);
 
   return (
     <IonContent>
@@ -173,16 +286,16 @@ export function PhraseBookPage() {
                 onBack={() => {}}
                 withBackIcon={false}
                 withCloseIcon={false}
-                label="Phrases"
+                label="Dictionary"
               ></TitleWithIcon>
             </Box>
           </Box>
 
           <FiltersAndSearch
-            languageOptions={MOCK_LANGUAGE_OPTIONS}
             ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
+            languageOptions={langs.map((l) => l.name)}
             setEthnologue={() => console.log('setEthnologue!')}
-            setLanguage={(l: string) => console.log('setLanguage! ' + l)}
+            setLanguage={handleSelectLanguage}
             setSearch={(s: string) => console.log('setSearch' + s)}
           />
           <Box display={'flex'} flexDirection="column" width={1}>
@@ -195,7 +308,7 @@ export function PhraseBookPage() {
             >
               <Box flex={3}>
                 <Typography variant="subtitle1" color={'text.gray'}>
-                  Phrase
+                  Phrases
                 </Typography>
               </Box>
               <Box flex={1} width={1} minWidth={'140px'}>
@@ -203,7 +316,7 @@ export function PhraseBookPage() {
                   variant="contained"
                   startIcon={<FiPlus />}
                   fullWidth
-                  onClick={() => setIsDialogOpened(true)}
+                  onClick={handleAddPhraseButtonClick}
                 >
                   New Phrase
                 </Button>
@@ -231,7 +344,7 @@ export function PhraseBookPage() {
             title={'Enter new Phrase'}
             isOpened={isDialogOpened}
             handleCancel={() => setIsDialogOpened(false)}
-            handleOk={addNewPhrase}
+            handleOk={addPhrase}
           />
         </Box>
       ) : (
@@ -246,8 +359,8 @@ export function PhraseBookPage() {
             item={selectedPhrase}
             onBack={() => setSelectedPhrase(null as unknown as VotableItem)}
             buttonText="New Definition"
-            changeContent={changePhraseContent}
-            addContent={addPhraseContent}
+            changeContent={changeDefinition}
+            addContent={addDefinition}
           />
         </Box>
       )}
