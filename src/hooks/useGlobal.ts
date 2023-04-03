@@ -9,6 +9,8 @@ import {
   setPrefersColorScheme as setPrefersColorSchemeAction,
   setConnectivity as setConnectivityAction,
   logout as logoutAction,
+  setLoadingState as setLoadingStateAction,
+  setSingletons as setSingletonsAction,
 } from '@/reducers/global.actions';
 
 import { type ActionType } from '@/reducers/index';
@@ -19,12 +21,12 @@ import {
   type PrefersColorSchemeType,
   TranslatedMap,
 } from '@/reducers/global.reducer';
+import { type ISingletons } from '@/src/singletons';
 
 interface UseGlobalProps {
   dispatch: Dispatch<ActionType<unknown>>;
 }
 
-// This hook take care every chagnes of discussion's state via connecting graphql servers
 export function useGlobal({ dispatch }: UseGlobalProps) {
   const dispatchRef = useRef<{ dispatch: Dispatch<ActionType<unknown>> }>({
     dispatch,
@@ -68,6 +70,14 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     dispatchRef.current.dispatch(logoutAction());
   }, []);
 
+  const setLoadingState = useCallback((state: boolean) => {
+    dispatchRef.current.dispatch(setLoadingStateAction(state));
+  }, []);
+
+  const setSingletons = useCallback((singletons: ISingletons | null) => {
+    dispatchRef.current.dispatch(setSingletonsAction(singletons));
+  }, []);
+
   return {
     setRole,
     setUser,
@@ -77,5 +87,7 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     alertFeedback,
     closeFeedback,
     setTranslatedMap,
+    setLoadingState,
+    setSingletons,
   };
 }

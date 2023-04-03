@@ -21,6 +21,7 @@ export function reducer(
 
   switch (type) {
     case actions.SET_SOURCE_LANGUAGE: {
+      console.log(action);
       return {
         ...prevState,
         sourceLanguage: action.payload as LanguageDto | null,
