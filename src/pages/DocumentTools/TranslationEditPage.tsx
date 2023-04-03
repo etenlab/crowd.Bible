@@ -34,7 +34,7 @@ export function TranslationEditPage() {
     useState<WordSequenceDto | null>(null);
 
   useEffect(() => {
-    if (!singletons && !documentId) {
+    if (!singletons || !documentId) {
       return;
     }
 

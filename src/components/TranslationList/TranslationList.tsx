@@ -14,6 +14,7 @@ import {
 
 import { Link } from '@/components/Link';
 
+import { useAppContext } from '@/hooks/useAppContext';
 import { useWordSequence } from '@/src/hooks/useWordSequence';
 import { useVote } from '@/src/hooks/useVote';
 
@@ -30,8 +31,8 @@ function Voting({
 }) {
   const { toggleVote } = useVote();
 
-  const handleToggleVote = (voteValue: boolean) => {
-    toggleVote(vote.ballot_entry_id, voteValue);
+  const handleToggleVote = async (voteValue: boolean) => {
+    await toggleVote(vote.ballot_entry_id, voteValue);
     onChangeVote();
   };
 
@@ -71,10 +72,10 @@ function Translation({
       <Stack
         direction="row"
         alignItems="flex-start"
-        sx={{ marginBottom: '12px' }}
+        sx={{ marginBottom: '12px', width: '100%' }}
       >
         {checkbox}
-        <Stack gap="3px">
+        <Stack gap="3px" sx={{ width: '100%' }}>
           <Typography
             variant="body3"
             sx={{ padding: '9px 0', color: getColor('dark') }}
@@ -128,11 +129,16 @@ export function TranslationList({
     listMyTranslationsByWordSequenceId,
   } = useWordSequence();
   const { getVotesStats } = useVote();
+  const {
+    states: {
+      global: { singletons },
+    },
+  } = useAppContext();
   const [currentTab, setCurrentTab] = useState<'all' | 'mine'>('all');
   const [translations, setTranslations] = useState<WordSequenceWithVote[]>([]);
 
   useEffect(() => {
-    if (!documentId) {
+    if (!documentId || !singletons) {
       return;
     }
 
@@ -152,6 +158,7 @@ export function TranslationList({
       }
     }
   }, [
+    singletons,
     documentId,
     wordSequenceId,
     currentTab,
@@ -210,7 +217,7 @@ export function TranslationList({
       <Tabs
         tabs={[
           { value: 'all', label: 'All Translations' },
-          { value: 'mine', label: 'My Translations(2)' },
+          { value: 'mine', label: 'My Translations' },
         ]}
         value={currentTab}
         onChange={handleTabChange}

@@ -35,6 +35,9 @@ export function DocumentToolsRoutes() {
       <Route exact path="/translation-edit/:documentId/:wordSequenceId">
         <TranslationEditPage />
       </Route>
+      <Route exact path="/translation-edit/:documentId">
+        <TranslationEditPage />
+      </Route>
       <Route exact path="/translation-candidates">
         <TranslationCandidatesPage />
       </Route>

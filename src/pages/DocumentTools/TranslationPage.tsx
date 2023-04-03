@@ -69,9 +69,13 @@ export function TranslationPage() {
 
   useEffect(() => {
     if (singletons && documentId) {
-      getOriginWordSequenceByDocumentId(documentId).then((wordSequence) => {
-        setOriginalWordSequence(wordSequence as WordSequenceWithSubDto | null);
-      });
+      getOriginWordSequenceByDocumentId(documentId, true).then(
+        (wordSequence) => {
+          setOriginalWordSequence(
+            wordSequence as WordSequenceWithSubDto | null,
+          );
+        },
+      );
     }
   }, [documentId, singletons, getOriginWordSequenceByDocumentId]);
 
@@ -163,6 +167,7 @@ export function TranslationPage() {
             borderTop: `1px solid ${getColor('middle-gray')}`,
             boxShadow: '0px 0px 20px rgba(4, 16, 31, 0.1)',
             height: '400px',
+            width: '100%',
             padding: '0 20px 20px',
             background: getColor('white'),
           }}

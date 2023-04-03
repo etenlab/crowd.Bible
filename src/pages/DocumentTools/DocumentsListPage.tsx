@@ -12,9 +12,11 @@ export function DocumentsListPage() {
       <LangugeSelectionBox />
       <DocumentList />
       <Link to="/add-document">
-        <Button variant="contained" sx={{ margin: '20px' }} fullWidth>
-          Add Document
-        </Button>
+        <div style={{ width: '100%', padding: '20px' }}>
+          <Button variant="contained" fullWidth>
+            Add Document
+          </Button>
+        </div>
       </Link>
     </IonContent>
   );

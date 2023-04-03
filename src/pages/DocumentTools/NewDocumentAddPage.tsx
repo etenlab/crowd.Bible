@@ -59,6 +59,7 @@ export function NewDocumentAddPage() {
       document.id,
       mockImportUid,
       sourceLanguage.id,
+      true,
     );
 
     if (wordSequence === null) {

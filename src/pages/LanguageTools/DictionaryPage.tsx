@@ -3,9 +3,9 @@ import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent, useIonAlert } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
-import { LanguageDto } from '../../dtos/lang.dto';
-import { useDefinitionService } from '../../hooks/useDefinitionService';
-import { VotableContent, VotableItem } from '../../services/definition.service';
+import { LanguageDto } from '@/dtos/language.dto';
+import { useDefinitionService } from '@/hooks/useDefinitionService';
+import { VotableContent, VotableItem } from '@/services/definition.service';
 const { Box, Divider } = MuiMaterial;
 
 const {
