@@ -14,7 +14,7 @@ interface ISearchNodePageProps {
 }
 
 export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [, dispatch] = useReducer(reducer, initialState);
   const { setLoadingState } = useGlobal({ dispatch });
   const [search, setSearch] = useState('');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

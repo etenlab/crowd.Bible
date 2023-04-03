@@ -14,7 +14,7 @@ interface INodeDetailsPageProps {
 }
 
 export function NodeDetailsPage({ nodeId, setNodeId }: INodeDetailsPageProps) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [, dispatch] = useReducer(reducer, initialState);
   const { setLoadingState } = useGlobal({ dispatch });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [node, setNode] = useState<any>(null);
