@@ -12,7 +12,7 @@ import { Node } from './node.entity';
 import { NodePropertyValue } from './node-property-value.entity';
 import { Syncable } from '../Syncable';
 
-@Entity({ name: 'node_property_key' })
+@Entity({ name: 'node_property_keys' })
 export class NodePropertyKey extends Syncable {
   @PrimaryColumn('uuid', { type: 'varchar', length: 21, unique: true })
   id!: string;

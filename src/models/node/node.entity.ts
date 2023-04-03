@@ -14,7 +14,7 @@ import { Relationship } from '../relationship/relationship.entity';
 import { Syncable } from '../Syncable';
 import { NodeTypeConst } from '../../constants/graph.constant';
 
-@Entity({ name: 'node' })
+@Entity({ name: 'nodes' })
 export class Node extends Syncable {
   @PrimaryColumn('uuid', { type: 'varchar', length: 21, unique: true })
   id!: string;

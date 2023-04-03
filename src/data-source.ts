@@ -14,6 +14,7 @@ import {
 } from '@/models/index';
 import initSqlJs, { SqlJsStatic } from 'sql.js';
 import localforage from 'localforage';
+import { SyncSession } from './models/Sync';
 
 declare global {
   interface Window {
@@ -65,6 +66,7 @@ const options: SqljsConnectionOptions = {
     RelationshipPropertyKey,
     RelationshipPropertyValue,
     Vote,
+    SyncSession,
   ],
   migrations: ['migrations/*.ts'],
 };

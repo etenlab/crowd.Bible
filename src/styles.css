@@ -85,3 +85,7 @@ h2.slide-title {
 .grid-full-height .fill-remaining {
   flex-grow: 1;
 }
+
+.text-transform-none {
+  text-transform: unset;
+}
