@@ -1,18 +1,13 @@
 import { Route, Switch } from 'react-router-dom';
 
 import { FileImportPage } from '@/pages/DataTools/FileImportPage';
-import { SearchNodePage } from '@/pages/DataTools/GraphViewer/SearchNodePage';
-import { NodeDetailsPage } from '@/pages/DataTools/GraphViewer/NodeDetailsPage';
+import { GraphViewerPage } from '../pages/DataTools/GraphViewer';
 
 export function DataToolsRoutes() {
   return (
     <Switch>
       <Route exact path="/graph-viewer">
-        <SearchNodePage />
-      </Route>
-
-      <Route exact path="/graph-viewer/node/:nodeId">
-        <NodeDetailsPage />
+        <GraphViewerPage />
       </Route>
 
       <Route exact path="/file-import">
