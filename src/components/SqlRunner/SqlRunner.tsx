@@ -34,14 +34,14 @@ const startingDefaultSqls: TSqls = {
       name: 'All tables',
       body: 'SELECT tbl_name from sqlite_master WHERE type = "table"',
     },
-    { name: 'All nodes', body: 'select * from node' },
+    { name: 'All nodes', body: 'select * from nodes' },
     {
       name: 'All word nodes',
       body: `
 --==========select all words and its values===================
-select npv.*, npk.*, n.* from node_property_value npv
-join node_property_key npk on npv.node_property_key_id = npk.id
-join node n on n.id = npk.node_id
+select npv.*, npk.*, n.* from node_property_values npv
+join node_property_keys npk on npv.node_property_key_id = npk.id
+join nodes n on n.id = npk.node_id
 where n.node_type='word'
 --============================================================`,
     },
@@ -49,10 +49,10 @@ where n.node_type='word'
       name: 'SQL3',
       body: `
 --===========select all property values of nodeId==============
-select npv.*, npk.*, n.* from node_property_value npv
-join node_property_key npk on npv.node_property_key_id = npk.id
-join node n on n.id = npk.node_id
-where n.id='uNHTLw6ZFy9mhz7-Wsxij'
+select npv.*, npk.*, n.* from node_property_values npv
+join node_property_keys npk on npv.node_property_key_id = npk.id
+join nodes n on n.id = npk.node_id
+where n.id='dNrAzwJi4nvAFBv6Kz4SK'
 --=============================================================
 `,
     },
@@ -60,17 +60,17 @@ where n.id='uNHTLw6ZFy9mhz7-Wsxij'
       name: 'SQL4',
       body: `
 --=== Get info on nodes (relations TO this node, and info of this node's properties) ======
-select node.id as "nodeId", r.id as "rId", r.from_node_id, r.to_node_id, nFrom.node_type as "nFromType", nTo.node_type as "nToType", npk.property_key, npv.property_value
-from node 
+select nodes.id as "nodeId", r.id as "rId", r.from_node_id, r.to_node_id, nFrom.node_type as "nFromType", nTo.node_type as "nToType", npk.property_key, npv.property_value
+from nodes 
 -- can adjust here direction of relations - to the node or from
-left join relationship r on r.to_node_id = node.id
+left join relationships r on r.to_node_id = nodes.id
 
-left join node nFrom on r.from_node_id = nFrom.id
-left join node nTo on r.To_node_id = nTo.id
-left join node_property_key npk on npk.node_id = node.id
-left join node_property_value npv on npv.node_property_key_id = npk.id
+left join nodes nFrom on r.from_node_id = nFrom.id
+left join nodes nTo on r.To_node_id = nTo.id
+left join node_property_keys npk on npk.node_id = nodes.id
+left join node_property_values npv on npv.node_property_key_id = npk.id
 
-where node.node_type='definition'
+where nodes.node_type='definition'
 --===========================================================================================
 `,
     },
@@ -79,12 +79,12 @@ where node.node_type='definition'
       body: `
 --===========select related node types of relations===========
 select rs.*, nf.node_type as 'fromNodeType', nt.node_type as 'toNodeType'
-from relationship rs
-join node nf on rs.from_node_id=nf.id
-join node nt on rs.to_node_id=nt.id
+from relationships rs
+join nodes nf on rs.from_node_id=nf.id
+join nodes nt on rs.to_node_id=nt.id
 where 
   rs.relationship_type='word-to-definition' and 
-  rs.from_node_id = 'yfrxVpjlR1Vyon_towTs0'
+  rs.from_node_id = 'dNrAzwJi4nvAFBv6Kz4SK'
 --============================================================
 `,
     },
