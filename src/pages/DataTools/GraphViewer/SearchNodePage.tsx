@@ -30,13 +30,6 @@ export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
 
     const searchNode = async () => {
       if (singletons) {
-        const table_id = await singletons.tableService.createTable('table_1');
-        const col_id = await singletons.tableService.createColumn(
-          table_id,
-          'col-1',
-        );
-        const row_id = await singletons.tableService.createRow(table_id);
-        await singletons.tableService.createCell(col_id, row_id, 'cell-1-1');
         const nodes = await singletons.nodeRepo.repository.find({
           relations: [
             'propertyKeys',
