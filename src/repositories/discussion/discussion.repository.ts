@@ -15,8 +15,8 @@ export class DiscussionRepository {
   async create(
     discussionParams: Omit<Discussion, 'id' | 'user'> & { userId: number },
   ) {
-    let discussion = this.repository.create(discussionParams);
-    discussion = await this.repository.save({
+    const discussion = this.repository.create(discussionParams);
+    await this.repository.save({
       ...discussion,
       user: { id: discussionParams.userId },
     });
