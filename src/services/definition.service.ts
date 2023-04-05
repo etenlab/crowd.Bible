@@ -5,25 +5,12 @@ import {
   RelationshipTypeConst,
   TablesNameConst,
 } from '../constants/graph.constant';
-import { LanguageDto } from '@/dtos/language.dto';
+import { LanguageDto, LanguageWithElecitonsDto } from '@/dtos/language.dto';
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 import { GraphThirdLayerService } from './graph-third-layer.service';
 import { VotingService } from './voting.service';
-
-export type VotableContent = {
-  content: string;
-  upVotes: number;
-  downVotes: number;
-  id: Nanoid | null;
-  ballotId: Nanoid | null;
-};
-
-export type VotableItem = {
-  title: VotableContent;
-  contents: VotableContent[];
-  contentElectionId: Nanoid | null;
-};
+import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
 
 export class DefinitionService {
   constructor(
@@ -228,8 +215,8 @@ export class DefinitionService {
   }
 
   /**
-   * Finds Phrases for given language Id as VotableContent
-   * For now, not wuite sure how vote on phrases (not phrase definitions, but phrase itself, so it is still TODO)
+   * Finds Phrases for given language Id as VotableItems
+   * For now, not quite sure how vote on phrases (not phrase definitions, but phrase itself, so it is still TODO)
    *
    * @param langNodeId
    * @returns
@@ -270,7 +257,7 @@ export class DefinitionService {
 
   /**
    * Finds Words for given language Id as VotableContent
-   * For now, not wuite sure how vote on phrases (not phrase definitions, but phrase itself, so it is still TODO)
+   * For now, not quite sure how vote on phrases (not phrase definitions, but phrase itself, so it is still TODO)
    * @param langNodeId
    * @returns
    */
@@ -307,12 +294,32 @@ export class DefinitionService {
   }
 
   /**
-   * Gets all languges. Just wrapper of graphThirdLayerService.getLanguages()
+   * Gets all languges. Finds or creates for each language elecions of words and phrases
    *
    * @returns
    */
-  async getLanguages(): Promise<LanguageDto[]> {
-    return this.graphThirdLayerService.getLanguages();
+  async getLanguages(): Promise<LanguageWithElecitonsDto[]> {
+    const languages = await this.graphThirdLayerService.getLanguages();
+    const langPromises: Promise<LanguageWithElecitonsDto>[] = languages.map(
+      async (l) => {
+        const electionWordsId = await this.votingService.createElection(
+          TablesNameConst.NODES,
+          l.id,
+          ElectionTypesConst.WORD_LANGUAGE,
+        );
+        const electionPhrasesId = await this.votingService.createElection(
+          TablesNameConst.NODES,
+          l.id,
+          ElectionTypesConst.PHRASE_LANGUAGE,
+        );
+        return {
+          ...l,
+          electionWordsId,
+          electionPhrasesId,
+        };
+      },
+    );
+    return Promise.all(langPromises);
   }
 
   /**
