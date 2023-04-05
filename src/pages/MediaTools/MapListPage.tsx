@@ -70,20 +70,6 @@ export const MapListPage = () => {
           mapId?: string,
         ) => {
           if (!singletons || !words.length || !langId) return;
-          // if (window.Worker) {
-          //   const worker = new Worker(new URL('./Worker.ts', import.meta.url));
-          //   worker.postMessage({
-          //     type: 'save-words',
-          //     words,
-          //     langId,
-          //     mapId,
-          //   });
-          //   if (worker.onmessage) {
-          //     worker.onmessage = function (e) {
-          //       console.log('response after save', e.data);
-          //     };
-          //   }
-          // }
           let hasNextBatch = true;
           let batchNumber = 0;
           const batchItemCount = 100;

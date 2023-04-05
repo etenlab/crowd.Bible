@@ -114,6 +114,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     nodePropertyKeyRepo,
     nodePropertyValueRepo,
     relationshipRepo,
+    syncService,
   );
 
   const tableService = new TableService(

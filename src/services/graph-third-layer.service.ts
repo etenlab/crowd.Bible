@@ -20,6 +20,7 @@ import { NodePropertyKey, NodePropertyValue } from '../models';
 import { NodePropertyKeyRepository } from '../repositories/node/node-property-key.repository';
 import { NodePropertyValueRepository } from '../repositories/node/node-property-value.repository';
 import { RelationshipRepository } from '../repositories/relationship/relationship.repository';
+import { SyncService } from './sync.service';
 
 export class GraphThirdLayerService {
   constructor(
@@ -29,6 +30,7 @@ export class GraphThirdLayerService {
     private readonly pkRepo: NodePropertyKeyRepository,
     private readonly pvRepo: NodePropertyValueRepository,
     private readonly relRepo: RelationshipRepository,
+    private readonly syncService: SyncService,
   ) {}
 
   // -------- Document --------- //
@@ -103,11 +105,17 @@ export class GraphThirdLayerService {
     langId: Nanoid,
     mapId?: Nanoid,
   ): Promise<Nanoid[]> {
+    const storedWords = await this.wordsExist(words, langId);
+    const syncLayer = this.syncService.syncLayer;
     const wordNodes: Node[] = [];
-    for (const _word of words) {
+    const storableWords: string[] = [];
+    for (const word of words) {
+      if (storedWords[word]) continue;
       const node = new Node();
       node.node_type = NodeTypeConst.WORD;
+      node.sync_layer = syncLayer;
       wordNodes.push(node);
+      storableWords.push(word);
     }
     const wordNodeEntities = await this.nodeRepo.repository.save(wordNodes, {
       transaction: true,
@@ -117,7 +125,8 @@ export class GraphThirdLayerService {
     for (const entity of wordNodeEntities) {
       const node = new NodePropertyKey();
       node.node_id = entity.id;
-      node.property_key = PropertyKeyConst.name;
+      node.property_key = PropertyKeyConst.NAME;
+      node.sync_layer = syncLayer;
       pkNodes.push(node);
     }
     const pkNodeEntities = await this.pkRepo.bulkSave(pkNodes);
@@ -127,7 +136,8 @@ export class GraphThirdLayerService {
     for (const entity of pkNodeEntities) {
       const node = new NodePropertyValue();
       node.node_property_key_id = entity.id;
-      node.property_value = JSON.stringify({ value: words[idx++] });
+      node.property_value = JSON.stringify({ value: storableWords[idx++] });
+      node.sync_layer = syncLayer;
       pvNodes.push(node);
     }
     await this.pvRepo.repository.save(pvNodes, {
@@ -140,6 +150,7 @@ export class GraphThirdLayerService {
       rel1.from_node_id = entity.id;
       rel1.to_node_id = langId;
       rel1.relationship_type = RelationshipTypeConst.WORD_TO_LANG;
+      rel1.sync_layer = syncLayer;
       relEntities.push(rel1);
 
       if (mapId) {
@@ -147,12 +158,56 @@ export class GraphThirdLayerService {
         rel2.from_node_id = entity.id;
         rel2.to_node_id = mapId;
         rel2.relationship_type = RelationshipTypeConst.WORD_MAP;
+        rel2.sync_layer = syncLayer;
         relEntities.push(rel2);
       }
     }
     await this.relRepo.repository.save(relEntities, { transaction: true });
 
-    return wordNodes.map((w) => w.id);
+    const wordIds = [];
+    idx = 0;
+    for (const w of words) {
+      if (storedWords[w]) wordIds.push(storedWords[w]);
+      else wordIds.push(wordNodes[idx++]?.id);
+    }
+    return wordIds;
+  }
+
+  async wordsExist(
+    words: string[],
+    langId: Nanoid,
+  ): Promise<{ [key: string]: string }> {
+    const nodes = await this.nodeRepo.repository.find({
+      relations: [
+        'propertyKeys',
+        'propertyKeys.propertyValue',
+        'nodeRelationships',
+      ],
+      where: {
+        node_type: NodeTypeConst.WORD,
+        propertyKeys: {
+          property_key: PropertyKeyConst.NAME,
+          propertyValue: {
+            property_value: In(words.map((w) => JSON.stringify({ value: w }))),
+          },
+        },
+        nodeRelationships: {
+          to_node_id: langId,
+          relationship_type: RelationshipTypeConst.WORD_TO_LANG,
+        },
+      },
+    });
+    const storedWordStatus: { [key: string]: string } = {};
+    for (const node of nodes) {
+      const storedWord = JSON.parse(
+        node.propertyKeys?.at(0)?.propertyValue?.property_value || '{}',
+      )?.value;
+      const idx = words.findIndex((w) => w === storedWord);
+      if (idx > -1) {
+        storedWordStatus[storedWord] = node.id;
+      }
+    }
+    return storedWordStatus;
   }
 
   async getWord(word: string, language: Nanoid): Promise<Nanoid | null> {
