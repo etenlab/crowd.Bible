@@ -62,6 +62,7 @@ export class PropertyKeyConst {
   static readonly TABLE_NAME = 'table_name';
   static readonly ROW_ID = 'row_id';
   static readonly ELECTION_ID = 'election_id';
+  static readonly ELECTION_TYPE = 'election-type';
 
   static readonly IMPORT_UID = 'import-uid';
   static readonly WORD_SEQUENCE = 'word_sequence';
@@ -75,4 +76,20 @@ export class PropertyKeyConst {
 
   static readonly ORIGINAL_WORD_SEQUENCE_ID = 'original-word-sequence-id';
   static readonly TEXT = 'text';
+}
+
+export class TablesNameConst {
+  static readonly NODES: TablesName = 'nodes';
+  static readonly NODE_PROPERTY_KEYS: TablesName = 'node_property_keys';
+  static readonly NODE_PROPERTY_VALUES: TablesName = 'node_property_values';
+  static readonly RELATIONSHIPS: TablesName = 'relationships';
+  static readonly RELATIONSHIP_PROPERTY_KEYS: TablesName =
+    'relationship_property_keys';
+  static readonly RELATIONSHIP_PROPERTY_VALUES: TablesName =
+    'relationship_property_values';
+}
+
+export class ElectionTypesConst {
+  static readonly TRANSLATION = 'translation';
+  static readonly DEFINITION = 'definition';
 }

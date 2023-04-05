@@ -8,6 +8,7 @@ import {
   NodeTypeConst,
   RelationshipTypeConst,
   PropertyKeyConst,
+  ElectionTypesConst,
 } from '@/constants/graph.constant';
 
 export class VotingService {
@@ -17,8 +18,12 @@ export class VotingService {
     private readonly voteRepo: VoteRepository,
   ) {}
 
-  async createElection(tableName: TablesName, rowId: Nanoid): Promise<Nanoid> {
-    const elections = await this.listElections(tableName, rowId);
+  async createElection(
+    tableName: TablesName,
+    rowId: Nanoid,
+    electionType: ElectionTypesConst = ElectionTypesConst.TRANSLATION,
+  ): Promise<Nanoid> {
+    const elections = await this.listElections(tableName, rowId, electionType);
 
     if (elections && elections.length > 0) {
       return elections[0];
@@ -29,13 +34,18 @@ export class VotingService {
       {
         [PropertyKeyConst.TABLE_NAME]: tableName,
         [PropertyKeyConst.ROW_ID]: rowId,
+        [PropertyKeyConst.ELECTION_TYPE]: electionType,
       },
     );
 
     return electionNode.id;
   }
 
-  async listElections(tableName: TablesName, rowId: Nanoid): Promise<Nanoid[]> {
+  async listElections(
+    tableName: TablesName,
+    rowId: Nanoid,
+    electionType: ElectionTypesConst = ElectionTypesConst.TRANSLATION,
+  ): Promise<Nanoid[]> {
     const constrains: { key: string; value: unknown }[] = [
       {
         key: PropertyKeyConst.TABLE_NAME,
@@ -44,6 +54,10 @@ export class VotingService {
       {
         key: PropertyKeyConst.ROW_ID,
         value: rowId,
+      },
+      {
+        key: PropertyKeyConst.ELECTION_TYPE,
+        value: electionType,
       },
     ];
 

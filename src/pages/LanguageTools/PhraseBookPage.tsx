@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { LanguageDto } from '@/dtos/language.dto';
 import { useDefinitionService } from '@/hooks/useDefinitionService';
 import { VotableContent, VotableItem } from '@/services/definition.service';
+import { useVote } from '../../hooks/useVote';
 const { Box, Divider } = MuiMaterial;
 
 const {
@@ -16,13 +17,6 @@ const {
   FiltersAndSearch,
 } = CrowdBibleUI;
 
-type TUpOrDownVote = 'upVote' | 'downVote';
-
-type SetPhraseVotesParams = {
-  titleContent: string;
-  upOrDown: TUpOrDownVote;
-};
-
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
 
 // use as sample and for debugging purposes
@@ -31,57 +25,67 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
   {
     title: {
       content: 'Phrase1',
-      downVote: 1,
-      upVote: 2,
+      downVotes: 1,
+      upVotes: 2,
       id: '12341234',
+      ballotId: '23456789',
     },
     contents: [
       {
         content: 'some content1',
-        upVote: 10,
-        downVote: 11,
+        upVotes: 10,
+        downVotes: 11,
         id: '12341235',
+        ballotId: '23456789',
       },
       {
         content: 'some content11',
-        upVote: 10,
-        downVote: 11,
+        upVotes: 10,
+        downVotes: 11,
         id: '12341236',
+        ballotId: '23456789',
       },
     ],
+    contentElectionId: '3456',
   },
   {
     title: {
       content: 'Phrase2',
-      downVote: 21,
-      upVote: 22,
+      downVotes: 21,
+      upVotes: 22,
       id: '12341237',
+      ballotId: '23456789',
     },
     contents: [
       {
         content: 'some content4',
-        upVote: 30,
-        downVote: 31,
+        upVotes: 30,
+        downVotes: 31,
         id: '12341238',
+        ballotId: '23456789',
       },
     ],
+    contentElectionId: '3456',
   },
   {
     title: {
       content:
         'title content3 title content3 title content3 title content 3title content3',
-      downVote: 31,
-      upVote: 32,
+      downVotes: 31,
+      upVotes: 32,
       id: '12341239',
+      ballotId: '23456789',
     },
     contents: [
       {
         content: 'some content4',
-        upVote: 30,
-        downVote: 31,
+        upVotes: 30,
+        downVotes: 31,
         id: '12341240',
+        ballotId: '23456789',
       },
     ],
+    contentElectionId: '3456',
   },
 ];
 
@@ -100,6 +104,8 @@ export function PhraseBookPage() {
     string | null | undefined
   >(null);
   const [langs, setLangs] = useState<LanguageDto[]>([]);
+
+  const { getVotesStats, toggleVote } = useVote();
 
   const handleSelectLanguage = (value: string): void => {
     const id = langs.find((l) => l.name === value)?.id;
@@ -126,15 +132,15 @@ export function PhraseBookPage() {
     loadPhrases();
   }, [definitionService, selectedLanguageId]);
 
-  const changePhraseVotes = ({
-    titleContent,
-    upOrDown,
-  }: SetPhraseVotesParams) => {
-    const phraseIdx = phrases.findIndex(
-      (w) => w.title.content === titleContent,
-    );
-    phrases[phraseIdx].title[upOrDown] += 1;
-    setPhrases([...phrases]);
+  const voteContentUp = (ballotId: Nanoid | null) => {
+    // const phraseIdx = phrases.findIndex((w) => w.title.content === titleContent);
+    // phrases[phraseIdx].title[upOrDown] += 1;
+    // setPhrases([...phrases]);
+  };
+  const voteContentDown = (ballotId: Nanoid | null) => {
+    // const phraseIdx = phrases.findIndex((w) => w.title.content === titleContent);
+    // phrases[phraseIdx].title[upOrDown] += 1;
+    // setPhrases([...phrases]);
   };
 
   const addPhrase = useCallback(
@@ -156,20 +162,23 @@ export function PhraseBookPage() {
         setIsDialogOpened(false);
         return;
       }
-      const newPhraseNodeId = await definitionService.createPhrase(
-        phrase,
-        selectedLanguageId,
-      );
+      const { phraseId, electionId } =
+        await definitionService.createPhraseAndDefinitionsElection(
+          phrase,
+          selectedLanguageId,
+        );
       setPhrases([
         ...phrases,
         {
           title: {
             content: phrase,
-            upVote: 0,
-            downVote: 0,
-            id: newPhraseNodeId,
+            upVotes: 0,
+            downVotes: 0,
+            id: phraseId,
+            ballotId: null, /// TODO: change when figure out with voting on phrases
           },
           contents: [],
+          contentElectionId: electionId,
         },
       ]);
       setIsDialogOpened(false);
@@ -177,14 +186,46 @@ export function PhraseBookPage() {
     [definitionService, selectedLanguageId, phrases, presentAlert],
   );
 
-  const changeDefinition = useCallback(
-    async ({
-      contentIndex,
-      newContent,
-    }: {
-      contentIndex: number;
-      newContent: VotableContent;
-    }) => {
+  const changeDefinitionVotes = useCallback(
+    async (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
+      if (!selectedPhrase?.title?.id) {
+        throw new Error(
+          `!selectedPhrase?.title?.id: There is no selected phrase to vote for definition`,
+        );
+      }
+      if (!ballotId) {
+        throw new Error(
+          `!ballotId: There is no assigned ballot ID for this definition`,
+        );
+      }
+
+      const phraseIdx = phrases.findIndex(
+        (w) => w.title.id === selectedPhrase?.title.id,
+      );
+
+      await toggleVote(ballotId, upOrDown === 'upVote'); // if not upVote, it calculated as false and toggleVote treats false as downVote
+      const votes = await getVotesStats(ballotId);
+
+      const definitionIndex = phrases[phraseIdx].contents.findIndex(
+        (d) => d.ballotId === ballotId,
+      );
+
+      if (definitionIndex < 0) {
+        throw new Error(`Can't find definition by ballotId ${ballotId}`);
+      }
+
+      phrases[phraseIdx].contents[definitionIndex] = {
+        ...phrases[phraseIdx].contents[definitionIndex],
+        upVotes: votes?.up || 0,
+        downVotes: votes?.down || 0,
+      };
+      setPhrases([...phrases]);
+    },
+    [getVotesStats, selectedPhrase?.title.id, toggleVote, phrases],
+  );
+
+  const changeDefinitionValue = useCallback(
+    async (definitionId: Nanoid | null, newContentValue: string) => {
       if (!selectedPhrase?.title?.id) {
         throw new Error(
           `!selectedPhrase?.title?.id: There is no selected phrase to change definition`,
@@ -195,40 +236,44 @@ export function PhraseBookPage() {
           `!definitionService: Definition service is not present`,
         );
       }
-      if (!newContent.id) {
-        throw new Error(`!newContent.id: Definition doesn't have an id`);
+      if (!definitionId) {
+        throw new Error(`!definitionId: Definition doesn't have an id`);
       }
       const phraseIdx = phrases.findIndex(
         (w) => w.title.id === selectedPhrase?.title.id,
       );
-      await definitionService.updateDefinition(
-        newContent.id,
-        newContent.content,
+      await definitionService.updateDefinitionValue(
+        definitionId,
+        newContentValue,
       );
-      phrases[phraseIdx].contents[contentIndex] = newContent;
+      const definitionIndex = phrases[phraseIdx].contents.findIndex(
+        (d) => d.id === definitionId,
+      );
+      phrases[phraseIdx].contents[definitionIndex].content = newContentValue;
       setPhrases([...phrases]);
     },
     [definitionService, selectedPhrase?.title.id, phrases],
   );
 
   const addDefinition = useCallback(
-    async ({ newContent }: { newContent: VotableContent }) => {
+    async (newContentValue: string) => {
       if (!definitionService) {
         throw new Error(`!definitionService when addDefinition`);
       }
       if (!selectedPhrase?.title?.id) {
         throw new Error(`There is no selected phrase to add definition`);
       }
-      const phraseNodeId = selectedPhrase?.title?.id;
-      const newDefinitionNodeId = await definitionService.createDefinition(
-        newContent.content,
-        phraseNodeId,
-      );
+      if (!selectedPhrase.contentElectionId) {
+        throw new Error(
+          `There is no ElectionId at Phrase id ${selectedPhrase.title.id}`,
+        );
+      }
+
       const phraseIdx = phrases.findIndex(
-        (phrase) => phrase.title.id === phraseNodeId,
+        (phrase) => phrase.title.id === selectedPhrase.title.id,
       );
       const existingDefinition = phrases[phraseIdx].contents.find(
-        (d) => d.content === newContent.content,
+        (d) => d.content === newContentValue,
       );
       if (existingDefinition) {
         presentAlert({
@@ -241,14 +286,31 @@ export function PhraseBookPage() {
         setIsDialogOpened(false);
         return;
       }
+
+      const { definitionId, ballotEntryId } =
+        await definitionService.createDefinition(
+          newContentValue,
+          selectedPhrase.title.id,
+          selectedPhrase.contentElectionId,
+        );
+
       phrases[phraseIdx].contents.push({
-        ...newContent,
-        id: newDefinitionNodeId,
-      });
+        content: newContentValue,
+        upVotes: 0,
+        downVotes: 0,
+        id: definitionId,
+        ballotId: ballotEntryId,
+      } as VotableContent);
       setSelectedPhrase(phrases[phraseIdx]);
       setPhrases([...phrases]);
     },
-    [definitionService, presentAlert, selectedPhrase?.title?.id, phrases],
+    [
+      definitionService,
+      presentAlert,
+      selectedPhrase?.contentElectionId,
+      selectedPhrase?.title.id,
+      phrases,
+    ],
   );
 
   const handleAddPhraseButtonClick = useCallback(() => {
@@ -326,18 +388,8 @@ export function PhraseBookPage() {
             <ItemsClickableList
               items={phrases}
               setSelectedItem={setSelectedPhrase}
-              setLikeItem={(id) =>
-                changePhraseVotes({
-                  titleContent: id,
-                  upOrDown: 'upVote',
-                })
-              }
-              setDislikeItem={(id) =>
-                changePhraseVotes({
-                  titleContent: id,
-                  upOrDown: 'downVote',
-                })
-              }
+              setLikeItem={voteContentUp}
+              setDislikeItem={voteContentDown}
             ></ItemsClickableList>
           </Box>
           <SimpleFormDialog
@@ -359,7 +411,8 @@ export function PhraseBookPage() {
             item={selectedPhrase}
             onBack={() => setSelectedPhrase(null as unknown as VotableItem)}
             buttonText="New Definition"
-            changeContent={changeDefinition}
+            changeContentValue={changeDefinitionValue}
+            changeContentVotes={changeDefinitionVotes}
             addContent={addDefinition}
           />
         </Box>
