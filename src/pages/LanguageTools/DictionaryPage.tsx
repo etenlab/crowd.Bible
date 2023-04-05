@@ -130,12 +130,12 @@ export function DictionaryPage() {
     loadWords();
   }, [definitionService, selectedLanguageId]);
 
-  const voteContentUp = (ballotId: Nanoid | null) => {
+  const voteItemUp = (ballotId: Nanoid | null) => {
     // const wordIdx = words.findIndex((w) => w.title.content === titleContent);
     // words[wordIdx].title[upOrDown] += 1;
     // setWords([...words]);
   };
-  const voteContentDown = (ballotId: Nanoid | null) => {
+  const voteItemDown = (ballotId: Nanoid | null) => {
     // const wordIdx = words.findIndex((w) => w.title.content === titleContent);
     // words[wordIdx].title[upOrDown] += 1;
     // setWords([...words]);
@@ -385,8 +385,8 @@ export function DictionaryPage() {
             <ItemsClickableList
               items={words}
               setSelectedItem={setSelectedWord}
-              setLikeItem={voteContentUp}
-              setDislikeItem={voteContentDown}
+              setLikeItem={voteItemUp}
+              setDislikeItem={voteItemDown}
             ></ItemsClickableList>
           </Box>
           <SimpleFormDialog
