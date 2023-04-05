@@ -5,18 +5,16 @@ import { useSingletons } from '@/src/hooks/useSingletons';
 import { Like } from 'typeorm';
 import { useGlobal } from '@/src/hooks/useGlobal';
 import { initialState, reducer } from '@/src/reducers';
+import { useHistory } from 'react-router';
 
 const { SearchNode, TitleWithIcon } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
-interface ISearchNodePageProps {
-  setNodeId: (id: string) => void;
-}
-
-export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
+export function SearchNodePage() {
   const [, dispatch] = useReducer(reducer, initialState);
   const { setLoadingState } = useGlobal({ dispatch });
   const [search, setSearch] = useState('');
+  const history = useHistory();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [nodes, setNodes] = useState<any>([]);
   const singletons = useSingletons();
@@ -79,6 +77,10 @@ export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
       .finally(() => setLoadingState(false));
   }, [search, setLoadingState, singletons]);
 
+  const nodeClickHandler = (id: string) => {
+    history.push(`/graph-viewer/${id}`);
+  };
+
   return (
     <IonContent>
       <Stack
@@ -86,14 +88,13 @@ export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
       >
         <TitleWithIcon
           label="Graph Viewer"
-          onClose={() => {
-            setNodeId('');
-          }}
+          withCloseIcon={false}
+          onClose={() => {}}
           onBack={() => {}}
         />
         <SearchNode
           nodes={nodes}
-          setNodeId={setNodeId}
+          nodeClickHandler={nodeClickHandler}
           search={search}
           setSearch={setSearch}
         />
