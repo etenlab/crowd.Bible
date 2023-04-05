@@ -140,7 +140,7 @@ export function NodeDetailsPage({ nodeId, setNodeId }: INodeDetailsPageProps) {
           }}
           onBack={() => {}}
         />
-        <NodeDetails node={node} setNodeId={setNodeId} />
+        <NodeDetails node={node} nodeClickHandler={setNodeId} />
       </Stack>
     </IonContent>
   );

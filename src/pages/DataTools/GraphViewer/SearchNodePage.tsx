@@ -93,7 +93,7 @@ export function SearchNodePage({ setNodeId }: ISearchNodePageProps) {
         />
         <SearchNode
           nodes={nodes}
-          setNodeId={setNodeId}
+          nodeClickHandler={setNodeId}
           search={search}
           setSearch={setSearch}
         />
