@@ -77,6 +77,15 @@ export class DefinitionService {
     return ballotEntryId;
   }
 
+  /**
+   * Creates defintion for given nodeId and ballot entry for this definition.
+   *
+   * @param definitionText - definition text
+   * @param forNodeId - node Id (word or phrase) for which definition is created
+   * @param electionId - election for node Id (word or phrase). Ballot entry will be connected to this election.
+   * @returns - created definition Id and ballot Id
+   */
+
   async createDefinition(
     definitionText: string,
     forNodeId: Nanoid,
@@ -119,6 +128,13 @@ export class DefinitionService {
     };
   }
 
+  /**
+   * Creates word and election of type 'definition' for this word
+   *
+   * @param word - word text
+   * @param langId - language of this word
+   * @returns - created word Id and election Id (to add definition ballots to it)
+   */
   async createWordAndDefinitionsElection(
     word: string,
     langId: Nanoid,
@@ -132,6 +148,13 @@ export class DefinitionService {
     return { wordId, electionId };
   }
 
+  /**
+   * Creates phrase and election of type 'definition' for this phrase
+   *
+   * @param word - phrase text
+   * @param langId - language of this phrase
+   * @returns - created phrase Id and election Id (to add definition ballots to it)
+   */
   async createPhraseAndDefinitionsElection(
     phrase: string,
     langId: Nanoid,
@@ -163,6 +186,13 @@ export class DefinitionService {
     return { phraseId: node.id, electionId };
   }
 
+  /**
+   * Finds definitions for given node Id and election Id and returns as VotableContent
+   *
+   * @param forNodeId
+   * @param electionId
+   * @returns
+   */
   async getDefinitionsAsVotableContent(
     forNodeId: Nanoid,
     electionId: Nanoid,
@@ -197,6 +227,13 @@ export class DefinitionService {
     return Promise.all(vcPromises);
   }
 
+  /**
+   * Finds Phrases for given language Id as VotableContent
+   * For now, not wuite sure how vote on phrases (not phrase definitions, but phrase itself, so it is still TODO)
+   *
+   * @param langNodeId
+   * @returns
+   */
   async getPhrasesAsVotableItems(
     langNodeId: string,
   ): Promise<Array<VotableItem>> {
@@ -231,6 +268,12 @@ export class DefinitionService {
     return vi;
   }
 
+  /**
+   * Finds Words for given language Id as VotableContent
+   * For now, not wuite sure how vote on phrases (not phrase definitions, but phrase itself, so it is still TODO)
+   * @param langNodeId
+   * @returns
+   */
   async getWordsAsVotableItems(
     langNodeId: string,
   ): Promise<Array<VotableItem>> {
@@ -263,9 +306,21 @@ export class DefinitionService {
     return vi;
   }
 
+  /**
+   * Gets all languges. Just wrapper of graphThirdLayerService.getLanguages()
+   *
+   * @returns
+   */
   async getLanguages(): Promise<LanguageDto[]> {
     return this.graphThirdLayerService.getLanguages();
   }
+
+  /**
+   * Updates definition (as text property of given node Id).
+   *
+   * @param definitionNodeId - node Id to be updated
+   * @param newDefinitionValue - new defintion value
+   */
 
   async updateDefinitionValue(
     definitionNodeId: Nanoid,
