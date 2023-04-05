@@ -37,7 +37,13 @@ export const CreateDiscussion: React.FC<PropsCreateDiscussion> = ({
   const onCreate = () => {
     if (formData.title !== '' && formData.text !== '') {
       singleton?.discussionRepo
-        ?.create({ ...formData, userId: 1 } as any)
+        ?.create({
+          ...formData,
+          userId: 1,
+          table_name: '',
+          row: 0,
+          posts: [],
+        })
         .then(() => {
           setIsCreateDiscussionShow(false);
         });
