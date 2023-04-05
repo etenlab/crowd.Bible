@@ -19,7 +19,6 @@ import { nanoid } from 'nanoid';
 import { useSingletons } from '@/src/hooks/useSingletons';
 import { LanguageDto } from '@/src/dtos/language.dto';
 const { TitleWithIcon } = CrowdBibleUI;
-
 //#region types
 enum eProcessStatus {
   NONE = 'NONE',
@@ -71,24 +70,34 @@ export const MapListPage = () => {
           mapId?: string,
         ) => {
           if (!singletons || !words.length || !langId) return;
-          const wordsQueue = [];
-          for (const word of words) {
-            const trimedWord = word.trim();
-            if (trimedWord) {
-              wordsQueue.push(
-                singletons.graphThirdLayerService.createWord(
-                  trimedWord,
-                  langId,
-                  mapId,
-                ),
-              );
+          let hasNextBatch = true;
+          let batchNumber = 0;
+          const batchItemCount = 100;
+          const createdWords = [];
+          while (hasNextBatch) {
+            const startIdx = batchNumber * batchItemCount;
+            const endIdx = startIdx + batchItemCount;
+            const batchWords = words.slice(startIdx, endIdx);
+            console.log(
+              'hasNextBatch',
+              hasNextBatch,
+              startIdx,
+              endIdx,
+              batchWords,
+            );
+            createdWords.push(
+              ...(await singletons.graphThirdLayerService.createWords(
+                batchWords.map((w) => w.trim()).filter((w) => w !== ''),
+                langId,
+                mapId,
+              )),
+            );
+            if (batchWords.length !== batchItemCount) {
+              hasNextBatch = false;
             }
+            batchNumber++;
           }
-          const resList = await Promise.allSettled(wordsQueue);
-          const createdWords = resList.filter(
-            (res) => res.status === 'fulfilled',
-          );
-          console.log('created words::', createdWords);
+          console.log('total created words', createdWords);
         };
         const handleMapParsingCompleted = async (argMap: MapDetail) => {
           if (!singletons) return;
@@ -104,10 +113,9 @@ export const MapListPage = () => {
                 ext: 'svg',
               },
             );
-            console.log('map successfully saved:', mapId);
             if (mapId) {
               newState.id = mapId;
-              await processMapWords(argMap.words!, argMap.langId!, mapId);
+              processMapWords(argMap.words!, argMap.langId!, mapId);
             } else newState.status = eProcessStatus.FAILED;
           } catch (error) {
             newState.status = eProcessStatus.FAILED;
