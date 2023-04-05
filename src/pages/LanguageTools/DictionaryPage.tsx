@@ -7,14 +7,12 @@ import { LanguageDto } from '@/dtos/language.dto';
 import { useDefinitionService } from '@/hooks/useDefinitionService';
 import { VotableContent, VotableItem } from '@/services/definition.service';
 import { useVote } from '../../hooks/useVote';
-import { ItemsClickableList } from '../../local-ui-kit/ItemsClickableList/ItemsClickableList';
-import { ItemContentListEdit } from '../../local-ui-kit/ItemContentListEdit/ItemContentListEdit';
 const { Box, Divider } = MuiMaterial;
 
 const {
   TitleWithIcon,
-  // ItemsClickableList,
-  // ItemContentListEdit,
+  ItemsClickableList,
+  ItemContentListEdit,
   SimpleFormDialog,
   FiltersAndSearch,
 } = CrowdBibleUI;
