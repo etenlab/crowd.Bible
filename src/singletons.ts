@@ -111,6 +111,9 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     graphFirstLayerService,
     graphSecondLayerService,
     nodeRepo,
+    nodePropertyKeyRepo,
+    nodePropertyValueRepo,
+    relationshipRepo,
   );
 
   const tableService = new TableService(

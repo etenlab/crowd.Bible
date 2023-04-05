@@ -4,8 +4,8 @@ import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 import { NodeRepository } from '@/repositories/node/node.repository';
 
-import { type Node } from '@/models/node/node.entity';
-import { type Relationship } from '@/models/relationship/relationship.entity';
+import { Node } from '@/models/node/node.entity';
+import { Relationship } from '@/models/relationship/relationship.entity';
 
 import { MapDto } from '../dtos/map.dto';
 import { LanguageDto } from '../dtos/lang.dto';
@@ -16,12 +16,19 @@ import {
   RelationshipTypeConst,
   PropertyKeyConst,
 } from '@/constants/graph.constant';
+import { NodePropertyKey, NodePropertyValue } from '../models';
+import { NodePropertyKeyRepository } from '../repositories/node/node-property-key.repository';
+import { NodePropertyValueRepository } from '../repositories/node/node-property-value.repository';
+import { RelationshipRepository } from '../repositories/relationship/relationship.repository';
 
 export class GraphThirdLayerService {
   constructor(
     private readonly firstLayerService: GraphFirstLayerService,
     private readonly secondLayerService: GraphSecondLayerService,
     private readonly nodeRepo: NodeRepository,
+    private readonly pkRepo: NodePropertyKeyRepository,
+    private readonly pvRepo: NodePropertyValueRepository,
+    private readonly relRepo: RelationshipRepository,
   ) {}
 
   // -------- Document --------- //
@@ -89,6 +96,63 @@ export class GraphThirdLayerService {
     }
 
     return node.id;
+  }
+
+  async createWords(
+    words: string[],
+    langId: Nanoid,
+    mapId?: Nanoid,
+  ): Promise<Nanoid[]> {
+    const wordNodes: Node[] = [];
+    for (const _word of words) {
+      const node = new Node();
+      node.node_type = NodeTypeConst.WORD;
+      wordNodes.push(node);
+    }
+    const wordNodeEntities = await this.nodeRepo.repository.save(wordNodes, {
+      transaction: true,
+    });
+
+    const pkNodes: NodePropertyKey[] = [];
+    for (const entity of wordNodeEntities) {
+      const node = new NodePropertyKey();
+      node.node_id = entity.id;
+      node.property_key = PropertyKeyConst.name;
+      pkNodes.push(node);
+    }
+    const pkNodeEntities = await this.pkRepo.bulkSave(pkNodes);
+
+    const pvNodes: NodePropertyValue[] = [];
+    let idx = 0;
+    for (const entity of pkNodeEntities) {
+      const node = new NodePropertyValue();
+      node.node_property_key_id = entity.id;
+      node.property_value = JSON.stringify({ value: words[idx++] });
+      pvNodes.push(node);
+    }
+    await this.pvRepo.repository.save(pvNodes, {
+      transaction: true,
+    });
+
+    const relEntities: Relationship[] = [];
+    for (const entity of wordNodeEntities) {
+      const rel1 = new Relationship();
+      rel1.from_node_id = entity.id;
+      rel1.to_node_id = langId;
+      rel1.relationship_type = RelationshipTypeConst.WORD_TO_LANG;
+      relEntities.push(rel1);
+
+      if (mapId) {
+        const rel2 = new Relationship();
+        rel2.from_node_id = entity.id;
+        rel2.to_node_id = mapId;
+        rel2.relationship_type = RelationshipTypeConst.WORD_MAP;
+        relEntities.push(rel2);
+      }
+    }
+    await this.relRepo.repository.save(relEntities, { transaction: true });
+
+    return wordNodes.map((w) => w.id);
   }
 
   async getWord(word: string, language: Nanoid): Promise<Nanoid | null> {
