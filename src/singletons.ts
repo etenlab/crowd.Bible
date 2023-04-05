@@ -22,6 +22,7 @@ import { GraphThirdLayerService } from './services/graph-third-layer.service';
 import { TableService } from '@/services/table.service';
 import { VotingService } from '@/services/voting.service';
 import { LexiconService } from '@/services/lexicon.service';
+import { MaterializerService } from '@/services/materializer.service';
 
 export interface ISingletons {
   dbService: DbService;
@@ -35,6 +36,7 @@ export interface ISingletons {
   tableService: TableService;
   votingService: VotingService;
   lexiconService: LexiconService;
+  materializerService: MaterializerService;
 
   nodeRepo: NodeRepository;
   nodeTypeRepo: NodeTypeRepository;
@@ -134,6 +136,13 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
 
   const lexiconService = new LexiconService(graphSecondLayerService, nodeRepo);
 
+  const materializerService = new MaterializerService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+    graphThirdLayerService,
+    tableService,
+  );
+
   return {
     dbService,
     syncService,
@@ -146,6 +155,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     tableService,
     votingService,
     lexiconService,
+    materializerService,
 
     nodeRepo,
     nodeTypeRepo,

@@ -9,11 +9,16 @@ import {
   WordSequenceWithVote,
 } from '../dtos/word-sequence.dto';
 
-interface MyObject {
-  [key: string]: string;
+interface IndexObject {
+  [key: string]: {
+    electionId: string;
+    ballotEntryIds: {
+      [key: string]: string;
+    };
+  };
 }
 
-const ballotEntryIds: MyObject = {};
+const electionIds: IndexObject = {};
 
 export function useWordSequence() {
   const {
@@ -187,29 +192,45 @@ export function useWordSequence() {
       for (const translation of translationDtos) {
         const originId = translation.originalWordSequenceId!;
 
-        if (ballotEntryIds[originId] === undefined) {
-          const electionIds = await listElections('nodes', originId);
+        if (electionIds[originId] === undefined) {
+          const tmpElectionIds = await listElections('nodes', originId);
 
-          if (electionIds.length === 0) {
+          if (tmpElectionIds.length === 0) {
             continue;
           }
 
-          const ballotEntryId = await getBallotEntryId(electionIds[0], {
-            tableName: 'nodes',
-            rowId: translation.id,
-          });
+          electionIds[originId] = {
+            electionId: tmpElectionIds[0],
+            ballotEntryIds: {},
+          };
+        }
+
+        if (
+          electionIds[originId].ballotEntryIds[translation.id] === undefined
+        ) {
+          const ballotEntryId = await getBallotEntryId(
+            electionIds[originId].electionId,
+            {
+              tableName: 'nodes',
+              rowId: translation.id,
+            },
+          );
 
           if (!ballotEntryId) {
             continue;
           }
 
-          ballotEntryIds[originId] = ballotEntryId;
+          electionIds[originId].ballotEntryIds[translation.id] = ballotEntryId;
         }
-        let vote = await getVotesStats(ballotEntryIds[originId]);
+
+        let vote = await getVotesStats(
+          electionIds[originId].ballotEntryIds[translation.id],
+        );
 
         if (!vote) {
           vote = {
-            ballot_entry_id: ballotEntryIds[originId],
+            ballot_entry_id:
+              electionIds[originId].ballotEntryIds[translation.id],
             up: 0,
             down: 0,
           };
