@@ -12,7 +12,7 @@ import {
   IonInputCustomEvent,
   IonTextareaCustomEvent,
 } from '@ionic/core/dist/types/components';
-import useSingletons from '@/src/hooks/useSingletons';
+import { useSingletons } from '@/src/hooks/useSingletons';
 
 interface PropsCreateDiscussion {
   setIsCreateDiscussionShow: React.Dispatch<

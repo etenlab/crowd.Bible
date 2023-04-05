@@ -10,12 +10,19 @@ import {
   type PrefersColorSchemeType,
   TranslatedMap,
 } from '@/reducers/global.reducer';
+import { type StateType as DocumentToolsStateType } from '@/reducers/documentTools.reducer';
+import { type LanguageDto } from '@/dtos/language.dto';
 
 import { useGlobal } from '@/hooks/useGlobal';
+import { useDocumentTools } from '@/hooks/useDocumentTools';
+
+import { getAppDataSource } from './data-source';
+import getSingletons from './singletons';
 
 export interface ContextType {
   states: {
     global: GlobalStateType;
+    documentTools: DocumentToolsStateType;
   };
   actions: {
     setUser: (user: IUser) => void;
@@ -26,6 +33,8 @@ export interface ContextType {
     alertFeedback: (feedbackType: FeedbackType, message: string) => void;
     closeFeedback: () => void;
     setTranslatedMap: (translatedMap: TranslatedMap) => void;
+    setSourceLanguage: (lang: LanguageDto | null) => void;
+    setTargetLanguage: (lang: LanguageDto | null) => void;
   };
 }
 
@@ -49,7 +58,13 @@ export function AppContextProvider({ children }: AppProviderProps) {
     setTranslatedMap,
     setPrefersColorScheme,
     logout,
+    setLoadingState,
+    setSingletons,
   } = useGlobal({
+    dispatch,
+  });
+
+  const { setTargetLanguage, setSourceLanguage } = useDocumentTools({
     dispatch,
   });
 
@@ -62,8 +77,15 @@ export function AppContextProvider({ children }: AppProviderProps) {
     });
   }, [setConnectivity]);
 
+  useEffect(() => {
+    setSingletons(null);
+    getAppDataSource().then((_ds) => {
+      getSingletons(_ds).then(setSingletons);
+    });
+  }, [setSingletons]);
+
   const value = {
-    states: { global: state.global },
+    states: { global: state.global, documentTools: state.documentTools },
     actions: {
       closeFeedback,
       alertFeedback,
@@ -72,6 +94,10 @@ export function AppContextProvider({ children }: AppProviderProps) {
       setConnectivity,
       setTranslatedMap,
       setPrefersColorScheme,
+      setLoadingState,
+      setSingletons,
+      setSourceLanguage,
+      setTargetLanguage,
       logout,
     },
   };

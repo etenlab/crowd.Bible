@@ -5,7 +5,7 @@ import { DiscussionList } from '@/components/dicussion/DiscussionList';
 import { Discussion } from '@/src/models/discussion.entity';
 import { Typography } from '@eten-lab/ui-kit';
 import { useHistory } from 'react-router';
-import useSingletons from '@/src/hooks/useSingletons';
+import { useSingletons } from '@/src/hooks/useSingletons';
 import './DiscussionList.css';
 
 const sampleData: any[] = [

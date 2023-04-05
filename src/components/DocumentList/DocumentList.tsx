@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import {
@@ -9,7 +9,10 @@ import {
   SearchInput,
   BiFile,
 } from '@eten-lab/ui-kit';
+import { DocumentDto } from '@/src/dtos/document.dto';
+
 import { useAppContext } from '@/hooks/useAppContext';
+import { useDocument } from '@/hooks/useDocument';
 
 const {
   Stack,
@@ -21,39 +24,34 @@ const {
   ListItemText,
 } = MuiMaterial;
 
-const documents = [
-  'Document #1',
-  'Document #2',
-  'Document #3',
-  'Document #4',
-  'Document #5',
-  'Document #6',
-  'Document #7',
-  'Document #8',
-  'Document #9',
-  'Document #10',
-];
-
 export function DocumentList() {
   const history = useHistory();
   const {
     states: {
-      global: { user },
+      global: { user, singletons },
     },
   } = useAppContext();
   const { getColor } = useColorModeContext();
+  const { listDocument } = useDocument();
 
   const [isShownSearchInput, setIsShownSearchInput] = useState<boolean>(false);
+  const [documents, setDocuments] = useState<DocumentDto[]>([]);
+
+  useEffect(() => {
+    if (singletons) {
+      listDocument().then(setDocuments);
+    }
+  }, [listDocument, singletons]);
 
   const handleToggleSearchInput = () => {
     setIsShownSearchInput((shown) => !shown);
   };
 
-  const handleClickDocument = () => {
+  const handleClickDocument = (documentId: Nanoid) => {
     if (user?.role === 'translator') {
-      history.push('/translation');
+      history.push(`/translation/${documentId}`);
     } else if (user?.role === 'reader') {
-      history.push('/feedback');
+      history.push(`/feedback/${documentId}`);
     }
   };
 
@@ -81,11 +79,11 @@ export function DocumentList() {
         </ListSubheader>
       }
     >
-      {documents.map((doc) => (
+      {documents.map(({ id, name }) => (
         <ListItemButton
-          key={doc}
+          key={id}
           sx={{ paddingLeft: 0, paddingRight: 0 }}
-          onClick={handleClickDocument}
+          onClick={() => handleClickDocument(id)}
         >
           <ListItemIcon>
             <BiFile
@@ -97,7 +95,7 @@ export function DocumentList() {
               }}
             />
           </ListItemIcon>
-          <ListItemText primary={doc} />
+          <ListItemText primary={name} />
         </ListItemButton>
       ))}
     </List>

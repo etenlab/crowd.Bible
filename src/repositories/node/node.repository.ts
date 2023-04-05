@@ -1,4 +1,5 @@
-// import { Repository } from 'typeorm';
+import { FindOptionsWhere } from 'typeorm';
+
 import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
 import { NodeType } from '@/models/index';
@@ -18,7 +19,8 @@ export class NodeRepository {
     let nodeType = await this.dbService.dataSource
       .getRepository(NodeType)
       .findOneBy({ type_name });
-    if (nodeType == null) {
+
+    if (nodeType === null) {
       nodeType = await this.dbService.dataSource
         .getRepository(NodeType)
         .save({ type_name });
@@ -52,38 +54,135 @@ export class NodeRepository {
     return nodes;
   }
 
-  async readNode(node_id: string): Promise<Node> {
-    const node = await this.repository.findOneBy({ id: node_id });
-    if (!node) {
-      throw new Error(`Failed to find node: ${node_id}`);
+  async readNode(
+    node_id: Nanoid,
+    relations?: string[],
+    whereObj?: FindOptionsWhere<Node>,
+  ): Promise<Node | null> {
+    if (relations) {
+      if (whereObj) {
+        return this.repository.findOne({
+          relations,
+          where: whereObj,
+        });
+      } else {
+        return this.repository.findOne({
+          relations,
+          where: {
+            id: node_id,
+          },
+        });
+      }
+    } else {
+      return this.repository.findOne({
+        where: {
+          id: node_id,
+        },
+      });
     }
-    return node;
+  }
+
+  async findOne(
+    relations: string[],
+    whereObj: FindOptionsWhere<Node>,
+  ): Promise<Node | null> {
+    return this.repository.findOne({
+      relations,
+      where: whereObj,
+    });
   }
 
   async getNodeByProp(
     type: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    prop: { key: string; value: any },
+    prop: { key: string; value: unknown },
+    relationship?: {
+      relationship_type?: string;
+      from_node_id?: Nanoid;
+      to_node_id?: Nanoid;
+    },
   ): Promise<Node | null> {
-    try {
-      const node = await this.repository.findOne({
-        relations: ['propertyKeys', 'propertyKeys.propertyValue'],
-        where: {
-          node_type: type,
-          propertyKeys: {
-            property_key: prop.key,
-            propertyValue: {
-              property_value: JSON.stringify({ value: prop.value }),
-            },
-          },
+    const relationsArray = ['propertyKeys', 'propertyKeys.propertyValue'];
+    const whereObj: FindOptionsWhere<Node> = {
+      node_type: type,
+      propertyKeys: {
+        property_key: prop.key,
+        propertyValue: {
+          property_value: JSON.stringify({ value: prop.value }),
         },
-      });
-      return node;
-    } catch (err) {
-      console.error(err);
-      throw new Error(
-        `Failed to get node by prop '${type} - prop: { key: ${prop.key}, value: ${prop.value} }'`,
-      );
+      },
+    };
+
+    if (relationship) {
+      relationsArray.push('nodeRelationships');
+      whereObj.nodeRelationships = {};
+
+      if (relationship.relationship_type) {
+        whereObj.nodeRelationships.relationship_type =
+          relationship.relationship_type;
+      }
+
+      if (relationship.from_node_id) {
+        whereObj.nodeRelationships.from_node_id = relationship.from_node_id;
+      }
+
+      if (relationship.to_node_id) {
+        whereObj.nodeRelationships.to_node_id = relationship.to_node_id;
+      }
     }
+
+    const node = await this.repository.findOne({
+      relations: relationsArray,
+      where: whereObj,
+    });
+
+    return node;
+  }
+
+  async getNodesByProps(
+    type: string,
+    props: { key: string; value: unknown }[],
+  ): Promise<Nanoid[]> {
+    const conditionStr = props
+      .map(
+        ({ key, value }) =>
+          `(
+              pk.property_key = '${key}' 
+              and pv.property_value = '${JSON.stringify({
+                value: value,
+              })}'
+            )`,
+      )
+      .join(' or ');
+
+    const sqlStr = `
+        select 
+          nodes.id
+        from 
+          nodes 
+          inner join (
+            select 
+              pk.id, 
+              pk.node_id, 
+              count(pk.property_key) as property_keys
+            from 
+              node_property_keys as pk 
+              left join node_property_values as pv on pk.id = pv.node_property_key_id 
+            where ${conditionStr}
+            group by 
+              pk.node_id 
+            having 
+              count(pk.property_key) = ${props.length}
+          ) as npk on nodes.id = npk.node_id 
+        where 
+          nodes.node_type = '${type}';
+      `;
+
+    const nodes: [{ id: Nanoid }] = await this.repository.query(sqlStr);
+
+    if (!nodes) {
+      return [];
+    }
+
+    return nodes.map(({ id }) => id);
   }
 }

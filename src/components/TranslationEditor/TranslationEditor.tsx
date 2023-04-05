@@ -10,25 +10,79 @@ import {
   FiPlus,
 } from '@eten-lab/ui-kit';
 
-import { useAppContext } from '@/hooks/useAppContext';
+import { Link } from '@/components/Link';
+
+import { useWordSequence } from '@/hooks/useWordSequence';
+import { useVote } from '@/hooks/useVote';
+
+import { WordSequenceDto } from '@/dtos/word-sequence.dto';
 
 const { Box } = MuiMaterial;
 
-export function TranslationEditor() {
+type TranslationEditorProps = {
+  subWordSequence:
+    | Nanoid
+    | {
+        range: {
+          start: number;
+          end: number;
+        };
+        origin: WordSequenceDto;
+      };
+  documentId: Nanoid;
+};
+
+export function TranslationEditor({
+  subWordSequence,
+  documentId,
+}: TranslationEditorProps) {
   const history = useHistory();
-  const {
-    actions: { alertFeedback },
-  } = useAppContext();
+  const { createTranslation, createSubWordSequence } = useWordSequence();
+  const { createElection, addBallotEntry, listElections } = useVote();
   const { getColor } = useColorModeContext();
   const [text, setText] = useState<string>('');
 
-  const handleGoToTranslationPage = () => {
-    history.push('/translation');
-  };
+  const handleSaveTranslation = async () => {
+    let subWordSequenceId: Nanoid;
+    let electionId: Nanoid;
 
-  const handleSaveTranslation = () => {
-    alertFeedback('success', 'Your translation has been sent!');
-    history.push('/translation');
+    if (typeof subWordSequence !== 'string') {
+      const wordSequenceId = await createSubWordSequence(
+        subWordSequence.origin,
+        subWordSequence.range,
+      );
+
+      if (!wordSequenceId) {
+        return;
+      }
+
+      const tmpElectionId = await createElection('nodes', wordSequenceId);
+
+      if (!tmpElectionId) {
+        return;
+      }
+
+      electionId = tmpElectionId;
+
+      subWordSequenceId = wordSequenceId;
+    } else {
+      subWordSequenceId = subWordSequence;
+
+      electionId = (await listElections('nodes', subWordSequenceId))[0];
+    }
+
+    const translationId = await createTranslation(subWordSequenceId, text);
+
+    if (!translationId) {
+      return;
+    }
+
+    await addBallotEntry(electionId, {
+      tableName: 'nodes',
+      rowId: translationId,
+    });
+
+    history.push(`/translation/${documentId}`);
   };
 
   const handleChangeText = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -44,15 +98,12 @@ export function TranslationEditor() {
         boxShadow: '0px 0px 20px rgba(4, 16, 31, 0.1)',
       }}
     >
-      <Button
-        onClick={handleGoToTranslationPage}
-        color="dark"
-        variant="text"
-        sx={{ paddingLeft: 0 }}
-      >
-        <BiLeftArrowAlt style={{ fontSize: '24px' }} />
-        Add My Translation
-      </Button>
+      <Link to={`/translation/${documentId}`}>
+        <Button color="dark" variant="text" sx={{ paddingLeft: 0 }}>
+          <BiLeftArrowAlt style={{ fontSize: '24px' }} />
+          Add My Translation
+        </Button>
+      </Link>
       <TextArea
         label="Your translation..."
         value={text}

@@ -13,6 +13,7 @@ import { Post } from './post.entity';
 import { Reaction } from './reaction.entity';
 import { RelationshipPostFile } from './relationship-post-file.entity';
 import { User } from './user.entity';
+import { Vote } from './vote/vote.entity';
 
 export {
   Node,
@@ -29,4 +30,5 @@ export {
   Reaction,
   RelationshipPostFile,
   User,
+  Vote,
 };

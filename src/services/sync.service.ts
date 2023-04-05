@@ -20,42 +20,42 @@ interface SyncTable {
 const syncTables: SyncTable[] = [
   {
     entity: Node,
-    tableName: 'node',
+    tableName: 'nodes',
     pk: 'id',
   },
   {
     entity: NodeType,
-    tableName: 'node_type',
+    tableName: 'node_types',
     pk: 'type_name',
   },
   {
     entity: NodePropertyKey,
-    tableName: 'node_property_key',
+    tableName: 'node_property_keys',
     pk: 'id',
   },
   {
     entity: NodePropertyValue,
-    tableName: 'node_property_value',
+    tableName: 'node_property_values',
     pk: 'id',
   },
   {
     entity: Relationship,
-    tableName: 'relationship',
+    tableName: 'relationships',
     pk: 'id',
   },
   {
     entity: RelationshipType,
-    tableName: 'relationship_type',
+    tableName: 'relationship_types',
     pk: 'type_name',
   },
   {
     entity: RelationshipPropertyKey,
-    tableName: 'relationship_property_key',
+    tableName: 'relationship_property_keys',
     pk: 'id',
   },
   {
     entity: RelationshipPropertyValue,
-    tableName: 'relationship_property_value',
+    tableName: 'relationship_property_values',
     pk: 'id',
   },
 ];
