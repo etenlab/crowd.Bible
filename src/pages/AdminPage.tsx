@@ -122,7 +122,7 @@ export function AdminPage() {
     <IonContent>
       <IonCard>
         <IonCardHeader>
-          <IonCardTitle>Import</IonCardTitle>
+          <IonCardTitle>Import Partial ISO-639-3 Dataset</IonCardTitle>
         </IonCardHeader>
         <IonCardContent>
           <IonButton onClick={addNewData}>Load</IonButton>
