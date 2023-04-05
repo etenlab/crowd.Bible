@@ -34,7 +34,7 @@ export class DefinitionService {
   ) {}
 
   /**
-   * Finds ballot entry for a give definitionId or creates new ballot entry if not found.
+   * Finds ballot entry for a given definitionId or creates new ballot entry if not found.
    *
    * @param definitionId
    * @param electionId - in case if no existing ballotEntry found, new one will be created using this electionId
@@ -95,7 +95,7 @@ export class DefinitionService {
         { from_node_id: forNodeId },
       );
 
-    const node = existingDefinitionNode
+    const definitionNode = existingDefinitionNode
       ? existingDefinitionNode
       : (
           await this.graphSecondLayerService.createRelatedToNodeFromObject(
@@ -108,13 +108,13 @@ export class DefinitionService {
         ).node;
 
     const ballotEntryId = await this.findBallotEntryIdForDefinition(
-      forNodeId,
+      definitionNode.id,
       electionId,
-      node.id,
+      forNodeId,
     );
 
     return {
-      definitionId: node.id,
+      definitionId: definitionNode.id,
       ballotEntryId,
     };
   }

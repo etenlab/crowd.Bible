@@ -255,7 +255,7 @@ export function DictionaryPage() {
   );
 
   const addDefinition = useCallback(
-    async ({ newContent: newDefinition }: { newContent: VotableContent }) => {
+    async (newContentValue: string) => {
       if (!definitionService) {
         throw new Error(`!definitionService when addDefinition`);
       }
@@ -267,17 +267,12 @@ export function DictionaryPage() {
           `There is no ElectionId at Word id ${selectedWord.title.id}`,
         );
       }
-      const { definitionId } = await definitionService.createDefinition(
-        newDefinition.content,
-        selectedWord.title.id,
-        selectedWord.contentElectionId,
-      );
 
       const wordIdx = words.findIndex(
         (word) => word.title.id === selectedWord.title.id,
       );
       const existingDefinition = words[wordIdx].contents.find(
-        (d) => d.content === newDefinition.content,
+        (d) => d.content === newContentValue,
       );
       if (existingDefinition) {
         presentAlert({
@@ -290,10 +285,21 @@ export function DictionaryPage() {
         setIsDialogOpened(false);
         return;
       }
+
+      const { definitionId, ballotEntryId } =
+        await definitionService.createDefinition(
+          newContentValue,
+          selectedWord.title.id,
+          selectedWord.contentElectionId,
+        );
+
       words[wordIdx].contents.push({
-        ...newDefinition,
+        content: newContentValue,
+        upVotes: 0,
+        downVotes: 0,
         id: definitionId,
-      });
+        ballotId: ballotEntryId,
+      } as VotableContent);
       setSelectedWord(words[wordIdx]);
       setWords([...words]);
     },
