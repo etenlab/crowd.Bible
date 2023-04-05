@@ -13,8 +13,8 @@ export function NodeDetailsPage() {
   const [, dispatch] = useReducer(reducer, initialState);
   const { setLoadingState } = useGlobal({ dispatch });
   const history = useHistory();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { nodeId } = useParams<{ nodeId: string }>();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [node, setNode] = useState<any>(null);
   const singletons = useSingletons();
 
