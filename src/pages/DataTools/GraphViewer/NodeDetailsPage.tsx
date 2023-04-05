@@ -4,18 +4,16 @@ import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { useSingletons } from '@/src/hooks/useSingletons';
 import { useGlobal } from '@/src/hooks/useGlobal';
 import { initialState, reducer } from '@/src/reducers';
+import { useHistory, useParams } from 'react-router';
 
 const { NodeDetails, TitleWithIcon } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
-interface INodeDetailsPageProps {
-  nodeId: string;
-  setNodeId: (id: string) => void;
-}
-
-export function NodeDetailsPage({ nodeId, setNodeId }: INodeDetailsPageProps) {
+export function NodeDetailsPage() {
   const [, dispatch] = useReducer(reducer, initialState);
   const { setLoadingState } = useGlobal({ dispatch });
+  const history = useHistory();
+  const { nodeId } = useParams<{ nodeId: string }>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [node, setNode] = useState<any>(null);
   const singletons = useSingletons();
@@ -128,6 +126,10 @@ export function NodeDetailsPage({ nodeId, setNodeId }: INodeDetailsPageProps) {
       .finally(() => setLoadingState(false));
   }, [singletons, setLoadingState, nodeId]);
 
+  const nodeClickHandler = (id: string) => {
+    history.push(`/graph-viewer/${id}`);
+  };
+
   return (
     <IonContent>
       <Stack
@@ -135,12 +137,14 @@ export function NodeDetailsPage({ nodeId, setNodeId }: INodeDetailsPageProps) {
       >
         <TitleWithIcon
           label="Graph Viewer"
-          onClose={() => {
-            setNodeId('');
+          withBackIcon
+          withCloseIcon={false}
+          onClose={() => {}}
+          onBack={() => {
+            history.goBack();
           }}
-          onBack={() => {}}
         />
-        <NodeDetails node={node} nodeClickHandler={setNodeId} />
+        <NodeDetails node={node} nodeClickHandler={nodeClickHandler} />
       </Stack>
     </IonContent>
   );
