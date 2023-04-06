@@ -3,7 +3,7 @@ import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent, useIonAlert } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
-import { LanguageDto, LanguageWithElecitonsDto } from '@/dtos/language.dto';
+import { LanguageWithElecitonsDto } from '@/dtos/language.dto';
 import { useDefinitionService } from '@/hooks/useDefinitionService';
 import { useVote } from '../../hooks/useVote';
 import { VotableContent, VotableItem } from '../../dtos/votable-item.dto';
@@ -122,10 +122,10 @@ export function DictionaryPage() {
   useEffect(() => {
     if (!definitionService) return;
     if (!selectedLanguageId) return;
-    const langSlectionWordsId = langs.find(
+    const langsElectionWordsId = langs.find(
       (l) => l.id === selectedLanguageId,
     )?.electionWordsId;
-    if (!langSlectionWordsId) {
+    if (!langsElectionWordsId) {
       throw new Error(
         `Language id ${selectedLanguageId} does't have electionWordsId to elect words`,
       );
@@ -135,7 +135,7 @@ export function DictionaryPage() {
       const words: VotableItem[] =
         await definitionService.getWordsAsVotableItems(
           selectedLanguageId,
-          langSlectionWordsId,
+          langsElectionWordsId,
         );
       setWords(words);
     };
@@ -160,10 +160,19 @@ export function DictionaryPage() {
         setIsDialogOpened(false);
         return;
       }
-      const { wordId, electionId } =
+      const langWordsElectionId = langs.find(
+        (l) => l.id === selectedLanguageId,
+      )?.electionWordsId;
+      if (!langWordsElectionId) {
+        throw new Error(
+          `Can't add word to language because language doesn't have electionId`,
+        );
+      }
+      const { wordId, electionId, wordBallotId } =
         await definitionService.createWordAndDefinitionsElection(
           word,
           selectedLanguageId,
+          langWordsElectionId,
         );
       setWords([
         ...words,
@@ -173,7 +182,7 @@ export function DictionaryPage() {
             upVotes: 0,
             downVotes: 0,
             id: wordId,
-            ballotId: null, /// TODO: change when figure out with voting on words
+            ballotId: wordBallotId,
           },
           contents: [],
           contentElectionId: electionId,
@@ -181,7 +190,7 @@ export function DictionaryPage() {
       ]);
       setIsDialogOpened(false);
     },
-    [definitionService, selectedLanguageId, words, presentAlert],
+    [definitionService, selectedLanguageId, words, langs, presentAlert],
   );
 
   const changeItemVotes = useCallback(
