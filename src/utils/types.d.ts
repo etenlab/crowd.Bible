@@ -18,6 +18,8 @@ type BallotEntryTarget = {
   rowId: Nanoid;
 };
 
+type TUpOrDownVote = 'upVote' | 'downVote';
+
 type VotesStatsRow = {
   ballot_entry_id: Nanoid;
   up: number;

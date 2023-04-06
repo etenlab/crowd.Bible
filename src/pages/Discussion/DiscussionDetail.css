@@ -1,0 +1,43 @@
+h3 {
+  font-weight: 700 !important;
+}
+ion-header > div[class*="-MuiStack-root"] {
+  border-bottom: 1px solid #E3EAF3;
+}
+ion-item::part(native),
+ion-item {
+  padding: 0px;
+  margin: 0px;
+}
+ion-icon::part(native),
+ion-icon {
+  margin-right: 5px;
+}
+
+.info-section {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.discussion-item-wrapper {
+  padding: 5px 0px;
+  border-bottom: 1px solid #E3EAF3;
+}
+
+.audio-sec > div[class*="-MuiStack-root"] {
+  width: 100%;
+}
+
+.reaction-sec button {
+  width: auto;
+}
+
+.reply-controls {
+  padding: 15px;
+  border: 1px solid #E3EAF3;
+  border-top-right-radius: 25px;
+  border-top-left-radius: 25px;
+}
