@@ -3,10 +3,10 @@ import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent, useIonAlert } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
-import { LanguageDto } from '@/dtos/language.dto';
+import { LanguageWithElecitonsDto } from '@/dtos/language.dto';
 import { useDefinitionService } from '@/hooks/useDefinitionService';
-import { VotableContent, VotableItem } from '@/services/definition.service';
 import { useVote } from '../../hooks/useVote';
+import { VotableContent, VotableItem } from '../../dtos/votable-item.dto';
 const { Box, Divider } = MuiMaterial;
 
 const {
@@ -103,7 +103,7 @@ export function PhraseBookPage() {
   const [selectedLanguageId, setSelectedLanguageId] = useState<
     string | null | undefined
   >(null);
-  const [langs, setLangs] = useState<LanguageDto[]>([]);
+  const [langs, setLangs] = useState<LanguageWithElecitonsDto[]>([]);
 
   const { getVotesStats, toggleVote } = useVote();
 
@@ -124,24 +124,24 @@ export function PhraseBookPage() {
   useEffect(() => {
     if (!definitionService) return;
     if (!selectedLanguageId) return;
+    const langSlectionPhrasesId = langs.find(
+      (l) => l.id === selectedLanguageId,
+    )?.electionPhrasesId;
+    if (!langSlectionPhrasesId) {
+      throw new Error(
+        `Language id ${selectedLanguageId} does't have electionWordsId to elect words`,
+      );
+    }
     const loadPhrases = async () => {
       const phrases: VotableItem[] =
-        await definitionService.getPhrasesAsVotableItems(selectedLanguageId);
+        await definitionService.getPhrasesAsVotableItems(
+          selectedLanguageId,
+          langSlectionPhrasesId,
+        );
       setPhrases(phrases);
     };
     loadPhrases();
-  }, [definitionService, selectedLanguageId]);
-
-  const voteContentUp = (ballotId: Nanoid | null) => {
-    // const phraseIdx = phrases.findIndex((w) => w.title.content === titleContent);
-    // phrases[phraseIdx].title[upOrDown] += 1;
-    // setPhrases([...phrases]);
-  };
-  const voteContentDown = (ballotId: Nanoid | null) => {
-    // const phraseIdx = phrases.findIndex((w) => w.title.content === titleContent);
-    // phrases[phraseIdx].title[upOrDown] += 1;
-    // setPhrases([...phrases]);
-  };
+  }, [definitionService, langs, selectedLanguageId]);
 
   const addPhrase = useCallback(
     async (phrase: string) => {
@@ -162,10 +162,19 @@ export function PhraseBookPage() {
         setIsDialogOpened(false);
         return;
       }
-      const { phraseId, electionId } =
+      const langPhrasesElectionId = langs.find(
+        (l) => l.id === selectedLanguageId,
+      )?.electionPhrasesId;
+      if (!langPhrasesElectionId) {
+        throw new Error(
+          `Can't add phrase to language because language doesn't have electionId`,
+        );
+      }
+      const { phraseId, electionId, phraseBallotId } =
         await definitionService.createPhraseAndDefinitionsElection(
           phrase,
           selectedLanguageId,
+          langPhrasesElectionId,
         );
       setPhrases([
         ...phrases,
@@ -175,7 +184,7 @@ export function PhraseBookPage() {
             upVotes: 0,
             downVotes: 0,
             id: phraseId,
-            ballotId: null, /// TODO: change when figure out with voting on phrases
+            ballotId: phraseBallotId,
           },
           contents: [],
           contentElectionId: electionId,
@@ -183,7 +192,23 @@ export function PhraseBookPage() {
       ]);
       setIsDialogOpened(false);
     },
-    [definitionService, selectedLanguageId, phrases, presentAlert],
+    [definitionService, selectedLanguageId, phrases, langs, presentAlert],
+  );
+
+  const changeItemVotes = useCallback(
+    async (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
+      if (!ballotId) {
+        throw new Error('!ballotId : No ballot entry given to change votes');
+      }
+      await toggleVote(ballotId, upOrDown === 'upVote'); // if not upVote, it calculated as false and toggleVote treats false as downVote
+      const votes = await getVotesStats(ballotId);
+      const wordIdx = phrases.findIndex((w) => w.title.ballotId === ballotId);
+      phrases[wordIdx].title.upVotes = votes?.up || 0;
+      phrases[wordIdx].title.downVotes = votes?.down || 0;
+
+      setPhrases([...phrases]);
+    },
+    [getVotesStats, toggleVote, phrases],
   );
 
   const changeDefinitionVotes = useCallback(
@@ -388,8 +413,10 @@ export function PhraseBookPage() {
             <ItemsClickableList
               items={phrases}
               setSelectedItem={setSelectedPhrase}
-              setLikeItem={voteContentUp}
-              setDislikeItem={voteContentDown}
+              setLikeItem={(ballotId) => changeItemVotes(ballotId, 'upVote')}
+              setDislikeItem={(ballotId) =>
+                changeItemVotes(ballotId, 'downVote')
+              }
             ></ItemsClickableList>
           </Box>
           <SimpleFormDialog

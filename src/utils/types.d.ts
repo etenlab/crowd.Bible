@@ -19,6 +19,7 @@ type BallotEntryTarget = {
 };
 
 type TUpOrDownVote = 'upVote' | 'downVote';
+type RelationshipDirection = 'from_node_id' | 'to_node_id';
 
 type VotesStatsRow = {
   ballot_entry_id: Nanoid;

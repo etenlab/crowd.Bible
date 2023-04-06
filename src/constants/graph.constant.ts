@@ -92,4 +92,6 @@ export class TablesNameConst {
 export class ElectionTypesConst {
   static readonly TRANSLATION = 'translation';
   static readonly DEFINITION = 'definition';
+  static readonly WORD_LANGUAGE = 'word-language';
+  static readonly PHRASE_LANGUAGE = 'phrase-language';
 }

@@ -3,10 +3,10 @@ import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent, useIonAlert } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
-import { LanguageDto } from '@/dtos/language.dto';
+import { LanguageWithElecitonsDto } from '@/dtos/language.dto';
 import { useDefinitionService } from '@/hooks/useDefinitionService';
-import { VotableContent, VotableItem } from '@/services/definition.service';
 import { useVote } from '../../hooks/useVote';
+import { VotableContent, VotableItem } from '../../dtos/votable-item.dto';
 const { Box, Divider } = MuiMaterial;
 
 const {
@@ -101,7 +101,7 @@ export function DictionaryPage() {
   const [selectedLanguageId, setSelectedLanguageId] = useState<
     string | null | undefined
   >(null);
-  const [langs, setLangs] = useState<LanguageDto[]>([]);
+  const [langs, setLangs] = useState<LanguageWithElecitonsDto[]>([]);
 
   const { getVotesStats, toggleVote } = useVote();
 
@@ -122,24 +122,25 @@ export function DictionaryPage() {
   useEffect(() => {
     if (!definitionService) return;
     if (!selectedLanguageId) return;
+    const langsElectionWordsId = langs.find(
+      (l) => l.id === selectedLanguageId,
+    )?.electionWordsId;
+    if (!langsElectionWordsId) {
+      throw new Error(
+        `Language id ${selectedLanguageId} does't have electionWordsId to elect words`,
+      );
+    }
+
     const loadWords = async () => {
       const words: VotableItem[] =
-        await definitionService.getWordsAsVotableItems(selectedLanguageId);
+        await definitionService.getWordsAsVotableItems(
+          selectedLanguageId,
+          langsElectionWordsId,
+        );
       setWords(words);
     };
     loadWords();
-  }, [definitionService, selectedLanguageId]);
-
-  const voteItemUp = (ballotId: Nanoid | null) => {
-    // const wordIdx = words.findIndex((w) => w.title.content === titleContent);
-    // words[wordIdx].title[upOrDown] += 1;
-    // setWords([...words]);
-  };
-  const voteItemDown = (ballotId: Nanoid | null) => {
-    // const wordIdx = words.findIndex((w) => w.title.content === titleContent);
-    // words[wordIdx].title[upOrDown] += 1;
-    // setWords([...words]);
-  };
+  }, [definitionService, langs, selectedLanguageId]);
 
   const addWord = useCallback(
     async (word: string) => {
@@ -159,10 +160,19 @@ export function DictionaryPage() {
         setIsDialogOpened(false);
         return;
       }
-      const { wordId, electionId } =
+      const langWordsElectionId = langs.find(
+        (l) => l.id === selectedLanguageId,
+      )?.electionWordsId;
+      if (!langWordsElectionId) {
+        throw new Error(
+          `Can't add word to language because language doesn't have electionId`,
+        );
+      }
+      const { wordId, electionId, wordBallotId } =
         await definitionService.createWordAndDefinitionsElection(
           word,
           selectedLanguageId,
+          langWordsElectionId,
         );
       setWords([
         ...words,
@@ -172,7 +182,7 @@ export function DictionaryPage() {
             upVotes: 0,
             downVotes: 0,
             id: wordId,
-            ballotId: null, /// TODO: change when figure out with voting on words
+            ballotId: wordBallotId,
           },
           contents: [],
           contentElectionId: electionId,
@@ -180,7 +190,23 @@ export function DictionaryPage() {
       ]);
       setIsDialogOpened(false);
     },
-    [definitionService, selectedLanguageId, words, presentAlert],
+    [definitionService, selectedLanguageId, words, langs, presentAlert],
+  );
+
+  const changeItemVotes = useCallback(
+    async (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
+      if (!ballotId) {
+        throw new Error('!ballotId : No ballot entry given to change votes');
+      }
+      await toggleVote(ballotId, upOrDown === 'upVote'); // if not upVote, it calculated as false and toggleVote treats false as downVote
+      const votes = await getVotesStats(ballotId);
+      const wordIdx = words.findIndex((w) => w.title.ballotId === ballotId);
+      words[wordIdx].title.upVotes = votes?.up || 0;
+      words[wordIdx].title.downVotes = votes?.down || 0;
+
+      setWords([...words]);
+    },
+    [getVotesStats, toggleVote, words],
   );
 
   const changeDefinitionVotes = useCallback(
@@ -385,8 +411,10 @@ export function DictionaryPage() {
             <ItemsClickableList
               items={words}
               setSelectedItem={setSelectedWord}
-              setLikeItem={voteItemUp}
-              setDislikeItem={voteItemDown}
+              setLikeItem={(ballotId) => changeItemVotes(ballotId, 'upVote')}
+              setDislikeItem={(ballotId) =>
+                changeItemVotes(ballotId, 'downVote')
+              }
             ></ItemsClickableList>
           </Box>
           <SimpleFormDialog
