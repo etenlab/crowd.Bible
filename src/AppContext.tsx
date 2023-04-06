@@ -35,6 +35,7 @@ export interface ContextType {
     setTranslatedMap: (translatedMap: TranslatedMap) => void;
     setSourceLanguage: (lang: LanguageDto | null) => void;
     setTargetLanguage: (lang: LanguageDto | null) => void;
+    setLoadingState: (state: boolean) => void;
   };
 }
 

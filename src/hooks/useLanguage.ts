@@ -6,7 +6,7 @@ export function useLanguage() {
     states: {
       global: { singletons },
     },
-    actions: { alertFeedback },
+    actions: { alertFeedback, setLoadingState },
   } = useAppContext();
 
   const getLanguage = useCallback(
@@ -22,14 +22,20 @@ export function useLanguage() {
       }
 
       try {
-        return singletons.graphThirdLayerService.getLanguage(language);
+        setLoadingState(true);
+        const result = await singletons.graphThirdLayerService.getLanguage(
+          language,
+        );
+        setLoadingState(false);
+        return result;
       } catch (err) {
         console.log(err);
+        setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback],
+    [singletons, alertFeedback, setLoadingState],
   );
 
   const createLanguage = useCallback(
@@ -45,20 +51,23 @@ export function useLanguage() {
       }
 
       try {
+        setLoadingState(true);
         const language = await singletons.graphThirdLayerService.createLanguage(
           lanaguageName,
         );
 
+        setLoadingState(false);
         alertFeedback('success', 'Imported a new language!');
 
         return language;
       } catch (err) {
         console.log(err);
+        setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback],
+    [singletons, alertFeedback, setLoadingState],
   );
 
   const getLanguages = useCallback(async () => {
@@ -68,13 +77,17 @@ export function useLanguage() {
     }
 
     try {
-      return singletons.graphThirdLayerService.getLanguages();
+      setLoadingState(true);
+      const result = await singletons.graphThirdLayerService.getLanguages();
+      setLoadingState(false);
+      return result;
     } catch (err) {
       console.log(err);
+      setLoadingState(false);
       alertFeedback('error', 'Internal Error!');
       return [];
     }
-  }, [singletons, alertFeedback]);
+  }, [singletons, alertFeedback, setLoadingState]);
 
   return {
     createLanguage,

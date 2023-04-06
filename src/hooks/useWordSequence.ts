@@ -7,7 +7,7 @@ import {
   WordSequenceDto,
   WordSequenceWithSubDto,
   WordSequenceWithVote,
-} from '../dtos/word-sequence.dto';
+} from '@/dtos/word-sequence.dto';
 
 interface IndexObject {
   [key: string]: {
@@ -26,7 +26,7 @@ export function useWordSequence() {
       global: { singletons, user },
       documentTools: { targetLanguage },
     },
-    actions: { alertFeedback },
+    actions: { alertFeedback, setLoadingState },
   } = useAppContext();
 
   const { getBallotEntryId, listElections, getVotesStats } = useVote();
@@ -55,6 +55,7 @@ export function useWordSequence() {
       }
 
       try {
+        setLoadingState(true);
         const userNode = await singletons.graphThirdLayerService.createUser(
           user.userEmail,
         );
@@ -74,14 +75,16 @@ export function useWordSequence() {
             false,
           );
 
+        setLoadingState(false);
         return wordSequenceNode.id;
       } catch (err) {
         console.log(err);
+        setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, user],
+    [singletons, alertFeedback, user, setLoadingState],
   );
 
   const createSubWordSequence = useCallback(
@@ -100,6 +103,7 @@ export function useWordSequence() {
       }
 
       try {
+        setLoadingState(true);
         const userNode = await singletons.graphThirdLayerService.createUser(
           user.userEmail,
         );
@@ -122,14 +126,16 @@ export function useWordSequence() {
             userNode.id,
           );
 
+        setLoadingState(false);
         return subWordSequenceNode.id;
       } catch (err) {
         console.log(err);
+        setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, user],
+    [singletons, alertFeedback, user, setLoadingState],
   );
 
   const createTranslation = useCallback(
@@ -149,13 +155,14 @@ export function useWordSequence() {
       }
 
       try {
+        setLoadingState(true);
         const wordSequence =
           await singletons.graphThirdLayerService.getWordSequenceById(
             wordSequenceId,
           );
 
         if (!wordSequence) {
-          return null;
+          throw new Error('Not Exists such wordSequence');
         }
 
         const translationWordSequenceId = await createWordSequence(
@@ -167,6 +174,7 @@ export function useWordSequence() {
         );
 
         if (!translationWordSequenceId) {
+          setLoadingState(false);
           return null;
         }
 
@@ -175,14 +183,22 @@ export function useWordSequence() {
           translationWordSequenceId,
         );
 
+        setLoadingState(false);
         return translationWordSequenceId;
       } catch (err) {
         console.log(err);
+        setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, createWordSequence, targetLanguage],
+    [
+      singletons,
+      alertFeedback,
+      createWordSequence,
+      targetLanguage,
+      setLoadingState,
+    ],
   );
 
   const appendVoteInfoToTranslation = useCallback(
@@ -262,6 +278,7 @@ export function useWordSequence() {
       }
 
       try {
+        setLoadingState(true);
         const translationDtos =
           await singletons.graphThirdLayerService.listTranslationsByDocumentId(
             documentId,
@@ -269,14 +286,24 @@ export function useWordSequence() {
             userId,
           );
 
-        return appendVoteInfoToTranslation(translationDtos);
+        const result = await appendVoteInfoToTranslation(translationDtos);
+
+        setLoadingState(false);
+        return result;
       } catch (err) {
         console.log(err);
+        setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, targetLanguage, appendVoteInfoToTranslation],
+    [
+      singletons,
+      alertFeedback,
+      targetLanguage,
+      appendVoteInfoToTranslation,
+      setLoadingState,
+    ],
   );
 
   const listMyTranslationsByDocumentId = useCallback(
@@ -300,6 +327,7 @@ export function useWordSequence() {
       }
 
       try {
+        setLoadingState(true);
         const userNode = await singletons.graphThirdLayerService.createUser(
           user.userEmail,
         );
@@ -311,9 +339,12 @@ export function useWordSequence() {
             userNode.id,
           );
 
-        return appendVoteInfoToTranslation(translationDtos);
+        const result = await appendVoteInfoToTranslation(translationDtos);
+        setLoadingState(false);
+        return result;
       } catch (err) {
         console.log(err);
+        setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
@@ -324,6 +355,7 @@ export function useWordSequence() {
       user,
       targetLanguage,
       appendVoteInfoToTranslation,
+      setLoadingState,
     ],
   );
 
@@ -343,6 +375,7 @@ export function useWordSequence() {
       }
 
       try {
+        setLoadingState(true);
         const translationDtos =
           await singletons.graphThirdLayerService.listTranslationsByWordSequenceId(
             wordSequenceId,
@@ -350,14 +383,23 @@ export function useWordSequence() {
             userId,
           );
 
-        return appendVoteInfoToTranslation(translationDtos);
+        const result = await appendVoteInfoToTranslation(translationDtos);
+        setLoadingState(false);
+        return result;
       } catch (err) {
         console.log(err);
+        setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, targetLanguage, appendVoteInfoToTranslation],
+    [
+      singletons,
+      alertFeedback,
+      targetLanguage,
+      appendVoteInfoToTranslation,
+      setLoadingState,
+    ],
   );
 
   const listMyTranslationsByWordSequenceId = useCallback(
@@ -381,6 +423,7 @@ export function useWordSequence() {
       }
 
       try {
+        setLoadingState(true);
         const userNode = await singletons.graphThirdLayerService.createUser(
           user.userEmail,
         );
@@ -392,9 +435,12 @@ export function useWordSequence() {
             userNode.id,
           );
 
-        return appendVoteInfoToTranslation(translationDtos);
+        const result = await appendVoteInfoToTranslation(translationDtos);
+        setLoadingState(false);
+        return result;
       } catch (err) {
         console.log(err);
+        setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
@@ -405,6 +451,7 @@ export function useWordSequence() {
       user,
       targetLanguage,
       appendVoteInfoToTranslation,
+      setLoadingState,
     ],
   );
 
@@ -416,10 +463,12 @@ export function useWordSequence() {
       }
 
       try {
+        setLoadingState(true);
         const wordSequenceNode =
           await singletons.graphFirstLayerService.readNode(wordSequenceId);
 
         if (!wordSequenceNode) {
+          setLoadingState(false);
           alertFeedback(
             'error',
             'Not exists a word-sequence with given word-sequence id!',
@@ -427,14 +476,20 @@ export function useWordSequence() {
           return null;
         }
 
-        return singletons.graphThirdLayerService.getText(wordSequenceId);
+        const result = await singletons.graphThirdLayerService.getText(
+          wordSequenceId,
+        );
+        setLoadingState(false);
+
+        return result;
       } catch (err) {
         console.log(err);
+        setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback],
+    [singletons, alertFeedback, setLoadingState],
   );
 
   const getOriginWordSequenceByDocumentId = useCallback(
@@ -451,17 +506,22 @@ export function useWordSequence() {
       }
 
       try {
-        return singletons.graphThirdLayerService.getOriginWordSequenceByDocumentId(
-          documentId,
-          withSubWordSequence,
-        );
+        setLoadingState(true);
+        const result =
+          await singletons.graphThirdLayerService.getOriginWordSequenceByDocumentId(
+            documentId,
+            withSubWordSequence,
+          );
+        setLoadingState(false);
+        return result;
       } catch (err) {
         console.log(err);
+        setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback],
+    [singletons, alertFeedback, setLoadingState],
   );
 
   const getWordSequenceById = useCallback(
@@ -474,16 +534,21 @@ export function useWordSequence() {
       }
 
       try {
-        return singletons.graphThirdLayerService.getWordSequenceById(
-          wordSequenceId,
-        );
+        setLoadingState(true);
+        const result =
+          await singletons.graphThirdLayerService.getWordSequenceById(
+            wordSequenceId,
+          );
+        setLoadingState(false);
+        return result;
       } catch (err) {
         console.log(err);
+        setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback],
+    [singletons, alertFeedback, setLoadingState],
   );
 
   return {
