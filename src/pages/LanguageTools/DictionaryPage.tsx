@@ -122,13 +122,25 @@ export function DictionaryPage() {
   useEffect(() => {
     if (!definitionService) return;
     if (!selectedLanguageId) return;
+    const langSlectionWordsId = langs.find(
+      (l) => l.id === selectedLanguageId,
+    )?.electionWordsId;
+    if (!langSlectionWordsId) {
+      throw new Error(
+        `Language id ${selectedLanguageId} does't have electionWordsId to elect words`,
+      );
+    }
+
     const loadWords = async () => {
       const words: VotableItem[] =
-        await definitionService.getWordsAsVotableItems(selectedLanguageId);
+        await definitionService.getWordsAsVotableItems(
+          selectedLanguageId,
+          langSlectionWordsId,
+        );
       setWords(words);
     };
     loadWords();
-  }, [definitionService, selectedLanguageId]);
+  }, [definitionService, langs, selectedLanguageId]);
 
   const addWord = useCallback(
     async (word: string) => {
