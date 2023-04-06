@@ -13,7 +13,7 @@ import {
 
 import { useSingletons } from '@/hooks/useSingletons';
 
-import txtfile from '@/utils/iso-639-3.tab';
+import txtfile from '@/utils/iso-639-3-min.tab';
 import { LoadingStatus } from '../enums';
 import useSeedService from '../hooks/useSeedService';
 
@@ -40,7 +40,9 @@ export function AdminPage() {
       if (!singletons) {
         return;
       }
-      const table = await singletons.tableService.createTable('iso-639-3.tab');
+      const table = await singletons.tableService.createTable(
+        'iso-639-3-min.tab',
+      );
 
       const rows = data.split('\r\n');
       const columns = rows.shift()?.split('\t');
@@ -120,7 +122,7 @@ export function AdminPage() {
     <IonContent>
       <IonCard>
         <IonCardHeader>
-          <IonCardTitle>Import</IonCardTitle>
+          <IonCardTitle>Import Partial ISO-639-3 Dataset</IonCardTitle>
         </IonCardHeader>
         <IonCardContent>
           <IonButton onClick={addNewData}>Load</IonButton>

@@ -74,4 +74,8 @@ export class NodePropertyKeyRepository {
       return this.createNodePropertyKey(node_id, key_name);
     }
   }
+
+  async bulkSave(entities: NodePropertyKey[]) {
+    return this.repository.save(entities, { transaction: true });
+  }
 }

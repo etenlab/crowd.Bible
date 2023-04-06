@@ -9,6 +9,8 @@ import { RelationshipPropertyValueRepository } from '@/repositories/relationship
 import { RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
 import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
 import { SyncSessionRepository } from '@/repositories/sync-session.repository';
+import { DiscussionRepository } from '@/repositories/discussion/discussion.repository';
+import { UserRepository } from '@/repositories/user.repository';
 import { VoteRepository } from '@/repositories/vote/vote.repository';
 
 import { DbService } from '@/services/db.service';
@@ -46,6 +48,8 @@ export interface ISingletons {
   relationshipTypeRepo: RelationshipTypeRepository;
   relationshipPropertyKeyRepo: RelationshipPropertyKeyRepository;
   relationshipPropertyValueRepo: RelationshipPropertyValueRepository;
+  discussionRepo: DiscussionRepository;
+  userRepo: UserRepository;
   voteRepo: VoteRepository;
 }
 
@@ -81,6 +85,8 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     dbService,
     syncService,
   );
+  const discussionRepo = new DiscussionRepository(dbService);
+  const userRepo = new UserRepository(dbService);
   const voteRepo = new VoteRepository(dbService, syncService);
 
   const seedService = new SeedService(
@@ -113,6 +119,10 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     graphFirstLayerService,
     graphSecondLayerService,
     nodeRepo,
+    nodePropertyKeyRepo,
+    nodePropertyValueRepo,
+    relationshipRepo,
+    syncService,
   );
 
   const tableService = new TableService(
@@ -165,6 +175,8 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipTypeRepo,
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
+    discussionRepo,
+    userRepo,
     voteRepo,
   };
 };
