@@ -24,7 +24,7 @@ export function SqlWindow({
   selectedIdx: number;
   setSqls: (sqls: TSqls) => void;
   runSql: (idxtoRun: number) => void;
-  tableSize: { w: number; h: number };
+  tableSize: { w: string; h: string };
 }) {
   const handleValueChange = (value: string) => {
     sqls.data[selectedIdx].body = value;
@@ -36,8 +36,8 @@ export function SqlWindow({
       display={'flex'}
       flexDirection={'column'}
       alignItems={'start'}
-      height={`${tableSize?.h || 500}px`}
-      width={`${tableSize?.w || 500}px`}
+      height={tableSize?.h ? tableSize?.h : '500px'}
+      width={tableSize?.w ? tableSize?.w : '500px'}
     >
       <Box width={'100%'}>
         <Editor

@@ -24,70 +24,64 @@ const startingDefaultSqls: TSqls = {
   lastCreatedIdx: 1,
   data: [
     {
-      name: 'All tables',
+      name: 'Tables',
       body: 'SELECT tbl_name from sqlite_master WHERE type = "table"',
     },
-    { name: 'All nodes', body: 'select * from nodes' },
+    { name: 'Nodes', body: 'select * from nodes' },
     {
-      name: 'All word nodes',
+      name: 'Word nodes',
       body: `
 --==========select all words and its values===================
-select npv.*, npk.*, n.* from node_property_values npv
-join node_property_keys npk on npv.node_property_key_id = npk.id
-join nodes n on n.id = npk.node_id
+select n.id as "node_id", n.node_type, 
+npk.id as "key_id", 
+npv.id as "property_key", npv.property_value 
+from nodes n
+left join node_property_keys npk on n.id = npk.node_id 
+left join node_property_values npv on npk.id = npv.node_property_key_id
 where n.node_type='word'
---============================================================`,
-    },
-    {
-      name: 'SQL3',
-      body: `
---===========select all property values of nodeId==============
-select npv.*, npk.*, n.* from node_property_values npv
-join node_property_keys npk on npv.node_property_key_id = npk.id
-join nodes n on n.id = npk.node_id
-where n.id='dNrAzwJi4nvAFBv6Kz4SK'
---=============================================================
-`,
-    },
-    {
-      name: 'SQL4',
-      body: `
---=== Get info on nodes (relations TO this node, and info of this node's properties) ======
-select nodes.id as "nodeId", r.id as "rId", r.from_node_id, r.to_node_id, nFrom.node_type as "nFromType", nTo.node_type as "nToType", npk.property_key, npv.property_value
-from nodes 
--- can adjust here direction of relations - to the node or from
-left join relationships r on r.to_node_id = nodes.id
-
-left join nodes nFrom on r.from_node_id = nFrom.id
-left join nodes nTo on r.To_node_id = nTo.id
-left join node_property_keys npk on npk.node_id = nodes.id
-left join node_property_values npv on npv.node_property_key_id = npk.id
-
-where nodes.node_type='definition'
---===========================================================================================
-`,
-    },
-    {
-      name: 'SQL5',
-      body: `
---===========select related node types of relations===========
-select rs.*, nf.node_type as 'fromNodeType', nt.node_type as 'toNodeType'
-from relationships rs
-join nodes nf on rs.from_node_id=nf.id
-join nodes nt on rs.to_node_id=nt.id
-where 
-  rs.relationship_type='word-to-definition' and 
-  rs.from_node_id = 'dNrAzwJi4nvAFBv6Kz4SK'
 --============================================================
+`,
+    },
+    {
+      name: 'Info On node',
+      body: `
+--=== Get info on nodes (relations TO/FROM this node, and info of this node's properties) ======
+select nodes.id as "nodeId", nodes.node_type, npk.property_key, npv.property_value,
+
+r_to_other.id as "r_to_other", 
+n_to.node_type as "nToType",
+
+r_from_other.id as "r_from_other",
+n_from.id as "nFromId",
+n_from.node_type as "nFromType"
+
+from nodes
+
+left join relationships r_to_other on nodes.id = r_to_other.from_node_id
+left join relationships r_from_other on nodes.id = r_from_other.to_node_id
+
+left join nodes n_to on r_to_other.to_node_id = n_to.id
+left join nodes n_from on r_from_other.from_node_id = n_from.id
+
+
+left join node_property_keys npk on nodes.id = npk.node_id
+left join node_property_values npv on npk.id = npv.node_property_key_id
+
+where nodes.id='BjEqDQXhxyT6H56dCkugL'
+--===========================================================================================
+
 `,
     },
   ],
 };
 
-export function SqlRunner() {
+export function SqlRunner({
+  dimensions,
+}: {
+  dimensions?: { w: number; h: number };
+}) {
   const singletons = useSingletons();
   const { getColor } = useColorModeContext();
-  const [dimensions, setDimensions] = useState({ w: 800, h: 600 });
   const [selectedTab, setSelectedTab] = useState(0);
   const [sqls, setSqls] = useState(startingDefaultSqls);
   const handleTabChange = useCallback(
@@ -141,8 +135,8 @@ export function SqlRunner() {
       <Box
         ref={nodeRef}
         display={'flex'}
-        width={dimensions.w + 'px'}
-        height={dimensions.h + 'px'}
+        width={dimensions ? dimensions.w + 'px' : '100%'}
+        height={dimensions ? dimensions.h + 'px' : '100%'}
         position={'absolute'}
         border={`1px solid ${getColor('gray')}`}
         flexDirection={'column'}
@@ -179,12 +173,17 @@ export function SqlRunner() {
             setSqls={setSqls}
             runSql={runSql}
             tableSize={{
-              w: dimensions.w - PADDING_SMALL - 2 * BORDER_W,
-              h:
-                dimensions.h -
-                REDUCE_TABLE_HEIGHT -
-                PADDING_SMALL -
-                2 * BORDER_W,
+              w: dimensions?.w
+                ? String(dimensions.w - PADDING_SMALL - 2 * BORDER_W)
+                : '100%',
+              h: dimensions?.h
+                ? String(
+                    dimensions.h -
+                      REDUCE_TABLE_HEIGHT -
+                      PADDING_SMALL -
+                      2 * BORDER_W,
+                  )
+                : '100%',
             }}
           ></SqlWindow>
         </Box>
