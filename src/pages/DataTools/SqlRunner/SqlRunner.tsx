@@ -6,7 +6,6 @@ import {
 } from '@eten-lab/ui-kit';
 import React, { ReactNode, useCallback, useState, useEffect } from 'react';
 
-import { useSingletons } from '@/hooks/useSingletons';
 import { TableFromResponce } from './tools';
 import { IonContent, IonToolbar } from '@ionic/react';
 import Editor from 'react-simple-code-editor';
@@ -84,11 +83,11 @@ export function SqlRunner({
 }) {
   const {
     states: {
-      global: { isSqlPortalShown },
+      global: { isSqlPortalShown, singletons },
     },
     actions: { setSqlPortalShown },
   } = useAppContext();
-  const singletons = useSingletons();
+  // const singletons = useSingletons();
   const { getColor } = useColorModeContext();
   const [selectedTab, setSelectedTab] = useState(0);
   const [sqls, setSqls] = useState(startingDefaultSqls);

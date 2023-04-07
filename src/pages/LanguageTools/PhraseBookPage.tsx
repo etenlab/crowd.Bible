@@ -4,9 +4,9 @@ import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 import { IonContent, useIonAlert } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
 import { LanguageWithElecitonsDto } from '@/dtos/language.dto';
-import { useDefinitionService } from '@/hooks/useDefinitionService';
 import { useVote } from '../../hooks/useVote';
 import { VotableContent, VotableItem } from '../../dtos/votable-item.dto';
+import { useAppContext } from '../../hooks/useAppContext';
 const { Box, Divider } = MuiMaterial;
 
 const {
@@ -92,11 +92,17 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
 const PADDING = 20;
 
 export function PhraseBookPage() {
+  const {
+    states: {
+      global: { singletons },
+    },
+  } = useAppContext();
+
   const [selectedPhrase, setSelectedPhrase] = useState<VotableItem | null>(
     null,
   );
   const [isDialogOpened, setIsDialogOpened] = useState(false);
-  const definitionService = useDefinitionService();
+  const definitionService = singletons?.definitionService;
   const [phrases, setPhrases] = useState<VotableItem[]>([]);
   const [presentAlert] = useIonAlert();
 
