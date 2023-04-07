@@ -4,14 +4,19 @@ import {
   Typography,
   useColorModeContext,
 } from '@eten-lab/ui-kit';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
+import { SqlRunner } from './SqlRunner';
+import { useAppContext } from '../../../hooks/useAppContext';
 
 const { Box } = MuiMaterial;
 
-export function Portal({ onClose }: { onClose: () => void }) {
+export function SqlPortal() {
+  const {
+    actions: { setSqlPortalShown },
+  } = useAppContext();
   const { getColor } = useColorModeContext();
   const [dimensions, setDimensions] = useState({ w: 800, h: 600 });
 
@@ -54,12 +59,17 @@ export function Portal({ onClose }: { onClose: () => void }) {
                 <Typography flex={1} className="draggable-header">
                   SqlRunner
                 </Typography>
-                <Button onClick={onClose} sx={{ padding: 0 }}>
+                <Button
+                  onClick={() => {
+                    setSqlPortalShown(false);
+                  }}
+                  sx={{ padding: 0 }}
+                >
                   Close
                 </Button>
               </Box>
 
-              {/* <SqlRunner></SqlRunner> */}
+              <SqlRunner></SqlRunner>
             </Box>
           </Resizable>
         </Draggable>,

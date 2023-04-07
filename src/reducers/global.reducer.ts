@@ -36,6 +36,7 @@ export interface StateType {
   isNewNotification: boolean;
   translatedMap: TranslatedMap;
   singletons: ISingletons | null;
+  isSqlPortalShown: boolean;
 }
 
 const initialSnact: SnackType = {
@@ -58,6 +59,7 @@ export const initialState: StateType = {
   isNewNotification: false,
   translatedMap: initialTranslatedMap,
   singletons: null,
+  isSqlPortalShown: false,
 };
 
 export function reducer(
@@ -148,6 +150,12 @@ export function reducer(
       return {
         ...prevState,
         singletons: action.payload as ISingletons,
+      };
+    }
+    case actions.SET_SQL_PORTAL_SHOWN: {
+      return {
+        ...prevState,
+        isSqlPortalShown: action.payload as boolean,
       };
     }
     default: {

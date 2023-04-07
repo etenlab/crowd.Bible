@@ -18,11 +18,10 @@ import {
   MuiMaterial,
   Alert,
   useColorModeContext,
-  Button,
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { Portal } from '../../pages/DataTools/SqlRunner/Portal';
+import { SqlPortal } from '../../pages/DataTools/SqlRunner/SqlPortal';
 
 const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
 
@@ -44,6 +43,7 @@ export function PageLayout({ children }: PageLayoutProps) {
         isNewNotification,
         loading,
         singletons,
+        isSqlPortalShown,
       },
     },
     actions: { closeFeedback, setPrefersColorScheme },
@@ -89,8 +89,6 @@ export function PageLayout({ children }: PageLayoutProps) {
     });
     toggleDarkTheme(prefersDarkRef.current.matches);
   }, [user, toggleDarkTheme]);
-
-  const [isPortalShown, setIsPortalShown] = useState(false);
 
   const handleToggleMenu = () => {
     ref.current!.toggle();
@@ -231,9 +229,7 @@ export function PageLayout({ children }: PageLayoutProps) {
               <div>LOADING</div>
             </Stack>
           </Backdrop>
-          {isPortalShown && (
-            <Portal onClose={() => setIsPortalShown(!isPortalShown)} />
-          )}
+          {isSqlPortalShown && <SqlPortal />}
         </IonContent>
       </IonPage>
     </>

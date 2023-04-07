@@ -10,6 +10,7 @@ import { useSingletons } from '@/hooks/useSingletons';
 import { TableFromResponce } from './tools';
 import { IonContent, IonToolbar } from '@ionic/react';
 import Editor from 'react-simple-code-editor';
+import { useAppContext } from '../../../hooks/useAppContext';
 const { Box, Tabs, Tab, IconButton } = MuiMaterial;
 
 type TSqls = {
@@ -81,6 +82,12 @@ export function SqlRunner({
 }: {
   dimensions?: { w: number; h: number };
 }) {
+  const {
+    states: {
+      global: { isSqlPortalShown },
+    },
+    actions: { setSqlPortalShown },
+  } = useAppContext();
   const singletons = useSingletons();
   const { getColor } = useColorModeContext();
   const [selectedTab, setSelectedTab] = useState(0);
@@ -189,6 +196,12 @@ export function SqlRunner({
             }}
           />
         </Box>
+
+        {!isSqlPortalShown && (
+          <Button onClick={() => setSqlPortalShown(true)}>
+            Show in portal
+          </Button>
+        )}
         {sqls.data[selectedTab]?.body && (
           <Button onClick={() => runSql(selectedTab)}>Run</Button>
         )}
