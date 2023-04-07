@@ -4,7 +4,7 @@ import {
   Typography,
   useColorModeContext,
 } from '@eten-lab/ui-kit';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';

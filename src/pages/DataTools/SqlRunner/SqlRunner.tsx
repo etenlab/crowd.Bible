@@ -87,12 +87,15 @@ export function SqlRunner({
     },
     actions: { setSqlPortalShown },
   } = useAppContext();
-  // const singletons = useSingletons();
+  const dbService = singletons?.dbService;
   const { getColor } = useColorModeContext();
   const [selectedTab, setSelectedTab] = useState(0);
-  const [sqls, setSqls] = useState(startingDefaultSqls);
+  const [sqls, setSqls] = useState<TSqls>(
+    JSON.parse(JSON.stringify(startingDefaultSqls)) as TSqls,
+  );
   const [sqlToolbarH, setSqlToolbarH] = useState(40);
   const sqlToolbarRef = React.useRef<HTMLIonToolbarElement>(null);
+  const [isSqlsLoaded, setSqlsLoaded] = useState(false);
 
   const handleTabChange = useCallback(
     (event: React.SyntheticEvent, selectedIdx: number) => {
@@ -109,10 +112,37 @@ export function SqlRunner({
     },
     [sqls],
   );
-  const handleValueChange = (value: string) => {
-    sqls.data[selectedTab].body = value;
-    setSqls({ ...sqls });
-  };
+
+  const resetToDefault = useCallback(async () => {
+    const localForage = dbService?.localForage as LocalForage;
+    if (!localForage) return;
+    await localForage.setItem('sqlRunner', startingDefaultSqls);
+    setSqls(JSON.parse(JSON.stringify(startingDefaultSqls)) as TSqls);
+  }, [dbService?.localForage]);
+
+  const handleValueChange = useCallback(
+    (value: string) => {
+      sqls.data[selectedTab].body = value;
+      const localForage = dbService?.localForage as LocalForage;
+      if (!localForage) return;
+      localForage.setItem('sqlRunner', sqls);
+      setSqls({ ...sqls });
+    },
+    [selectedTab, dbService?.localForage, sqls],
+  );
+
+  useEffect(() => {
+    const localForage = dbService?.localForage as LocalForage;
+    if (!localForage || isSqlsLoaded) return;
+    const loadSqls = async () => {
+      const loadedSqls = (await localForage.getItem('sqlRunner')) as TSqls;
+      if (!loadedSqls) return;
+      // loadedSqls.data.forEach((s) => delete s.result);
+      setSqls(loadedSqls);
+      setSqlsLoaded(true);
+    };
+    loadSqls();
+  }, [dbService?.localForage, isSqlsLoaded]);
 
   const handleCloseTab = (idx: number) => {
     sqls.data.splice(idx, 1);
@@ -158,69 +188,78 @@ export function SqlRunner({
   );
 
   return (
-    <IonContent>
-      <IonToolbar style={{ position: 'fixed' }} ref={sqlToolbarRef}>
-        <Tabs value={selectedTab} onChange={handleTabChange}>
-          {sqls.data.map((sql, idx) => (
-            <Tab
-              sx={{ padding: 0, margin: 0 }}
-              key={idx}
-              label={
-                <span>
-                  {sql.name}
-                  <IconButton
-                    component="div"
-                    onClick={() =>
-                      window.confirm('Close?') ? handleCloseTab(idx) : null
-                    }
-                  >
-                    <FiX />
-                  </IconButton>
-                </span>
-              }
+    <>
+      <IonContent>
+        <IonToolbar style={{ position: 'fixed' }} ref={sqlToolbarRef}>
+          <Tabs value={selectedTab} onChange={handleTabChange}>
+            {sqls.data.map((sql, idx) => (
+              <Tab
+                sx={{ padding: 0, margin: 0 }}
+                key={idx}
+                label={
+                  <span>
+                    {sql.name}
+                    <IconButton
+                      component="div"
+                      onClick={() =>
+                        window.confirm('Close?') ? handleCloseTab(idx) : null
+                      }
+                    >
+                      <FiX />
+                    </IconButton>
+                  </span>
+                }
+              />
+            ))}
+            <Tab label=" + Add New" key={-1} sx={{ padding: 0 }} />
+          </Tabs>
+          <Box width={'100%'} maxHeight={'300px'} overflow="auto">
+            <Editor
+              value={sqls.data[selectedTab]?.body}
+              onValueChange={(v) => handleValueChange(v)}
+              highlight={(code) => code}
+              padding={10}
+              ignoreTabKey={true}
+              style={{
+                fontFamily: '"Fira code", "Fira Mono", monospace',
+                fontSize: 12,
+              }}
             />
-          ))}
-          <Tab label=" + Add New" key={-1} sx={{ padding: 0 }} />
-        </Tabs>
-        <Box width={'100%'} maxHeight={'300px'} overflow="auto">
-          <Editor
-            value={sqls.data[selectedTab]?.body}
-            onValueChange={(v) => handleValueChange(v)}
-            highlight={(code) => code}
-            padding={10}
-            ignoreTabKey={true}
-            style={{
-              fontFamily: '"Fira code", "Fira Mono", monospace',
-              fontSize: 12,
-            }}
-          />
-        </Box>
+          </Box>
 
-        {!isSqlPortalShown && (
-          <Button onClick={() => setSqlPortalShown(true)}>
-            Show in portal
+          {!isSqlPortalShown && (
+            <Button onClick={() => setSqlPortalShown(true)}>
+              Show in portal
+            </Button>
+          )}
+          {sqls.data[selectedTab]?.body && (
+            <Button onClick={() => runSql(selectedTab)}>Run</Button>
+          )}
+          <Button
+            onClick={() =>
+              window.confirm('Reset all sqls?') ? resetToDefault() : null
+            }
+          >
+            Reset sqls to default
           </Button>
-        )}
-        {sqls.data[selectedTab]?.body && (
-          <Button onClick={() => runSql(selectedTab)}>Run</Button>
-        )}
-      </IonToolbar>
-      <Box
-        marginTop={`${sqlToolbarH}px`}
-        display={'flex'}
-        width={dimensions ? dimensions.w + 'px' : '100%'}
-        height={dimensions ? dimensions.h + 'px' : undefined}
-        position={'absolute'}
-        border={`1px solid ${getColor('middle-gray')}`}
-        flexDirection={'column'}
-        overflow={'auto'}
-      >
-        <Box>
-          <Box height={'100%'} width={'100%'}>
-            {sqls.data[selectedTab]?.result && sqls.data[selectedTab]?.result}
+        </IonToolbar>
+        <Box
+          marginTop={`${sqlToolbarH}px`}
+          display={'flex'}
+          width={dimensions ? dimensions.w + 'px' : '100%'}
+          height={dimensions ? dimensions.h + 'px' : undefined}
+          position={'absolute'}
+          border={`1px solid ${getColor('middle-gray')}`}
+          flexDirection={'column'}
+          overflow={'auto'}
+        >
+          <Box>
+            <Box height={'100%'} width={'100%'}>
+              {sqls.data[selectedTab]?.result && sqls.data[selectedTab]?.result}
+            </Box>
           </Box>
         </Box>
-      </Box>
-    </IonContent>
+      </IonContent>
+    </>
   );
 }
