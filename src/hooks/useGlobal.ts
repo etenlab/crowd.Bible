@@ -11,6 +11,7 @@ import {
   logout as logoutAction,
   setLoadingState as setLoadingStateAction,
   setSingletons as setSingletonsAction,
+  setSqlPortalShown as setSqlPortalShownAction,
 } from '@/reducers/global.actions';
 
 import { type ActionType } from '@/reducers/index';
@@ -78,6 +79,10 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     dispatchRef.current.dispatch(setSingletonsAction(singletons));
   }, []);
 
+  const setSqlPortalShown = useCallback((isSqlPortalShown: boolean) => {
+    dispatchRef.current.dispatch(setSqlPortalShownAction(isSqlPortalShown));
+  }, []);
+
   return {
     setRole,
     setUser,
@@ -89,5 +94,6 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     setTranslatedMap,
     setLoadingState,
     setSingletons,
+    setSqlPortalShown,
   };
 }

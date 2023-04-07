@@ -36,6 +36,7 @@ export interface ContextType {
     setSourceLanguage: (lang: LanguageDto | null) => void;
     setTargetLanguage: (lang: LanguageDto | null) => void;
     setLoadingState: (state: boolean) => void;
+    setSqlPortalShown: (isSqlPortalShown: boolean) => void;
   };
 }
 
@@ -61,6 +62,7 @@ export function AppContextProvider({ children }: AppProviderProps) {
     logout,
     setLoadingState,
     setSingletons,
+    setSqlPortalShown,
   } = useGlobal({
     dispatch,
   });
@@ -100,6 +102,7 @@ export function AppContextProvider({ children }: AppProviderProps) {
       setSourceLanguage,
       setTargetLanguage,
       logout,
+      setSqlPortalShown,
     },
   };
 

@@ -18,6 +18,7 @@ export const actions = {
   LOGOUT: 'LOGOUT',
   SET_LOGING_STATE: 'SET_LOGING_STATE',
   SET_SINGLETONS: 'SET_SINGLETONS',
+  SET_SQL_PORTAL_SHOWN: 'SET_SQL_PORTAL_SHOWN',
 };
 
 export function setUser(user: IUser) {
@@ -90,5 +91,12 @@ export function setSingletons(singletons: ISingletons | null) {
   return {
     type: actions.SET_SINGLETONS,
     payload: singletons,
+  };
+}
+
+export function setSqlPortalShown(isShown: boolean) {
+  return {
+    type: actions.SET_SQL_PORTAL_SHOWN,
+    payload: isShown,
   };
 }
