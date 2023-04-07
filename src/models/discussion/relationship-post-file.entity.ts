@@ -9,7 +9,7 @@ import {
 import { Post } from './post.entity';
 import { File } from '../file/file.entity';
 
-@Entity()
+@Entity({ name: 'relationship_post_files' })
 export class RelationshipPostFile {
   @PrimaryGeneratedColumn('increment', { type: 'integer' })
   id!: number;

@@ -12,7 +12,7 @@ import { Reaction } from './reaction.entity';
 import { RelationshipPostFile } from './relationship-post-file.entity';
 import { User } from '../user/user.entity';
 
-@Entity()
+@Entity({ name: 'posts' })
 export class Post {
   @PrimaryGeneratedColumn('increment', { type: 'integer' })
   id!: number;

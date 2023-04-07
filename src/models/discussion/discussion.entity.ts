@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Post } from './post.entity';
 
-@Entity()
+@Entity({ name: 'discussions' })
 export class Discussion {
   @PrimaryGeneratedColumn('increment', { type: 'integer', name: 'id' })
   id!: number;

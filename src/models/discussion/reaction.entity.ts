@@ -8,7 +8,7 @@ import {
 import { Post } from './post.entity';
 import { User } from '../user/user.entity';
 
-@Entity()
+@Entity({ name: 'reactions' })
 export class Reaction {
   @PrimaryGeneratedColumn('increment', { type: 'integer' })
   id!: number;

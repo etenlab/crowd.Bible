@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'sync_sessions' })
 export class SyncSession {
   @PrimaryGeneratedColumn({ type: 'int', name: 'sync_session' })
   id!: number;
