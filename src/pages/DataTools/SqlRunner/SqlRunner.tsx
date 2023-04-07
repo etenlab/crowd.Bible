@@ -1,15 +1,16 @@
-import { MuiMaterial, useColorModeContext, FiX } from '@eten-lab/ui-kit';
-import React, { ReactNode, useCallback, useState } from 'react';
+import {
+  MuiMaterial,
+  useColorModeContext,
+  FiX,
+  Button,
+} from '@eten-lab/ui-kit';
+import React, { ReactNode, useCallback, useState, useEffect } from 'react';
 
 import { useSingletons } from '@/hooks/useSingletons';
-import { SqlWindow } from './SqlWindow';
 import { TableFromResponce } from './tools';
+import { IonContent, IonToolbar } from '@ionic/react';
+import Editor from 'react-simple-code-editor';
 const { Box, Tabs, Tab, IconButton } = MuiMaterial;
-
-const PADDING = 20;
-const PADDING_SMALL = PADDING / 2;
-const REDUCE_TABLE_HEIGHT = 75;
-const BORDER_W = 1;
 
 type TSqls = {
   lastCreatedIdx: number;
@@ -84,6 +85,9 @@ export function SqlRunner({
   const { getColor } = useColorModeContext();
   const [selectedTab, setSelectedTab] = useState(0);
   const [sqls, setSqls] = useState(startingDefaultSqls);
+  const [sqlToolbarH, setSqlToolbarH] = useState(40);
+  const sqlToolbarRef = React.useRef<HTMLIonToolbarElement>(null);
+
   const handleTabChange = useCallback(
     (event: React.SyntheticEvent, selectedIdx: number) => {
       if (selectedIdx > sqls.data.length - 1) {
@@ -99,13 +103,30 @@ export function SqlRunner({
     },
     [sqls],
   );
+  const handleValueChange = (value: string) => {
+    sqls.data[selectedTab].body = value;
+    setSqls({ ...sqls });
+  };
 
   const handleCloseTab = (idx: number) => {
     sqls.data.splice(idx, 1);
     setSqls({ ...sqls });
   };
 
-  const nodeRef = React.useRef(null);
+  useEffect(() => {
+    const sqlToolbar = sqlToolbarRef.current;
+    if (!sqlToolbar) return;
+
+    const observer = new ResizeObserver((entries) => {
+      const h = entries[0].contentRect.height;
+      setSqlToolbarH(h);
+    });
+    observer.observe(sqlToolbar);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [sqlToolbarRef]);
 
   const runSql = useCallback(
     (sqlIdxToRun: number) => {
@@ -131,63 +152,63 @@ export function SqlRunner({
   );
 
   return (
-    <>
+    <IonContent>
+      <IonToolbar style={{ position: 'fixed' }} ref={sqlToolbarRef}>
+        <Tabs value={selectedTab} onChange={handleTabChange}>
+          {sqls.data.map((sql, idx) => (
+            <Tab
+              sx={{ padding: 0, margin: 0 }}
+              key={idx}
+              label={
+                <span>
+                  {sql.name}
+                  <IconButton
+                    component="div"
+                    onClick={() =>
+                      window.confirm('Close?') ? handleCloseTab(idx) : null
+                    }
+                  >
+                    <FiX />
+                  </IconButton>
+                </span>
+              }
+            />
+          ))}
+          <Tab label=" + Add New" key={-1} sx={{ padding: 0 }} />
+        </Tabs>
+        <Box width={'100%'} maxHeight={'300px'} overflow="auto">
+          <Editor
+            value={sqls.data[selectedTab]?.body}
+            onValueChange={(v) => handleValueChange(v)}
+            highlight={(code) => code}
+            padding={10}
+            ignoreTabKey={true}
+            style={{
+              fontFamily: '"Fira code", "Fira Mono", monospace',
+              fontSize: 12,
+            }}
+          />
+        </Box>
+        {sqls.data[selectedTab]?.body && (
+          <Button onClick={() => runSql(selectedTab)}>Run</Button>
+        )}
+      </IonToolbar>
       <Box
-        ref={nodeRef}
+        marginTop={`${sqlToolbarH}px`}
         display={'flex'}
         width={dimensions ? dimensions.w + 'px' : '100%'}
-        height={dimensions ? dimensions.h + 'px' : '100%'}
+        height={dimensions ? dimensions.h + 'px' : undefined}
         position={'absolute'}
-        border={`1px solid ${getColor('gray')}`}
+        border={`1px solid ${getColor('middle-gray')}`}
         flexDirection={'column'}
+        overflow={'auto'}
       >
         <Box>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={selectedTab} onChange={handleTabChange}>
-              {sqls.data.map((sql, idx) => (
-                <Tab
-                  sx={{ padding: 0, margin: 0 }}
-                  key={idx}
-                  label={
-                    <span>
-                      {sql.name}
-                      <IconButton
-                        component="div"
-                        onClick={() =>
-                          window.confirm('Close?') ? handleCloseTab(idx) : null
-                        }
-                      >
-                        <FiX />
-                      </IconButton>
-                    </span>
-                  }
-                />
-              ))}
-              <Tab label=" + Add New" key={-1} sx={{ padding: 0 }} />
-            </Tabs>
+          <Box height={'100%'} width={'100%'}>
+            {sqls.data[selectedTab]?.result && sqls.data[selectedTab]?.result}
           </Box>
-
-          <SqlWindow
-            sqls={sqls}
-            selectedIdx={selectedTab}
-            setSqls={setSqls}
-            runSql={runSql}
-            tableSize={{
-              w: dimensions?.w
-                ? String(dimensions.w - PADDING_SMALL - 2 * BORDER_W)
-                : '100%',
-              h: dimensions?.h
-                ? String(
-                    dimensions.h -
-                      REDUCE_TABLE_HEIGHT -
-                      PADDING_SMALL -
-                      2 * BORDER_W,
-                  )
-                : '100%',
-            }}
-          ></SqlWindow>
         </Box>
       </Box>
-    </>
+    </IonContent>
   );
 }
