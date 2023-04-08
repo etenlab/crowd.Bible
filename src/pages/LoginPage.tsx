@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
 import axios from 'axios';
@@ -34,6 +34,7 @@ const validationSchema = Yup.object().shape({
 
 export function LoginPage() {
   const [show, setShow] = useState<boolean>(false);
+  const [userToken, setUserToken] = useState('');
 
   const history = useHistory();
   const {
@@ -72,6 +73,8 @@ export function LoginPage() {
           )
           .then(async (response) => {
             console.log('response.data.access_token');
+            setUserToken(response.data.access_token);
+            localStorage.setItem('userToken', response.data.access_token);
             const token: any = decodeToken(response.data.access_token);
             console.log(token.email);
             setUser({
@@ -79,7 +82,7 @@ export function LoginPage() {
               userEmail: token.email,
               role: 'translator',
             });
-            history.push('/home');
+            history.push('/profile');
           });
       } catch (error: any) {
         console.log(error.message);
@@ -104,6 +107,10 @@ export function LoginPage() {
 
     formik.submitForm();
   };
+
+  useEffect(() => {
+    localStorage.setItem('userToken', userToken);
+  }, [userToken]);
 
   return (
     <IonContent>

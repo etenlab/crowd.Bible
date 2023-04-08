@@ -8,6 +8,7 @@ import {
   IonContent,
   IonToolbar,
   IonList,
+  IonItem,
 } from '@ionic/react';
 
 import { LinkItem } from '../LinkItem';
@@ -18,6 +19,7 @@ import {
   MuiMaterial,
   Alert,
   useColorModeContext,
+  Typography,
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
@@ -99,10 +101,10 @@ export function PageLayout({ children }: PageLayoutProps) {
     history.push('/home');
   };
 
-  // const handleLogout = () => {
-  //   // logout();
-  //   history.push('/home');
-  // };
+  const handleLogout = () => {
+    localStorage.clear();
+    history.push('/login');
+  };
 
   let isHeader = true;
 
@@ -159,7 +161,12 @@ export function PageLayout({ children }: PageLayoutProps) {
             />
             <LinkItem to="/settings" label="Settings" />
             <LinkItem to="/admin" label="Admin" />
-            <LinkItem to="/home" label="Logout" />
+            {/* <LinkItem to="/home" label="Logout" /> */}
+            <IonItem button onClick={handleLogout}>
+              <Typography variant="body1" color="text.dark">
+                Logout
+              </Typography>
+            </IonItem>
           </IonList>
         </IonContent>
       </IonMenu>
