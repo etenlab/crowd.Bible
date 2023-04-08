@@ -1,41 +1,104 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { IonContent } from '@ionic/react';
-import axios from 'axios';
-import { buildNodesBySearchQuery } from '@/src/graphql';
-import { useHistory } from 'react-router-dom';
-import { CrowdBibleUI } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
+import { useSingletons } from '@/src/hooks/useSingletons';
+import { Like } from 'typeorm';
+import { useGlobal } from '@/src/hooks/useGlobal';
+import { initialState, reducer } from '@/src/reducers';
+import { useHistory } from 'react-router';
 
-const { SearchNode } = CrowdBibleUI;
+const { SearchNode, TitleWithIcon } = CrowdBibleUI;
+const { Stack } = MuiMaterial;
 
 export function SearchNodePage() {
-  const history = useHistory();
-  const [isLoading, setIsLoading] = useState(false);
+  const [, dispatch] = useReducer(reducer, initialState);
+  const { setLoadingState } = useGlobal({ dispatch });
   const [search, setSearch] = useState('');
-  const [nodes, setNodes] = useState<Node[]>([]);
+  const history = useHistory();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [nodes, setNodes] = useState<any>([]);
+  const singletons = useSingletons();
 
   useEffect(() => {
     if (!search) {
       setNodes([]);
       return;
     }
-    setIsLoading(true);
-    axios
-      .post(process.env.REACT_APP_GRAPHQL_URL!, {
-        query: buildNodesBySearchQuery(search),
+    setLoadingState(true);
+
+    const searchNode = async () => {
+      if (singletons) {
+        const nodes = await singletons.nodeRepo.repository.find({
+          relations: [
+            'propertyKeys',
+            'propertyKeys.propertyValue',
+            'nodeRelationships',
+          ],
+          where: {
+            propertyKeys: {
+              propertyValue: {
+                property_value: Like(`%${search}%`),
+              },
+            },
+          },
+        });
+
+        const new_nodes = [];
+        for (const node of nodes) {
+          const propertyKeys = node.propertyKeys.map((property_key) => {
+            return {
+              ...property_key,
+              upVotes: 25,
+              downVotes: 12,
+              posts: [],
+              propertyValue: {
+                ...property_key.propertyValue,
+                upVotes: 25,
+                downVotes: 12,
+                posts: [],
+              },
+            };
+          });
+          new_nodes.push({
+            ...node,
+            propertyKeys,
+          });
+        }
+
+        return new_nodes;
+      }
+      return [];
+    };
+    searchNode()
+      .then((filtered_nodes) => {
+        setNodes(filtered_nodes);
       })
-      .then((response) => setNodes(response.data.data.nodesBySearch))
-      .finally(() => setIsLoading(false));
-  }, [search, setIsLoading]);
+      .catch((err) => console.log(err))
+      .finally(() => setLoadingState(false));
+  }, [search, setLoadingState, singletons]);
+
+  const nodeClickHandler = (id: string) => {
+    history.push(`/graph-viewer/${id}`);
+  };
 
   return (
     <IonContent>
-      /graph-viewer
-      <SearchNode
-        nodes={nodes}
-        isLoading={isLoading}
-        history={history}
-        setSearch={setSearch}
-      />
+      <Stack
+        sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto', gap: '16px' }}
+      >
+        <TitleWithIcon
+          label="Graph Viewer"
+          withCloseIcon={false}
+          onClose={() => {}}
+          onBack={() => {}}
+        />
+        <SearchNode
+          nodes={nodes}
+          nodeClickHandler={nodeClickHandler}
+          search={search}
+          setSearch={setSearch}
+        />
+      </Stack>
     </IonContent>
   );
 }

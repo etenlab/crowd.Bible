@@ -23,6 +23,7 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { SqlPortal } from '../../pages/DataTools/SqlRunner/SqlPortal';
 
 const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
 
@@ -37,7 +38,15 @@ export function PageLayout({ children }: PageLayoutProps) {
 
   const {
     states: {
-      global: { user, snack, isNewDiscussion, isNewNotification, loading },
+      global: {
+        user,
+        snack,
+        isNewDiscussion,
+        isNewNotification,
+        loading,
+        singletons,
+        isSqlPortalShown,
+      },
     },
     actions: { closeFeedback, setPrefersColorScheme },
   } = useAppContext();
@@ -126,6 +135,8 @@ export function PageLayout({ children }: PageLayoutProps) {
     }
   }
 
+  const isLoading = loading || !singletons;
+
   return (
     <>
       <IonMenu ref={ref} contentId="crowd-bible-app">
@@ -195,7 +206,6 @@ export function PageLayout({ children }: PageLayoutProps) {
 
         <IonContent fullscreen className="crowd-bible-ion-content">
           {children}
-
           <Snackbar
             open={snack.open}
             autoHideDuration={5000}
@@ -218,8 +228,7 @@ export function PageLayout({ children }: PageLayoutProps) {
               {snack.message}
             </Alert>
           </Snackbar>
-
-          <Backdrop sx={{ color: '#fff', zIndex: 1000 }} open={loading}>
+          <Backdrop sx={{ color: '#fff', zIndex: 1000 }} open={isLoading}>
             <Stack justifyContent="center">
               <div style={{ margin: 'auto' }}>
                 <CircularProgress color="inherit" />
@@ -227,6 +236,7 @@ export function PageLayout({ children }: PageLayoutProps) {
               <div>LOADING</div>
             </Stack>
           </Backdrop>
+          {isSqlPortalShown && <SqlPortal />}
         </IonContent>
       </IonPage>
     </>

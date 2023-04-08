@@ -10,9 +10,17 @@ import {
   RelationshipPropertyKey,
   RelationshipPropertyValue,
   RelationshipType,
+  Discussion,
+  File,
+  Post,
+  Reaction,
+  RelationshipPostFile,
+  User,
+  Vote,
 } from '@/models/index';
 import initSqlJs, { SqlJsStatic } from 'sql.js';
 import localforage from 'localforage';
+import { SyncSession } from './models/Sync';
 
 declare global {
   interface Window {
@@ -51,7 +59,7 @@ const options: SqljsConnectionOptions = {
   type: 'sqljs',
   autoSave: true,
   useLocalForage: true,
-  logging: false,
+  logging: ['error', 'query', 'schema'],
   synchronize: true,
   migrationsRun: true,
   entities: [
@@ -63,6 +71,14 @@ const options: SqljsConnectionOptions = {
     RelationshipType,
     RelationshipPropertyKey,
     RelationshipPropertyValue,
+    Discussion,
+    File,
+    Post,
+    Reaction,
+    RelationshipPostFile,
+    User,
+    Vote,
+    SyncSession,
   ],
   migrations: ['migrations/*.ts'],
 };

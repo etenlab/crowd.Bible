@@ -4,8 +4,11 @@
     "paths": {
       "@/src/*": ["src/*"],
       "@/components/*": ["src/components/*"],
+      "@/constants/*": ["src/constants/*"],
+      "@/dtos/*": ["src/dtos/*"],
       "@/hooks/*": ["src/hooks/*"],
       "@/models/*": ["src/models/*"],
+      "@/mappers/*": ["src/mappers/*"],
       "@/pages/*": ["src/pages/*"],
       "@/reducers/*": ["src/reducers/*"],
       "@/repositories/*": ["src/repositories/*"],

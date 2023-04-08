@@ -1,0 +1,14 @@
+ion-item::part(native), ion-item {
+  padding: 0px;
+  margin: 0px;
+}
+ion-icon::part(native), ion-icon {
+    margin-right: 5px;
+}
+.chip-btn {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+.MuiTypography-body1.MuiListItemText-primary {
+  font-weight: 600;
+}

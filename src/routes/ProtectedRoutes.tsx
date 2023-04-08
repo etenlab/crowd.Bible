@@ -14,6 +14,7 @@ import { LanguageToolsRoutes } from './LanguageToolsRoutes';
 import { MediaToolsRoutes } from './MediaToolsRoutes';
 import { DataToolsRoutes } from './DataToolsRoutes';
 import { AppDevRoutes } from './AppDevRoutes';
+import { DiscussionRoutes } from './DiscussionRoutes';
 
 export function ProtectedRoutes() {
   return (
@@ -56,6 +57,8 @@ export function ProtectedRoutes() {
       <DataToolsRoutes />
 
       <AppDevRoutes />
+
+      <DiscussionRoutes />
 
       <Route exact path="/">
         <Redirect to="/home" />

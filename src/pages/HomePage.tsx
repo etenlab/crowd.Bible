@@ -34,22 +34,21 @@ const linkGroups = [
     group: 'Language Tools',
     linkItems: [
       { to: '/dictionary', label: 'Dictionary editor' },
-      { to: '/dictionary-v2', label: 'Dictionary editor v2' },
       { to: '/bilingual-dictionary', label: 'Bilingual dictionary toer' },
       { to: '/phrase-book', label: 'Phrase-book editor' },
-      { to: '/phrase-book-v2', label: 'Phrase-book editor v2' },
       { to: '/lexicon', label: 'Lexicon editor' },
       { to: '/grammar', label: 'Grammar editor' },
     ],
   },
   {
     group: 'Media Tools',
-    linkItems: [{ to: '/svg-translation', label: 'Map translation editor' }],
+    linkItems: [{ to: '/map-list', label: 'Map translation editor' }],
   },
   {
     group: 'Data Tools',
     linkItems: [
       { to: '/graph-viewer', label: 'Data viewer' },
+      { to: '/sql-runner', label: 'SQL runner' },
       { to: '/file-import', label: 'File import tool' },
     ],
   },

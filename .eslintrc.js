@@ -12,6 +12,7 @@ module.exports = {
   ],
   extends: [
     'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
     'react-app',
@@ -25,7 +26,7 @@ module.exports = {
     project: 'tsconfig.json',
     tsconfigRootDir: __dirname,
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: ['react', 'react-hooks', '@typescript-eslint'],
   settings: {
     react: {
       version: 'detect',
@@ -34,6 +35,8 @@ module.exports = {
   rules: {
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-empty-function': 'off',
