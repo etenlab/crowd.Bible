@@ -125,7 +125,9 @@ export function SqlRunner({
       sqls.data[selectedTab].body = value;
       const localForage = dbService?.localForage as LocalForage;
       if (!localForage) return;
-      localForage.setItem('sqlRunner', sqls);
+      const saveSqls = { ...sqls };
+      saveSqls.data = sqls.data.map((d) => ({ name: d.name, body: d.body }));
+      localForage.setItem('sqlRunner', saveSqls);
       setSqls({ ...sqls });
     },
     [selectedTab, dbService?.localForage, sqls],
@@ -253,11 +255,7 @@ export function SqlRunner({
           flexDirection={'column'}
           overflow={'auto'}
         >
-          <Box>
-            <Box height={'100%'} width={'100%'}>
-              {sqls.data[selectedTab]?.result && sqls.data[selectedTab]?.result}
-            </Box>
-          </Box>
+          {sqls.data[selectedTab]?.result && sqls.data[selectedTab]?.result}
         </Box>
       </IonContent>
     </>
