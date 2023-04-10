@@ -23,15 +23,15 @@ export class DefinitionService {
   ) {}
 
   /**
-   * Finds ballot entry for a given votableNodeId or creates new ballot entry if not found.
-   * We vote on relations, so relation must be a ballot entry target. So if relation between
+   * Finds candidate entry for a given votableNodeId or creates new candidate entry if not found.
+   * We vote on relations, so relation must be a candidate entry target. So if relation between
    * votable node and election target does not exist, it will be created.
    * Relation type and direction is created according to electionTargetNode.nodeType
    *
    * @param votableNodeId - nodeId (definition/word/phrase)
-   * @param electionId - in case if no existing ballotEntry found, new one will be created using this electionId
+   * @param electionId - in case if no existing candidateEntry found, new one will be created using this electionId
    * @param electionTargetId - nodeId (word/phrase/language)
-   * @returns - id of the created ballot entry
+   * @returns - id of the created candidate entry
    */
   async findOrCreateCandidateId(
     votableNodeId: Nanoid,
@@ -100,12 +100,12 @@ export class DefinitionService {
   }
 
   /**
-   * Creates defintion for given nodeId and ballot entry for this definition.
+   * Creates defintion for given nodeId and candidate entry for this definition.
    *
    * @param definitionText - definition text
    * @param forNodeId - node Id (word or phrase) for which definition is created
-   * @param electionId - election for node Id (word or phrase). Ballot entry will be connected to this election.
-   * @returns - created definition Id and ballot Id
+   * @param electionId - election for node Id (word or phrase). Candidate entry will be connected to this election.
+   * @returns - created definition Id and candidate Id
    */
   async createDefinition(
     definitionText: string,
@@ -113,7 +113,7 @@ export class DefinitionService {
     electionId: Nanoid,
   ): Promise<{
     definitionId: Nanoid;
-    ballotEntryId: Nanoid;
+    candidateId: Nanoid;
   }> {
     const existingDefinitionNode =
       await this.graphFirstLayerService.getNodeByProp(
@@ -145,7 +145,7 @@ export class DefinitionService {
 
     return {
       definitionId: definitionNode.id,
-      ballotEntryId: candidateId,
+      candidateId: candidateId,
     };
   }
 
@@ -154,15 +154,15 @@ export class DefinitionService {
    *
    * @param word - word text
    * @param langId - language of this word
-   * @returns - created word Id and election Id (to add definition ballots to it)
+   * @returns - created word Id and election Id (to add definition candidates to it)
    */
   async createWordAndDefinitionsElection(
     word: string,
     langId: Nanoid,
     langElectionId: Nanoid,
-  ): Promise<{ wordId: Nanoid; electionId: Nanoid; wordBallotId: Nanoid }> {
+  ): Promise<{ wordId: Nanoid; electionId: Nanoid; wordCandidateId: Nanoid }> {
     const wordId = await this.graphThirdLayerService.createWord(word, langId);
-    const wordBallotId = await this.findOrCreateCandidateId(
+    const wordCandidateId = await this.findOrCreateCandidateId(
       wordId,
       langElectionId,
       langId,
@@ -173,7 +173,7 @@ export class DefinitionService {
       TableNameConst.NODES,
       TableNameConst.RELATIONSHIPS,
     );
-    return { wordId, electionId: definitionEelection.id, wordBallotId };
+    return { wordId, electionId: definitionEelection.id, wordCandidateId };
   }
 
   /**
@@ -181,13 +181,17 @@ export class DefinitionService {
    *
    * @param word - phrase text
    * @param langId - language of this phrase
-   * @returns - created phrase Id and election Id (to add definition ballots to it)
+   * @returns - created phrase Id and election Id (to add definition candidates to it)
    */
   async createPhraseAndDefinitionsElection(
     phrase: string,
     langId: Nanoid,
     langElectionId: Nanoid,
-  ): Promise<{ phraseId: Nanoid; electionId: Nanoid; phraseBallotId: Nanoid }> {
+  ): Promise<{
+    phraseId: Nanoid;
+    electionId: Nanoid;
+    phraseCandidateId: Nanoid;
+  }> {
     const existingPhraseNode = await this.graphFirstLayerService.getNodeByProp(
       NodeTypeConst.PHRASE,
       {
@@ -207,7 +211,7 @@ export class DefinitionService {
           )
         ).node;
 
-    const phraseBallotId = await this.findOrCreateCandidateId(
+    const phraseCandidateId = await this.findOrCreateCandidateId(
       node.id,
       langElectionId,
       langId,
@@ -219,13 +223,13 @@ export class DefinitionService {
       TableNameConst.NODES,
       TableNameConst.RELATIONSHIPS,
     );
-    return { phraseId: node.id, electionId: election.id, phraseBallotId };
+    return { phraseId: node.id, electionId: election.id, phraseCandidateId };
   }
 
   /**
    * Finds nodes related to electionTargetId (nodes only of given votableNodesType,
    * relation direction described by fromVotableNodes).
-   * Finds/creates ballotEntry for each found node using given electionId.
+   * Finds/creates candidateEntry for each found node using given electionId.
    * Incapsulates information and returns it as VotableContent
    *
    * @param electionTargetId - nodeId (word/phrase/language)
@@ -251,13 +255,13 @@ export class DefinitionService {
       });
     const vcPromises: Promise<VotableContent>[] = votableNodes.map(
       async (votableNode) => {
-        const ballotId = await this.findOrCreateCandidateId(
+        const candidateId = await this.findOrCreateCandidateId(
           votableNode.id,
           electionId,
           electionTargetId,
         );
         const { upVotes, downVotes } = await this.votingService.getVotesStats(
-          ballotId,
+          candidateId,
         );
         return {
           content: this.graphSecondLayerService.getNodePropertyValue(
@@ -267,7 +271,7 @@ export class DefinitionService {
           upVotes,
           downVotes,
           id: votableNode.id,
-          ballotId,
+          candidateId,
         };
       },
     );

@@ -28,6 +28,7 @@ export class Candidate extends Syncable {
     this.id = nanoid();
   }
 
+  // TODO: looks redundant, check and delete
   @Column('text', { nullable: true })
   readonly candidate_id!: string | null;
 

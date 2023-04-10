@@ -28,7 +28,7 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
       downVotes: 1,
       upVotes: 2,
       id: '12341234',
-      ballotId: '23456789',
+      candidateId: '23456789',
     },
     contents: [
       {
@@ -36,14 +36,14 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
         upVotes: 10,
         downVotes: 11,
         id: '12341235',
-        ballotId: '23456789',
+        candidateId: '23456789',
       },
       {
         content: 'some content11',
         upVotes: 10,
         downVotes: 11,
         id: '12341236',
-        ballotId: '23456789',
+        candidateId: '23456789',
       },
     ],
     contentElectionId: '3456',
@@ -54,7 +54,7 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
       downVotes: 21,
       upVotes: 22,
       id: '12341237',
-      ballotId: '23456789',
+      candidateId: '23456789',
     },
     contents: [
       {
@@ -62,7 +62,7 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
         upVotes: 30,
         downVotes: 31,
         id: '12341238',
-        ballotId: '23456789',
+        candidateId: '23456789',
       },
     ],
     contentElectionId: '3456',
@@ -74,7 +74,7 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
       downVotes: 31,
       upVotes: 32,
       id: '12341239',
-      ballotId: '23456789',
+      candidateId: '23456789',
     },
     contents: [
       {
@@ -82,7 +82,7 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
         upVotes: 30,
         downVotes: 31,
         id: '12341240',
-        ballotId: '23456789',
+        candidateId: '23456789',
       },
     ],
     contentElectionId: '3456',
@@ -96,6 +96,7 @@ export function DictionaryPage() {
     states: {
       global: { singletons },
     },
+    actions: { setLoadingState, alertFeedback },
   } = useAppContext();
   const [selectedWord, setSelectedWord] = useState<VotableItem | null>(null);
   const [isDialogOpened, setIsDialogOpened] = useState(false);
@@ -127,43 +128,66 @@ export function DictionaryPage() {
   };
 
   useEffect(() => {
-    const loadLanguages = async () => {
-      if (!definitionService) return;
-      const langDtos = await definitionService.getLanguages();
-      setLangs(langDtos);
-    };
-    loadLanguages();
-  }, [definitionService]);
+    try {
+      setLoadingState(true);
+      const loadLanguages = async () => {
+        if (!definitionService) return;
+        const langDtos = await definitionService.getLanguages();
+        setLangs(langDtos);
+      };
+      loadLanguages();
+      setLoadingState(false);
+    } catch (error) {
+      console.log(error);
+      alertFeedback('error', 'Internal Error!');
+    } finally {
+      setLoadingState(false);
+    }
+  }, [alertFeedback, definitionService, setLoadingState]);
 
   useEffect(() => {
     if (!definitionService) return;
     if (!selectedLanguageId) return;
-    const langsElectionWordsId = langs.find(
-      (l) => l.id === selectedLanguageId,
-    )?.electionWordsId;
-    if (!langsElectionWordsId) {
-      throw new Error(
-        `Language id ${selectedLanguageId} does't have electionWordsId to elect words`,
-      );
-    }
-    const loadWords = async () => {
-      const words: VotableItem[] =
-        await definitionService.getWordsAsVotableItems(
-          selectedLanguageId,
-          langsElectionWordsId,
+    try {
+      setLoadingState(true);
+      const langsElectionWordsId = langs.find(
+        (l) => l.id === selectedLanguageId,
+      )?.electionWordsId;
+      if (!langsElectionWordsId) {
+        throw new Error(
+          `Language id ${selectedLanguageId} does't have electionWordsId to elect words`,
         );
-      setWords(words);
-    };
-    loadWords();
-  }, [definitionService, langs, selectedLanguageId]);
+      }
+      const loadWords = async () => {
+        const words: VotableItem[] =
+          await definitionService.getWordsAsVotableItems(
+            selectedLanguageId,
+            langsElectionWordsId,
+          );
+        setWords(words);
+      };
+      loadWords();
+    } catch (error) {
+      console.log(error);
+      alertFeedback('error', 'Internal Error!');
+    } finally {
+      setLoadingState(false);
+    }
+  }, [
+    alertFeedback,
+    definitionService,
+    langs,
+    selectedLanguageId,
+    setLoadingState,
+  ]);
 
   const addWord = (newWord: string) => {
     addItem(words, newWord);
   };
 
   const changeWordVotes = useCallback(
-    (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
-      changeItemVotes(ballotId, upOrDown, words);
+    (candidateId: Nanoid | null, upOrDown: TUpOrDownVote) => {
+      changeItemVotes(candidateId, upOrDown, words);
     },
     [changeItemVotes, words],
   );
@@ -183,8 +207,8 @@ export function DictionaryPage() {
   );
 
   const changeWordDefinitionVotes = useCallback(
-    (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
-      changeDefinitionVotes(words, selectedWord, ballotId, upOrDown);
+    (candidateId: Nanoid | null, upOrDown: TUpOrDownVote) => {
+      changeDefinitionVotes(words, selectedWord, candidateId, upOrDown);
     },
     [changeDefinitionVotes, selectedWord, words],
   );

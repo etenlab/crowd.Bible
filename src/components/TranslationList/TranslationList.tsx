@@ -55,7 +55,7 @@ function Translation({
 }: {
   translation: WordSequenceWithVote;
   isCheckbox: boolean;
-  onChangeVote: (translationId: Nanoid, ballotEntryId: Nanoid) => void;
+  onChangeVote: (translationId: Nanoid, candidateId: Nanoid) => void;
 }) {
   const { id, wordSequence, vote } = translation;
 
@@ -191,9 +191,9 @@ export function TranslationList({
 
   const handleChangeVote = async (
     translationId: Nanoid,
-    ballotEntryId: Nanoid,
+    candidateId: Nanoid,
   ) => {
-    const vote = await getVotesStats(ballotEntryId);
+    const vote = await getVotesStats(candidateId);
 
     if (!vote) {
       return;
