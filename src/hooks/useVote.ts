@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 
+import { ElectionTypeConst } from '@/constants/voting.constant';
+
 export function useVote() {
   const {
     states: {
@@ -9,18 +11,52 @@ export function useVote() {
     actions: { alertFeedback, setLoadingState },
   } = useAppContext();
 
-  const listElections = useCallback(
-    async (tableName: TablesName, rowId: Nanoid) => {
+  const createElection = useCallback(
+    async (
+      electionType: ElectionTypeConst,
+      electionRef: Nanoid,
+      refTableName: string,
+      candidateRefTableName: string,
+    ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at listElections');
-        return [];
+        alertFeedback('error', 'Internal Error! at createElection');
+        return null;
       }
 
       try {
         setLoadingState(true);
-        const result = await singletons.votingService.listElections(
-          tableName,
-          rowId,
+        const electionId = await singletons.votingService.createElection(
+          electionType,
+          electionRef,
+          refTableName,
+          candidateRefTableName,
+        );
+
+        setLoadingState(false);
+        alertFeedback('success', 'Created a new Election!');
+
+        return electionId;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
+  const getElectionById = useCallback(
+    async (electionId: Nanoid) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at listElections');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.votingService.getElectionById(
+          electionId,
         );
         setLoadingState(false);
         return result;
@@ -28,7 +64,38 @@ export function useVote() {
         console.log(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
-        return [];
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
+  const getElectionByRef = useCallback(
+    async (
+      electionType: ElectionTypeConst,
+      electionRef: Nanoid,
+
+      refTableName: string,
+    ) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at listElections');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.votingService.getElectionByRef(
+          electionType,
+          electionRef,
+          refTableName,
+        );
+        setLoadingState(false);
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
       }
     },
     [singletons, alertFeedback, setLoadingState],
@@ -58,36 +125,8 @@ export function useVote() {
     [singletons, alertFeedback, setLoadingState],
   );
 
-  const createElection = useCallback(
-    async (tableName: TablesName, rowId: Nanoid) => {
-      if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createElection');
-        return null;
-      }
-
-      try {
-        setLoadingState(true);
-        const electionId = await singletons.votingService.createElection(
-          tableName,
-          rowId,
-        );
-
-        setLoadingState(false);
-        alertFeedback('success', 'Created a new Election!');
-
-        return electionId;
-      } catch (err) {
-        console.log(err);
-        setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
-        return null;
-      }
-    },
-    [singletons, alertFeedback, setLoadingState],
-  );
-
-  const addBallotEntry = useCallback(
-    async (electionId: Nanoid, ballotEntryTarget: BallotEntryTarget) => {
+  const addCandidate = useCallback(
+    async (electionId: Nanoid, candidateRef: Nanoid) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at addBallotEntry');
         return null;
@@ -95,9 +134,9 @@ export function useVote() {
 
       try {
         setLoadingState(true);
-        const ballotEntryId = await singletons.votingService.addBallotEntry(
+        const ballotEntryId = await singletons.votingService.addCandidate(
           electionId,
-          ballotEntryTarget,
+          candidateRef,
         );
 
         setLoadingState(false);
@@ -114,8 +153,81 @@ export function useVote() {
     [singletons, alertFeedback, setLoadingState],
   );
 
+  const getCandidateById = useCallback(
+    async (electionId: Nanoid) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at listElections');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.votingService.getCandidateById(
+          electionId,
+        );
+        setLoadingState(false);
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
+  const getCandidateByRef = useCallback(
+    async (electionId: Nanoid, candidateRef: Nanoid) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at getBallotEntryId');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.votingService.getCandidateByRef(
+          electionId,
+          candidateRef,
+        );
+        setLoadingState(false);
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
+  const getVotesStats = useCallback(
+    async (candidateId: Nanoid) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at getVotesStats');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.votingService.getVotesStats(
+          candidateId,
+        );
+        setLoadingState(false);
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
   const addVote = useCallback(
-    async (ballotEntryId: Nanoid, vote: boolean | null) => {
+    async (candidateId: Nanoid, vote: boolean | null) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at addVote');
         return null;
@@ -132,16 +244,12 @@ export function useVote() {
           user.userEmail,
         );
 
-        const voteId = await singletons.votingService.addVote(
-          ballotEntryId,
-          userDto.id,
-          vote,
-        );
+        await singletons.votingService.addVote(candidateId, userDto.id, vote);
 
         setLoadingState(false);
         alertFeedback('success', 'Created a new Vote!');
 
-        return voteId;
+        return true;
       } catch (err) {
         console.log(err);
         setLoadingState(false);
@@ -153,7 +261,7 @@ export function useVote() {
   );
 
   const toggleVote = useCallback(
-    async (ballotEntryId: Nanoid, vote: boolean | null) => {
+    async (candidateId: Nanoid, vote: boolean | null) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at toggleVote');
         return null;
@@ -170,22 +278,23 @@ export function useVote() {
           user.userEmail,
         );
 
-        const voteEntity = await singletons.votingService.getVote(
-          ballotEntryId,
+        const voteEntity = await singletons.votingService.getVoteByRef(
+          candidateId,
           userDto.id,
         );
 
         let voteValue: boolean | null;
 
-        if (!voteEntity || voteEntity.vote === null) {
+        if (!voteEntity) {
           voteValue = vote;
         } else {
           voteValue = vote === voteEntity.vote ? null : vote;
         }
 
+        await addVote(candidateId, voteValue);
         setLoadingState(false);
 
-        return addVote(ballotEntryId, voteValue);
+        return true;
       } catch (err) {
         console.log(err);
         setLoadingState(false);
@@ -196,63 +305,16 @@ export function useVote() {
     [singletons, alertFeedback, user, addVote, setLoadingState],
   );
 
-  const getVotesStats = useCallback(
-    async (ballotEntryId: Nanoid) => {
-      if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getVotesStats');
-        return null;
-      }
-
-      try {
-        setLoadingState(true);
-        const result = await singletons.votingService.getVotesStats(
-          ballotEntryId,
-        );
-        setLoadingState(false);
-        return result;
-      } catch (err) {
-        console.log(err);
-        setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
-        return null;
-      }
-    },
-    [singletons, alertFeedback, setLoadingState],
-  );
-
-  const getBallotEntryId = useCallback(
-    async (electionId: Nanoid, ballotEntryTarget: BallotEntryTarget) => {
-      if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getBallotEntryId');
-        return null;
-      }
-
-      try {
-        setLoadingState(true);
-        const result = await singletons.votingService.getBallotEntryId(
-          electionId,
-          ballotEntryTarget,
-        );
-        setLoadingState(false);
-        return result;
-      } catch (err) {
-        console.log(err);
-        setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
-        return null;
-      }
-    },
-    [singletons, alertFeedback, setLoadingState],
-  );
-
   return {
     createElection,
-    listElections,
+    getElectionById,
+    getElectionByRef,
     getElectionFull,
+    addCandidate,
+    getCandidateById,
+    getCandidateByRef,
     getVotesStats,
-    addBallotEntry,
-    getBallotEntryId,
-    toggleVote,
     addVote,
+    toggleVote,
   };
 }

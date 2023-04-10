@@ -1,175 +1,83 @@
-import { GraphFirstLayerService } from './graph-first-layer.service';
-import { GraphSecondLayerService } from './graph-second-layer.service';
-import { VoteRepository } from '@/repositories/vote/vote.repository';
+import { ElectionRepository } from '@/repositories/voting/election.repository';
+import { CandidateRepository } from '@/repositories/voting/candidate.repository';
+import { VoteRepository } from '@/repositories/voting/vote.repository';
 
-import { Vote } from '@/models/vote/vote.entity';
+import { Election } from '@/models/voting/election.entity';
+import { Candidate } from '@/models/voting/candidate.entity';
+import { Vote } from '@/models/voting/vote.entity';
 
-import {
-  NodeTypeConst,
-  RelationshipTypeConst,
-  PropertyKeyConst,
-  ElectionTypesConst,
-} from '@/constants/graph.constant';
+import { ElectionTypeConst } from '@/constants/voting.constant';
 
 export class VotingService {
   constructor(
-    private readonly firstLayerService: GraphFirstLayerService,
-    private readonly secondLayerService: GraphSecondLayerService,
+    private readonly electionRepo: ElectionRepository,
+    private readonly candidateRepo: CandidateRepository,
     private readonly voteRepo: VoteRepository,
   ) {}
 
   async createElection(
-    tableName: TablesName,
-    rowId: Nanoid,
-    electionType: ElectionTypesConst = ElectionTypesConst.TRANSLATION,
-  ): Promise<Nanoid> {
-    const elections = await this.listElections(tableName, rowId, electionType);
-
-    if (elections && elections.length > 0) {
-      return elections[0];
-    }
-
-    const electionNode = await this.secondLayerService.createNodeFromObject(
-      NodeTypeConst.ELECTION,
-      {
-        [PropertyKeyConst.TABLE_NAME]: tableName,
-        [PropertyKeyConst.ROW_ID]: rowId,
-        [PropertyKeyConst.ELECTION_TYPE]: electionType,
-      },
+    election_type: ElectionTypeConst,
+    election_ref: Nanoid,
+    ref_table_name: string,
+    candidate_ref_table_name: string,
+  ): Promise<Election> {
+    return this.electionRepo.createElection(
+      election_type,
+      election_ref,
+      ref_table_name,
+      candidate_ref_table_name,
     );
-
-    return electionNode.id;
   }
 
-  async listElections(
-    tableName: TablesName,
-    rowId: Nanoid,
-    electionType: ElectionTypesConst = ElectionTypesConst.TRANSLATION,
-  ): Promise<Nanoid[]> {
-    const constrains: { key: string; value: unknown }[] = [
-      {
-        key: PropertyKeyConst.TABLE_NAME,
-        value: tableName,
-      },
-      {
-        key: PropertyKeyConst.ROW_ID,
-        value: rowId,
-      },
-      {
-        key: PropertyKeyConst.ELECTION_TYPE,
-        value: electionType,
-      },
-    ];
+  async getElectionById(electionId: Nanoid): Promise<Election | null> {
+    return this.electionRepo.getElectionById(electionId);
+  }
 
-    return this.firstLayerService.getNodesByProps(
-      NodeTypeConst.ELECTION,
-      constrains,
+  async getElectionByRef(
+    election_type: ElectionTypeConst,
+    election_ref: Nanoid,
+    ref_table_name: string,
+  ): Promise<Election | null> {
+    return this.electionRepo.getElectionByRef(
+      election_type,
+      election_ref,
+      ref_table_name,
     );
   }
 
   async getElectionFull(electionId: Nanoid): Promise<VotesStatsRow[]> {
-    const election = await this.firstLayerService.readNode(
-      electionId,
-      ['nodeRelationships'],
-      {
-        id: electionId,
-        nodeRelationships: {
-          relationship_type: RelationshipTypeConst.ELECTION_TO_BALLOT_ENTRY,
-        },
-      },
-    );
+    const election = await this.electionRepo.getElectionById(electionId);
 
     if (!election) {
       throw new Error('Not Exists a Election by Eleciton Id!');
     }
 
-    if (!election.nodeRelationships) {
-      return [];
+    const candidateWithStatesList = [];
+
+    for (const candidate of election.candidates) {
+      const tmp = await this.voteRepo.getVotesStats(candidate.id);
+      candidateWithStatesList.push(tmp);
     }
 
-    const ballotList = election.nodeRelationships.map((rel) => rel.to_node_id);
-
-    const ballotWithStatesList = [];
-
-    for (const id of ballotList) {
-      const tmp = await this.voteRepo.getVotesStats(id);
-      ballotWithStatesList.push(tmp);
-    }
-
-    return ballotWithStatesList;
+    return candidateWithStatesList;
   }
 
-  async addBallotEntry(
+  async addCandidate(
     electionId: Nanoid,
-    ballotEntryTarget: BallotEntryTarget,
-  ): Promise<Nanoid> {
-    const constrains: { key: string; value: unknown }[] = [
-      {
-        key: PropertyKeyConst.TABLE_NAME,
-        value: ballotEntryTarget.tableName,
-      },
-      {
-        key: PropertyKeyConst.ROW_ID,
-        value: ballotEntryTarget.rowId,
-      },
-      {
-        key: PropertyKeyConst.ELECTION_ID,
-        value: electionId,
-      },
-    ];
-
-    const nodes = await this.firstLayerService.getNodesByProps(
-      NodeTypeConst.BALLOT_ENTRY,
-      constrains,
-    );
-
-    if (nodes && nodes.length > 0) {
-      return nodes[0];
-    }
-
-    const { node } =
-      await this.secondLayerService.createRelatedToNodeFromObject(
-        RelationshipTypeConst.ELECTION_TO_BALLOT_ENTRY,
-        {},
-        electionId,
-        NodeTypeConst.BALLOT_ENTRY,
-        {
-          [PropertyKeyConst.TABLE_NAME]: ballotEntryTarget.tableName,
-          [PropertyKeyConst.ROW_ID]: ballotEntryTarget.rowId,
-          [PropertyKeyConst.ELECTION_ID]: electionId,
-        },
-      );
-
-    return node.id;
+    candidateRef: Nanoid,
+  ): Promise<Candidate> {
+    return this.candidateRepo.createCandidate(electionId, candidateRef);
   }
 
-  async getBallotEntryId(
+  async getCandidateById(candidateId: Nanoid): Promise<Candidate | null> {
+    return this.candidateRepo.getCandidateById(candidateId);
+  }
+
+  async getCandidateByRef(
     electionId: Nanoid,
-    ballotEntryTarget: BallotEntryTarget,
-  ): Promise<Nanoid | null> {
-    const election = await this.firstLayerService.readNode(electionId);
-
-    if (!election) {
-      throw new Error('Not Exists such electionId!');
-    }
-
-    const ballots = await this.firstLayerService.getNodesByProps(
-      NodeTypeConst.BALLOT_ENTRY,
-      [
-        { key: PropertyKeyConst.ELECTION_ID, value: electionId },
-        {
-          key: PropertyKeyConst.TABLE_NAME,
-          value: ballotEntryTarget.tableName,
-        },
-        { key: PropertyKeyConst.ROW_ID, value: ballotEntryTarget.rowId },
-      ],
-    );
-
-    if (ballots.length === 0) {
-      return null;
-    }
-
-    return ballots[0];
+    candidateRef: Nanoid,
+  ): Promise<Candidate | null> {
+    return this.candidateRepo.getCandidateByRef(electionId, candidateRef);
   }
 
   async getVotesStats(ballot_entry_id: Nanoid): Promise<VotesStatsRow> {
@@ -177,20 +85,17 @@ export class VotingService {
   }
 
   async addVote(
-    ballotEntryId: Nanoid,
+    candidateId: Nanoid,
     userId: Nanoid,
     vote: boolean | null,
-  ): Promise<Nanoid> {
-    const newVote = await this.voteRepo.upsert({
-      ballot_entry_id: ballotEntryId,
-      user_id: userId,
-      vote: vote,
-    });
-
-    return newVote.id;
+  ): Promise<void> {
+    await this.voteRepo.upsert(candidateId, userId, vote);
   }
 
-  async getVote(ballotEntryId: Nanoid, userId: Nanoid): Promise<Vote | null> {
-    return this.voteRepo.getVote(ballotEntryId, userId);
+  async getVoteByRef(
+    candidateId: Nanoid,
+    userId: Nanoid,
+  ): Promise<Vote | null> {
+    return this.voteRepo.getVoteByRef(candidateId, userId);
   }
 }

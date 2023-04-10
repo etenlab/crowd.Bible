@@ -17,6 +17,9 @@ import { useVote } from '@/hooks/useVote';
 
 import { WordSequenceDto } from '@/dtos/word-sequence.dto';
 
+import { ElectionTypeConst } from '@/constants/voting.constant';
+import { TableNameConst } from '@/constants/table-name.constant';
+
 const { Box } = MuiMaterial;
 
 type TranslationEditorProps = {
@@ -38,7 +41,7 @@ export function TranslationEditor({
 }: TranslationEditorProps) {
   const history = useHistory();
   const { createTranslation, createSubWordSequence } = useWordSequence();
-  const { createElection, addBallotEntry, listElections } = useVote();
+  const { createElection, addCandidate, getElectionByRef } = useVote();
   const { getColor } = useColorModeContext();
   const [text, setText] = useState<string>('');
 
@@ -56,19 +59,34 @@ export function TranslationEditor({
         return;
       }
 
-      const tmpElectionId = await createElection('nodes', wordSequenceId);
+      const tmpElection = await createElection(
+        ElectionTypeConst.TRANSLATION,
+        wordSequenceId,
+        TableNameConst.NODES,
+        TableNameConst.NODES,
+      );
 
-      if (!tmpElectionId) {
+      if (!tmpElection) {
         return;
       }
 
-      electionId = tmpElectionId;
+      electionId = tmpElection.id;
 
       subWordSequenceId = wordSequenceId;
     } else {
       subWordSequenceId = subWordSequence;
 
-      electionId = (await listElections('nodes', subWordSequenceId))[0];
+      const tmpElection = await getElectionByRef(
+        ElectionTypeConst.TRANSLATION,
+        subWordSequenceId,
+        TableNameConst.NODES,
+      );
+
+      if (!tmpElection) {
+        return;
+      }
+
+      electionId = tmpElection.id;
     }
 
     const translationId = await createTranslation(subWordSequenceId, text);
@@ -77,10 +95,7 @@ export function TranslationEditor({
       return;
     }
 
-    await addBallotEntry(electionId, {
-      tableName: 'nodes',
-      rowId: translationId,
-    });
+    await addCandidate(electionId, translationId);
 
     history.push(`/translation/${documentId}`);
   };

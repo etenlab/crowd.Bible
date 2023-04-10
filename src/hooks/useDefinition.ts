@@ -90,8 +90,8 @@ export function useDefinition(
       await toggleVote(ballotId, upOrDown === 'upVote'); // if not upVote, it calculated as false and toggleVote treats false as downVote
       const votes = await getVotesStats(ballotId);
       const wordIdx = items.findIndex((w) => w.title.ballotId === ballotId);
-      items[wordIdx].title.upVotes = votes?.up || 0;
-      items[wordIdx].title.downVotes = votes?.down || 0;
+      items[wordIdx].title.upVotes = votes?.upVotes || 0;
+      items[wordIdx].title.downVotes = votes?.downVotes || 0;
 
       setItems([...items]);
     },
@@ -223,8 +223,8 @@ export function useDefinition(
 
       items[wordIdx].contents[definitionIndex] = {
         ...items[wordIdx].contents[definitionIndex],
-        upVotes: votes?.up || 0,
-        downVotes: votes?.down || 0,
+        upVotes: votes?.upVotes || 0,
+        downVotes: votes?.downVotes || 0,
       };
       setItems([...items]);
     },

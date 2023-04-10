@@ -3,28 +3,15 @@ declare module '*.tab' {
   export default value;
 }
 
-type TablesName =
-  | 'nodes'
-  | 'node_property_keys'
-  | 'node_property_values'
-  | 'relationships'
-  | 'relationship_property_keys'
-  | 'relationship_property_values';
-
 type Nanoid = string;
-
-type BallotEntryTarget = {
-  tableName: TablesName;
-  rowId: Nanoid;
-};
 
 type TUpOrDownVote = 'upVote' | 'downVote';
 type RelationshipDirection = 'from_node_id' | 'to_node_id';
 
 type VotesStatsRow = {
-  ballot_entry_id: Nanoid;
-  up: number;
-  down: number;
+  candidateId: Nanoid;
+  upVotes: number;
+  downVotes: number;
 };
 
 interface Table {
