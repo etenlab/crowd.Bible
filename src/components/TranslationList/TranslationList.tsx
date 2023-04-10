@@ -32,16 +32,16 @@ function Voting({
   const { toggleVote } = useVote();
 
   const handleToggleVote = async (voteValue: boolean) => {
-    await toggleVote(vote.ballot_entry_id, voteValue);
+    await toggleVote(vote.candidateId, voteValue);
     onChangeVote();
   };
 
   return (
     <Stack direction="row" gap="20px">
-      <VoteButton count={vote.up} onClick={() => handleToggleVote(true)} />
+      <VoteButton count={vote.upVotes} onClick={() => handleToggleVote(true)} />
       <VoteButton
         isLike={false}
-        count={vote.down}
+        count={vote.downVotes}
         onClick={() => handleToggleVote(false)}
       />
     </Stack>
@@ -89,7 +89,7 @@ function Translation({
           >
             <Voting
               vote={vote}
-              onChangeVote={() => onChangeVote(id, vote.ballot_entry_id)}
+              onChangeVote={() => onChangeVote(id, vote.candidateId)}
             />
 
             <IconButton onClick={handleClickDiscussionButton}>
