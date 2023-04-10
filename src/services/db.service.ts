@@ -16,6 +16,7 @@ export class DbService {
 
   constructor(public readonly dataSource: DataSource) {
     window.localforage = localforage;
+    this.localForage = localforage;
     localforage.config({
       description: 'user',
       driver: localforage.INDEXEDDB,

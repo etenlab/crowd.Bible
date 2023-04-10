@@ -6,6 +6,7 @@ declare module '*.tab' {
 type Nanoid = string;
 
 type TUpOrDownVote = 'upVote' | 'downVote';
+type RelationshipDirection = 'from_node_id' | 'to_node_id';
 
 type VotesStatsRow = {
   candidateId: Nanoid;

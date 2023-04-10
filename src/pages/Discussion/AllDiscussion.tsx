@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { IonContent, IonPage } from '@ionic/react';
 import { CreateDiscussion } from '@/components/dicussion/CreateDiscussion/CreateDiscussion';
 import { DiscussionList } from '@/components/dicussion/DiscussionList';
-import { Discussion } from '@/src/models/discussion.entity';
+import { Discussion } from '@/src/models/discussion/discussion.entity';
 import { Typography } from '@eten-lab/ui-kit';
 import { useSingletons } from '@/src/hooks/useSingletons';
 import './DiscussionList.css';

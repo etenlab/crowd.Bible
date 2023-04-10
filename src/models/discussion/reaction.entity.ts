@@ -1,21 +1,17 @@
 import {
-  PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
-  JoinColumn,
-  OneToOne,
   Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Post } from './post.entity';
-import { File } from './file.entity';
+import { User } from '../user/user.entity';
 
-@Entity()
-export class RelationshipPostFile {
+@Entity({ name: 'reactions' })
+export class Reaction {
   @PrimaryGeneratedColumn('increment', { type: 'integer' })
   id!: number;
-
-  @Column('bigint')
-  post_id!: number;
 
   @ManyToOne(() => Post, (post) => post.id, {
     nullable: false,
@@ -25,14 +21,20 @@ export class RelationshipPostFile {
   post!: Post;
 
   @Column('bigint')
-  file_id!: number;
+  post_id!: number;
 
-  @OneToOne(() => File, (file) => file.id, {
+  @Column('bigint')
+  user_id!: number;
+
+  @ManyToOne(() => User, (user) => user.id, {
     nullable: false,
     onDelete: 'CASCADE',
   })
   @JoinColumn({
-    name: 'file_id',
+    name: 'user_id',
   })
-  file!: File;
+  user!: User;
+
+  @Column('varchar')
+  content!: string;
 }

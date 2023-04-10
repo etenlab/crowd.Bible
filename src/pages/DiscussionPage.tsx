@@ -8,7 +8,7 @@ import {
   Typography,
   useColorModeContext,
 } from '@eten-lab/ui-kit';
-import { DiscussionForDev } from '@eten-lab/discussion-box';
+// import { DiscussionForDev } from '@eten-lab/discussion-box'; // needs refactor
 import { useAppContext } from '@/hooks/useAppContext';
 
 const { Stack, IconButton } = MuiMaterial;
@@ -29,13 +29,14 @@ export function DiscussionPage() {
 
   const discussionUI =
     table_name.length > 0 && +row > 0 && user != null ? (
-      <DiscussionForDev
-        tableName={table_name.substring(0, 30)}
-        rowId={+row}
-        userEmail={user.userEmail}
-        height="calc(100vh - 108px)"
-      />
-    ) : null;
+      <div>refactor me</div>
+    ) : // <DiscussionForDev
+    //   tableName={table_name.substring(0, 30)}
+    //   rowId={+row}
+    //   userEmail={user.userEmail}
+    //   height="calc(100vh - 108px)"
+    // />
+    null;
 
   return (
     <IonContent>

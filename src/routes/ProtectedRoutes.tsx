@@ -7,6 +7,7 @@ import { DiscussionPage } from '@/pages/DiscussionPage';
 import { HomePage } from '@/pages/HomePage';
 import { DiscussionsListPage } from '@/pages/DiscussionsListPage';
 import { AdminPage } from '@/pages/AdminPage';
+import { ProfilePage } from '@/pages/ProfilePage';
 
 import { DocumentToolsRoutes } from './DocumentToolsRoutes';
 import { LanguageToolsRoutes } from './LanguageToolsRoutes';
@@ -21,6 +22,10 @@ export function ProtectedRoutes() {
       <Switch>
         <Route exact path="/home">
           <HomePage />
+        </Route>
+
+        <Route exact path="/profile">
+          <ProfilePage />
         </Route>
 
         <Route exact path="/discussion/table-name/:table_name/row/:row">

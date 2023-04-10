@@ -55,15 +55,14 @@ export function RegisterPage() {
       console.log(values.email);
       setErrorMessage('');
       setSuccessMessage('');
-      const keycloakUrl = `${process.env.REACT_APP_KEYCLOAK_URL}`;
 
       try {
         await axios
           .post(
-            `${keycloakUrl}/realms/master/protocol/openid-connect/token`,
+            `${process.env.REACT_APP_KEYCLOAK_URL}/realms/master/protocol/openid-connect/token`,
             querystring.stringify({
-              client_id: 'admin-cli', // process.env.REACT_APP_KEYCLOAK_CLIENT_ID,
-              client_secret: 'hZJZWixwA1IOiPGp6M8BgV3KfEcs8XTk', // process.env.REACT_APP_KEYCLOAK_CLIENT_SECRET,
+              client_id: 'admin-cli', //process.env.REACT_APP_KEYCLOAK_CLIENT_ID,
+              client_secret: process.env.REACT_APP_KEYCLOAK_CLIENT_SECRET,
               grant_type: 'client_credentials', //'password'
             }),
             {
@@ -79,7 +78,7 @@ export function RegisterPage() {
             try {
               await axios
                 .post(
-                  `${keycloakUrl}/admin/realms/showcase/users`,
+                  `${process.env.REACT_APP_KEYCLOAK_URL}/admin/realms/${process.env.REACT_APP_KEYCLOAK_REALM}/users`,
                   {
                     username: values.username,
                     email: values.email,

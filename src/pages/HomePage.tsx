@@ -48,6 +48,7 @@ const linkGroups = [
     group: 'Data Tools',
     linkItems: [
       { to: '/graph-viewer', label: 'Data viewer' },
+      { to: '/sql-runner', label: 'SQL runner' },
       { to: '/file-import', label: 'File import tool' },
     ],
   },

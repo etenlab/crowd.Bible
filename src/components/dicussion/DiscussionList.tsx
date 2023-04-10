@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { useHistory } from 'react-router-dom';
 import { List, ListItem, ListItemText, Divider } from '@mui/material';
-import { Discussion } from '../../models/discussion.entity';
+import { Discussion } from '../../models/discussion/discussion.entity';
 import { IonChip } from '@ionic/react';
 import AppRoutes from '../../constants/AppRoutes';
 

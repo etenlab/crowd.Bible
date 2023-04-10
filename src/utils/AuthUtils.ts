@@ -24,7 +24,7 @@ export function decodeToken(str: string) {
   return str;
 }
 
-export function checkTokenValidity(_token: any) {
+export function isTokenValid(_token: any) {
   if (_token && Object.keys(_token).length > 0) {
     const time = new Date().getTime() / 1000;
     if (!_token.exp || _token.exp < time) {
@@ -36,7 +36,7 @@ export function checkTokenValidity(_token: any) {
 }
 
 export const isAutherized = (tokenObj: any, roles?: any) => {
-  if (tokenObj && checkTokenValidity(tokenObj)) {
+  if (tokenObj && isTokenValid(tokenObj)) {
     if (roles) {
       return roles.some((r: any) => {
         const realm = tokenObj.realm_access.roles.includes(r); // keycloak.hasRealmRole(r);
