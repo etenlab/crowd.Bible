@@ -8,10 +8,15 @@ import { RelationshipPropertyKeyRepository } from '@/repositories/relationship/r
 import { RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
 import { RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
 import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
+
 import { SyncSessionRepository } from '@/repositories/sync-session.repository';
 import { DiscussionRepository } from '@/repositories/discussion/discussion.repository';
-import { UserRepository } from '@/repositories/user.repository';
-import { VoteRepository } from '@/repositories/vote/vote.repository';
+
+import { ElectionTypeRepository } from '@/repositories/voting/election-type.repository';
+import { ElectionRepository } from '@/repositories/voting/election.repository';
+import { CandidateRepository } from '@/repositories/voting/candidate.repository';
+import { VoteRepository } from '@/src/repositories/voting/vote.repository';
+import { UserRepository } from '@/src/repositories/user.repository';
 
 import { DbService } from '@/services/db.service';
 import { SeedService } from '@/services/seed.service';
@@ -50,6 +55,10 @@ export interface ISingletons {
   relationshipPropertyValueRepo: RelationshipPropertyValueRepository;
   discussionRepo: DiscussionRepository;
   userRepo: UserRepository;
+
+  electionTypeRepo: ElectionTypeRepository;
+  electionRepo: ElectionRepository;
+  candidateRepo: CandidateRepository;
   voteRepo: VoteRepository;
 }
 
@@ -87,6 +96,10 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   );
   const discussionRepo = new DiscussionRepository(dbService);
   const userRepo = new UserRepository(dbService);
+
+  const electionRepo = new ElectionRepository(dbService, syncService);
+  const electionTypeRepo = new ElectionTypeRepository(dbService, syncService);
+  const candidateRepo = new CandidateRepository(dbService, syncService);
   const voteRepo = new VoteRepository(dbService, syncService);
 
   const seedService = new SeedService(
@@ -132,8 +145,8 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   );
 
   const votingService = new VotingService(
-    graphFirstLayerService,
-    graphSecondLayerService,
+    electionRepo,
+    candidateRepo,
     voteRepo,
   );
 
@@ -177,6 +190,10 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipPropertyValueRepo,
     discussionRepo,
     userRepo,
+
+    electionRepo,
+    electionTypeRepo,
+    candidateRepo,
     voteRepo,
   };
 };
