@@ -4,9 +4,9 @@ import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 import { IonContent, useIonAlert } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
 import { LanguageWithElecitonsDto } from '@/dtos/language.dto';
-import { useVote } from '../../hooks/useVote';
-import { VotableContent, VotableItem } from '../../dtos/votable-item.dto';
 import { useAppContext } from '../../hooks/useAppContext';
+import { useDefinition } from '../../hooks/useDefinition';
+import { VotableItem } from '../../dtos/votable-item.dto';
 const { Box, Divider } = MuiMaterial;
 
 const {
@@ -107,8 +107,19 @@ export function DictionaryPage() {
     string | null | undefined
   >(null);
   const [langs, setLangs] = useState<LanguageWithElecitonsDto[]>([]);
-
-  const { getVotesStats, toggleVote } = useVote();
+  const {
+    addItem,
+    changeItemVotes,
+    addDefinition,
+    changeDefinitionValue,
+    changeDefinitionVotes,
+  } = useDefinition(
+    'word',
+    setWords,
+    langs,
+    selectedLanguageId,
+    setIsDialogOpened,
+  );
 
   const handleSelectLanguage = (value: string): void => {
     const id = langs.find((l) => l.name === value)?.id;
@@ -135,7 +146,6 @@ export function DictionaryPage() {
         `Language id ${selectedLanguageId} does't have electionWordsId to elect words`,
       );
     }
-
     const loadWords = async () => {
       const words: VotableItem[] =
         await definitionService.getWordsAsVotableItems(
@@ -147,198 +157,36 @@ export function DictionaryPage() {
     loadWords();
   }, [definitionService, langs, selectedLanguageId]);
 
-  const addWord = useCallback(
-    async (word: string) => {
-      if (!definitionService || !selectedLanguageId) {
-        throw new Error(
-          `!definitionService || !selectedLanguageId when addNewWord`,
-        );
-      }
-      const existingWord = words.find((w) => w.title.content === word);
-      if (existingWord) {
-        presentAlert({
-          header: 'Alert',
-          subHeader: 'Such a word already exists!',
-          message: 'Use existing word to add a new definition, if you want to.',
-          buttons: ['Ok'],
-        });
-        setIsDialogOpened(false);
-        return;
-      }
-      const langWordsElectionId = langs.find(
-        (l) => l.id === selectedLanguageId,
-      )?.electionWordsId;
-      if (!langWordsElectionId) {
-        throw new Error(
-          `Can't add word to language because language doesn't have electionId`,
-        );
-      }
-      const { wordId, electionId, wordBallotId } =
-        await definitionService.createWordAndDefinitionsElection(
-          word,
-          selectedLanguageId,
-          langWordsElectionId,
-        );
-      setWords([
-        ...words,
-        {
-          title: {
-            content: word,
-            upVotes: 0,
-            downVotes: 0,
-            id: wordId,
-            ballotId: wordBallotId,
-          },
-          contents: [],
-          contentElectionId: electionId,
-        },
-      ]);
-      setIsDialogOpened(false);
+  const addWord = (newWord: string) => {
+    addItem(words, newWord);
+  };
+
+  const changeWordVotes = useCallback(
+    (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
+      changeItemVotes(ballotId, upOrDown, words);
     },
-    [definitionService, selectedLanguageId, words, langs, presentAlert],
+    [changeItemVotes, words],
   );
 
-  const changeItemVotes = useCallback(
-    async (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
-      if (!ballotId) {
-        throw new Error('!ballotId : No ballot entry given to change votes');
-      }
-      await toggleVote(ballotId, upOrDown === 'upVote'); // if not upVote, it calculated as false and toggleVote treats false as downVote
-      const votes = await getVotesStats(ballotId);
-      const wordIdx = words.findIndex((w) => w.title.ballotId === ballotId);
-      words[wordIdx].title.upVotes = votes?.up || 0;
-      words[wordIdx].title.downVotes = votes?.down || 0;
-
-      setWords([...words]);
+  const addDefinitionToWord = useCallback(
+    (text: string) => {
+      addDefinition(text, words, selectedWord, setSelectedWord);
     },
-    [getVotesStats, toggleVote, words],
+    [addDefinition, selectedWord, words],
   );
 
-  const changeDefinitionVotes = useCallback(
-    async (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
-      if (!selectedWord?.title?.id) {
-        throw new Error(
-          `!selectedWord?.title?.id: There is no selected word to vote for definition`,
-        );
-      }
-      if (!ballotId) {
-        throw new Error(
-          `!ballotId: There is no assigned ballot ID for this definition`,
-        );
-      }
-
-      const wordIdx = words.findIndex(
-        (w) => w.title.id === selectedWord?.title.id,
-      );
-
-      await toggleVote(ballotId, upOrDown === 'upVote'); // if not upVote, it calculated as false and toggleVote treats false as downVote
-      const votes = await getVotesStats(ballotId);
-
-      const definitionIndex = words[wordIdx].contents.findIndex(
-        (d) => d.ballotId === ballotId,
-      );
-
-      if (definitionIndex < 0) {
-        throw new Error(`Can't find definition by ballotId ${ballotId}`);
-      }
-
-      words[wordIdx].contents[definitionIndex] = {
-        ...words[wordIdx].contents[definitionIndex],
-        upVotes: votes?.up || 0,
-        downVotes: votes?.down || 0,
-      };
-      setWords([...words]);
+  const changeWordDefinition = useCallback(
+    (definitionId: Nanoid | null, newValue: string) => {
+      changeDefinitionValue(words, selectedWord, definitionId, newValue);
     },
-    [getVotesStats, selectedWord?.title.id, toggleVote, words],
+    [changeDefinitionValue, selectedWord, words],
   );
 
-  const changeDefinitionValue = useCallback(
-    async (definitionId: Nanoid | null, newContentValue: string) => {
-      if (!selectedWord?.title?.id) {
-        throw new Error(
-          `!selectedWord?.title?.id: There is no selected word to change definition`,
-        );
-      }
-      if (!definitionService) {
-        throw new Error(
-          `!definitionService: Definition service is not present`,
-        );
-      }
-      if (!definitionId) {
-        throw new Error(`!definitionId: Definition doesn't have an id`);
-      }
-      const wordIdx = words.findIndex(
-        (w) => w.title.id === selectedWord?.title.id,
-      );
-      await definitionService.updateDefinitionValue(
-        definitionId,
-        newContentValue,
-      );
-      const definitionIndex = words[wordIdx].contents.findIndex(
-        (d) => d.id === definitionId,
-      );
-      words[wordIdx].contents[definitionIndex].content = newContentValue;
-      setWords([...words]);
+  const changeWordDefinitionVotes = useCallback(
+    (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
+      changeDefinitionVotes(words, selectedWord, ballotId, upOrDown);
     },
-    [definitionService, selectedWord?.title.id, words],
-  );
-
-  const addDefinition = useCallback(
-    async (newContentValue: string) => {
-      if (!definitionService) {
-        throw new Error(`!definitionService when addDefinition`);
-      }
-      if (!selectedWord?.title?.id) {
-        throw new Error(`There is no selected word to add definition`);
-      }
-      if (!selectedWord.contentElectionId) {
-        throw new Error(
-          `There is no ElectionId at Word id ${selectedWord.title.id}`,
-        );
-      }
-
-      const wordIdx = words.findIndex(
-        (word) => word.title.id === selectedWord.title.id,
-      );
-      const existingDefinition = words[wordIdx].contents.find(
-        (d) => d.content === newContentValue,
-      );
-      if (existingDefinition) {
-        presentAlert({
-          header: 'Alert',
-          subHeader: 'Such a definition of the word already exists!',
-          message:
-            'You can vote for the existing definition or enter another one.',
-          buttons: ['Ok'],
-        });
-        setIsDialogOpened(false);
-        return;
-      }
-
-      const { definitionId, ballotEntryId } =
-        await definitionService.createDefinition(
-          newContentValue,
-          selectedWord.title.id,
-          selectedWord.contentElectionId,
-        );
-
-      words[wordIdx].contents.push({
-        content: newContentValue,
-        upVotes: 0,
-        downVotes: 0,
-        id: definitionId,
-        ballotId: ballotEntryId,
-      } as VotableContent);
-      setSelectedWord(words[wordIdx]);
-      setWords([...words]);
-    },
-    [
-      definitionService,
-      presentAlert,
-      selectedWord?.contentElectionId,
-      selectedWord?.title.id,
-      words,
-    ],
+    [changeDefinitionVotes, selectedWord, words],
   );
 
   const handleAddWordButtonClick = useCallback(() => {
@@ -416,9 +264,9 @@ export function DictionaryPage() {
             <ItemsClickableList
               items={words}
               setSelectedItem={setSelectedWord}
-              setLikeItem={(ballotId) => changeItemVotes(ballotId, 'upVote')}
+              setLikeItem={(ballotId) => changeWordVotes(ballotId, 'upVote')}
               setDislikeItem={(ballotId) =>
-                changeItemVotes(ballotId, 'downVote')
+                changeWordVotes(ballotId, 'downVote')
               }
             ></ItemsClickableList>
           </Box>
@@ -426,7 +274,7 @@ export function DictionaryPage() {
             title={'Enter new Word'}
             isOpened={isDialogOpened}
             handleCancel={() => setIsDialogOpened(false)}
-            handleOk={addWord}
+            handleOk={(newWord) => addWord(newWord)}
           />
         </Box>
       ) : (
@@ -441,9 +289,9 @@ export function DictionaryPage() {
             item={selectedWord}
             onBack={() => setSelectedWord(null as unknown as VotableItem)}
             buttonText="New Definition"
-            changeContentValue={changeDefinitionValue}
-            changeContentVotes={changeDefinitionVotes}
-            addContent={addDefinition}
+            changeContentValue={changeWordDefinition}
+            changeContentVotes={changeWordDefinitionVotes}
+            addContent={addDefinitionToWord}
           />
         </Box>
       )}
