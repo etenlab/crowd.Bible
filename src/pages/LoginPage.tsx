@@ -18,8 +18,6 @@ import * as Yup from 'yup';
 import * as querystring from 'qs';
 import { decodeToken } from '@/utils/AuthUtils';
 
-// import axios from "axios";
-
 const { Box } = MuiMaterial;
 // const querystring = await import('qs');
 
@@ -35,7 +33,7 @@ const validationSchema = Yup.object().shape({
 export function LoginPage() {
   const [show, setShow] = useState<boolean>(false);
   const [userToken, setUserToken] = useState('');
-
+  const [errorMessage, setErrorMessage] = useState('');
   const history = useHistory();
   const {
     actions: { setUser },
@@ -53,13 +51,13 @@ export function LoginPage() {
       console.log(values.email);
       console.log(values.password);
 
-      const keycloakUrl = `${process.env.REACT_APP_KEYCLOAK_URL}/realms/showcase/protocol/openid-connect`;
+      const keycloakUrl = `${process.env.REACT_APP_KEYCLOAK_URL}/realms/${process.env.REACT_APP_KEYCLOAK_REALM}/protocol/openid-connect`;
       try {
         await axios
           .post(
             `${keycloakUrl}/token`,
             querystring.stringify({
-              client_id: 'showcase-auth', // process.env.REACT_APP_KEYCLOAK_CLIENT_ID,
+              client_id: process.env.REACT_APP_KEYCLOAK_CLIENT_ID,
               // client_secret: process.env.REACT_APP_KEYCLOAK_CLIENT_SECRET,
               username: values.email,
               password: values.password,
@@ -83,9 +81,13 @@ export function LoginPage() {
               role: 'translator',
             });
             history.push('/profile');
+          })
+          .catch((error) => {
+            setErrorMessage(error.response.data.error_description);
+            console.log(error);
           });
       } catch (error: any) {
-        console.log(error.message);
+        setErrorMessage(error.message);
       }
 
       // history.push('/home');
@@ -104,8 +106,11 @@ export function LoginPage() {
     if (!formik.isValid) {
       return;
     }
-
     formik.submitForm();
+  };
+
+  const handleForgotPassword = () => {
+    history.push('/forgot-password');
   };
 
   useEffect(() => {
@@ -132,7 +137,11 @@ export function LoginPage() {
         >
           Login
         </Typography>
-
+        {errorMessage && (
+          <Typography sx={{ marginBottom: '18px', color: '#ff0000' }}>
+            {errorMessage}{' '}
+          </Typography>
+        )}
         <Input
           id="email"
           name="email"
@@ -168,6 +177,16 @@ export function LoginPage() {
           disabled={!formik.isValid}
         >
           Login Now
+        </Button>
+
+        <Button
+          variant="text"
+          endIcon
+          fullWidth
+          color="gray"
+          onClick={handleForgotPassword}
+        >
+          {'Forgot Password?'}
         </Button>
 
         <Button

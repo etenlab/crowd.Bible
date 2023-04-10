@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.7.11",
     "@capacitor/app": "4.1.1",
     "@capacitor/core": "4.6.1",
     "@capacitor/haptics": "4.1.0",
@@ -24,6 +25,7 @@
     "axios": "^1.3.4",
     "bl": "^0.9.0",
     "formik": "^2.2.9",
+    "graphql": "^16.6.0",
     "history": "^4.9.0",
     "ionicons": "^6.0.3",
     "localforage": "^1.10.0",

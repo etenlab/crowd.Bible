@@ -1,21 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
-// import axios from 'axios';
+import { useAppContext } from '@/hooks/useAppContext';
 
 import { Button, MuiMaterial, Typography, Input } from '@eten-lab/ui-kit';
 import { useFormik } from 'formik';
-// import { useAppContext } from '@/hooks/useAppContext';
 import * as Yup from 'yup';
-
-// import * as querystring from 'qs';
-// import { decodeToken } from '@/utils/AuthUtils';
-
-// import axios from "axios";
+import { gql, useApolloClient } from '@apollo/client';
 
 const { Box } = MuiMaterial;
-// const querystring = await import('qs');
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -23,14 +17,26 @@ const validationSchema = Yup.object().shape({
     .required('Email is required'),
 });
 
+const FORGET_PASSWORD_MUTATION = gql`
+  mutation ForgotPasswordMutation($email: String!) {
+    forgotPassword(email: $email) {
+      createdAt
+      token
+      user
+    }
+  }
+`;
+
 export function ForgotPasswordPage() {
   // const [show, setShow] = useState<boolean>(false);
-  // const [userToken, setUserToken] = useState('');
-
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const apolloClient = useApolloClient();
   const history = useHistory();
-  // const {
-  //   actions: { setUser },
-  // } = useAppContext();
+  const {
+    actions: { setLoadingState },
+  } = useAppContext();
+
   const formik = useFormik<{
     email: string;
   }>({
@@ -39,25 +45,27 @@ export function ForgotPasswordPage() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log(values.email);
-
-      // const keycloakUrl = `${process.env.REACT_APP_KEYCLOAK_URL}/realms/showcase/protocol/openid-connect`;
-      // const url = `${process.env.REACT_APP_CPG_SERVER_URL}`;
-
-      // axios
-      //   .post(process.env.REACT_APP_GRAPHQL_URL!, {
-      //     query: buildNodeQuery(nodeId),
-      //   })
-      //   .then((response) => setNode(response.data.data.node))
-      //   .finally(() => setIsLoading(false));
-
-      // history.push('/home');
+      setLoadingState(true);
+      setErrorMessage('');
+      setSuccessMessage('');
+      apolloClient
+        .mutate({
+          mutation: FORGET_PASSWORD_MUTATION,
+          variables: {
+            email: values.email,
+          },
+        })
+        .then((res) => {
+          setSuccessMessage('Reset password link sent to your email');
+          setLoadingState(false);
+          console.log(res);
+        })
+        .catch((error: any) => {
+          setErrorMessage(error.message);
+          setLoadingState(false);
+        });
     },
   });
-
-  // const handleToggleShow = () => {
-  //   setShow((show) => !show);
-  // };
 
   const handleGoRegister = () => {
     history.push('/register');
@@ -70,10 +78,6 @@ export function ForgotPasswordPage() {
 
     formik.submitForm();
   };
-
-  // useEffect(() => {
-  //   localStorage.setItem('userToken', userToken);
-  // }, [userToken]);
 
   return (
     <IonContent>
@@ -95,6 +99,18 @@ export function ForgotPasswordPage() {
         >
           Forgot Password
         </Typography>
+
+        {errorMessage && (
+          <Typography sx={{ marginBottom: '18px', color: '#ff0000' }}>
+            {errorMessage}{' '}
+          </Typography>
+        )}
+
+        {successMessage && (
+          <Typography sx={{ marginBottom: '18px', color: '#008000' }}>
+            {successMessage}{' '}
+          </Typography>
+        )}
 
         <Input
           id="email"

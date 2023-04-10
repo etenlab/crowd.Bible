@@ -1,30 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+// import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router';
 import { IonContent } from '@ionic/react';
-
+import { gql, useApolloClient } from '@apollo/client';
 import {
   Button,
   MuiMaterial,
   Typography,
-  // Input,
   PasswordInput,
 } from '@eten-lab/ui-kit';
 import { useFormik } from 'formik';
 
 import * as Yup from 'yup';
-import axios from 'axios';
-
-import * as querystring from 'qs';
-// import { decodeToken } from '@/utils/AuthUtils';
 
 const { Box, Alert } = MuiMaterial;
 
 const validationSchema = Yup.object().shape({
-  username: Yup.string().required('First name is required'),
-  email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
   password: Yup.string()
     .min(8, 'Password must be at least 8 characters')
     .required('Password is required'),
@@ -33,11 +25,31 @@ const validationSchema = Yup.object().shape({
     .required('Password confirmation is required'),
 });
 
+const IS_TOKEN_VALID_QUERY = gql`
+  query isTokenValidMutation($token: String!) {
+    isTokenValid(token: $token) {
+      createdAt
+      token
+      user
+    }
+  }
+`;
+
+const RESET_PASSWORD_MUTATION = gql`
+  mutation ResetPasswordMutation($token: String!, $password: String!) {
+    resetUserPassword(token: $token, password: $password)
+  }
+`;
+
 export function ResetPasswordPage() {
+  const [tokenValid, setTokenValid] = useState<boolean>(false);
   const [show, setShow] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const history = useHistory();
+  const { token } = useParams<{ token: string }>();
+  const apolloClient = useApolloClient();
+
   const formik = useFormik<{
     password: string;
     passwordConfirm: string;
@@ -48,66 +60,25 @@ export function ResetPasswordPage() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      setErrorMessage('');
-      setSuccessMessage('');
-      const keycloakUrl = `${process.env.REACT_APP_KEYCLOAK_URL}`;
-
-      try {
-        await axios
-          .post(
-            `${keycloakUrl}/realms/master/protocol/openid-connect/token`,
-            querystring.stringify({
-              client_id: 'admin-cli', // process.env.REACT_APP_KEYCLOAK_CLIENT_ID,
-              client_secret: 'hZJZWixwA1IOiPGp6M8BgV3KfEcs8XTk', // process.env.REACT_APP_KEYCLOAK_CLIENT_SECRET,
-              grant_type: 'client_credentials', //'password'
-            }),
-            {
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
+      if (values.password === values.passwordConfirm) {
+        apolloClient
+          .mutate({
+            mutation: RESET_PASSWORD_MUTATION,
+            variables: {
+              token: token,
+              password: values.password,
             },
-          )
-          .then(async (response) => {
-            console.log('response.data.access_token');
-            // const token: any = decodeToken(response.data.access_token);
-
-            try {
-              await axios
-                .post(
-                  `${keycloakUrl}/admin/realms/showcase/users`,
-                  {
-                    // username: values.username,
-                    // email: values.email,
-                    enabled: true,
-                    credentials: [
-                      {
-                        type: 'password',
-                        value: values.password,
-                      },
-                    ],
-                    emailVerified: true,
-                  },
-                  {
-                    headers: {
-                      'Content-Type': 'application/json',
-                      Authorization: `Bearer ${response.data.access_token}`,
-                    },
-                  },
-                )
-                .then((resp) => {
-                  setSuccessMessage('User registration successfull');
-                });
-            } catch (error: any) {
-              setErrorMessage(error.response.data.errorMessage);
-              console.log(error);
-            }
-            // console.log(token.email);
-            // history.push('/home');
+          })
+          .then((res) => {
+            setSuccessMessage('Password reset successfully');
+            console.log(res);
+          })
+          .catch((error: any) => {
+            setErrorMessage(error.message);
           });
-      } catch (error: any) {
-        setErrorMessage(error.message);
+      } else {
+        setErrorMessage('Passwords reset error!');
       }
-      //history.push('/login');
     },
   });
 
@@ -126,6 +97,37 @@ export function ResetPasswordPage() {
 
     formik.submitForm();
   };
+
+  useEffect(() => {
+    apolloClient
+      .query({
+        query: IS_TOKEN_VALID_QUERY,
+        variables: {
+          token: token,
+        },
+      })
+      .then((res) => {
+        setTokenValid(true);
+        console.log(res);
+      })
+      .catch((error: any) => {
+        setTokenValid(false);
+      });
+  }, [apolloClient, token]);
+
+  if (!tokenValid) {
+    return (
+      <IonContent>
+        <Typography
+          variant="h1"
+          color="text.dark"
+          sx={{ marginBottom: '18px' }}
+        >
+          Reset Token Invalid / Expired
+        </Typography>
+      </IonContent>
+    );
+  }
 
   return (
     <IonContent>
@@ -189,7 +191,7 @@ export function ResetPasswordPage() {
           onClick={handleRegister}
           disabled={!formik.isValid}
         >
-          Register Now
+          Reset Password
         </Button>
 
         <Button
