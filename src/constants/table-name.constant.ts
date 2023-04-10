@@ -8,8 +8,8 @@ export enum TableNameConst {
   RELATIONSHIP_PROPERTY_KEYS = 'relationship_property_keys',
   RELATIONSHIP_PROPERTY_VALUES = 'relationship_property_values',
 
-  ELECTIONS = 'ELECTIONS',
-  ELECTION_TYPES = 'ELECTION_TYPES',
-  CANDIDATES = 'CANDIDATES',
-  VOTES = 'VOTES',
+  ELECTIONS = 'elections',
+  ELECTION_TYPES = 'election_types',
+  CANDIDATES = 'candidates',
+  VOTES = 'votes',
 }

@@ -1,11 +1,13 @@
 import {
-  ElectionTypesConst,
   NodeTypeConst,
   PropertyKeyConst,
   RelationshipTypeConst,
-  TablesNameConst,
 } from '../constants/graph.constant';
+import { ElectionTypeConst } from '@/constants/voting.constant';
+import { TableNameConst } from '@/constants/table-name.constant';
+
 import { LanguageDto } from '@/dtos/language.dto';
+
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 import { GraphThirdLayerService } from './graph-third-layer.service';
@@ -41,7 +43,7 @@ export class DefinitionService {
    * @param forNodeId - nodeId (with type word or phrase) for which definition will be found or created
    * @returns - id of the created ballot entry
    */
-  async findBallotEntryIdForDefinition(
+  async findCandidateIdForDefinition(
     definitionId: Nanoid,
     electionId: Nanoid,
     forNodeId: Nanoid,
@@ -68,13 +70,13 @@ export class DefinitionService {
       );
     }
 
-    // if ballot entry exists, it won't be created, Just found and returned.
-    const ballotEntryId = await this.votingService.addBallotEntry(electionId, {
-      tableName: TablesNameConst.RELATIONSHIPS,
-      rowId: relationship.id,
-    });
+    // if candidate exists, it won't be created, Just found and returned.
+    const candidate = await this.votingService.addCandidate(
+      electionId,
+      relationship.id,
+    );
 
-    return ballotEntryId;
+    return candidate.id;
   }
 
   /**
@@ -116,7 +118,7 @@ export class DefinitionService {
           )
         ).node;
 
-    const ballotEntryId = await this.findBallotEntryIdForDefinition(
+    const candidateId = await this.findCandidateIdForDefinition(
       definitionNode.id,
       electionId,
       forNodeId,
@@ -124,7 +126,7 @@ export class DefinitionService {
 
     return {
       definitionId: definitionNode.id,
-      ballotEntryId,
+      ballotEntryId: candidateId,
     };
   }
 
@@ -140,12 +142,13 @@ export class DefinitionService {
     langId: Nanoid,
   ): Promise<{ wordId: Nanoid; electionId: Nanoid }> {
     const wordId = await this.graphThirdLayerService.createWord(word, langId);
-    const electionId = await this.votingService.createElection(
-      TablesNameConst.NODES,
+    const election = await this.votingService.createElection(
+      ElectionTypeConst.DEFINITION,
       wordId,
-      ElectionTypesConst.DEFINITION,
+      TableNameConst.NODES,
+      TableNameConst.RELATIONSHIPS,
     );
-    return { wordId, electionId };
+    return { wordId, electionId: election.id };
   }
 
   /**
@@ -178,12 +181,13 @@ export class DefinitionService {
           )
         ).node;
 
-    const electionId = await this.votingService.createElection(
-      TablesNameConst.NODES,
+    const election = await this.votingService.createElection(
+      ElectionTypeConst.DEFINITION,
       node.id,
-      ElectionTypesConst.DEFINITION,
+      TableNameConst.NODES,
+      TableNameConst.RELATIONSHIPS,
     );
-    return { phraseId: node.id, electionId };
+    return { phraseId: node.id, electionId: election.id };
   }
 
   /**
@@ -204,14 +208,15 @@ export class DefinitionService {
       });
     const vcPromises: Promise<VotableContent>[] = definitionNodes.map(
       async (definitionNode) => {
-        const ballotId = await this.findBallotEntryIdForDefinition(
+        const ballotId = await this.findCandidateIdForDefinition(
           definitionNode.id,
           electionId,
           forNodeId,
         );
 
-        const { up: upVotes, down: downVotes } =
-          await this.votingService.getVotesStats(ballotId);
+        const { upVotes, downVotes } = await this.votingService.getVotesStats(
+          ballotId,
+        );
         return {
           content: this.graphSecondLayerService.getNodePropertyValue(
             definitionNode,
@@ -245,10 +250,11 @@ export class DefinitionService {
 
     const viPromises = phraseNodes.map(async (pn) => {
       // if electionId exists, it won't be created, Just found and returned.
-      const electionId = await this.votingService.createElection(
-        TablesNameConst.NODES,
+      const election = await this.votingService.createElection(
+        ElectionTypeConst.DEFINITION,
         pn.id,
-        ElectionTypesConst.DEFINITION,
+        TableNameConst.NODES,
+        TableNameConst.RELATIONSHIPS,
       );
       return {
         title: {
@@ -260,8 +266,8 @@ export class DefinitionService {
           downVotes: 0, //TODO: 0 is a mocked value, replace it when voting is ready
           id: pn.id,
         } as VotableContent,
-        contents: await this.getDefinitionsAsVotableContent(pn.id, electionId),
-        contentElectionId: electionId,
+        contents: await this.getDefinitionsAsVotableContent(pn.id, election.id),
+        contentElectionId: election.id,
       } as VotableItem;
     });
     const vi = await Promise.all(viPromises);
@@ -283,10 +289,11 @@ export class DefinitionService {
     });
     const viPromises = wordNodes.map(async (wn) => {
       // if electionId exists, it won't be created, Just found and returned.
-      const electionId = await this.votingService.createElection(
-        TablesNameConst.NODES,
+      const election = await this.votingService.createElection(
+        ElectionTypeConst.DEFINITION,
         wn.id,
-        ElectionTypesConst.DEFINITION,
+        TableNameConst.NODES,
+        TableNameConst.RELATIONSHIPS,
       );
       return {
         title: {
@@ -298,8 +305,8 @@ export class DefinitionService {
           downVotes: 0, //TODO: 0 is a mocked value, replace it when voting is ready
           id: wn.id,
         } as VotableContent,
-        contents: await this.getDefinitionsAsVotableContent(wn.id, electionId),
-        contentElectionId: electionId,
+        contents: await this.getDefinitionsAsVotableContent(wn.id, election.id),
+        contentElectionId: election.id,
       } as VotableItem;
     });
     const vi = await Promise.all(viPromises);
