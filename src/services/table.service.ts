@@ -62,13 +62,9 @@ export class TableService {
   }
 
   async getColumn(table: Nanoid, column_name: string): Promise<Nanoid | null> {
-    const column = await this.nodeRepo.repository.findOne({
-      relations: [
-        'propertyKeys',
-        'propertyKeys.propertyValue',
-        'nodeRelationships',
-      ],
-      where: {
+    const column = await this.nodeRepo.findOne(
+      ['propertyKeys', 'propertyKeys.propertyValue', 'fromNodeRelationships'],
+      {
         node_type: NodeTypeConst.TABLE_COLUMN,
         propertyKeys: {
           property_key: PropertyKeyConst.NAME,
@@ -76,11 +72,11 @@ export class TableService {
             property_value: JSON.stringify({ value: column_name }),
           },
         },
-        nodeRelationships: {
+        fromNodeRelationships: {
           from_node_id: table,
         },
       },
-    });
+    );
 
     if (!column) {
       return null;
@@ -101,9 +97,13 @@ export class TableService {
     return node.id;
   }
 
-  // async getRow(table: string, finder: (table: string) => string): Promise<string | null> {
-
-  // }
+  async getRow(
+    table: Nanoid,
+    finder: (table: Nanoid) => Promise<Nanoid | null>,
+  ): Promise<Nanoid | null> {
+    const row_id = await finder(table);
+    return row_id;
+  }
 
   async createCell(
     column: Nanoid,
@@ -135,20 +135,16 @@ export class TableService {
   }
 
   async readCell(column: Nanoid, row: Nanoid): Promise<unknown> {
-    const cell = await this.nodeRepo.repository.findOne({
-      relations: [
-        'propertyKeys',
-        'propertyKeys.propertyValue',
-        'nodeRelationships',
-      ],
-      select: {
-        propertyKeys: true,
-      },
-      where: {
-        node_type: NodeTypeConst.TABLE_CELL,
-        nodeRelationships: [{ from_node_id: column }, { from_node_id: row }],
-      },
-    });
+    const cell = await this.nodeRepo.repository
+      .createQueryBuilder('node')
+      .leftJoinAndSelect('node.fromNodeRelationships', 'fromNodeRelationships')
+      .leftJoinAndSelect('fromNodeRelationships.fromNode', 'fromNode')
+      .leftJoinAndSelect('node.propertyKeys', 'propertyKeys')
+      .leftJoinAndSelect('propertyKeys.propertyValue', 'propertyValue')
+      .where('fromNode.id IN (:...ids)', { ids: [column, row] })
+      .groupBy('node.id')
+      .having('COUNT(fromNode.id) = 2')
+      .getOne();
 
     if (!cell) {
       return null;
@@ -162,20 +158,16 @@ export class TableService {
     row: Nanoid,
     value: unknown,
   ): Promise<unknown> {
-    const cell = await this.nodeRepo.repository.findOne({
-      relations: [
-        'propertyKeys',
-        'propertyKeys.propertyValue',
-        'nodeRelationships',
-      ],
-      select: {
-        propertyKeys: true,
-      },
-      where: {
-        node_type: NodeTypeConst.TABLE_CELL,
-        nodeRelationships: [{ from_node_id: column }, { from_node_id: row }],
-      },
-    });
+    const cell = await this.nodeRepo.repository
+      .createQueryBuilder('node')
+      .leftJoinAndSelect('node.fromNodeRelationships', 'fromNodeRelationships')
+      .leftJoinAndSelect('fromNodeRelationships.fromNode', 'fromNode')
+      .leftJoinAndSelect('node.propertyKeys', 'propertyKeys')
+      .leftJoinAndSelect('propertyKeys.propertyValue', 'propertyValue')
+      .where('fromNode.id IN (:...ids)', { ids: [column, row] })
+      .groupBy('node.id')
+      .having('COUNT(fromNode.id) = 2')
+      .getOne();
 
     if (!cell) {
       return null;
