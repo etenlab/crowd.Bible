@@ -32,7 +32,8 @@ export function SearchNodePage() {
           relations: [
             'propertyKeys',
             'propertyKeys.propertyValue',
-            'nodeRelationships',
+            'fromNodeRelationships',
+            'toNodeRelationships',
           ],
           where: {
             propertyKeys: {

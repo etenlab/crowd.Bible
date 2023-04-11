@@ -10,7 +10,7 @@ export class MapMapper {
         propertyKey.propertyValue?.property_value,
       ).value;
     }
-    dto.langId = entity.nodeRelationships?.at(0)?.to_node_id as string;
+    dto.langId = entity.toNodeRelationships?.at(0)?.to_node_id as string;
     return dto;
   }
 }

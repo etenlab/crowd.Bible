@@ -1,7 +1,7 @@
 import { type Node } from '@/models/index';
 
 export const tableNodeToTable = (node: Node) => {
-  const cells = node.nodeRelationships?.map((cell) => {
+  const cells = node.toNodeRelationships?.map((cell) => {
     const cell_data: TableCell = {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cell.toNode.propertyKeys?.forEach((key: any) => {

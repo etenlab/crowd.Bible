@@ -66,10 +66,10 @@ export class WordSequenceMapper {
 
     dto.subSequences = [];
 
-    if (!entity.nodeRelationships) {
+    if (!entity.toNodeRelationships) {
       return dto;
     }
-    entity.nodeRelationships.forEach((rel) => {
+    entity.toNodeRelationships.forEach((rel) => {
       if (
         rel.relationship_type !==
         RelationshipTypeConst.WORD_SEQUENCE_TO_SUB_WORD_SEQUENCE
