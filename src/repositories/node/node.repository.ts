@@ -113,20 +113,20 @@ export class NodeRepository {
     };
 
     if (relationship) {
-      relationsArray.push('nodeRelationships');
-      whereObj.nodeRelationships = {};
+      relationsArray.push('toNodeRelationships');
+      whereObj.toNodeRelationships = {};
 
       if (relationship.relationship_type) {
-        whereObj.nodeRelationships.relationship_type =
+        whereObj.toNodeRelationships.relationship_type =
           relationship.relationship_type;
       }
 
       if (relationship.from_node_id) {
-        whereObj.nodeRelationships.from_node_id = relationship.from_node_id;
+        whereObj.toNodeRelationships.from_node_id = relationship.from_node_id;
       }
 
       if (relationship.to_node_id) {
-        whereObj.nodeRelationships.to_node_id = relationship.to_node_id;
+        whereObj.toNodeRelationships.to_node_id = relationship.to_node_id;
       }
     }
 

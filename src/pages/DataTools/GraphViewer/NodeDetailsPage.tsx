@@ -25,12 +25,12 @@ export function NodeDetailsPage() {
           relations: [
             'propertyKeys',
             'propertyKeys.propertyValue',
-            'nodeRelationships',
-            'nodeRelationships.propertyKeys',
-            'nodeRelationships.fromNode',
-            'nodeRelationships.toNode',
-            'nodeRelationships.toNode.propertyKeys',
-            'nodeRelationships.toNode.propertyKeys.propertyValue',
+            'toNodeRelationships',
+            'toNodeRelationships.propertyKeys',
+            'toNodeRelationships.fromNode',
+            'toNodeRelationships.toNode',
+            'toNodeRelationships.toNode.propertyKeys',
+            'toNodeRelationships.toNode.propertyKeys.propertyValue',
           ],
           where: {
             id: nodeId,
@@ -57,8 +57,8 @@ export function NodeDetailsPage() {
           },
         );
         const new_relationships = [];
-        if (filtered_node?.nodeRelationships) {
-          for (const node_rel of filtered_node?.nodeRelationships) {
+        if (filtered_node?.toNodeRelationships) {
+          for (const node_rel of filtered_node?.toNodeRelationships) {
             const relPropertyKeys = node_rel.propertyKeys.map(
               (property_key) => {
                 return {
@@ -112,7 +112,7 @@ export function NodeDetailsPage() {
           downVotes: 12,
           posts: [],
           propertyKeys: nodePropertyKeys,
-          nodeRelationships: new_relationships,
+          toNodeRelationships: new_relationships,
         };
       }
       return null;

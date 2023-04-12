@@ -71,8 +71,8 @@ export const MapStringsListPage = () => {
           ).value;
         }
       }
-      for (const relNode of node.nodeRelationships?.at(0)?.fromNode
-        ?.nodeRelationships || []) {
+      for (const relNode of node.toNodeRelationships?.at(0)?.fromNode
+        ?.toNodeRelationships || []) {
         if (relNode.relationship_type === RelationshipTypeConst.WORD_TO_LANG) {
           wordInfo.langId = relNode.to_node_id;
         }
@@ -80,7 +80,7 @@ export const MapStringsListPage = () => {
           relNode.relationship_type ===
           RelationshipTypeConst.WORD_TO_TRANSLATION
         ) {
-          const translationNode = relNode.toNode.nodeRelationships?.find(
+          const translationNode = relNode.toNode.toNodeRelationships?.find(
             (nr) => nr.relationship_type === RelationshipTypeConst.WORD_TO_LANG,
           );
           if (translationNode) {

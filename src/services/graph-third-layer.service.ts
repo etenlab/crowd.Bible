@@ -244,7 +244,7 @@ export class GraphThirdLayerService {
       relations: [
         'propertyKeys',
         'propertyKeys.propertyValue',
-        'nodeRelationships',
+        'toNodeRelationships',
       ],
       where: {
         node_type: NodeTypeConst.WORD,
@@ -254,7 +254,7 @@ export class GraphThirdLayerService {
             property_value: In(words.map((w) => JSON.stringify({ value: w }))),
           },
         },
-        nodeRelationships: {
+        toNodeRelationships: {
           to_node_id: langId,
           relationship_type: RelationshipTypeConst.WORD_TO_LANG,
         },
@@ -302,12 +302,12 @@ export class GraphThirdLayerService {
       relations: [
         'propertyKeys',
         'propertyKeys.propertyValue',
-        'nodeRelationships',
+        'toNodeRelationships',
         ...additionalRelations,
       ],
       where: {
         node_type: NodeTypeConst.WORD,
-        nodeRelationships: relQuery,
+        toNodeRelationships: relQuery,
       },
     });
 
@@ -330,12 +330,12 @@ export class GraphThirdLayerService {
         },
       ],
       [
-        'nodeRelationships.fromNode',
-        'nodeRelationships.fromNode.nodeRelationships',
-        'nodeRelationships.fromNode.nodeRelationships.toNode',
-        'nodeRelationships.fromNode.nodeRelationships.toNode.propertyKeys',
-        'nodeRelationships.fromNode.nodeRelationships.toNode.propertyKeys.propertyValue',
-        'nodeRelationships.fromNode.nodeRelationships.toNode.nodeRelationships',
+        'toNodeRelationships.fromNode',
+        'toNodeRelationships.fromNode.toNodeRelationships',
+        'toNodeRelationships.fromNode.toNodeRelationships.toNode',
+        'toNodeRelationships.fromNode.toNodeRelationships.toNode.propertyKeys',
+        'toNodeRelationships.fromNode.toNodeRelationships.toNode.propertyKeys.propertyValue',
+        'toNodeRelationships.fromNode.toNodeRelationships.toNode.toNodeRelationships',
       ],
     );
   }
@@ -493,8 +493,8 @@ export class GraphThirdLayerService {
       [
         'propertyKeys',
         'propertyKeys.propertyValue',
-        'nodeRelationships',
-        'nodeRelationships.toNode',
+        'toNodeRelationships',
+        'toNodeRelationships.toNode',
       ],
       {
         node_type: NodeTypeConst.WORD_SEQUENCE,
@@ -504,7 +504,7 @@ export class GraphThirdLayerService {
             property_value: JSON.stringify({ value: true }),
           },
         },
-        nodeRelationships: {
+        toNodeRelationships: {
           relationship_type: RelationshipTypeConst.WORD_SEQUENCE_TO_DOCUMENT,
           toNode: {
             id: documentId,
@@ -522,10 +522,10 @@ export class GraphThirdLayerService {
       [
         'propertyKeys',
         'propertyKeys.propertyValue',
-        'nodeRelationships',
-        'nodeRelationships.propertyKeys',
-        'nodeRelationships.propertyKeys.propertyValue',
-        'nodeRelationships.toNode',
+        'toNodeRelationships',
+        'toNodeRelationships.propertyKeys',
+        'toNodeRelationships.propertyKeys.propertyValue',
+        'toNodeRelationships.toNode',
       ],
     );
 
@@ -557,10 +557,10 @@ export class GraphThirdLayerService {
       [
         'propertyKeys',
         'propertyKeys.propertyValue',
-        'nodeRelationships',
-        'nodeRelationships.toNode',
-        'nodeRelationships.toNode.propertyKeys',
-        'nodeRelationships.toNode.propertyKeys.propertyValue',
+        'toNodeRelationships',
+        'toNodeRelationships.toNode',
+        'toNodeRelationships.toNode.propertyKeys',
+        'toNodeRelationships.toNode.propertyKeys.propertyValue',
       ],
     );
 
@@ -791,11 +791,11 @@ export class GraphThirdLayerService {
       relations: [
         'propertyKeys',
         'propertyKeys.propertyValue',
-        'nodeRelationships',
+        'toNodeRelationships',
       ],
       where: {
         node_type: NodeTypeConst.MAP,
-        nodeRelationships: {
+        toNodeRelationships: {
           relationship_type: NodeTypeConst.MAP_LANG,
           to_node_id: langId,
         },
