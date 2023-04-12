@@ -16,6 +16,7 @@ import { useSingletons } from '@/hooks/useSingletons';
 import txtfile from '@/utils/iso-639-3-min.tab';
 import { LoadingStatus } from '../enums';
 import useSeedService from '../hooks/useSeedService';
+import { NodeTypeConst } from '../constants/graph.constant';
 
 export function AdminPage() {
   const singletons = useSingletons();
@@ -32,6 +33,8 @@ export function AdminPage() {
   const [loadResult, setLoadResult] = useState('');
   const seedService = useSeedService();
 
+  const [loadingMessage, setLoadingMessage] = useState('Loading table...');
+
   const addNewData = async () => {
     setLoadingStatus(LoadingStatus.LOADING);
     try {
@@ -40,6 +43,8 @@ export function AdminPage() {
       if (!singletons) {
         return;
       }
+
+      setLoadingMessage('Creating table...');
       const table = await singletons.tableService.createTable(
         'iso-639-3-min.tab',
       );
@@ -50,24 +55,60 @@ export function AdminPage() {
         return;
       }
 
-      const col_ids = [],
+      setLoadingMessage('Creating columns...');
+      const col_ids: string[] = [],
         row_ids = [];
       for (const col of columns) {
         col_ids.push(await singletons.tableService.createColumn(table, col));
       }
-      console.log(col_ids);
 
-      for (const row of rows) {
+      for (const [row_index, row] of rows.entries()) {
+        setLoadingMessage('Checking if the row already exists...');
+        const cells = row.split('\t');
+        const existing_row = await singletons.tableService.getRow(
+          table,
+          async () => {
+            const table_rows =
+              await singletons.graphFirstLayerService.getNodesByTypeAndRelatedNodes(
+                {
+                  type: NodeTypeConst.TABLE_ROW,
+                  from_node_id: table,
+                },
+              );
+            for (const table_row of table_rows) {
+              for (const [index, col_id] of col_ids.entries()) {
+                const val = await singletons.tableService.readCell(
+                  col_id,
+                  table_row.id,
+                );
+                if (cells[index] !== val) {
+                  break;
+                }
+                if (index === col_ids.length - 1) {
+                  return table_row.id;
+                }
+              }
+            }
+            return null;
+          },
+        );
+        if (existing_row) {
+          console.log('table-row: ', existing_row, ' already exists');
+          continue;
+        }
         const row_id = await singletons.tableService.createRow(table);
         row_ids.push(row_id);
-        const cells = row.split('\t');
-        for (const [index, col_id] of col_ids.entries()) {
-          const cell_id = await singletons.tableService.createCell(
+        for (const [col_index, col_id] of col_ids.entries()) {
+          setLoadingMessage(
+            `${row_index * col_ids.length + columns.length} of ${
+              rows.length * columns.length
+            } table cells Loaded...`,
+          );
+          await singletons.tableService.createCell(
             col_id,
             row_id,
-            cells[index],
+            cells[col_index],
           );
-          console.log(cell_id);
         }
       }
 
@@ -166,7 +207,8 @@ export function AdminPage() {
       <IonLoading
         isOpen={loadingStatus === LoadingStatus.LOADING}
         onDidDismiss={() => setLoadingStatus(LoadingStatus.FINISHED)}
-        message={'Loading table...'}
+        message={loadingMessage}
+        spinner={'lines'}
       />
       <IonToast
         isOpen={!!loadResult}

@@ -16,6 +16,9 @@ import {
   Reaction,
   RelationshipPostFile,
   User,
+  ElectionType,
+  Election,
+  Candidate,
   Vote,
 } from '@/models/index';
 import initSqlJs, { SqlJsStatic } from 'sql.js';
@@ -77,6 +80,9 @@ const options: SqljsConnectionOptions = {
     Reaction,
     RelationshipPostFile,
     User,
+    ElectionType,
+    Election,
+    Candidate,
     Vote,
     SyncSession,
   ],

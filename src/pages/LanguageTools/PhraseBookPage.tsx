@@ -28,7 +28,7 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
       downVotes: 1,
       upVotes: 2,
       id: '12341234',
-      ballotId: '23456789',
+      candidateId: '23456789',
     },
     contents: [
       {
@@ -36,14 +36,14 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
         upVotes: 10,
         downVotes: 11,
         id: '12341235',
-        ballotId: '23456789',
+        candidateId: '23456789',
       },
       {
         content: 'some content11',
         upVotes: 10,
         downVotes: 11,
         id: '12341236',
-        ballotId: '23456789',
+        candidateId: '23456789',
       },
     ],
     contentElectionId: '3456',
@@ -54,7 +54,7 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
       downVotes: 21,
       upVotes: 22,
       id: '12341237',
-      ballotId: '23456789',
+      candidateId: '23456789',
     },
     contents: [
       {
@@ -62,7 +62,7 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
         upVotes: 30,
         downVotes: 31,
         id: '12341238',
-        ballotId: '23456789',
+        candidateId: '23456789',
       },
     ],
     contentElectionId: '3456',
@@ -74,7 +74,7 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
       downVotes: 31,
       upVotes: 32,
       id: '12341239',
-      ballotId: '23456789',
+      candidateId: '23456789',
     },
     contents: [
       {
@@ -82,7 +82,7 @@ const MOCK_VOTABLE_ITEM_SAMPLE: Array<VotableItem> = [
         upVotes: 30,
         downVotes: 31,
         id: '12341240',
-        ballotId: '23456789',
+        candidateId: '23456789',
       },
     ],
     contentElectionId: '3456',

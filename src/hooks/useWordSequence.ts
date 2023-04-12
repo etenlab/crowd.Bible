@@ -9,10 +9,13 @@ import {
   WordSequenceWithVote,
 } from '@/dtos/word-sequence.dto';
 
+import { ElectionTypeConst } from '@/constants/voting.constant';
+import { TableNameConst } from '@/constants/table-name.constant';
+
 interface IndexObject {
   [key: string]: {
     electionId: string;
-    ballotEntryIds: {
+    candidateIds: {
       [key: string]: string;
     };
   };
@@ -29,7 +32,7 @@ export function useWordSequence() {
     actions: { alertFeedback, setLoadingState },
   } = useAppContext();
 
-  const { getBallotEntryId, listElections, getVotesStats } = useVote();
+  const { getCandidateByRef, getElectionByRef, getVotesStats } = useVote();
 
   const createWordSequence = useCallback(
     async (
@@ -209,48 +212,47 @@ export function useWordSequence() {
         const originId = translation.originalWordSequenceId!;
 
         if (electionIds[originId] === undefined) {
-          const tmpElectionIds = await listElections('nodes', originId);
+          const election = await getElectionByRef(
+            ElectionTypeConst.TRANSLATION,
+            originId,
+            TableNameConst.NODES,
+          );
 
-          if (tmpElectionIds.length === 0) {
+          if (!election) {
             continue;
           }
 
           electionIds[originId] = {
-            electionId: tmpElectionIds[0],
-            ballotEntryIds: {},
+            electionId: election.id,
+            candidateIds: {},
           };
         }
 
-        if (
-          electionIds[originId].ballotEntryIds[translation.id] === undefined
-        ) {
-          const ballotEntryId = await getBallotEntryId(
+        if (electionIds[originId].candidateIds[translation.id] === undefined) {
+          const candidate = await getCandidateByRef(
             electionIds[originId].electionId,
-            {
-              tableName: 'nodes',
-              rowId: translation.id,
-            },
+            translation.id,
           );
 
-          if (!ballotEntryId) {
+          if (!candidate) {
             continue;
           }
 
-          electionIds[originId].ballotEntryIds[translation.id] = ballotEntryId;
+          electionIds[originId].candidateIds[translation.id] = candidate.id;
         }
 
         let vote = await getVotesStats(
-          electionIds[originId].ballotEntryIds[translation.id],
+          electionIds[originId].candidateIds[translation.id],
         );
 
         if (!vote) {
           vote = {
-            ballot_entry_id:
-              electionIds[originId].ballotEntryIds[translation.id],
-            up: 0,
-            down: 0,
+            candidateId: electionIds[originId].candidateIds[translation.id],
+            upVotes: 0,
+            downVotes: 0,
           };
         }
+
         translationWithVoteDtos.push({
           ...translation,
           vote,
@@ -259,7 +261,7 @@ export function useWordSequence() {
 
       return translationWithVoteDtos;
     },
-    [getVotesStats, getBallotEntryId, listElections],
+    [getVotesStats, getCandidateByRef, getElectionByRef],
   );
 
   const listTranslationsByDocumentId = useCallback(
