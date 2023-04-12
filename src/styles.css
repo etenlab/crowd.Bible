@@ -89,3 +89,7 @@ h2.slide-title {
 .text-transform-none {
   text-transform: unset;
 }
+
+.header-md::after {
+  background-image: none;
+}
