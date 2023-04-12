@@ -20,7 +20,7 @@ const { Box } = MuiMaterial;
 
 type Item = {
   label: string;
-  value: unknown;
+  value: string;
 };
 
 const { TitleWithIcon, ButtonList } = CrowdBibleUI;
@@ -29,9 +29,9 @@ const PADDING = 20;
 
 const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
 const MOCK_TRANSLATED_MAPS: Item[] = [
-  { value: 1, label: 'Translated map1' },
-  { value: 2, label: 'Translated map2' },
-  { value: 3, label: 'Translated map3' },
+  { value: '1', label: 'Translated map1' },
+  { value: '2', label: 'Translated map2' },
+  { value: '3', label: 'Translated map3' },
 ];
 
 export const SvgTranslationPage = () => {
@@ -201,7 +201,7 @@ export const SvgTranslationPage = () => {
               onClick={() => {
                 history.push('/svg-translated-map');
               }}
-              Icon={<BiRightArrowAlt size={25} />}
+              startIcon={<BiRightArrowAlt size={25} />}
             ></ButtonList>
           </Box>
         )}

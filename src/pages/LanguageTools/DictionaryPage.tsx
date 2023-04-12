@@ -285,14 +285,14 @@ export function DictionaryPage() {
               </Box>
             </Box>
             <Divider />
-            <ItemsClickableList
+            {/* <ItemsClickableList
               items={words}
               setSelectedItem={setSelectedWord}
               setLikeItem={(ballotId) => changeWordVotes(ballotId, 'upVote')}
               setDislikeItem={(ballotId) =>
                 changeWordVotes(ballotId, 'downVote')
               }
-            ></ItemsClickableList>
+            ></ItemsClickableList> */}
           </Box>
           <SimpleFormDialog
             title={'Enter new Word'}
@@ -309,14 +309,14 @@ export function DictionaryPage() {
           alignItems={'start'}
           padding={`${PADDING}px`}
         >
-          <ItemContentListEdit
+          {/* <ItemContentListEdit
             item={selectedWord}
             onBack={() => setSelectedWord(null as unknown as VotableItem)}
             buttonText="New Definition"
             changeContentValue={changeWordDefinition}
             changeContentVotes={changeWordDefinitionVotes}
             addContent={addDefinitionToWord}
-          />
+          /> */}
         </Box>
       )}
     </IonContent>
