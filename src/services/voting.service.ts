@@ -80,8 +80,8 @@ export class VotingService {
     return this.candidateRepo.getCandidateByRef(electionId, candidateRef);
   }
 
-  async getVotesStats(ballot_entry_id: Nanoid): Promise<VotesStatsRow> {
-    return this.voteRepo.getVotesStats(ballot_entry_id);
+  async getVotesStats(candidateId: Nanoid): Promise<VotesStatsRow> {
+    return this.voteRepo.getVotesStats(candidateId);
   }
 
   async addVote(
