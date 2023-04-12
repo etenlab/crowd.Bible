@@ -11,9 +11,7 @@ const { Box, Divider } = MuiMaterial;
 
 const {
   TitleWithIcon,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ItemsClickableList,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ItemContentListEdit,
   SimpleFormDialog,
   FiltersAndSearch,
