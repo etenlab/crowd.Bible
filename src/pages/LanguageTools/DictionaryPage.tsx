@@ -11,7 +11,9 @@ const { Box, Divider } = MuiMaterial;
 
 const {
   TitleWithIcon,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ItemsClickableList,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ItemContentListEdit,
   SimpleFormDialog,
   FiltersAndSearch,
@@ -185,6 +187,7 @@ export function DictionaryPage() {
     addItem(words, newWord);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changeWordVotes = useCallback(
     (candidateId: Nanoid | null, upOrDown: TUpOrDownVote) => {
       changeItemVotes(candidateId, upOrDown, words);
@@ -192,6 +195,7 @@ export function DictionaryPage() {
     [changeItemVotes, words],
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addDefinitionToWord = useCallback(
     (text: string) => {
       addDefinition(text, words, selectedWord, setSelectedWord);
@@ -199,6 +203,7 @@ export function DictionaryPage() {
     [addDefinition, selectedWord, words],
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changeWordDefinition = useCallback(
     (definitionId: Nanoid | null, newValue: string) => {
       changeDefinitionValue(words, selectedWord, definitionId, newValue);
@@ -206,6 +211,7 @@ export function DictionaryPage() {
     [changeDefinitionValue, selectedWord, words],
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changeWordDefinitionVotes = useCallback(
     (candidateId: Nanoid | null, upOrDown: TUpOrDownVote) => {
       changeDefinitionVotes(words, selectedWord, candidateId, upOrDown);

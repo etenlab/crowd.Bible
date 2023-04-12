@@ -11,7 +11,9 @@ const { Box, Divider } = MuiMaterial;
 
 const {
   TitleWithIcon,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ItemsClickableList,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ItemContentListEdit,
   SimpleFormDialog,
   FiltersAndSearch,
@@ -165,6 +167,7 @@ export function PhraseBookPage() {
     addItem(phrases, newPhrase);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changePhraseVotes = useCallback(
     (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
       changeItemVotes(ballotId, upOrDown, phrases);
@@ -172,6 +175,7 @@ export function PhraseBookPage() {
     [changeItemVotes, phrases],
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changePhraseDefinition = useCallback(
     (definitionId: Nanoid | null, newValue: string) => {
       changeDefinitionValue(phrases, selectedPhrase, definitionId, newValue);
@@ -179,6 +183,7 @@ export function PhraseBookPage() {
     [changeDefinitionValue, selectedPhrase, phrases],
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changePhraseDefinitionVotes = useCallback(
     (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
       changeDefinitionVotes(phrases, selectedPhrase, ballotId, upOrDown);
@@ -186,6 +191,7 @@ export function PhraseBookPage() {
     [changeDefinitionVotes, phrases, selectedPhrase],
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addDefinitionToPhrase = useCallback(
     (text: string) => {
       addDefinition(text, phrases, selectedPhrase, setSelectedPhrase);
