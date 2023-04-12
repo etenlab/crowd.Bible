@@ -265,14 +265,14 @@ export function PhraseBookPage() {
               </Box>
             </Box>
             <Divider />
-            <ItemsClickableList
+            {/* <ItemsClickableList
               items={phrases}
               setSelectedItem={setSelectedPhrase}
               setLikeItem={(ballotId) => changePhraseVotes(ballotId, 'upVote')}
               setDislikeItem={(ballotId) =>
                 changePhraseVotes(ballotId, 'downVote')
               }
-            ></ItemsClickableList>
+            ></ItemsClickableList> */}
           </Box>
           <SimpleFormDialog
             title={'Enter new Phrase'}
@@ -289,14 +289,14 @@ export function PhraseBookPage() {
           alignItems={'start'}
           padding={`${PADDING}px`}
         >
-          <ItemContentListEdit
+          {/* <ItemContentListEdit
             item={selectedPhrase}
             onBack={() => setSelectedPhrase(null as unknown as VotableItem)}
             buttonText="New Definition"
             changeContentValue={changePhraseDefinition}
             changeContentVotes={changePhraseDefinitionVotes}
             addContent={addDefinitionToPhrase}
-          />
+          /> */}
         </Box>
       )}
     </IonContent>
