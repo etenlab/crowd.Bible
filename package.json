@@ -9,7 +9,7 @@
     "@capacitor/haptics": "4.1.0",
     "@capacitor/keyboard": "4.1.0",
     "@capacitor/status-bar": "4.1.1",
-    "@eten-lab/crowd-bible-models": "^1.2.0",
+    "@eten-lab/crowd-bible-models": "^1.2.3",
     "@eten-lab/ui-kit": "^0.3.86",
     "@ionic/react": "^6.0.0",
     "@ionic/react-router": "^6.0.0",
