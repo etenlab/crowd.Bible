@@ -76,4 +76,6 @@ export class PropertyKeyConst {
 
   static readonly ORIGINAL_WORD_SEQUENCE_ID = 'original-word-sequence-id';
   static readonly TEXT = 'text';
+
+  static readonly SITE_TEXT = 'site-text';
 }

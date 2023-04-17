@@ -12,4 +12,7 @@ export enum TableNameConst {
   ELECTION_TYPES = 'election_types',
   CANDIDATES = 'candidates',
   VOTES = 'votes',
+
+  SITE_TEXT = 'site_texts',
+  SITE_TEXT_TRANSLATION = 'site_text_translations',
 }

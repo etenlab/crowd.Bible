@@ -263,11 +263,12 @@ export class DefinitionService {
         const { upVotes, downVotes } = await this.votingService.getVotesStats(
           candidateId,
         );
+        const content = (await this.graphFirstLayerService.getNodePropertyValue(
+          votableNode.id,
+          propertyKeyText,
+        )) as string;
         return {
-          content: this.graphSecondLayerService.getNodePropertyValue(
-            votableNode,
-            propertyKeyText,
-          ),
+          content,
           upVotes,
           downVotes,
           id: votableNode.id,
@@ -406,6 +407,26 @@ export class DefinitionService {
       },
     );
     return Promise.all(langPromises);
+  }
+
+  /**
+   * Gets languge. Finds or creates language elections of words and phrases
+   *
+   * @param langId
+   * @returns
+   */
+  async getLanguageById(langId: Nanoid): Promise<LanguageWithElecitonsDto> {
+    const languages = await this.getLanguages();
+
+    const lang = languages.find((lang) => lang.id === langId);
+
+    if (!lang) {
+      throw new Error(
+        `Not Exists given language Node(#langId=${langId}) in the graph schema`,
+      );
+    }
+
+    return lang;
   }
 
   /**

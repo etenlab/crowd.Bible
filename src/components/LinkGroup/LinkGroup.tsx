@@ -36,7 +36,7 @@ export function LinkGroup({ group, linkItems }: LinkGroupType) {
     return linkItems.map(({ to, label, onlineOnly, implemented }) => ({
       value: to,
       label,
-      color: implemented ? getColor('green') : getColor('dark'),
+      color: implemented ? getColor('dark') : getColor('dark'),
       isEndIcon: connectivity === false && onlineOnly === true ? true : false,
       disabled: connectivity === false && onlineOnly === true ? true : false,
     }));
