@@ -159,6 +159,10 @@ export function AdminPage() {
     }
   }, [seedService]);
 
+  const materialize = async () => {
+    singletons?.materializerService.materialize('iso-639-3-min.tab');
+  };
+
   return (
     <IonContent>
       <IonCard>
@@ -202,6 +206,14 @@ export function AdminPage() {
               ? 'Syncing Out...'
               : 'Sync Out'}
           </IonButton>
+        </IonCardContent>
+      </IonCard>
+      <IonCard>
+        <IonCardHeader>
+          <IonCardTitle>Materialize Table</IonCardTitle>
+        </IonCardHeader>
+        <IonCardContent>
+          <IonButton onClick={materialize}>Materialize</IonButton>
         </IonCardContent>
       </IonCard>
       <IonLoading

@@ -92,6 +92,16 @@ export class NodeRepository {
     });
   }
 
+  async find(
+    relations: string[],
+    whereObj: FindOptionsWhere<Node>,
+  ): Promise<Node[]> {
+    return this.repository.find({
+      relations,
+      where: whereObj,
+    });
+  }
+
   async getNodeByProp(
     type: string,
     prop: { key: string; value: unknown },
