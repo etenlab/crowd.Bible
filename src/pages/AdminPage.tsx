@@ -49,7 +49,7 @@ export function AdminPage() {
         'iso-639-3-min.tab',
       );
 
-      const rows = data.split('\r\n');
+      const rows = data.split(/\r?\n/);
       const columns = rows.shift()?.split('\t');
       if (!columns) {
         return;
