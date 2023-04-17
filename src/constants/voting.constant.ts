@@ -1,1 +1,1 @@
-export { ElectionTypeConst } from '@eten-lab/crowd-bible-models';
+export { ElectionTypeConst } from '@eten-lab/models';

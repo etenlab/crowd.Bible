@@ -1,1 +1,1 @@
-export { TableNameConst } from '@eten-lab/crowd-bible-models';
+export { TableNameConst } from '@eten-lab/models';
