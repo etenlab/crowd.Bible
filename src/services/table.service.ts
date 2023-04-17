@@ -262,7 +262,7 @@ export class TableService {
 
       const votes = await this.votingService.getVotesStats(candidate!.id);
       const vote = votes.upVotes - votes.downVotes;
-      if (maxVote < vote) {
+      if (maxVote <= vote) {
         maxVote = vote;
         maxVotedCellData = data;
       }
