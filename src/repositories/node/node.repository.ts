@@ -5,6 +5,8 @@ import { SyncService } from '@/services/sync.service';
 import { NodeType } from '@/models/index';
 import { Node } from '@/models/node/node.entity';
 
+import { PropertyKeyConst } from '@/constants/graph.constant';
+
 export class NodeRepository {
   constructor(
     private readonly dbService: DbService,
@@ -184,5 +186,36 @@ export class NodeRepository {
     }
 
     return nodes.map(({ id }) => id);
+  }
+
+  async getNodePropertyValue(
+    nodeId: Nanoid,
+    propertyName: PropertyKeyConst,
+  ): Promise<unknown> {
+    const nodeEntity = await this.readNode(nodeId, [
+      'propertyKeys',
+      'propertyKeys.propertyValue',
+    ]);
+
+    if (!nodeEntity) {
+      return null;
+    }
+
+    if (
+      !nodeEntity.propertyKeys?.length ||
+      nodeEntity.propertyKeys?.length < 1
+    ) {
+      return null;
+    }
+
+    const propertyIdx = nodeEntity.propertyKeys.findIndex(
+      (pk) => pk.property_key === propertyName,
+    );
+
+    const resJson =
+      nodeEntity.propertyKeys[propertyIdx].propertyValue.property_value;
+    const res = JSON.parse(resJson).value;
+
+    return res;
   }
 }
