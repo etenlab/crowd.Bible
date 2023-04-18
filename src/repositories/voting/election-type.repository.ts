@@ -22,7 +22,7 @@ export class ElectionTypeRepository {
       sync_layer: this.syncService.syncLayer,
     });
 
-    return electionType.type_name;
+    return electionType.type_name as ElectionTypeConst;
   }
 
   async listElectionTypes(): Promise<ElectionType[]> {
