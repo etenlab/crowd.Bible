@@ -1,5 +1,5 @@
 import { Relationship } from '@/models/index';
-import { RelationshipPropertyKey } from '@/models/relationship/relationship-property-key.entity';
+import { RelationshipPropertyKey } from '@/src/models/';
 import { type DbService } from '@/services/db.service';
 import { type SyncService } from '@/services/sync.service';
 
