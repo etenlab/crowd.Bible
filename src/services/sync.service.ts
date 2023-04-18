@@ -1,12 +1,12 @@
-import { NodePropertyKey } from '@/src/models';
-import { NodePropertyValue } from '@/src/models';
-import { NodeType } from '@/src/models';
-import { Node } from '@/src/models';
+import { NodePropertyKey } from '@/models/node/node-property-key.entity';
+import { NodePropertyValue } from '@/models/node/node-property-value.entity';
+import { NodeType } from '@/models/node/node-type.entity';
+import { Node } from '@/models/node/node.entity';
 import axios from 'axios';
-import { Relationship } from '@/src/models';
-import { RelationshipType } from '@/src/models';
-import { RelationshipPropertyKey } from '@/src/models';
-import { RelationshipPropertyValue } from '@/src/models';
+import { Relationship } from '@/models/relationship/relationship.entity';
+import { RelationshipType } from '@/models/relationship/relationship-type.entity';
+import { RelationshipPropertyKey } from '@/models/relationship/relationship-property-key.entity';
+import { RelationshipPropertyValue } from '@/models/relationship/relationship-property-value.entity';
 import { DbService } from './db.service';
 import { SyncSessionRepository } from '@/repositories/sync-session.repository';
 

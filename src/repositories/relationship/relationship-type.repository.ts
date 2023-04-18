@@ -1,4 +1,4 @@
-import { RelationshipType } from '@/src/models/';
+import { RelationshipType } from '@/models/relationship/relationship-type.entity';
 import { type DbService } from '@/services/db.service';
 import { type SyncService } from '@/services/sync.service';
 

@@ -1,6 +1,6 @@
 // import { Repository } from 'typeorm';
 import { Node } from '@/models/index';
-import { NodePropertyKey } from '@/src/models';
+import { NodePropertyKey } from '@/models/node/node-property-key.entity';
 import { type DbService } from '@/services/db.service';
 import { type SyncService } from '@/services/sync.service';
 

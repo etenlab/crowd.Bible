@@ -1,8 +1,8 @@
 import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
 
-import { ElectionType } from '@/src/models/';
-import { Election } from '@/src/models/';
+import { ElectionType } from '@/models/voting/election-type.entity';
+import { Election } from '@/models/voting/election.entity';
 
 import { ElectionTypeConst } from '@/constants/voting.constant';
 

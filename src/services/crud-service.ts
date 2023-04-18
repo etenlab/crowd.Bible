@@ -1,5 +1,5 @@
 import { GraphSecondLayerService } from './graph-second-layer.service';
-import { Node } from '@/src/models/';
+import { Node } from '@/models/node/node.entity';
 import { InferType, object, reach, Schema, string } from 'yup';
 import { NodeRepository } from '@/repositories/node/node.repository';
 import { FindOptionsWhere } from 'typeorm';

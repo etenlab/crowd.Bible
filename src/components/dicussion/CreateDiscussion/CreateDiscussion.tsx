@@ -40,7 +40,7 @@ export const CreateDiscussion: React.FC<PropsCreateDiscussion> = ({
         ?.create({
           ...formData,
           userId: 1,
-          tableName: '',
+          table_name: '',
           row: 0,
           posts: [],
         })

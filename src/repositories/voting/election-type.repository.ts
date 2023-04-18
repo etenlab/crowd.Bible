@@ -1,4 +1,4 @@
-import { ElectionType } from '@/src/models/';
+import { ElectionType } from '@/models/voting/election-type.entity';
 import { type DbService } from '@/services/db.service';
 import { type SyncService } from '@/services/sync.service';
 
@@ -17,12 +17,12 @@ export class ElectionTypeRepository {
   async createElectionType(
     type_name: ElectionTypeConst,
   ): Promise<ElectionTypeConst> {
-    const electionType = await this.repository.save<ElectionType>({
+    const electionType = await this.repository.save({
       type_name,
       sync_layer: this.syncService.syncLayer,
     });
 
-    return electionType.type_name as ElectionTypeConst;
+    return electionType.type_name;
   }
 
   async listElectionTypes(): Promise<ElectionType[]> {

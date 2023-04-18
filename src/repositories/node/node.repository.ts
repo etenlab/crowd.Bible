@@ -2,8 +2,8 @@ import { FindOptionsWhere } from 'typeorm';
 
 import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
-import { NodeType } from '@/src/models';
-import { Node } from '@/src/models';
+import { NodeType } from '@/models/index';
+import { Node } from '@/models/node/node.entity';
 
 export class NodeRepository {
   constructor(

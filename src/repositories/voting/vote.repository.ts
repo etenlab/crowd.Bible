@@ -1,6 +1,6 @@
 import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
-import { Vote } from '@/src/models/';
+import { Vote } from '@/src/models/voting/vote.entity';
 
 export interface IVoteInput {
   ballot_entry_id: string;
