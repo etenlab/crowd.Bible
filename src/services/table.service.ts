@@ -6,7 +6,7 @@ import {
   RelationshipTypeConst,
   PropertyKeyConst,
 } from '@/constants/graph.constant';
-import { type Node } from '@/models/node/node.entity';
+import { type Node } from '@eten-lab/models';
 import { VotingService } from './voting.service';
 import { ElectionTypeConst } from '../constants/voting.constant';
 
