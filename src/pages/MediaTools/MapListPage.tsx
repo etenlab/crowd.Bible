@@ -47,11 +47,10 @@ const PADDING = 15;
 export const MapListPage = () => {
   const langIdRef = useRef('');
   const [langs, setLangs] = useState<LanguageDto[]>([]);
-  const [mapList, setMapList] = useState<MapDetail[]>([
-    // { fileName: 'text name', status: eProcessStatus.FAILED },
-  ]);
+  const [mapList, setMapList] = useState<MapDetail[]>([]);
   const [selectedLang, setSelectedLang] = useState<string>('');
   const [presentAlert] = useIonAlert();
+  const [uploadMapBtnStatus, setUploadMapBtnStatus] = useState();
   const singletons = useSingletons();
 
   useEffect(() => {
@@ -59,6 +58,7 @@ export const MapListPage = () => {
       if (!singletons) return;
       const res = await singletons.graphThirdLayerService.getLanguages();
       setLangs(res);
+      if (res.length > 0) setSelectedLang(res.at(0)!.name);
     };
     loadLanguages();
   }, [singletons]);
