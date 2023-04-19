@@ -1,3 +1,4 @@
+const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack');
 const { aliasWebpack, aliasJest } = require('react-app-alias');
 
@@ -32,7 +33,20 @@ function mainOverride(config) {
   ];
 
   config.ignoreWarnings = [/Failed to parse source map/];
-  config.optimization.minimize = false;
+
+  // inspired by https://github.com/typeorm/typeorm/issues/4526
+  // to tackle bug with typerom entites metadata on finified calssnames,
+  // we want to keep classnames not minified.
+  const terserPluginIdx = config.optimization.minimizer.findIndex(
+    (minimizer) => minimizer instanceof TerserPlugin,
+  );
+  config.optimization.minimizer[terserPluginIdx] = new TerserPlugin({
+    parallel: true,
+    terserOptions: {
+      keep_classnames: true,
+      keep_fnames: true,
+    },
+  });
 
   return config;
 }
