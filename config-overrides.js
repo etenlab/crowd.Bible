@@ -32,6 +32,7 @@ function mainOverride(config) {
   ];
 
   config.ignoreWarnings = [/Failed to parse source map/];
+  config.optimization.minimize = false;
 
   return config;
 }
