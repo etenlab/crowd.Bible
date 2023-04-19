@@ -7,18 +7,20 @@ import {
 } from '@ionic/react';
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { type INode, parseSync } from 'svgson';
-import { Box, Typography } from '@mui/material';
 import {
   Autocomplete,
-  Button,
   Input,
   CrowdBibleUI,
   BiTrashAlt,
+  MuiMaterial,
+  Button,
 } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
 import { useSingletons } from '@/src/hooks/useSingletons';
 import { LanguageDto } from '@/src/dtos/language.dto';
 const { TitleWithIcon } = CrowdBibleUI;
+const { Box, Typography, styled } = MuiMaterial;
+
 //#region types
 enum eProcessStatus {
   NONE = 'NONE',
@@ -256,24 +258,89 @@ export const MapListPage = () => {
     <IonContent>
       <Box
         display={'flex'}
+        flexDirection={'row'}
+        alignItems={'center'}
+        justifyContent={'flex-start'}
+        padding={'20px'}
+        bgcolor={'text.light-blue'}
+      >
+        <Typography
+          color={'text.dark'}
+          sx={{ fontSize: '20px', lineHeight: '28px', fontWeight: 600 }}
+        >
+          Map Translator
+        </Typography>
+      </Box>
+      <Box
+        display={'flex'}
         flexDirection={'column'}
         justifyContent={'start'}
         alignItems={'start'}
-        paddingTop={`${PADDING}px`}
+        padding={'20px'}
+        paddingTop={'15px'}
       >
         <Box
           width={'100%'}
           display={'flex'}
           justifyContent={'space-between'}
           alignItems={'center'}
+          gap={'20px'}
         >
-          <Button variant={'text'} href={'/map-list'} disabled>
-            Map List
-          </Button>
-          <Button variant={'text'} href={'/map-strings-list'}>
-            String List
-          </Button>
+          <StyledButtonTab variant={'contained'} href={'/map-list'}>
+            Map
+          </StyledButtonTab>
+          <StyledButtonTab variant={'text'} href={'/map-strings-list'}>
+            Word List
+          </StyledButtonTab>
         </Box>
+        <Typography
+          color={'text.gray'}
+          fontWeight={800}
+          fontSize={'14px'}
+          lineHeight={'20px'}
+          sx={{
+            textTransform: 'uppercase',
+            padding: '15px 0px',
+            letterSpacing: '0.05em',
+          }}
+        >
+          Select the source language
+        </Typography>
+        <Box
+          display={'flex'}
+          width={'100%'}
+          gap={'20px'}
+          flexDirection={'row'}
+          alignItems={'center'}
+          justifyContent={'space-between'}
+        >
+          <Autocomplete
+            options={langLabels}
+            value={selectedLang}
+            onChange={(_, value) => {
+              handleApplyLanguageFilter(value || '');
+            }}
+            label=""
+            sx={{ flex: 1 }}
+          />
+          <Input label="" placeholder="Language ID" sx={{ flex: 1 }} />
+        </Box>
+        <Button
+          fullWidth
+          sx={{
+            backgroundColor: 'text.blue-primary',
+            color: 'text.white',
+            fontSize: '14px',
+            fontWeight: 800,
+            padding: '14px 73px',
+            marginTop: '20px',
+            ':hover': {
+              backgroundColor: 'text.blue-primary',
+            },
+          }}
+        >
+          Upload .svg File
+        </Button>
 
         <Box
           width={'100%'}
@@ -432,3 +499,36 @@ function iterateOverINode(
     iterateOverINode(child, skipNodeNames, cb);
   }
 }
+
+//#region styled component
+const StyledButtonTab = styled(Button)(({ theme, variant }) => {
+  const conditionalStyles = {};
+  if (variant === 'text') {
+    Object.assign(conditionalStyles, {
+      color: theme.palette.text.gray,
+      borderBottom: '1px solid',
+      borderColor: theme.palette.text['middle-gray'],
+    });
+  } else {
+    Object.assign(conditionalStyles, {
+      color: theme.palette.text['blue-primary'],
+      backgroundColor: '#CBE0F8',
+      ':hover': {
+        backgroundColor: '#CBE0F8',
+      },
+    });
+  }
+  return {
+    fontWeight: 800,
+    fontSize: '14px',
+    lineHeight: '20px',
+    borderRadius: '4px',
+    padding: '11px 46px',
+    gap: '10px',
+    height: '42px',
+    flex: 1,
+
+    ...conditionalStyles,
+  };
+});
+//#endregion
