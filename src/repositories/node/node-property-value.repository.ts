@@ -1,5 +1,5 @@
-import { NodePropertyKey } from '@/models/index';
-import { NodePropertyValue } from '@/models/node/node-property-value.entity';
+import { NodePropertyKey } from '@/src/models';
+import { NodePropertyValue } from '@/src/models';
 import { type DbService } from '@/services/db.service';
 import { type SyncService } from '@/services/sync.service';
 
