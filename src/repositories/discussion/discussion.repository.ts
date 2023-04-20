@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
-import { Discussion } from '@/src/models/discussion/discussion.entity';
+import { Discussion } from '@/src/models';
 import { DbService } from '@/services/db.service';
-import { User } from '@/src/models/user/user.entity';
+import { User } from '@/src/models';
 
 export class DiscussionRepository {
   repository: Repository<Discussion>;
