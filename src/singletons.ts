@@ -165,6 +165,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     graphSecondLayerService,
     nodeRepo,
     nodePropertyValueRepo,
+    votingService,
   );
 
   const definitionService = new DefinitionService(
@@ -184,12 +185,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
 
   const lexiconService = new LexiconService(graphSecondLayerService, nodeRepo);
 
-  const materializerService = new MaterializerService(
-    graphFirstLayerService,
-    graphSecondLayerService,
-    graphThirdLayerService,
-    tableService,
-  );
+  const materializerService = new MaterializerService(tableService, dbService);
 
   return {
     dbService,

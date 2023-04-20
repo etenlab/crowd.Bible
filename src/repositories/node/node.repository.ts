@@ -2,8 +2,8 @@ import { FindOptionsWhere } from 'typeorm';
 
 import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
-import { NodeType } from '@/models/index';
-import { Node } from '@/models/node/node.entity';
+import { NodeType } from '@/src/models';
+import { Node } from '@/src/models';
 
 import { PropertyKeyConst } from '@/constants/graph.constant';
 
@@ -89,6 +89,16 @@ export class NodeRepository {
     whereObj: FindOptionsWhere<Node>,
   ): Promise<Node | null> {
     return this.repository.findOne({
+      relations,
+      where: whereObj,
+    });
+  }
+
+  async find(
+    relations: string[],
+    whereObj: FindOptionsWhere<Node>,
+  ): Promise<Node[]> {
+    return this.repository.find({
       relations,
       where: whereObj,
     });

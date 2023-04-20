@@ -1,7 +1,7 @@
 import { GraphFirstLayerService } from './graph-first-layer.service';
 
-import { type Node } from '@/models/node/node.entity';
-import { type Relationship } from '@/models/relationship/relationship.entity';
+import { type Node } from '@/src/models/';
+import { type Relationship } from '@/src/models/';
 
 export class GraphSecondLayerService {
   constructor(private readonly firstLayerService: GraphFirstLayerService) {}

@@ -1,7 +1,7 @@
 import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
 
-import { SiteText } from '@/models/site-text/site-text.entity';
+import { SiteText } from '@/models/index';
 
 export class SiteTextRepository {
   constructor(

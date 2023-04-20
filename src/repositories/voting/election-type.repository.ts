@@ -1,4 +1,4 @@
-import { ElectionType } from '@/models/voting/election-type.entity';
+import { ElectionType } from '@/src/models/';
 import { type DbService } from '@/services/db.service';
 import { type SyncService } from '@/services/sync.service';
 
@@ -24,7 +24,7 @@ export class ElectionTypeRepository {
     if (electionType === null) {
       await this.dbService.dataSource
         .getRepository(ElectionType)
-        .save({ type_name: type_name });
+        .save({ type_name: type_name, sync_layer: this.syncService.syncLayer });
     }
 
     return type_name;

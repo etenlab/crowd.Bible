@@ -18,8 +18,8 @@ import { GraphFirstLayerService } from './graph-first-layer.service';
 import { VotingService } from './voting.service';
 import { DefinitionService } from './definition.service';
 
-import { SiteText } from '@/models/site-text/site-text.entity';
-import { SiteTextTranslation } from '@/models/site-text/site-text-translation.entity';
+import { SiteText } from '@/models/index';
+import { SiteTextTranslation } from '@/models/index';
 
 import { SiteTextRepository } from '@/repositories/site-text/site-text.repository';
 import { SiteTextTranslationRepository } from '@/repositories/site-text/site-text-translation.repository';

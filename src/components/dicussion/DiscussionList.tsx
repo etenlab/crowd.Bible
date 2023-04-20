@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { useHistory } from 'react-router-dom';
 import { List, ListItem, ListItemText, Divider } from '@mui/material';
-import { Discussion } from '../../models/discussion/discussion.entity';
+import { Discussion } from '../../models';
 import { IonChip } from '@ionic/react';
 import AppRoutes from '../../constants/AppRoutes';
 
@@ -71,7 +71,7 @@ export const DiscussionList: React.FC<PropsDiscussionList> = ({
 
   return (
     <List>
-      {discussions.map(({ id, table_name, row }) => (
+      {discussions.map(({ id, tableName, row }) => (
         <Fragment key={id}>
           <ListItem
             secondaryAction={
@@ -91,7 +91,7 @@ export const DiscussionList: React.FC<PropsDiscussionList> = ({
             }}
           >
             <ListItemText
-              primary={table_name}
+              primary={tableName}
               secondary={`Total discussions: ${row}`}
             />
           </ListItem>
