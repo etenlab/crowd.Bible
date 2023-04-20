@@ -14,26 +14,26 @@ export class NodePropertyKeyRepository {
     return this.dbService.dataSource.getRepository(NodePropertyKey);
   }
 
-  async createNodePropertyKey(
-    node_id: string,
+  private async createNodePropertyKey(
+    node_id: Nanoid,
     key_name: string,
-  ): Promise<string | null> {
-    const propertyKey = await this.repository
-      .createQueryBuilder('nodePropertyKey')
-      .where('nodePropertyKey.id = :node_id', { node_id })
-      .andWhere('nodePropertyKey.property_key = :key_name', { key_name })
-      .getOne();
+  ): Promise<Nanoid> {
+    const propertyKey = await this.findPropertyKey(node_id, key_name);
 
-    if (propertyKey != null) {
-      return propertyKey.id;
+    if (propertyKey !== null) {
+      throw new Error(
+        `Already Exists property key with same #key_name='${key_name}' at #node_id='${node_id}'`,
+      );
     }
 
     const node = await this.dbService.dataSource
       .getRepository(Node)
       .findOneBy({ id: node_id });
 
-    if (node == null) {
-      return null;
+    if (node === null) {
+      throw new Error(
+        `Not Exists node at node table with #node_id='${node_id}'`,
+      );
     }
 
     const new_property_key_instance = this.repository.create({
@@ -49,5 +49,33 @@ export class NodePropertyKeyRepository {
     );
 
     return new_property_key.id;
+  }
+
+  private async findPropertyKey(
+    node_id: Nanoid,
+    key_name: string,
+  ): Promise<Nanoid | null> {
+    const nodePropertyKey = await this.repository.findOne({
+      where: {
+        property_key: key_name,
+        node_id: node_id,
+      },
+    });
+
+    return nodePropertyKey?.id || null;
+  }
+
+  async getNodePropertyKey(node_id: Nanoid, key_name: string): Promise<Nanoid> {
+    const propertyKeyId = await this.findPropertyKey(node_id, key_name);
+
+    if (propertyKeyId) {
+      return propertyKeyId;
+    } else {
+      return this.createNodePropertyKey(node_id, key_name);
+    }
+  }
+
+  async bulkSave(entities: NodePropertyKey[]) {
+    return this.repository.save(entities, { transaction: true });
   }
 }

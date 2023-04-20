@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
@@ -10,11 +11,14 @@ import {
   PasswordInput,
 } from '@eten-lab/ui-kit';
 import { useFormik } from 'formik';
+
 import * as Yup from 'yup';
+import axios from 'axios';
 
-// import axios from "axios";
+import * as querystring from 'qs';
+// import { decodeToken } from '@/utils/AuthUtils';
 
-const { Box } = MuiMaterial;
+const { Box, Alert } = MuiMaterial;
 
 const validationSchema = Yup.object().shape({
   username: Yup.string().required('First name is required'),
@@ -31,6 +35,8 @@ const validationSchema = Yup.object().shape({
 
 export function RegisterPage() {
   const [show, setShow] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const history = useHistory();
   const formik = useFormik<{
     email: string;
@@ -46,23 +52,66 @@ export function RegisterPage() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      // const url = `${process.env.REACT_APP_DATABASE_API_URL}/users/register`;
-      // const queryParams = { realm: process.env.REACT_APP_REALM_NAME };
-      // const headers = { "Content-Type": "application/json" };
-      // const requestBody = {
-      //   email: values.email,
-      //   username: values.username,
-      //   password: values.password,
-      // };
-      // try {
-      //   const result = await axios.post(url, requestBody, {
-      //     params: queryParams,
-      //     headers: headers,
-      //   });
-      // } catch (err) {
-      //   console.log(err);
-      // }
-      history.push('/login');
+      console.log(values.email);
+      setErrorMessage('');
+      setSuccessMessage('');
+
+      try {
+        await axios
+          .post(
+            `${process.env.REACT_APP_KEYCLOAK_URL}/realms/master/protocol/openid-connect/token`,
+            querystring.stringify({
+              client_id: 'admin-cli', //process.env.REACT_APP_KEYCLOAK_CLIENT_ID,
+              client_secret: process.env.REACT_APP_KEYCLOAK_CLIENT_SECRET,
+              grant_type: 'client_credentials', //'password'
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+            },
+          )
+          .then(async (response) => {
+            console.log('response.data.access_token');
+            // const token: any = decodeToken(response.data.access_token);
+
+            try {
+              await axios
+                .post(
+                  `${process.env.REACT_APP_KEYCLOAK_URL}/admin/realms/${process.env.REACT_APP_KEYCLOAK_REALM}/users`,
+                  {
+                    username: values.username,
+                    email: values.email,
+                    enabled: true,
+                    credentials: [
+                      {
+                        type: 'password',
+                        value: values.password,
+                      },
+                    ],
+                    emailVerified: true,
+                  },
+                  {
+                    headers: {
+                      'Content-Type': 'application/json',
+                      Authorization: `Bearer ${response.data.access_token}`,
+                    },
+                  },
+                )
+                .then((resp) => {
+                  setSuccessMessage('User registration successfull');
+                });
+            } catch (error: any) {
+              setErrorMessage(error.response.data.errorMessage);
+              console.log(error);
+            }
+            // console.log(token.email);
+            // history.push('/home');
+          });
+      } catch (error: any) {
+        setErrorMessage(error.message);
+      }
+      //history.push('/login');
     },
   });
 
@@ -102,7 +151,8 @@ export function RegisterPage() {
         >
           Register
         </Typography>
-
+        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+        {successMessage && <Alert severity="success">{successMessage}</Alert>}
         <Input
           id="email"
           name="email"

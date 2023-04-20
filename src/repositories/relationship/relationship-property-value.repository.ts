@@ -14,16 +14,15 @@ export class RelationshipPropertyValueRepository {
   }
 
   async createRelationshipPropertyValue(
-    key_id: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    key_value: any,
-  ): Promise<string | null> {
+    key_id: Nanoid,
+    key_value: unknown,
+  ): Promise<Nanoid> {
     const rel_property_key = await this.dbService.dataSource
       .getRepository(RelationshipPropertyKey)
       .findOneBy({ id: key_id });
 
-    if (rel_property_key == null) {
-      return null;
+    if (rel_property_key === null) {
+      throw new Error(`Not Exists property key with #key_id='${key_id}'`);
     }
 
     const new_property_value_instance = this.repository.create({
@@ -39,5 +38,35 @@ export class RelationshipPropertyValueRepository {
     );
 
     return relationship_property_value.id;
+  }
+
+  async setRelationshipPropertyValue(
+    key_id: Nanoid,
+    key_value: unknown,
+  ): Promise<Nanoid> {
+    const rel_property_key = await this.dbService.dataSource
+      .getRepository(RelationshipPropertyKey)
+      .findOneBy({ id: key_id });
+
+    if (rel_property_key === null) {
+      throw new Error(`Not Exists property key with #key_id='${key_id}'`);
+    }
+
+    const relationshipPropertyValue = await this.repository.findOne({
+      where: {
+        relationship_property_key_id: key_id,
+      },
+    });
+
+    if (relationshipPropertyValue) {
+      await this.repository.update(relationshipPropertyValue.id, {
+        property_value: JSON.stringify({ value: key_value }),
+        sync_layer: this.syncService.syncLayer,
+      });
+
+      return relationshipPropertyValue.id;
+    } else {
+      return this.createRelationshipPropertyValue(key_id, key_value);
+    }
   }
 }

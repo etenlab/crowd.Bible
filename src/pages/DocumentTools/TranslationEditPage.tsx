@@ -1,20 +1,57 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+
 import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
 
+import { useWordSequence } from '@/hooks/useWordSequence';
+import { useAppContext } from '@/hooks/useAppContext';
 import { TranslationEditor } from '@/components/TranslationEditor';
-
-import { mockDocument } from './TranslationPage';
+import { WordSequenceDto } from '@/dtos/word-sequence.dto';
 
 const { RangeSelectableTextArea } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
 export function TranslationEditPage() {
+  const { documentId, wordSequenceId } = useParams<{
+    documentId: Nanoid;
+    wordSequenceId?: Nanoid;
+  }>();
+  const { getOriginWordSequenceByDocumentId, getWordSequenceById } =
+    useWordSequence();
+  const {
+    states: {
+      global: { singletons },
+    },
+  } = useAppContext();
+
   const [range, setRange] = useState<{
     start: number | null;
     end: number | null;
   }>({ start: null, end: null });
+  const [originalWordSequence, setOriginalWordSequence] =
+    useState<WordSequenceDto | null>(null);
+
+  useEffect(() => {
+    if (!singletons || !documentId) {
+      return;
+    }
+
+    if (!wordSequenceId) {
+      getOriginWordSequenceByDocumentId(documentId).then(
+        setOriginalWordSequence,
+      );
+    } else {
+      getWordSequenceById(wordSequenceId).then(setOriginalWordSequence);
+    }
+  }, [
+    documentId,
+    wordSequenceId,
+    singletons,
+    getOriginWordSequenceByDocumentId,
+    getWordSequenceById,
+  ]);
 
   const handleChangeRange = ({
     start,
@@ -26,8 +63,41 @@ export function TranslationEditPage() {
     setRange({ start, end });
   };
 
-  const translationEdit =
-    range.start !== null && range.end !== null ? <TranslationEditor /> : null;
+  const translationEdit = wordSequenceId ? (
+    <TranslationEditor
+      subWordSequence={wordSequenceId}
+      documentId={documentId}
+    />
+  ) : range.start !== null && range.end !== null && originalWordSequence ? (
+    <TranslationEditor
+      subWordSequence={{
+        origin: originalWordSequence,
+        range: {
+          start: range.start,
+          end: range.end,
+        },
+      }}
+      documentId={documentId}
+    />
+  ) : null;
+
+  const documentOriginalText = originalWordSequence
+    ? originalWordSequence.wordSequence || ''
+    : '';
+
+  const originalTextComponent = wordSequenceId ? (
+    <RangeSelectableTextArea
+      text={documentOriginalText}
+      range={{ start: null, end: null }}
+      onChangeRange={() => {}}
+    />
+  ) : (
+    <RangeSelectableTextArea
+      text={documentOriginalText}
+      range={range}
+      onChangeRange={handleChangeRange}
+    />
+  );
 
   return (
     <IonContent>
@@ -46,11 +116,7 @@ export function TranslationEditPage() {
           >
             Original
           </Typography>
-          <RangeSelectableTextArea
-            text={mockDocument}
-            range={range}
-            onChangeRange={handleChangeRange}
-          />
+          {originalTextComponent}
         </Stack>
         <Stack sx={{ flexGrow: 1 }}>{translationEdit}</Stack>
       </Stack>

@@ -1,6 +1,7 @@
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import { DocumentsListPage } from '@/pages/DocumentTools/DocumentsListPage';
+import { NewDocumentAddPage } from '../pages/DocumentTools/NewDocumentAddPage';
 import { TranslationPage } from '@/pages/DocumentTools/TranslationPage';
 import { TranslationCandidatesPage } from '@/pages/DocumentTools/TranslationCandidatesPage';
 import { TranslationEditPage } from '@/pages/DocumentTools/TranslationEditPage';
@@ -19,22 +20,29 @@ import { AlignmentPage } from '@/pages/DocumentTools/AlignmentPage';
 
 export function DocumentToolsRoutes() {
   return (
-    <>
+    <Switch>
       <Route exact path="/documents-list">
         <DocumentsListPage />
       </Route>
 
-      <Route exact path="/translation">
+      <Route exact path="/add-document">
+        <NewDocumentAddPage />
+      </Route>
+
+      <Route exact path="/translation/:documentId">
         <TranslationPage />
       </Route>
-      <Route exact path="/translation-edit">
+      <Route exact path="/translation-edit/:documentId/:wordSequenceId">
+        <TranslationEditPage />
+      </Route>
+      <Route exact path="/translation-edit/:documentId">
         <TranslationEditPage />
       </Route>
       <Route exact path="/translation-candidates">
         <TranslationCandidatesPage />
       </Route>
 
-      <Route exact path="/feedback">
+      <Route exact path="/feedback/:documentId">
         <FeedbackPage />
       </Route>
       <Route exact path="/feedback/text-part">
@@ -74,6 +82,6 @@ export function DocumentToolsRoutes() {
       <Route exact path="/alignment">
         <AlignmentPage />
       </Route>
-    </>
+    </Switch>
   );
 }

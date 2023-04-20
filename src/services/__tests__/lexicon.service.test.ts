@@ -1,6 +1,7 @@
 import { getTestDataSource } from '../../data-source';
 import getSingletons from '../../singletons';
-import { Lexicon } from '../lexicon.service';
+import { BaseType, CRUDService } from '../crud-service';
+import { LexiconService } from '../lexicon.service';
 
 describe('LexiconService', () => {
   const getService = () =>
@@ -9,19 +10,59 @@ describe('LexiconService', () => {
       .then(({ lexiconService }) => lexiconService);
 
   describe('Core Types', () => {
-    it('Creates lexica', async () => {
-      const service = await getService();
+    type ServiceProvider<T extends BaseType> = (
+      s: LexiconService,
+    ) => CRUDService<T>;
+    type TestParams<T extends BaseType> = {
+      type: string;
+      data: Partial<T>;
+      provider: ServiceProvider<T>;
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const args: TestParams<any>[] = [
+      {
+        type: 'lexica',
+        data: { name: 'Greek' },
+        provider: (s: LexiconService) => s.lexica,
+      },
+      {
+        type: 'lexical categories',
+        data: { name: 'noun' },
+        provider: (s: LexiconService) => s.lexicalCategories,
+      },
+      {
+        type: 'grammatical categories',
+        data: { name: 'case' },
+        provider: (s: LexiconService) => s.grammaticalCategories,
+      },
+      {
+        type: 'grammemes',
+        data: { name: 'nominative' },
+        provider: (s: LexiconService) => s.grammemes,
+      },
+      {
+        type: 'lexemes',
+        data: { lemma: 'οἶκος' },
+        provider: (s: LexiconService) => s.lexemes,
+      },
+      {
+        type: 'word forms',
+        data: { text: 'οἶκοι' },
+        provider: (s: LexiconService) => s.wordForms,
+      },
+    ];
 
-      const d: Partial<Lexicon> = {
-        name: 'foo',
-      };
+    it.each(args)('Creates $type', async ({ data, provider }) => {
+      const lexiconService = await getService();
+      const service = provider(lexiconService);
 
-      const created = await service.lexica.create(d);
-      expect(created).toMatchObject(d);
+      const created = await service.create(data);
+      expect(created).toMatchObject(data);
 
-      const found = await service.lexica.findOneBy({ id: created.id });
+      const found = await service.findOneBy({ id: created.id });
       expect(found).toMatchObject(created);
     });
+
     it.todo('Creates lexical categories');
     it.todo('Creates grammatical categories');
     it.todo('Creates grammemes');

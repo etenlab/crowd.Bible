@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import {
   IonButton,
@@ -11,29 +11,43 @@ import {
   IonToast,
 } from '@ionic/react';
 
-import useNodeServices from '@/hooks/useNodeServices';
+import { useSingletons } from '@/hooks/useSingletons';
 
-import txtfile from '@/utils/iso-639-3.tab';
+import txtfile from '@/utils/iso-639-3-min.tab';
 import { LoadingStatus } from '../enums';
+import useSeedService from '../hooks/useSeedService';
+import { NodeTypeConst } from '../constants/graph.constant';
 
 export function AdminPage() {
-  const nodeService = useNodeServices();
+  const singletons = useSingletons();
 
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>(
     LoadingStatus.INITIAL,
   );
+  const [syncInLoadingStatus, setSyncInLoadingStatus] = useState<LoadingStatus>(
+    LoadingStatus.INITIAL,
+  );
+  const [syncOutLoadingStatus, setSyncOutLoadingStatus] =
+    useState<LoadingStatus>(LoadingStatus.INITIAL);
 
-  const [loadResult, setLoadResult] = useState('Load finished.');
+  const [loadResult, setLoadResult] = useState('');
+  const seedService = useSeedService();
+
+  const [loadingMessage, setLoadingMessage] = useState('Loading table...');
 
   const addNewData = async () => {
     setLoadingStatus(LoadingStatus.LOADING);
     try {
       const res = await fetch(txtfile);
       const data = await res.text();
-      if (!nodeService) {
+      if (!singletons) {
         return;
       }
-      const table = await nodeService.createTable('iso-639-3.tab');
+
+      setLoadingMessage('Creating table...');
+      const table = await singletons.tableService.createTable(
+        'iso-639-3-min.tab',
+      );
 
       const rows = data.split('\r\n');
       const columns = rows.shift()?.split('\t');
@@ -41,52 +55,171 @@ export function AdminPage() {
         return;
       }
 
-      const col_ids = [],
+      setLoadingMessage('Creating columns...');
+      const col_ids: string[] = [],
         row_ids = [];
       for (const col of columns) {
-        col_ids.push(await nodeService.createColumn(table, col));
+        col_ids.push(await singletons.tableService.createColumn(table, col));
       }
-      console.log(col_ids);
 
-      for (const row of rows) {
-        const row_id = await nodeService.createRow(table);
-        row_ids.push(row_id);
+      for (const [row_index, row] of rows.entries()) {
+        setLoadingMessage('Checking if the row already exists...');
         const cells = row.split('\t');
-        for (const [index, col_id] of col_ids.entries()) {
-          const cell_id = await nodeService.createCell(
+        const existing_row = await singletons.tableService.getRow(
+          table,
+          async () => {
+            const table_rows =
+              await singletons.graphFirstLayerService.getNodesByTypeAndRelatedNodes(
+                {
+                  type: NodeTypeConst.TABLE_ROW,
+                  from_node_id: table,
+                },
+              );
+            for (const table_row of table_rows) {
+              for (const [index, col_id] of col_ids.entries()) {
+                const val = await singletons.tableService.readCell(
+                  col_id,
+                  table_row.id,
+                );
+                if (cells[index] !== val) {
+                  break;
+                }
+                if (index === col_ids.length - 1) {
+                  return table_row.id;
+                }
+              }
+            }
+            return null;
+          },
+        );
+        if (existing_row) {
+          console.log('table-row: ', existing_row, ' already exists');
+          continue;
+        }
+        const row_id = await singletons.tableService.createRow(table);
+        row_ids.push(row_id);
+        for (const [col_index, col_id] of col_ids.entries()) {
+          setLoadingMessage(
+            `${row_index * col_ids.length + columns.length} of ${
+              rows.length * columns.length
+            } table cells Loaded...`,
+          );
+          await singletons.tableService.createCell(
             col_id,
             row_id,
-            cells[index],
+            cells[col_index],
           );
-          console.log(cell_id);
         }
       }
+
+      setLoadResult('Load finished.');
     } catch (err) {
       console.log(err);
-      setLoadResult('Error occured while loading.');
+      setLoadResult('Error occurred while loading.');
     } finally {
       setLoadingStatus(LoadingStatus.FINISHED);
     }
   };
 
+  const doSyncOut = async () => {
+    if (!singletons?.syncService) return;
+    setSyncOutLoadingStatus(LoadingStatus.LOADING);
+    try {
+      const syncOutRes = await singletons.syncService.syncOut();
+      console.log('syncOutRes', syncOutRes);
+      setLoadResult('Syncing Out was successful!');
+    } catch (error) {
+      console.error('Error occurred while syncing out::', error);
+      setLoadResult('Error occurred while syncing out.');
+    } finally {
+      setSyncOutLoadingStatus(LoadingStatus.FINISHED);
+    }
+  };
+
+  const doSyncIn = async () => {
+    if (!singletons?.syncService) return;
+    setSyncInLoadingStatus(LoadingStatus.LOADING);
+    try {
+      const syncInRes = await singletons.syncService.syncIn();
+      console.log('syncInRes', syncInRes);
+      setLoadResult('Syncing In was successful!');
+    } catch (error) {
+      console.error('Error occurred while syncing in::', error);
+      setLoadResult('Error occurred while syncing in.');
+    } finally {
+      setSyncInLoadingStatus(LoadingStatus.FINISHED);
+    }
+  };
+
+  const seedLandgData = useCallback(async () => {
+    if (seedService) {
+      setLoadingStatus(LoadingStatus.LOADING);
+      await seedService.seedLanguages();
+      setLoadingStatus(LoadingStatus.FINISHED);
+    }
+  }, [seedService]);
+
   return (
     <IonContent>
       <IonCard>
         <IonCardHeader>
-          <IonCardTitle>Import</IonCardTitle>
+          <IonCardTitle>Import Partial ISO-639-3 Dataset</IonCardTitle>
         </IonCardHeader>
         <IonCardContent>
           <IonButton onClick={addNewData}>Load</IonButton>
         </IonCardContent>
       </IonCard>
+      <IonCard>
+        <IonCardHeader>
+          <IonCardTitle>Seed some random data</IonCardTitle>
+        </IonCardHeader>
+        <IonCardContent>
+          {seedService && (
+            <IonButton onClick={seedLandgData}>Seed Languages</IonButton>
+          )}
+        </IonCardContent>
+      </IonCard>
+      <IonCard>
+        <IonCardHeader>
+          <IonCardTitle>Sync Data</IonCardTitle>
+        </IonCardHeader>
+        <IonCardContent>
+          <IonButton
+            className="text-transform-none"
+            onClick={doSyncIn}
+            disabled={syncInLoadingStatus === LoadingStatus.LOADING}
+          >
+            {syncInLoadingStatus === LoadingStatus.LOADING
+              ? 'Syncing In...'
+              : 'Sync In'}
+          </IonButton>
+          <IonButton
+            className="text-transform-none"
+            onClick={doSyncOut}
+            disabled={syncOutLoadingStatus === LoadingStatus.LOADING}
+          >
+            {syncOutLoadingStatus === LoadingStatus.LOADING
+              ? 'Syncing Out...'
+              : 'Sync Out'}
+          </IonButton>
+        </IonCardContent>
+      </IonCard>
       <IonLoading
         isOpen={loadingStatus === LoadingStatus.LOADING}
         onDidDismiss={() => setLoadingStatus(LoadingStatus.FINISHED)}
-        message={'Loading table...'}
+        message={loadingMessage}
+        spinner={'lines'}
       />
       <IonToast
-        isOpen={loadingStatus === LoadingStatus.FINISHED}
-        color={loadResult === 'Load finished.' ? 'success' : 'danger'}
+        isOpen={!!loadResult}
+        onDidDismiss={() => {
+          setLoadResult('');
+        }}
+        color={
+          loadResult.search(RegExp(/(error)/, 'gmi')) > -1
+            ? 'danger'
+            : 'success'
+        }
         message={loadResult}
         duration={5000}
       />
