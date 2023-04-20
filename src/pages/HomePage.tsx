@@ -63,11 +63,9 @@ const linkGroups = [
     group: 'Application Development Tools',
     linkItems: [
       { to: '/site-text-admin', label: 'Site text user interface editor' },
-      { to: '/site-text-translation', label: 'Site text translation editor' },
-      { to: RouteConst.APPLICATIONS, label: 'Applications', implemented: true },
       {
-        to: RouteConst.SITE_TEXT_LIST,
-        label: 'Site text list',
+        to: RouteConst.SITE_TEXT_TRANSLATION_APP_LIST,
+        label: 'Site text translation editor',
         implemented: true,
       },
     ],

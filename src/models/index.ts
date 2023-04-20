@@ -1,24 +1,3 @@
-import {
-  Node,
-  NodeType,
-  NodePropertyKey,
-  NodePropertyValue,
-  Relationship,
-  RelationshipType,
-  RelationshipPropertyKey,
-  RelationshipPropertyValue,
-  Discussion,
-  File,
-  Post,
-  Reaction,
-  RelationshipPostFile,
-  User,
-  ElectionType,
-  Election,
-  Candidate,
-  Vote,
-} from '@eten-lab/models';
-
 export {
   Node,
   NodeType,
@@ -38,4 +17,6 @@ export {
   Election,
   Candidate,
   Vote,
-};
+  SiteText,
+  SiteTextTranslation,
+} from '@eten-lab/models';

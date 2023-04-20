@@ -147,7 +147,7 @@ export class GraphThirdLayerService {
         RelationshipTypeConst.WORD_TO_LANG,
         {},
         NodeTypeConst.WORD,
-        { name: word },
+        { [PropertyKeyConst.NAME]: word },
         langId,
       );
 

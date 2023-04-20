@@ -263,11 +263,12 @@ export class DefinitionService {
         const { upVotes, downVotes } = await this.votingService.getVotesStats(
           candidateId,
         );
+        const content = (await this.graphFirstLayerService.getNodePropertyValue(
+          votableNode.id,
+          propertyKeyText,
+        )) as string;
         return {
-          content: this.graphSecondLayerService.getNodePropertyValue(
-            votableNode,
-            propertyKeyText,
-          ),
+          content,
           upVotes,
           downVotes,
           id: votableNode.id,
@@ -378,6 +379,38 @@ export class DefinitionService {
   }
 
   /**
+   * Finds a word for given language Id and text, then gets all definitions as a VotableItem form.
+   * @param word
+   * @param langId
+   * @returns
+   */
+  async getDefinitionVotableContentByWord(
+    word: string,
+    langId: Nanoid,
+  ): Promise<VotableContent[]> {
+    const langDto = await this.getLanguageById(langId);
+
+    const wordNodeId = await this.graphThirdLayerService.getWord(word, langId);
+
+    if (!wordNodeId || !langDto.electionWordsId) {
+      return [];
+    }
+
+    const wordVotables = await this.getWordsAsVotableItems(
+      langDto.id,
+      langDto.electionWordsId,
+    );
+
+    const wordVotable = wordVotables.find((wt) => wt.title.id === wordNodeId);
+
+    if (!wordVotable) {
+      return [];
+    }
+
+    return wordVotable.contents;
+  }
+
+  /**
    * Gets all languges. Finds or creates for each language elections of words and phrases
    *
    * @returns
@@ -406,6 +439,26 @@ export class DefinitionService {
       },
     );
     return Promise.all(langPromises);
+  }
+
+  /**
+   * Gets languge. Finds or creates language elections of words and phrases
+   *
+   * @param langId
+   * @returns
+   */
+  async getLanguageById(langId: Nanoid): Promise<LanguageWithElecitonsDto> {
+    const languages = await this.getLanguages();
+
+    const lang = languages.find((lang) => lang.id === langId);
+
+    if (!lang) {
+      throw new Error(
+        `Not Exists given language Node(#langId=${langId}) in the graph schema`,
+      );
+    }
+
+    return lang;
   }
 
   /**

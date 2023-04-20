@@ -32,7 +32,16 @@ export const SvgTranslatedPage = () => {
   const history = useHistory();
 
   if (translatedMap.translatedMapStr?.length === 0) {
-    return <Alert severity="error">No translated map data found</Alert>;
+    return (
+      <Alert
+        severity="error"
+        content={undefined}
+        rel={undefined}
+        rev={undefined}
+      >
+        No translated map data found
+      </Alert>
+    );
   }
 
   return (
