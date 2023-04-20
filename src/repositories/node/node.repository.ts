@@ -166,23 +166,23 @@ export class NodeRepository {
 
     const sqlStr = `
         select 
-          nodes.id
+          nodes.node_id
         from 
           nodes 
           inner join (
             select 
-              pk.id, 
+              pk.node_property_key_id, 
               pk.node_id, 
               count(pk.property_key) as property_keys
             from 
               node_property_keys as pk 
-              left join node_property_values as pv on pk.id = pv.node_property_key_id 
+              left join node_property_values as pv on pk.node_property_key_id = pv.node_property_key_id 
             where ${conditionStr}
             group by 
               pk.node_id 
             having 
               count(pk.property_key) = ${props.length}
-          ) as npk on nodes.id = npk.node_id 
+          ) as npk on nodes.node_id = npk.node_id 
         where 
           nodes.node_type = '${type}';
       `;
