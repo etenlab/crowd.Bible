@@ -45,11 +45,11 @@ export class SiteTextRepository {
     return this.repository.findOneBy({ id: siteTextId });
   }
 
-  async getSiteTextByRef(
+  async getSiteTextsByRef(
     app_id: Nanoid,
     word_ref: Nanoid,
-  ): Promise<SiteText | null> {
-    return this.repository.findOneBy({
+  ): Promise<SiteText[]> {
+    return this.repository.findBy({
       app_id,
       word_ref,
     });
@@ -66,6 +66,19 @@ export class SiteTextRepository {
     definitionRef: Nanoid,
   ): Promise<void> {
     await this.repository.update(id, {
+      definition_ref: definitionRef,
+    });
+
+    return;
+  }
+
+  async updateSiteTextWithNewSiteTextAndDefinition(
+    id: Nanoid,
+    wordRef: Nanoid,
+    definitionRef: Nanoid,
+  ): Promise<void> {
+    await this.repository.update(id, {
+      word_ref: wordRef,
       definition_ref: definitionRef,
     });
 

@@ -14,15 +14,20 @@ export class ElectionTypeRepository {
     return this.dbService.dataSource.getRepository(ElectionType);
   }
 
-  async createElectionType(
+  async createOrFindElectionType(
     type_name: ElectionTypeConst,
   ): Promise<ElectionTypeConst> {
-    const electionType = await this.repository.save({
-      type_name,
-      sync_layer: this.syncService.syncLayer,
-    });
+    const electionType = await this.dbService.dataSource
+      .getRepository(ElectionType)
+      .findOneBy({ type_name: type_name });
 
-    return electionType.type_name;
+    if (electionType === null) {
+      await this.dbService.dataSource
+        .getRepository(ElectionType)
+        .save({ type_name: type_name });
+    }
+
+    return type_name;
   }
 
   async listElectionTypes(): Promise<ElectionType[]> {

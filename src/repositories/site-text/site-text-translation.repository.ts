@@ -22,9 +22,9 @@ export class SiteTextTranslationRepository {
     // Checks an SiteText that already exists, and returns the SiteText if yes.
     const siteTextTranslation = await this.repository.findOneBy({
       site_text_id,
+      language_id,
       word_ref,
       definition_ref,
-      language_id,
     });
 
     if (siteTextTranslation) {
@@ -34,6 +34,7 @@ export class SiteTextTranslationRepository {
     const newSiteTextTranslation = this.repository.create({
       site_text_id,
       word_ref,
+      definition_ref,
       language_id,
       sync_layer: this.syncService.syncLayer,
     });
@@ -109,7 +110,6 @@ export class SiteTextTranslationRepository {
   async selectSiteTextTranslation(
     id: Nanoid,
     siteTextId: Nanoid,
-    langId: Nanoid,
   ): Promise<void> {
     const siteTextTranslation = await this.getSiteTextTranslationById(id);
 
@@ -117,7 +117,10 @@ export class SiteTextTranslationRepository {
       return;
     }
 
-    await this.cancelSiteTextTranslation(siteTextId, langId);
+    await this.cancelSiteTextTranslation(
+      siteTextId,
+      siteTextTranslation.language_id,
+    );
 
     this.repository.update(id, {
       is_selected: true,
