@@ -4,12 +4,15 @@ import { TableNameConst } from '@/constants/table-name.constant';
 
 import {
   Votable,
+  TranslationType,
   SiteTextDto,
   SiteTextWithTranslationCntDto,
   SiteTextWithTranslationVotablesDto,
   SiteTextTranslationVotable,
   SiteTextTranslationDto,
 } from '@/dtos/site-text.dto';
+
+import { NodeTypeConst } from '@/constants/graph.constant';
 
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { VotingService } from './voting.service';
@@ -54,40 +57,6 @@ export class SiteTextService {
     return {
       wordId,
       definitionId,
-    };
-  }
-
-  async getSelectedSiteTextTranslation(
-    siteTextId: Nanoid,
-    langId: Nanoid,
-  ): Promise<SiteTextTranslationDto | null> {
-    const translationEntity =
-      await this.siteTextTranslationRepo.getSelectedSiteTextTranslation(
-        siteTextId,
-        langId,
-      );
-
-    if (!translationEntity) {
-      return null;
-    }
-
-    const translatedSiteText =
-      (await this.graphFirstLayerService.getNodePropertyValue(
-        translationEntity.word_ref,
-        PropertyKeyConst.NAME,
-      )) as string;
-    const translatedDefinition =
-      (await this.graphFirstLayerService.getNodePropertyValue(
-        translationEntity.definition_ref,
-        PropertyKeyConst.TEXT,
-      )) as string;
-
-    return {
-      id: translationEntity.id,
-      siteTextId,
-      languageId: langId,
-      translatedSiteText,
-      translatedDefinition,
     };
   }
 
@@ -172,42 +141,37 @@ export class SiteTextService {
     };
   }
 
-  private async getSiteTextByIdAndLanguageId(
-    id: Nanoid,
-    targetLanguageId: Nanoid,
-  ): Promise<SiteTextDto | null> {
-    const siteText = await this.siteTextRepo.getSiteTextById(id);
+  async getSelectedSiteTextTranslation(
+    siteTextId: Nanoid,
+    langId: Nanoid,
+  ): Promise<SiteTextTranslationDto | null> {
+    const translationEntity =
+      await this.siteTextTranslationRepo.getSelectedSiteTextTranslation(
+        siteTextId,
+        langId,
+      );
 
-    if (!siteText) {
+    if (!translationEntity) {
       return null;
     }
 
-    const selectedSiteText = await this.getSelectedSiteTextTranslation(
-      siteText.id,
-      targetLanguageId,
-    );
-
-    const recommendedSiteText = await this.getRecommendedSiteTextTranslation(
-      siteText.id,
-      targetLanguageId,
-    );
-
-    const word = await this.graphFirstLayerService.getNodePropertyValue(
-      siteText.word_ref,
-      PropertyKeyConst.NAME,
-    );
-    const definition = await this.graphFirstLayerService.getNodePropertyValue(
-      siteText.definition_ref,
-      PropertyKeyConst.TEXT,
-    );
+    const translatedSiteText =
+      (await this.graphFirstLayerService.getNodePropertyValue(
+        translationEntity.word_ref,
+        PropertyKeyConst.NAME,
+      )) as string;
+    const translatedDefinition =
+      (await this.graphFirstLayerService.getNodePropertyValue(
+        translationEntity.definition_ref,
+        PropertyKeyConst.TEXT,
+      )) as string;
 
     return {
-      id: siteText.id,
-      languageId: siteText.original_language_id,
-      siteText: word as string,
-      definition: definition as string,
-      recommendedSiteText,
-      selectedSiteText,
+      id: translationEntity.id,
+      siteTextId,
+      languageId: langId,
+      translatedSiteText,
+      translatedDefinition,
     };
   }
 
@@ -238,6 +202,47 @@ export class SiteTextService {
     );
 
     return siteTextEntity;
+  }
+
+  async editSiteTextWordAndDescription(
+    siteTextId: Nanoid,
+    siteText: string,
+    definitionText: string,
+  ): Promise<void> {
+    const siteTextEntity = await this.siteTextRepo.getSiteTextById(siteTextId);
+
+    if (!siteTextEntity) {
+      throw new Error('Not exists site text by given Id!');
+    }
+
+    const alreadyExists = await this.getSiteTextsByRef(
+      siteTextEntity.app_id,
+      siteTextEntity.original_language_id,
+      siteText,
+    );
+
+    console.log('alreadyExists ==>', alreadyExists);
+    console.log(siteTextId);
+
+    if (alreadyExists.length > 1) {
+      throw new Error('Already Exists same site text!');
+    }
+
+    if (alreadyExists.length === 1 && alreadyExists[0].id !== siteTextId) {
+      throw new Error('Already Exists same site text!');
+    }
+
+    const { wordId, definitionId } = await this.createOrFindSiteTextOnGraph(
+      siteTextEntity.original_language_id,
+      siteText,
+      definitionText,
+    );
+
+    await this.siteTextRepo.updateSiteTextWithNewSiteTextAndDefinition(
+      siteTextId,
+      wordId,
+      definitionId,
+    );
   }
 
   async createOrFindSiteTextTranslationCandidate(
@@ -316,6 +321,75 @@ export class SiteTextService {
     }
 
     return siteTextDtos;
+  }
+
+  async getSiteTextByIdAndLanguageId(
+    id: Nanoid,
+    targetLanguageId: Nanoid,
+  ): Promise<SiteTextDto | null> {
+    const siteText = await this.siteTextRepo.getSiteTextById(id);
+
+    if (!siteText) {
+      return null;
+    }
+
+    const word = await this.graphFirstLayerService.getNodePropertyValue(
+      siteText.word_ref,
+      PropertyKeyConst.NAME,
+    );
+    const definition = await this.graphFirstLayerService.getNodePropertyValue(
+      siteText.definition_ref,
+      PropertyKeyConst.TEXT,
+    );
+
+    const selectedSiteText = await this.getSelectedSiteTextTranslation(
+      siteText.id,
+      targetLanguageId,
+    );
+
+    const recommendedSiteText = await this.getRecommendedSiteTextTranslation(
+      siteText.id,
+      targetLanguageId,
+    );
+
+    let translated: {
+      siteText: string;
+      definition: string;
+      type: TranslationType;
+    } | null = null;
+
+    if (recommendedSiteText) {
+      translated = {
+        siteText: recommendedSiteText.translatedSiteText,
+        definition: recommendedSiteText.translatedDefinition,
+        type: 'recommended',
+      };
+    }
+
+    if (selectedSiteText) {
+      translated = {
+        siteText: selectedSiteText.translatedSiteText,
+        definition: selectedSiteText.translatedDefinition,
+        type: 'selected',
+      };
+    }
+
+    if (targetLanguageId === siteText.original_language_id) {
+      translated = {
+        siteText: word as string,
+        definition: definition as string,
+        type: 'origin',
+      };
+    }
+
+    return {
+      id: siteText.id,
+      appId: siteText.app_id,
+      languageId: siteText.original_language_id,
+      siteText: word as string,
+      definition: definition as string,
+      translated: translated,
+    };
   }
 
   async getSiteTextWithTranslationCandidates(
@@ -429,6 +503,32 @@ export class SiteTextService {
     };
   }
 
+  async getSiteTextById(id: Nanoid): Promise<SiteTextDto | null> {
+    const siteText = await this.siteTextRepo.getSiteTextById(id);
+
+    if (!siteText) {
+      return null;
+    }
+
+    const word = await this.graphFirstLayerService.getNodePropertyValue(
+      siteText.word_ref,
+      PropertyKeyConst.NAME,
+    );
+    const definition = await this.graphFirstLayerService.getNodePropertyValue(
+      siteText.definition_ref,
+      PropertyKeyConst.TEXT,
+    );
+
+    return {
+      id: siteText.id,
+      appId: siteText.app_id,
+      languageId: siteText.original_language_id,
+      siteText: word as string,
+      definition: definition as string,
+      translated: null,
+    };
+  }
+
   async changeSiteTextDefinitionRef(
     siteTextId: Nanoid,
     langId: Nanoid,
@@ -467,12 +567,10 @@ export class SiteTextService {
   async selectSiteTextTranslationCandidate(
     siteTextTranslationId: Nanoid,
     siteTextId: Nanoid,
-    langId: Nanoid,
   ): Promise<void> {
     return this.siteTextTranslationRepo.selectSiteTextTranslation(
       siteTextTranslationId,
       siteTextId,
-      langId,
     );
   }
 
@@ -484,5 +582,28 @@ export class SiteTextService {
       siteTextId,
       langId,
     );
+  }
+
+  async getSiteTextsByRef(
+    appId: Nanoid,
+    languageId: Nanoid,
+    siteText: string,
+  ): Promise<SiteText[]> {
+    const existingWordNode = await this.graphFirstLayerService.getNodeByProp(
+      NodeTypeConst.WORD,
+      {
+        key: PropertyKeyConst.NAME,
+        value: siteText,
+      },
+      {
+        to_node_id: languageId,
+      },
+    );
+
+    if (!existingWordNode) {
+      return [];
+    }
+
+    return this.siteTextRepo.getSiteTextsByRef(appId, existingWordNode.id);
   }
 }
