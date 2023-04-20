@@ -12,13 +12,19 @@ export interface SiteTextTranslationDto {
   translatedDefinition: string;
 }
 
+export type TranslationType = 'origin' | 'selected' | 'recommended';
+
 export interface SiteTextDto {
   id: Nanoid;
+  appId: Nanoid;
   languageId: Nanoid;
   siteText: string;
   definition: string;
-  recommendedSiteText: SiteTextTranslationDto | null;
-  selectedSiteText: SiteTextTranslationDto | null;
+  translated: {
+    siteText: string;
+    definition: string;
+    type: TranslationType;
+  } | null;
 }
 
 export interface SiteTextWithTranslationCntDto extends SiteTextDto {

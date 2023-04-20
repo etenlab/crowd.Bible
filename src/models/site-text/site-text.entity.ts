@@ -6,7 +6,7 @@ import { Syncable } from '../Syncable';
 import { TableNameConst } from '@/constants/table-name.constant';
 
 @Entity({ name: TableNameConst.SITE_TEXT })
-@Index(['app_id', 'site_text_ref', 'definition_ref'], { unique: true })
+@Index(['app_id', 'word_ref', 'definition_ref'], { unique: true })
 export class SiteText extends Syncable {
   @PrimaryColumn('uuid', { type: 'varchar', length: 21, unique: true })
   id!: string;

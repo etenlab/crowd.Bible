@@ -8,6 +8,7 @@ export enum RouteConst {
   SITE_TEXT_TRANSLATION_EDITOR = '/site-text-translation-editor',
   STIE_TEXT_TRANSLATION = '/site-text-translation',
   SITE_TEXT_TRANSLATION_APP_LIST = '/site-text-translation-app-list',
+  SITE_TEXT_CHANGE_TRANSLATION = '/site-text-change-translation',
 
   LANGUAGE_PROFICIENCY = '/language-proficiency',
   SETTINGS = '/settings',

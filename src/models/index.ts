@@ -13,6 +13,9 @@ import { Election } from './voting/election.entity';
 import { Candidate } from './voting/candidate.entity';
 import { Vote } from './voting/vote.entity';
 
+import { SiteText } from './site-text/site-text.entity';
+import { SiteTextTranslation } from './site-text/site-text-translation.entity';
+
 import { Discussion } from './discussion/discussion.entity';
 import { File } from './file/file.entity';
 import { Post } from './discussion/post.entity';
@@ -39,4 +42,6 @@ export {
   Election,
   Candidate,
   Vote,
+  SiteText,
+  SiteTextTranslation,
 };
