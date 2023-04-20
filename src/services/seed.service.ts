@@ -7,6 +7,7 @@ import { type RelationshipPropertyValueRepository } from '@/repositories/relatio
 import { type RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
 import { type RelationshipRepository } from '@/repositories/relationship/relationship.repository';
 import { nanoid } from 'nanoid';
+import { SeedVersificationService } from './seed-versification.service';
 
 const DATA_SEEDED = 'DATA_SEEDED';
 export class SeedService {
@@ -18,14 +19,14 @@ export class SeedService {
   }
 
   constructor(
-    private readonly nodeRepository: NodeRepository,
-    private readonly nodeTypeRepository: NodeTypeRepository,
-    private readonly nodePropertyKeyRepository: NodePropertyKeyRepository,
-    private readonly nodePropertyValueRepository: NodePropertyValueRepository,
-    private readonly relationshipRepository: RelationshipRepository,
-    private readonly relationshipTypeRepository: RelationshipTypeRepository,
-    private readonly relationshipPropertyKeyRepository: RelationshipPropertyKeyRepository,
-    private readonly relationshipPropertyValueRepository: RelationshipPropertyValueRepository,
+    readonly nodeRepository: NodeRepository,
+    readonly nodeTypeRepository: NodeTypeRepository,
+    readonly nodePropertyKeyRepository: NodePropertyKeyRepository,
+    readonly nodePropertyValueRepository: NodePropertyValueRepository,
+    readonly relationshipRepository: RelationshipRepository,
+    readonly relationshipTypeRepository: RelationshipTypeRepository,
+    readonly relationshipPropertyKeyRepository: RelationshipPropertyKeyRepository,
+    readonly relationshipPropertyValueRepository: RelationshipPropertyValueRepository,
   ) {
     this.init();
   }
@@ -34,7 +35,8 @@ export class SeedService {
     try {
       if (this.dataSeeded) return;
       console.log('*** data seeding started ***');
-      await Promise.allSettled([this.seedLanguages()]);
+      await this.seedLanguages();
+      await new SeedVersificationService(this).init();
       console.log('*** data seeding completed ***');
       this.dataSeeded = true;
     } catch (error) {
@@ -106,23 +108,24 @@ export class SeedService {
 
       for (const lang of langList) {
         const langNode = await this.nodeRepository.createNode('language');
-        for (const [key, value] of Object.entries({ name: lang })) {
-          const property_key_id =
-            await this.nodePropertyKeyRepository.getNodePropertyKey(
-              langNode.id,
-              key,
-            );
-          if (property_key_id) {
-            await this.nodePropertyValueRepository.setNodePropertyValue(
-              property_key_id,
-              value,
-            );
-          }
-        }
+        await this.insertPropsToNode(langNode.id, { name: lang });
       }
     } catch (error) {
       console.error('failed to seed languages::', error);
       throw new Error('failed to seed languages');
+    }
+  }
+
+  async insertPropsToNode(nodeId: string, props: Record<string, unknown>) {
+    for (const [key, value] of Object.entries(props)) {
+      const property_key_id =
+        await this.nodePropertyKeyRepository.getNodePropertyKey(nodeId, key);
+      if (property_key_id) {
+        await this.nodePropertyValueRepository.setNodePropertyValue(
+          property_key_id,
+          value,
+        );
+      }
     }
   }
 }

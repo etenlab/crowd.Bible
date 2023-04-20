@@ -23,21 +23,12 @@ import './styles.css';
 
 import { ThemeProvider } from '@eten-lab/ui-kit';
 import { AppContextProvider } from './AppContext';
-import useSeedService from './hooks/useSeedService';
-import { useEffect } from 'react';
 import { PageLayout } from '@/components/PageLayout';
 import { AppRoutes } from '@/routes/AppRoutes';
 
 setupIonicReact();
 
 export default function App() {
-  const seedService = useSeedService();
-  useEffect(() => {
-    if (seedService) {
-      seedService.init();
-    }
-  }, [seedService]);
-
   return (
     <IonApp>
       <AppContextProvider>

@@ -6,6 +6,7 @@ import {
   OneToOne,
   JoinColumn,
   BeforeInsert,
+  OneToMany,
 } from 'typeorm';
 import { nanoid } from 'nanoid';
 import { Relationship } from './relationship.entity';
@@ -45,4 +46,10 @@ export class RelationshipPropertyKey extends Syncable {
     (relationshipPropertyValue) => relationshipPropertyValue.propertyKey,
   )
   propertyValue!: RelationshipPropertyValue;
+
+  @OneToMany(
+    () => RelationshipPropertyValue,
+    (relationshipPropertyValue) => relationshipPropertyValue.propertyKey,
+  )
+  propertyValues!: RelationshipPropertyValue[];
 }

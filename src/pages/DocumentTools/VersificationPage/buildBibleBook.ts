@@ -1,69 +1,73 @@
-import { Bible } from './types';
+import { Node } from '@/models/node/node.entity';
 
-export function buildBibleBook(bible: Bible, bookId: string) {
-  const bibleName =
-    bible.propertyKeys.find(({ property_key }) => property_key === 'name')
-      ?.values[0]?.property_value.value || 'Bible';
-  const { toNode: book } = bible.nestedRelationships.find(
-    ({ toNode: { node_id } }) => node_id.toString() === bookId,
+export function buildBibleBook(bible: Node, bookId: string) {
+  const bibleNamePropertyValue = bible.propertyKeys.find(
+    ({ property_key }) => property_key === 'name',
+  )?.propertyValues[0]?.property_value;
+  const bibleName = bibleNamePropertyValue
+    ? JSON.parse(bibleNamePropertyValue).value
+    : '';
+  const { toNode: book } = (bible.toNodeRelationships || []).find(
+    ({ toNode: { id } }) => id === bookId,
   )!;
-  const bookName =
-    book.propertyKeys.find(({ property_key }) => property_key === 'name')
-      ?.values[0]?.property_value.value || 'Book';
-  const chapters = book.nestedRelationships.map(
-    ({ toNode: { node_id, propertyKeys, nestedRelationships } }) => {
-      const { node_property_key_id, values } = propertyKeys.find(
+  const bookNamePropertyValue = book.propertyKeys.find(
+    ({ property_key }) => property_key === 'name',
+  )?.propertyValues[0]?.property_value;
+  const bookName = bookNamePropertyValue
+    ? JSON.parse(bookNamePropertyValue).value
+    : '';
+  const chapters = (book.toNodeRelationships || []).map(
+    ({ toNode: { id, propertyKeys, toNodeRelationships = [] } }) => {
+      const { id: pkId, propertyValues } = propertyKeys.find(
         ({ property_key }) => property_key === 'chapter-identifier',
       )!;
 
       return {
-        id: node_id,
+        id: id,
         identifier: {
-          id: node_property_key_id,
-          values: values.map(
-            ({ upVotes, downVotes, posts, property_value: { value } }) => ({
-              value,
-              numUpVotes: upVotes,
-              numDownVotes: downVotes,
-              numPosts: posts.length,
-            }),
-          ),
+          id: pkId,
+          values: propertyValues.map(({ property_value }) => ({
+            value: property_value
+              ? (JSON.parse(property_value).value as string)
+              : '',
+            numUpVotes: 0,
+            numDownVotes: 0,
+            numPosts: 0,
+          })),
         },
-        verses: nestedRelationships.map(
-          ({ toNode: { node_id, propertyKeys, nestedRelationships } }) => {
-            const { node_property_key_id, values } = propertyKeys.find(
+        verses: toNodeRelationships.map(
+          ({ toNode: { id, propertyKeys, toNodeRelationships = [] } }) => {
+            const { id: pkId, propertyValues } = propertyKeys.find(
               ({ property_key }) => property_key === 'verse-identifier',
             )!;
-            const text = nestedRelationships
+            const text = toNodeRelationships
               .map(({ toNode: wordSequence }) =>
-                wordSequence.nestedRelationships
-                  .map(
-                    ({ toNode: word }) =>
-                      word.propertyKeys.find(
-                        ({ property_key }) => property_key === 'word_name',
-                      )!.values[0].property_value.value,
-                  )
+                (wordSequence.toNodeRelationships || [])
+                  .map(({ toNode: word }) => {
+                    const propertyValue = word.propertyKeys.find(
+                      ({ property_key }) => property_key === 'word_name',
+                    )!.propertyValues[0].property_value;
+
+                    return propertyValue
+                      ? (JSON.parse(propertyValue).value as string)
+                      : '';
+                  })
                   .join(' '),
               )
               .join(' ');
 
             return {
-              id: node_id,
+              id: id,
               identifier: {
-                id: node_property_key_id,
-                values: values.map(
-                  ({
-                    upVotes,
-                    downVotes,
-                    posts,
-                    property_value: { value },
-                  }) => ({
-                    value,
-                    numUpVotes: upVotes,
-                    numDownVotes: downVotes,
-                    numPosts: posts.length,
-                  }),
-                ),
+                id: pkId,
+                values: propertyValues.map(({ property_value }) => ({
+                  value: property_value
+                    ? (JSON.parse(property_value).value as string)
+                    : '',
+                  numUpVotes: 0,
+                  numDownVotes: 0,
+                  numPosts: 0,
+                })),
               },
               text,
             };
@@ -74,9 +78,9 @@ export function buildBibleBook(bible: Bible, bookId: string) {
   );
 
   return {
-    bibleId: bible.node_id,
+    bibleId: bible.id,
     bibleName,
-    bookId: book.node_id,
+    bookId: book.id,
     bookName,
     chapters,
   };

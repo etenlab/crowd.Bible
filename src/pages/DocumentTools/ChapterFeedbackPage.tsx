@@ -10,18 +10,18 @@ const { TitleWithIcon, VerticalRadioList } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
 export const mockChapters = [
-  { value: 1, label: 'Chapter 1: Name of the Chapter' },
-  { value: 2, label: 'Chapter 2: Name of the Chapter' },
-  { value: 3, label: 'Chapter 3: Name of the Chapter' },
-  { value: 4, label: 'Chapter 4: Name of the Chapter' },
-  { value: 5, label: 'Chapter 5: Name of the Chapter' },
-  { value: 6, label: 'Chapter 6: Name of the Chapter' },
-  { value: 7, label: 'Chapter 7: Name of the Chapter' },
-  { value: 8, label: 'Chapter 8: Name of the Chapter' },
-  { value: 9, label: 'Chapter 9: Name of the Chapter' },
-  { value: 10, label: 'Chapter 10: Name of the Chapter' },
-  { value: 11, label: 'Chapter 11: Name of the Chapter' },
-  { value: 12, label: 'Chapter 12: Name of the Chapter' },
+  { value: '1', label: 'Chapter 1: Name of the Chapter' },
+  { value: '2', label: 'Chapter 2: Name of the Chapter' },
+  { value: '3', label: 'Chapter 3: Name of the Chapter' },
+  { value: '4', label: 'Chapter 4: Name of the Chapter' },
+  { value: '5', label: 'Chapter 5: Name of the Chapter' },
+  { value: '6', label: 'Chapter 6: Name of the Chapter' },
+  { value: '7', label: 'Chapter 7: Name of the Chapter' },
+  { value: '8', label: 'Chapter 8: Name of the Chapter' },
+  { value: '9', label: 'Chapter 9: Name of the Chapter' },
+  { value: '10', label: 'Chapter 10: Name of the Chapter' },
+  { value: '11', label: 'Chapter 11: Name of the Chapter' },
+  { value: '12', label: 'Chapter 12: Name of the Chapter' },
 ];
 
 export function ChapterFeedbackPage() {

@@ -11,7 +11,7 @@ const { TitleWithIcon, VerticalRadioList, ButtonList } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
 interface ChapterListProps {
-  onClickChapter: (chapter: number) => void;
+  onClickChapter: (chapter: string) => void;
   onClickCancel: () => void;
 }
 
@@ -132,7 +132,7 @@ function VerseFeedback({ onClickCancel, onClickBack }: VerseFeedbackProps) {
 
 export function VerseFeedbackPage() {
   const history = useHistory();
-  const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
 
   const handleClickCancel = () => {
     history.push('/feedback');
@@ -142,7 +142,7 @@ export function VerseFeedbackPage() {
     setSelectedChapter(null);
   };
 
-  const handleClickChapter = (chapter: number) => {
+  const handleClickChapter = (chapter: string) => {
     setSelectedChapter(chapter);
   };
 

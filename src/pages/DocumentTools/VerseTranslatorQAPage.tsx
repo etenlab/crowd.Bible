@@ -72,7 +72,7 @@ function VerseTranslatorQA({ onClickCancel, onClickBack }: VerseFeedbackProps) {
 
 export function VerseTranslatorQAPage() {
   const history = useHistory();
-  const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
 
   const handleClickCancel = () => {
     history.push('/translator-qa');
@@ -82,7 +82,7 @@ export function VerseTranslatorQAPage() {
     setSelectedChapter(null);
   };
 
-  const handleClickChapter = (chapter: number) => {
+  const handleClickChapter = (chapter: string) => {
     setSelectedChapter(chapter);
   };
 

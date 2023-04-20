@@ -10,7 +10,7 @@ export class NodePropertyKeyRepository {
     private readonly syncService: SyncService,
   ) {}
 
-  private get repository() {
+  get repository() {
     return this.dbService.dataSource.getRepository(NodePropertyKey);
   }
 

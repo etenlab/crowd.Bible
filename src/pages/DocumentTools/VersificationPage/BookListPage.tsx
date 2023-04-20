@@ -37,43 +37,46 @@ export function BookListPage() {
             />
           }
         >
-          {bibles.map(
-            ({ node_id: bibleId, propertyKeys, nestedRelationships }) => {
-              const bibleName =
-                propertyKeys.find(({ property_key }) => property_key === 'name')
-                  ?.values[0]?.property_value.value || 'Bible';
+          {bibles.map(({ id: bibleId, propertyKeys, toNodeRelationships }) => {
+            const propertyValue = propertyKeys.find(
+              ({ property_key }) => property_key === 'name',
+            )?.propertyValues[0]?.property_value;
+            const bibleName = propertyValue
+              ? JSON.parse(propertyValue).value
+              : '';
 
-              return (
-                <Fragment key={bibleId}>
-                  {nestedRelationships.map(
-                    ({ toNode: { node_id: bookId, propertyKeys } }) => {
-                      const bookName =
-                        propertyKeys.find(
-                          ({ property_key }) => property_key === 'name',
-                        )?.values[0]?.property_value.value || 'Book';
+            return (
+              <Fragment key={bibleId}>
+                {(toNodeRelationships || []).map(
+                  ({ toNode: { id: bookId, propertyKeys } }, index) => {
+                    const propertyValue = propertyKeys.find(
+                      ({ property_key }) => property_key === 'name',
+                    )?.propertyValues[0]?.property_value;
+                    const bookName = propertyValue
+                      ? JSON.parse(propertyValue).value
+                      : '';
 
-                      return (
-                        <div
-                          key={bookId}
-                          style={{
-                            cursor: 'pointer',
-                            padding: '14px 0',
-                          }}
-                          onClick={() =>
-                            history.push(
-                              `/versification/bible/${bibleId}/book/${bookId}`,
-                            )
-                          }
-                        >
-                          #{bookId} {bibleName}: {bookName}
-                        </div>
-                      );
-                    },
-                  )}
-                </Fragment>
-              );
-            },
-          )}
+                    return (
+                      <div
+                        key={bookId}
+                        style={{
+                          cursor: 'pointer',
+                          padding: '14px 0',
+                        }}
+                        onClick={() =>
+                          history.push(
+                            `/versification/bible/${bibleId}/book/${bookId}`,
+                          )
+                        }
+                      >
+                        #{index + 1} {bibleName}: {bookName}
+                      </div>
+                    );
+                  },
+                )}
+              </Fragment>
+            );
+          })}
         </Stack>
       </Box>
     </Layout>

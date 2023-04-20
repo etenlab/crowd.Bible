@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom';
 
 import { VersificationUI, MuiMaterial } from '@eten-lab/ui-kit';
 
-import { Bible } from './types';
+import { Node } from '@/models/node/node.entity';
+
 import { Layout } from './Layout';
 import { buildBibleBook } from './buildBibleBook';
 import { useVersificationContext } from '.';
@@ -14,12 +15,12 @@ const { Box } = MuiMaterial;
 export function BookPage() {
   const { bibleId, bookId } = useParams<{ bibleId: string; bookId: string }>();
   const { bibles } = useVersificationContext();
-  const bible = bibles.find(({ node_id }) => node_id.toString() === bibleId)!;
+  const bible = bibles.find(({ id }) => id === bibleId)!;
 
   return !bible ? null : <Content bible={bible} bookId={bookId} />;
 }
 
-function Content({ bible, bookId }: { bible: Bible; bookId: string }) {
+function Content({ bible, bookId }: { bible: Node; bookId: string }) {
   const { onIdentifierAdd } = useVersificationContext();
   const [filteredChapterId, setFilteredChapterId] = useState<null | string>(
     null,
@@ -27,7 +28,7 @@ function Content({ bible, bookId }: { bible: Bible; bookId: string }) {
   const [filteredVerseId, setFilteredVerseId] = useState<null | string>(null);
   const bibleBook = buildBibleBook(bible, bookId);
   const filteredChapter = filteredChapterId
-    ? bibleBook.chapters.find(({ id }) => id.toString() === filteredChapterId)
+    ? bibleBook.chapters.find(({ id }) => (id || '') === filteredChapterId)
     : null;
   const filteredChapters = !filteredChapter
     ? bibleBook.chapters
@@ -36,13 +37,13 @@ function Content({ bible, bookId }: { bible: Bible; bookId: string }) {
         identifier,
         verses: !filteredVerseId
           ? verses
-          : verses.filter(({ id }) => id.toString() === filteredVerseId),
+          : verses.filter(({ id }) => (id || '') === filteredVerseId),
       }));
 
   return (
     <Layout
       backRoute="/versification"
-      breadcrumb={`#${bibleBook.bookId} ${bibleBook.bibleName}: ${bibleBook.bookName}`}
+      breadcrumb={`${bibleBook.bibleName}: ${bibleBook.bookName}`}
       headerContent={
         <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap={2} mt={2}>
           <NodeFilter
