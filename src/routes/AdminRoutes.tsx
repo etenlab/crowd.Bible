@@ -9,7 +9,7 @@ import { UserDetailsPage } from '@/pages/Admin/UserDetailsPage';
 export function AdminRoutes() {
   return (
     <Switch>
-      <Route exact path="/admin">
+      <Route exact path="/admin/home">
         <HomePage />
       </Route>
       <Route exact path="/admin/users">

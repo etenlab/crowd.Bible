@@ -48,9 +48,9 @@ export function DocumentList() {
   };
 
   const handleClickDocument = (documentId: Nanoid) => {
-    if (user?.role === 'translator') {
+    if (user?.roles.includes('translator')) {
       history.push(`/translation/${documentId}`);
-    } else if (user?.role === 'reader') {
+    } else if (user?.roles.includes('reader')) {
       history.push(`/feedback/${documentId}`);
     }
   };

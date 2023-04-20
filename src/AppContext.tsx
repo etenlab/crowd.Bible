@@ -26,7 +26,7 @@ export interface ContextType {
   };
   actions: {
     setUser: (user: IUser) => void;
-    setRole: (role: RoleType) => void;
+    setRole: (roles: RoleType) => void;
     setPrefersColorScheme: (themeMode: PrefersColorSchemeType) => void;
     setConnectivity: (connectivity: boolean) => void;
     logout: () => void;

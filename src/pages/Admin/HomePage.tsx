@@ -1,12 +1,5 @@
 import { IonContent, IonItem } from '@ionic/react';
-import {
-  Alert,
-  Button,
-  Input,
-  MuiMaterial,
-  PasswordInput,
-  Typography,
-} from '@eten-lab/ui-kit';
+import { MuiMaterial, Typography } from '@eten-lab/ui-kit';
 
 const { Box } = MuiMaterial;
 
@@ -31,11 +24,11 @@ export function HomePage() {
         >
           Admin
         </Typography>
-        <IonItem>Users</IonItem>
-        <IonItem>Organizations</IonItem>
-        <IonItem>Applications</IonItem>
+        <IonItem routerLink="/admin/users">Users</IonItem>
+        <IonItem routerLink="/admin/organizations">Organizations</IonItem>
+        <IonItem routerLink="/admin/applications">Applications</IonItem>
 
-        <IonItem>Import</IonItem>
+        <IonItem routerLink="/admin/import">Import</IonItem>
         <IonItem>Seed some random data</IonItem>
         <IonItem>Sync data</IonItem>
       </Box>

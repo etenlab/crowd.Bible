@@ -74,13 +74,13 @@ export function LoginPage() {
             setUserToken(response.data.access_token);
             localStorage.setItem('userToken', response.data.access_token);
             const token: any = decodeToken(response.data.access_token);
-            console.log(token.email);
+            console.log(token);
             setUser({
-              userId: 1,
+              userId: token.sub,
               userEmail: token.email,
-              role: 'translator',
+              roles: [''],
             });
-            history.push('/profile');
+            // history.push('/profile');
           })
           .catch((error) => {
             setErrorMessage(error.response.data.error_description);

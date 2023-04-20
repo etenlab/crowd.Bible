@@ -1,18 +1,26 @@
-import { IonContent, IonItem } from '@ionic/react';
-import {
-  Alert,
-  Button,
-  Input,
-  MuiMaterial,
-  PasswordInput,
-  Typography,
-} from '@eten-lab/ui-kit';
+import { IonContent } from '@ionic/react';
+import { useHistory } from 'react-router-dom';
+import { MuiMaterial, CrowdBibleUI, Typography } from '@eten-lab/ui-kit';
 
 const { Box } = MuiMaterial;
+const { HeadBox } = CrowdBibleUI;
 
 export function UsersPage() {
+  const history = useHistory();
+
+  const handleClickBackBtn = () => {
+    history.goBack();
+  };
+
+  const handleSearch = () => {};
+
   return (
     <IonContent>
+      <HeadBox
+        back={{ action: handleClickBackBtn }}
+        title="Users"
+        search={{ onChange: handleSearch, placeHolder: 'Search', value: '' }}
+      />
       <Box
         component="form"
         sx={{

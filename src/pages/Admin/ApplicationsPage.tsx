@@ -1,18 +1,21 @@
 import { IonContent, IonItem } from '@ionic/react';
-import {
-  Alert,
-  Button,
-  Input,
-  MuiMaterial,
-  PasswordInput,
-  Typography,
-} from '@eten-lab/ui-kit';
+import { useHistory } from 'react-router-dom';
+import { MuiMaterial, CrowdBibleUI, Typography } from '@eten-lab/ui-kit';
+// import { sayHello } from 'keycloak-sso';
 
 const { Box } = MuiMaterial;
+const { HeadBox } = CrowdBibleUI;
 
 export function ApplicationsPage() {
+  const history = useHistory();
+
+  const handleClickBackBtn = () => {
+    history.goBack();
+  };
+
   return (
     <IonContent>
+      <HeadBox back={{ action: handleClickBackBtn }} title="Applications" />
       <Box
         component="form"
         sx={{
