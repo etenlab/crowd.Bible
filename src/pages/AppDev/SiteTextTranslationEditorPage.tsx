@@ -1,6 +1,7 @@
-import { ChangeEventHandler, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { ChangeEventHandler, useState, useCallback, useEffect } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
+import { useDebounce } from 'use-debounce';
 
 import {
   CrowdBibleUI,
@@ -8,30 +9,44 @@ import {
   TextArea,
   Button,
   MuiMaterial,
-  Autocomplete,
 } from '@eten-lab/ui-kit';
 
-import { LanguageDto } from '@/dtos/language.dto';
+import { useAppContext } from '@/hooks/useAppContext';
+import { useSiteText } from '@/hooks/useSiteText';
+
+import { SiteTextDto } from '@/dtos/site-text.dto';
+
+import { SelectableDefinitionCandidateList } from '@/components/SelectableDefinitionCandidateList';
 
 const { HeadBox } = CrowdBibleUI;
 const { Stack, Typography } = MuiMaterial;
 
-const MockLanguageList = [
-  { id: '1', name: 'English' },
-  { id: '2', name: 'Spanish' },
-  { id: '3', name: 'Danish' },
-];
-
 export function SiteTextTranslationEditorPage() {
   const history = useHistory();
+  const { siteTextId } = useParams<{ siteTextId: Nanoid }>();
+  const {
+    states: {
+      global: { singletons },
+      documentTools: { targetLanguage },
+    },
+    actions: { alertFeedback },
+  } = useAppContext();
+  const { createOrFindSiteTextTranslationCandidate, getTranslatedSiteText } =
+    useSiteText();
+
+  const [translatedSiteText, setTranslatedSiteText] =
+    useState<SiteTextDto | null>(null);
 
   const [word, setWord] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [target, setTarget] = useState<LanguageDto | null>(null);
+  const [bouncedWord] = useDebounce(word, 1000);
 
-  const handleClickBackBtn = () => {
-    history.goBack();
-  };
+  const [description, setDescription] = useState<string>('');
+
+  useEffect(() => {
+    if (singletons && siteTextId) {
+      getTranslatedSiteText(siteTextId).then(setTranslatedSiteText);
+    }
+  }, [singletons, getTranslatedSiteText, siteTextId]);
 
   const handleChangeWord: ChangeEventHandler<HTMLInputElement> = (event) => {
     setWord(event.target.value);
@@ -43,43 +58,57 @@ export function SiteTextTranslationEditorPage() {
     setDescription(event.target.value);
   };
 
-  const handleClickSave = () => {
+  const handleChangeDescriptionForCandidateList = useCallback(
+    (description: string) => {
+      setDescription(description);
+    },
+    [],
+  );
+
+  const handleClickSave = async () => {
+    if (siteTextId) {
+      // actuall we need language id for app, but for now, we don't have so temperilly used sourceLangauge
+      await createOrFindSiteTextTranslationCandidate(
+        siteTextId,
+        word,
+        description,
+      );
+      history.goBack();
+    } else {
+      alertFeedback('error', 'Not exists siteTextId');
+    }
+  };
+
+  const handleClickBackBtn = () => {
     history.goBack();
   };
 
-  const handleClickCancel = () => {
-    history.goBack();
-  };
+  if (!translatedSiteText) {
+    return null;
+  }
 
-  const handleSetTargetLanguage = (
-    _event: React.SyntheticEvent<Element, Event>,
-    value: LanguageDto | null,
-  ) => {
-    setTarget(value);
-  };
+  const selectableCandidateListCom = targetLanguage ? (
+    <SelectableDefinitionCandidateList
+      word={bouncedWord}
+      languageId={targetLanguage.id}
+      description={description}
+      onChangeDescription={handleChangeDescriptionForCandidateList}
+    />
+  ) : null;
 
   return (
     <IonContent>
       <HeadBox
         back={{ action: handleClickBackBtn }}
         title="Add New Translation"
-        extraNode={<Input value="Ipsum" disabled />}
+        extraNode={
+          <Input value={translatedSiteText.translated?.siteText} disabled />
+        }
       />
       <Stack gap="12px" sx={{ padding: '20px' }}>
         <Typography variant="body1" color="text.dark">
-          Ipsum is placeholder text commonly used in the graphic, print, and
-          publishing industries for previewing layouts.
+          {translatedSiteText.translated?.definition}
         </Typography>
-
-        <Autocomplete
-          label="Choose Source Language"
-          options={MockLanguageList}
-          value={target}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          getOptionLabel={(option) => option.name}
-          onChange={handleSetTargetLanguage}
-          withLegend={false}
-        />
 
         <Input
           label="Translation"
@@ -99,10 +128,12 @@ export function SiteTextTranslationEditorPage() {
         <Button variant="contained" onClick={handleClickSave}>
           Save
         </Button>
-        <Button variant="text" onClick={handleClickCancel}>
+        <Button variant="text" onClick={handleClickBackBtn}>
           Cancel
         </Button>
       </Stack>
+
+      {selectableCandidateListCom}
     </IonContent>
   );
 }
