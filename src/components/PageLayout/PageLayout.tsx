@@ -90,6 +90,9 @@ export function PageLayout({ children }: PageLayoutProps) {
               onClose={closeFeedback}
               severity={snack.severity}
               sx={{ width: '100%' }}
+              content={undefined}
+              rel={undefined}
+              rev={undefined}
             >
               {snack.message}
             </Alert>

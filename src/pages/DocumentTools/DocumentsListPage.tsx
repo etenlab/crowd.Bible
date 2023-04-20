@@ -74,6 +74,16 @@ export function DocumentsListPage() {
     return documents.map(({ id, name }) => ({
       value: id,
       label: name,
+      startIcon: (
+        <BiFile
+          style={{
+            borderRadius: '7px',
+            padding: '7px',
+            fontSize: '32px',
+            background: '#E3EAF3',
+          }}
+        />
+      ),
     }));
   }, [documents]);
 
@@ -98,16 +108,6 @@ export function DocumentsListPage() {
         }}
         withUnderline={true}
         items={items}
-        startIcon={
-          <BiFile
-            style={{
-              borderRadius: '7px',
-              padding: '7px',
-              fontSize: '32px',
-              background: '#E3EAF3',
-            }}
-          />
-        }
         onClick={handleClickDocument}
         toolBtnGroup={
           <Link to="/add-document">

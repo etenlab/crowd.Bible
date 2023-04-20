@@ -37,7 +37,16 @@ export function LinkGroup({ group, linkItems }: LinkGroupType) {
       value: to,
       label,
       color: implemented ? getColor('dark') : getColor('dark'),
-      isEndIcon: connectivity === false && onlineOnly === true ? true : false,
+      endIcon:
+        connectivity === false && onlineOnly === true ? (
+          <Chip
+            label="Online only"
+            variant="outlined"
+            color="error"
+            size="small"
+            sx={{ marginLeft: 2 }}
+          />
+        ) : null,
       disabled: connectivity === false && onlineOnly === true ? true : false,
     }));
   }, [linkItems, getColor, connectivity]);
@@ -51,15 +60,6 @@ export function LinkGroup({ group, linkItems }: LinkGroupType) {
       label={group}
       withUnderline
       items={items}
-      endIcon={
-        <Chip
-          label="Online only"
-          variant="outlined"
-          color="error"
-          size="small"
-          sx={{ marginLeft: 2 }}
-        />
-      }
       onClick={handleClickItem}
     />
   );
