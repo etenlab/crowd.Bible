@@ -115,7 +115,7 @@ export type DescriptionItem = {
   id: string;
   title?: string;
   description?: string;
-  vote: {
+  vote?: {
     upVotes: number;
     downVotes: number;
     candidateId: string;
@@ -124,37 +124,78 @@ export type DescriptionItem = {
 
 type DescriptionProps = {
   content: DescriptionItem;
-  checked?: boolean;
-  onSelectRadio?: (id: string) => void;
-  onClickDiscussionBtn(): void;
-  onChangeVote(candidateId: Nanoid, voteValue: boolean): void;
+  radioBtn?: {
+    checkedId: Nanoid | null;
+    onSelectRadio: (descriptionId: string) => void;
+  };
+  discussionBtn?: {
+    onClickDiscussionBtn(descriptionId: Nanoid): void;
+  };
+  voteBtn?: {
+    onChangeVote(
+      candidateId: Nanoid,
+      voteValue: boolean,
+      descriptionId: Nanoid,
+    ): void;
+  };
 };
 
 function Description({
   content,
-  checked,
-  onSelectRadio,
-  onClickDiscussionBtn,
-  onChangeVote,
+  radioBtn,
+  discussionBtn,
+  voteBtn,
 }: DescriptionProps) {
   const { getColor } = useColorModeContext();
 
   const { id, title, description, vote } = content;
 
   const handleChangeRadio: ChangeEventHandler<HTMLInputElement> = (event) => {
-    onSelectRadio!(event.target.value);
+    radioBtn?.onSelectRadio!(event.target.value);
   };
 
-  const radioCom =
-    checked !== undefined ? (
-      <Radio
-        sx={{ marginLeft: '-9px' }}
-        checked={checked}
-        onChange={handleChangeRadio}
-        value={id}
-        name="site-text-translation-radio-button"
+  const radioCom = radioBtn ? (
+    <Radio
+      sx={{ marginLeft: '-9px' }}
+      checked={radioBtn.checkedId === content.id}
+      onChange={handleChangeRadio}
+      value={id}
+      name="site-text-translation-radio-button"
+    />
+  ) : null;
+
+  const titleCom = title ? (
+    <Typography
+      variant="subtitle1"
+      sx={{ padding: '9px 0', color: getColor('dark') }}
+    >
+      {title}
+    </Typography>
+  ) : null;
+
+  const voteCom =
+    vote && voteBtn ? (
+      <Voting
+        vote={vote}
+        onChangeVote={(candidateId: Nanoid, voteValue: boolean) =>
+          voteBtn.onChangeVote(candidateId, voteValue, id)
+        }
       />
     ) : null;
+
+  const discussionCom = discussionBtn ? (
+    <IconButton onClick={() => discussionBtn.onClickDiscussionBtn(content.id)}>
+      <BiMessageRounded
+        style={{
+          padding: '5px',
+          borderRadius: '4px',
+          background: getColor('light-blue'),
+          color: getColor('gray'),
+          fontSize: '26px',
+        }}
+      />
+    </IconButton>
+  ) : null;
 
   return (
     <Stack
@@ -164,12 +205,7 @@ function Description({
     >
       {radioCom}
       <Stack gap="3px" sx={{ width: '100%' }}>
-        <Typography
-          variant="subtitle1"
-          sx={{ padding: '9px 0', color: getColor('dark') }}
-        >
-          {title}
-        </Typography>
+        {titleCom}
         <Typography
           variant="body3"
           sx={{ padding: '9px 0', color: getColor('dark') }}
@@ -181,19 +217,8 @@ function Description({
           justifyContent="space-between"
           alignItems="center"
         >
-          <Voting vote={vote} onChangeVote={onChangeVote} />
-
-          <IconButton onClick={onClickDiscussionBtn}>
-            <BiMessageRounded
-              style={{
-                padding: '5px',
-                borderRadius: '4px',
-                background: getColor('light-blue'),
-                color: getColor('gray'),
-                fontSize: '26px',
-              }}
-            />
-          </IconButton>
+          {voteCom}
+          {discussionCom}
         </Stack>
         <Stack direction="row" gap="5px">
           <Typography
@@ -220,34 +245,44 @@ function Description({
 }
 
 type DescriptionListProps = {
+  title: string;
   items: DescriptionItem[];
-  checkedId?: Nanoid;
-  onSelectRadio?: (descriptionId: string) => void;
-  onClickDiscussionBtn(descriptionId: Nanoid): void;
-  onChangeVote(candidateId: Nanoid, voteValue: boolean): void;
+  radioBtn?: {
+    checkedId: Nanoid | null;
+    onSelectRadio: (descriptionId: string) => void;
+  };
+  discussionBtn?: {
+    onClickDiscussionBtn(descriptionId: Nanoid): void;
+  };
+  voteBtn?: {
+    onChangeVote(
+      candidateId: Nanoid,
+      voteValue: boolean,
+      descriptionId: Nanoid,
+    ): void;
+  };
 };
 
 export function DescriptionList({
+  title,
   items,
-  checkedId,
-  onSelectRadio,
-  onClickDiscussionBtn,
-  onChangeVote,
+  radioBtn,
+  discussionBtn,
+  voteBtn,
 }: DescriptionListProps) {
   return (
     <Stack sx={{ padding: '20px' }}>
       <Typography variant="overline" sx={{ opacity: 0.5 }}>
-        List of Candidates
+        {title}
       </Typography>
 
       {items.map((item) => (
         <Description
           key={item.id}
           content={item}
-          checked={item.id === checkedId}
-          onSelectRadio={onSelectRadio}
-          onClickDiscussionBtn={() => onClickDiscussionBtn(item.id)}
-          onChangeVote={onChangeVote}
+          radioBtn={radioBtn}
+          discussionBtn={discussionBtn}
+          voteBtn={voteBtn}
         />
       ))}
     </Stack>
