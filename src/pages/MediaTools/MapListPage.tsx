@@ -19,7 +19,7 @@ import { nanoid } from 'nanoid';
 import { useSingletons } from '@/src/hooks/useSingletons';
 import { LanguageDto } from '@/src/dtos/language.dto';
 const { TitleWithIcon } = CrowdBibleUI;
-const { Box, Typography, styled } = MuiMaterial;
+const { Box, Typography, styled, CircularProgress } = MuiMaterial;
 
 //#region types
 enum eProcessStatus {
@@ -28,6 +28,13 @@ enum eProcessStatus {
   PARSING_COMPLETED = 'PARSING_COMPLETED',
   COMPLETED = 'SAVED_IN_DB',
   FAILED = 'FAILED',
+}
+enum eUploadMapBtnStatus {
+  NONE,
+  LANG_SELECTION,
+  UPLOAD_FILE,
+  SAVING_FILE,
+  COMPLETED,
 }
 type MapDetail = {
   id?: string;
@@ -50,7 +57,8 @@ export const MapListPage = () => {
   const [mapList, setMapList] = useState<MapDetail[]>([]);
   const [selectedLang, setSelectedLang] = useState<string>('');
   const [presentAlert] = useIonAlert();
-  const [uploadMapBtnStatus, setUploadMapBtnStatus] = useState();
+  const [uploadMapBtnStatus, setUploadMapBtnStatus] =
+    useState<eUploadMapBtnStatus>(eUploadMapBtnStatus.NONE);
   const singletons = useSingletons();
 
   useEffect(() => {
@@ -58,7 +66,7 @@ export const MapListPage = () => {
       if (!singletons) return;
       const res = await singletons.graphThirdLayerService.getLanguages();
       setLangs(res);
-      if (res.length > 0) setSelectedLang(res.at(0)!.name);
+      // if (res.length > 0) setSelectedLang(res.at(0)!.name);
     };
     loadLanguages();
   }, [singletons]);
@@ -210,18 +218,6 @@ export const MapListPage = () => {
     [showAlert],
   );
 
-  const fileUploadPreCheck = (e: MouseEvent<HTMLInputElement>) => {
-    let msg = '';
-    if (!selectedLang) {
-      msg = 'Please choose the language first and then Add Map';
-    }
-    if (msg) {
-      showAlert(msg);
-      e?.preventDefault();
-      e?.stopPropagation();
-    }
-  };
-
   const setMapsByLang = async (langId: string) => {
     if (!singletons) return;
     const res = await singletons.graphThirdLayerService.getMaps(langId);
@@ -237,6 +233,22 @@ export const MapListPage = () => {
           } as MapDetail),
       ),
     );
+  };
+
+  const handleUploadBtnClick = (
+    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
+  ): void => {
+    if (uploadMapBtnStatus === eUploadMapBtnStatus.NONE) {
+      setUploadMapBtnStatus(eUploadMapBtnStatus.LANG_SELECTION);
+    } else if (uploadMapBtnStatus === eUploadMapBtnStatus.LANG_SELECTION) {
+      if (selectedLang) {
+        setUploadMapBtnStatus(eUploadMapBtnStatus.UPLOAD_FILE);
+      } else {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+    } else if (uploadMapBtnStatus === eUploadMapBtnStatus.SAVING_FILE) {
+    }
   };
 
   const handleApplyLanguageFilter = (value: string) => {
@@ -293,40 +305,46 @@ export const MapListPage = () => {
             Word List
           </StyledButtonTab>
         </Box>
-        <Typography
-          color={'text.gray'}
-          fontWeight={800}
-          fontSize={'14px'}
-          lineHeight={'20px'}
-          sx={{
-            textTransform: 'uppercase',
-            padding: '15px 0px',
-            letterSpacing: '0.05em',
-          }}
-        >
-          Select the source language
-        </Typography>
-        <Box
-          display={'flex'}
-          width={'100%'}
-          gap={'20px'}
-          flexDirection={'row'}
-          alignItems={'center'}
-          justifyContent={'space-between'}
-        >
-          <Autocomplete
-            options={langLabels}
-            value={selectedLang}
-            onChange={(_, value) => {
-              handleApplyLanguageFilter(value || '');
-            }}
-            label=""
-            sx={{ flex: 1 }}
-          />
-          <Input label="" placeholder="Language ID" sx={{ flex: 1 }} />
-        </Box>
+
+        {uploadMapBtnStatus > eUploadMapBtnStatus.NONE ? (
+          <>
+            <StyledSectionTypography>
+              Select the source language
+            </StyledSectionTypography>
+            <Box
+              display={'flex'}
+              width={'100%'}
+              gap={'20px'}
+              flexDirection={'row'}
+              alignItems={'center'}
+              justifyContent={'space-between'}
+            >
+              <Autocomplete
+                options={langLabels}
+                value={selectedLang}
+                onChange={(_, value) => {
+                  handleApplyLanguageFilter(value || '');
+                }}
+                label=""
+                sx={{
+                  flex: 1,
+                  borderColor: 'text.gray',
+                  color: 'text.dark',
+                  fontWeight: 700,
+                }}
+              />
+              <Input label="" placeholder="Language ID" sx={{ flex: 1 }} />
+            </Box>
+          </>
+        ) : (
+          <></>
+        )}
+
         <Button
           fullWidth
+          onClick={handleUploadBtnClick}
+          variant={'contained'}
+          component="label"
           sx={{
             backgroundColor: 'text.blue-primary',
             color: 'text.white',
@@ -339,107 +357,36 @@ export const MapListPage = () => {
             },
           }}
         >
-          Upload .svg File
+          Upload {selectedLang || '.svg'} File
+          {uploadMapBtnStatus === eUploadMapBtnStatus.SAVING_FILE ? (
+            <>
+              <CircularProgress
+                disableShrink
+                sx={{
+                  color: 'text.white',
+                  fontWeight: 800,
+                  marginLeft: '10px',
+                }}
+                size={24}
+              />
+            </>
+          ) : (
+            <></>
+          )}
+          <input
+            hidden
+            multiple={false}
+            accept="image/svg+xml"
+            onChange={fileHandler}
+            type="file"
+          />
         </Button>
 
-        <Box
-          width={'100%'}
-          padding={`${PADDING}px 0 ${PADDING}px`}
-          display={'flex'}
-          flexDirection={'column'}
-          justifyContent={'space-between'}
-          gap={`${PADDING}px`}
-        >
-          <Box>
-            <TitleWithIcon
-              onClose={() => {}}
-              onBack={() => {}}
-              withBackIcon={false}
-              withCloseIcon={false}
-              label="Filter by Language"
-            ></TitleWithIcon>
-          </Box>
-          <Box>
-            <Autocomplete
-              fullWidth
-              options={langLabels}
-              value={selectedLang}
-              onChange={(_, value) => {
-                handleApplyLanguageFilter(value || '');
-              }}
-              label="Languages"
-            ></Autocomplete>
-          </Box>
-        </Box>
-
-        <Box
-          width={'100%'}
-          padding={`${PADDING}px 0 ${PADDING}px`}
-          display={'flex'}
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          gap={`${PADDING}px`}
-        >
-          <Box flex={1} alignSelf={'center'}>
-            <TitleWithIcon
-              onClose={() => {}}
-              onBack={() => {}}
-              withBackIcon={false}
-              withCloseIcon={false}
-              label="Language ID"
-            ></TitleWithIcon>
-          </Box>
-          <Box flex={1}>
-            <Input fullWidth label=""></Input>
-          </Box>
-        </Box>
-
-        {selectedLang ? (
-          <Box
-            width={'100%'}
-            padding={`${PADDING}px 0 ${PADDING}px`}
-            display={'flex'}
-            flexDirection={'row'}
-            justifyContent={'flex-end'}
-            gap={`${PADDING}px`}
-          >
-            <Button
-              variant="contained"
-              endIcon={<BiTrashAlt />}
-              color={'error'}
-              size="small"
-              onClick={() => {
-                handleClearLanguageFilter();
-              }}
-            >
-              Clear language filter
-            </Button>
-          </Box>
-        ) : (
-          <></>
-        )}
-
-        <Box
-          width={'100%'}
-          padding={`${PADDING}px 0 ${PADDING}px`}
-          display={'flex'}
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          gap={`${PADDING}px`}
-        >
-          <Typography fontWeight={700}>Map List</Typography>
-          <Button variant={'contained'} component="label">
-            Add Map
-            <input
-              hidden
-              multiple
-              accept="image/svg+xml"
-              onClick={fileUploadPreCheck}
-              onChange={fileHandler}
-              type="file"
-            />
-          </Button>
-        </Box>
+        <StyledBox>
+          <StyledSectionTypography>
+            Select the source language
+          </StyledSectionTypography>
+        </StyledBox>
 
         {mapList.length > 0 ? (
           <Box width={'100%'} paddingTop={`${PADDING}px`}>
@@ -531,4 +478,21 @@ const StyledButtonTab = styled(Button)(({ theme, variant }) => {
     ...conditionalStyles,
   };
 });
+const StyledSectionTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.gray,
+  fontWeight: 800,
+  fontSize: '14px',
+  lineHeight: '20px',
+  textTransform: 'uppercase',
+  padding: '15px 0px',
+  letterSpacing: '0.05em',
+  paddingTop: '20px',
+}));
+const StyledBox = styled(Box)(({}) => ({
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '15px 0px',
+}));
 //#endregion
