@@ -11,14 +11,13 @@ import {
   Autocomplete,
   Input,
   CrowdBibleUI,
-  BiTrashAlt,
   MuiMaterial,
   Button,
 } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
 import { useSingletons } from '@/src/hooks/useSingletons';
 import { LanguageDto } from '@/src/dtos/language.dto';
-const { TitleWithIcon } = CrowdBibleUI;
+import { FilterIcon } from '@/src/components/Icons';
 const { Box, Typography, styled, CircularProgress } = MuiMaterial;
 
 //#region types
@@ -48,7 +47,6 @@ type MapDetail = {
 //#endregion
 
 //#region data
-const PADDING = 15;
 //#endregion
 
 export const MapListPage = () => {
@@ -263,6 +261,7 @@ export const MapListPage = () => {
   const handleClearLanguageFilter = () => {
     setSelectedLang('');
     setMapList([]);
+    setUploadMapBtnStatus(eUploadMapBtnStatus.LANG_SELECTION);
   };
 
   const langLabels = langs.map((l) => l.name);
@@ -382,42 +381,75 @@ export const MapListPage = () => {
           />
         </Button>
 
-        <StyledBox>
-          <StyledSectionTypography>
-            Select the source language
-          </StyledSectionTypography>
-        </StyledBox>
-
-        {mapList.length > 0 ? (
-          <Box width={'100%'} paddingTop={`${PADDING}px`}>
-            <IonList>
-              {mapList.map((map, idx) => {
-                return (
-                  <IonItem
-                    key={idx}
-                    lines="none"
-                    href={`/map-detail/${map.id}`}
-                    disabled={!map.id}
-                  >
-                    <IonLabel>{map.name}</IonLabel>
-                    {[
-                      eProcessStatus.PARSING_STARTED,
-                      eProcessStatus.PARSING_COMPLETED,
-                    ].includes(map.status) && (
-                      <Button variant={'text'} color={'blue-primary'}>
-                        Processing...
-                      </Button>
-                    )}
-                    {map.status === eProcessStatus.FAILED && (
-                      <Button variant={'text'} color={'error'}>
-                        Error
-                      </Button>
-                    )}
-                  </IonItem>
-                );
-              })}
-            </IonList>
-          </Box>
+        {/* Uploaded Maps */}
+        {selectedLang && mapList.length ? (
+          <>
+            <StyledBox>
+              <StyledSectionTypography>Uploaded Maps</StyledSectionTypography>
+              <Button
+                onClick={handleClearLanguageFilter}
+                sx={{
+                  backgroundColor: 'text.light-blue',
+                  padding: '9px',
+                  minWidth: 'fit-content',
+                  ':hover': {
+                    backgroundColor: 'text.light-blue',
+                  },
+                }}
+              >
+                <FilterIcon />
+              </Button>
+            </StyledBox>
+            <Box width={'100%'} marginTop={'-25px'}>
+              <IonList>
+                {mapList.map((map, idx) => {
+                  return (
+                    <IonItem
+                      key={idx}
+                      href={`/map-detail/${map.id}`}
+                      disabled={!map.id}
+                    >
+                      <IonLabel
+                        style={{
+                          color: '#1B1B1B',
+                          fontSize: '16px',
+                          lineHeight: '26px',
+                          fontWeight: 400,
+                          padding: '12px 0px',
+                        }}
+                      >
+                        {map.name}
+                      </IonLabel>
+                      <IonLabel
+                        style={{
+                          color: '#616F82',
+                          fontSize: '14px',
+                          lineHeight: '20px',
+                          fontWeight: 500,
+                          padding: '12px 0px',
+                        }}
+                      >
+                        {selectedLang}
+                      </IonLabel>
+                      {[
+                        eProcessStatus.PARSING_STARTED,
+                        eProcessStatus.PARSING_COMPLETED,
+                      ].includes(map.status) && (
+                        <Button variant={'text'} color={'blue-primary'}>
+                          Processing...
+                        </Button>
+                      )}
+                      {map.status === eProcessStatus.FAILED && (
+                        <Button variant={'text'} color={'error'}>
+                          Error
+                        </Button>
+                      )}
+                    </IonItem>
+                  );
+                })}
+              </IonList>
+            </Box>
+          </>
         ) : (
           <></>
         )}
@@ -474,7 +506,6 @@ const StyledButtonTab = styled(Button)(({ theme, variant }) => {
     gap: '10px',
     height: '42px',
     flex: 1,
-
     ...conditionalStyles,
   };
 });
