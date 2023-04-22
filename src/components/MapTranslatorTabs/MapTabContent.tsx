@@ -1,10 +1,4 @@
-import {
-  IonContent,
-  IonItem,
-  IonLabel,
-  IonList,
-  useIonAlert,
-} from '@ionic/react';
+import { IonItem, IonLabel, IonList, useIonAlert } from '@ionic/react';
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { type INode, parseSync } from 'svgson';
 import { Autocomplete, Input, MuiMaterial, Button } from '@eten-lab/ui-kit';
@@ -43,7 +37,7 @@ type MapDetail = {
 //#region data
 //#endregion
 
-export const MapListPage = () => {
+export const MapTabContent = () => {
   const langIdRef = useRef('');
   const [langs, setLangs] = useState<LanguageDto[]>([]);
   const [mapList, setMapList] = useState<MapDetail[]>([]);
@@ -260,195 +254,162 @@ export const MapListPage = () => {
 
   const langLabels = langs.map((l) => l.name);
   return (
-    <IonContent>
-      <Box
-        display={'flex'}
-        flexDirection={'row'}
-        alignItems={'center'}
-        justifyContent={'flex-start'}
-        padding={'20px'}
-        bgcolor={'text.light-blue'}
-      >
-        <Typography
-          color={'text.dark'}
-          sx={{ fontSize: '20px', lineHeight: '28px', fontWeight: 600 }}
-        >
-          Map Translator
-        </Typography>
-      </Box>
-      <Box
-        display={'flex'}
-        flexDirection={'column'}
-        justifyContent={'start'}
-        alignItems={'start'}
-        padding={'20px'}
-        paddingTop={'15px'}
-      >
-        <Box
-          width={'100%'}
-          display={'flex'}
-          justifyContent={'space-between'}
-          alignItems={'center'}
-          gap={'20px'}
-        >
-          <StyledButtonTab variant={'contained'} href={'/map-list'}>
-            Map
-          </StyledButtonTab>
-          <StyledButtonTab variant={'text'} href={'/map-strings-list'}>
-            Word List
-          </StyledButtonTab>
-        </Box>
+    <Box
+      display={'flex'}
+      flexDirection={'column'}
+      justifyContent={'start'}
+      alignItems={'start'}
+      width={'100%'}
+    >
+      {uploadMapBtnStatus > eUploadMapBtnStatus.NONE ? (
+        <>
+          <StyledSectionTypography>
+            Select the source language
+          </StyledSectionTypography>
+          <Box
+            display={'flex'}
+            width={'100%'}
+            gap={'20px'}
+            flexDirection={'row'}
+            alignItems={'center'}
+            justifyContent={'space-between'}
+          >
+            <Autocomplete
+              options={langLabels}
+              value={selectedLang}
+              onChange={(_, value) => {
+                handleApplyLanguageFilter(value || '');
+              }}
+              label=""
+              sx={{
+                flex: 1,
+                borderColor: 'text.gray',
+                color: 'text.dark',
+                fontWeight: 700,
+              }}
+            />
+            <Input label="" placeholder="Language ID" sx={{ flex: 1 }} />
+          </Box>
+        </>
+      ) : (
+        <></>
+      )}
 
-        {uploadMapBtnStatus > eUploadMapBtnStatus.NONE ? (
-          <>
-            <StyledSectionTypography>
-              Select the source language
-            </StyledSectionTypography>
-            <Box
-              display={'flex'}
-              width={'100%'}
-              gap={'20px'}
-              flexDirection={'row'}
-              alignItems={'center'}
-              justifyContent={'space-between'}
-            >
-              <Autocomplete
-                options={langLabels}
-                value={selectedLang}
-                onChange={(_, value) => {
-                  handleApplyLanguageFilter(value || '');
-                }}
-                label=""
-                sx={{
-                  flex: 1,
-                  borderColor: 'text.gray',
-                  color: 'text.dark',
-                  fontWeight: 700,
-                }}
-              />
-              <Input label="" placeholder="Language ID" sx={{ flex: 1 }} />
-            </Box>
-          </>
-        ) : (
-          <></>
-        )}
-
-        <Button
-          fullWidth
-          onClick={handleUploadBtnClick}
-          variant={'contained'}
-          component="label"
-          sx={{
+      <Button
+        fullWidth
+        onClick={handleUploadBtnClick}
+        variant={'contained'}
+        component="label"
+        sx={{
+          backgroundColor: 'text.blue-primary',
+          color: 'text.white',
+          fontSize: '14px',
+          fontWeight: 800,
+          padding: '14px 73px',
+          marginTop: '20px',
+          ':hover': {
             backgroundColor: 'text.blue-primary',
-            color: 'text.white',
-            fontSize: '14px',
-            fontWeight: 800,
-            padding: '14px 73px',
-            marginTop: '20px',
-            ':hover': {
-              backgroundColor: 'text.blue-primary',
-            },
-          }}
-        >
-          Upload {selectedLang || '.svg'} File
-          {uploadMapBtnStatus === eUploadMapBtnStatus.SAVING_FILE ? (
-            <>
-              <CircularProgress
-                disableShrink
-                sx={{
-                  color: 'text.white',
-                  fontWeight: 800,
-                  marginLeft: '10px',
-                }}
-                size={24}
-              />
-            </>
-          ) : (
-            <></>
-          )}
-          <input
-            hidden
-            multiple={false}
-            accept="image/svg+xml"
-            onChange={fileHandler}
-            type="file"
-          />
-        </Button>
-
-        {/* Uploaded Maps */}
-        {selectedLang && mapList.length ? (
+          },
+        }}
+      >
+        Upload {selectedLang || '.svg'} File
+        {uploadMapBtnStatus === eUploadMapBtnStatus.SAVING_FILE ? (
           <>
-            <StyledBox>
-              <StyledSectionTypography>Uploaded Maps</StyledSectionTypography>
-              <Button
-                onClick={handleClearLanguageFilter}
-                sx={{
-                  backgroundColor: 'text.light-blue',
-                  padding: '9px',
-                  minWidth: 'fit-content',
-                  ':hover': {
-                    backgroundColor: 'text.light-blue',
-                  },
-                }}
-              >
-                <FilterIcon />
-              </Button>
-            </StyledBox>
-            <Box width={'100%'} marginTop={'-25px'}>
-              <IonList>
-                {mapList.map((map, idx) => {
-                  return (
-                    <IonItem
-                      key={idx}
-                      href={`/map-detail/${map.id}`}
-                      disabled={!map.id}
-                    >
-                      <IonLabel
-                        style={{
-                          color: '#1B1B1B',
-                          fontSize: '16px',
-                          lineHeight: '26px',
-                          fontWeight: 400,
-                          padding: '12px 0px',
-                        }}
-                      >
-                        {map.name}
-                      </IonLabel>
-                      <IonLabel
-                        style={{
-                          color: '#616F82',
-                          fontSize: '14px',
-                          lineHeight: '20px',
-                          fontWeight: 500,
-                          padding: '12px 0px',
-                        }}
-                      >
-                        {selectedLang}
-                      </IonLabel>
-                      {[
-                        eProcessStatus.PARSING_STARTED,
-                        eProcessStatus.PARSING_COMPLETED,
-                      ].includes(map.status) && (
-                        <Button variant={'text'} color={'blue-primary'}>
-                          Processing...
-                        </Button>
-                      )}
-                      {map.status === eProcessStatus.FAILED && (
-                        <Button variant={'text'} color={'error'}>
-                          Error
-                        </Button>
-                      )}
-                    </IonItem>
-                  );
-                })}
-              </IonList>
-            </Box>
+            <CircularProgress
+              disableShrink
+              sx={{
+                color: 'text.white',
+                fontWeight: 800,
+                marginLeft: '10px',
+              }}
+              size={24}
+            />
           </>
         ) : (
           <></>
         )}
-      </Box>
-    </IonContent>
+        <input
+          hidden
+          multiple={false}
+          accept="image/svg+xml"
+          onChange={fileHandler}
+          type="file"
+        />
+      </Button>
+
+      {/* Uploaded Maps */}
+      {selectedLang && mapList.length ? (
+        <>
+          <StyledBox>
+            <StyledSectionTypography>Uploaded Maps</StyledSectionTypography>
+            <Button
+              onClick={handleClearLanguageFilter}
+              sx={{
+                backgroundColor: 'text.light-blue',
+                padding: '9px',
+                minWidth: 'fit-content',
+                ':hover': {
+                  backgroundColor: 'text.light-blue',
+                },
+              }}
+            >
+              <FilterIcon />
+            </Button>
+          </StyledBox>
+          <Box width={'100%'} marginTop={'-25px'}>
+            <IonList>
+              {mapList.map((map, idx) => {
+                return (
+                  <IonItem
+                    key={idx}
+                    href={`/map-detail/${map.id}`}
+                    disabled={!map.id}
+                  >
+                    <IonLabel
+                      style={{
+                        color: '#1B1B1B',
+                        fontSize: '16px',
+                        lineHeight: '26px',
+                        fontWeight: 400,
+                        padding: '12px 0px',
+                      }}
+                    >
+                      {map.name}
+                    </IonLabel>
+                    <IonLabel
+                      style={{
+                        color: '#616F82',
+                        fontSize: '14px',
+                        lineHeight: '20px',
+                        fontWeight: 500,
+                        padding: '12px 0px',
+                      }}
+                    >
+                      {selectedLang}
+                    </IonLabel>
+                    {[
+                      eProcessStatus.PARSING_STARTED,
+                      eProcessStatus.PARSING_COMPLETED,
+                    ].includes(map.status) && (
+                      <Button variant={'text'} color={'blue-primary'}>
+                        Processing...
+                      </Button>
+                    )}
+                    {map.status === eProcessStatus.FAILED && (
+                      <Button variant={'text'} color={'error'}>
+                        Error
+                      </Button>
+                    )}
+                  </IonItem>
+                );
+              })}
+            </IonList>
+          </Box>
+        </>
+      ) : (
+        <></>
+      )}
+    </Box>
   );
 };
 
@@ -474,35 +435,6 @@ function iterateOverINode(
 }
 
 //#region styled component
-const StyledButtonTab = styled(Button)(({ theme, variant }) => {
-  const conditionalStyles = {};
-  if (variant === 'text') {
-    Object.assign(conditionalStyles, {
-      color: theme.palette.text.gray,
-      borderBottom: '1px solid',
-      borderColor: theme.palette.text['middle-gray'],
-    });
-  } else {
-    Object.assign(conditionalStyles, {
-      color: theme.palette.text['blue-primary'],
-      backgroundColor: '#CBE0F8',
-      ':hover': {
-        backgroundColor: '#CBE0F8',
-      },
-    });
-  }
-  return {
-    fontWeight: 800,
-    fontSize: '14px',
-    lineHeight: '20px',
-    borderRadius: '4px',
-    padding: '11px 46px',
-    gap: '10px',
-    height: '42px',
-    flex: 1,
-    ...conditionalStyles,
-  };
-});
 const StyledSectionTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.gray,
   fontWeight: 800,
