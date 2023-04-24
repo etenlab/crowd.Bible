@@ -36,6 +36,7 @@ import { DefinitionService } from '@/services/definition.service';
 import { SiteTextService } from '@/services/site-text.service';
 import { TableService } from '@/services/table.service';
 import { LexiconService } from '@/services/lexicon.service';
+import { TranslationService } from '@/services/translation.service';
 import { MaterializerService } from '@/services/materializer.service';
 
 export interface ISingletons {
@@ -52,6 +53,7 @@ export interface ISingletons {
   siteTextService: SiteTextService;
   lexiconService: LexiconService;
   materializerService: MaterializerService;
+  translationService: TranslationService;
 
   nodeRepo: NodeRepository;
   nodeTypeRepo: NodeTypeRepository;
@@ -175,6 +177,13 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     votingService,
   );
 
+  const translationService = new TranslationService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+    graphThirdLayerService,
+    votingService,
+  );
+
   const siteTextService = new SiteTextService(
     graphFirstLayerService,
     votingService,
@@ -201,6 +210,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     siteTextService,
     lexiconService,
     materializerService,
+    translationService,
 
     nodeRepo,
     nodeTypeRepo,
