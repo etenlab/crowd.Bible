@@ -1,54 +1,55 @@
-import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
 
-import { CrowdBibleUI, PlusButton } from '@eten-lab/ui-kit';
+import {
+  CrowdBibleUI,
+  PlusButton,
+  Typography,
+  MuiMaterial,
+  BiRightArrowAlt,
+  useColorModeContext,
+} from '@eten-lab/ui-kit';
 
 import { RouteConst } from '@/constants/route.constant';
 
-import { LanguageDto } from '@/dtos/language.dto';
+import { useAppContext } from '@/hooks/useAppContext';
+import { useSiteText } from '@/hooks/useSiteText';
+import { useLanguage, MockApp } from '@/hooks/useLanguage';
+
+import { SiteTextWithTranslationCntDto } from '@/dtos/site-text.dto';
 
 const { HeadBox, ButtonList } = CrowdBibleUI;
+const { Stack, Chip } = MuiMaterial;
 
-const MockApps = [
-  { value: '1', label: 'Lorem' },
-  { value: '2', label: 'Ipsum' },
-  { value: '3', label: 'Example' },
-  { value: '4', label: 'Word' },
-  { value: '5', label: 'Lorem' },
-  { value: '6', label: 'Ipsum' },
-  { value: '7', label: 'Example' },
-  { value: '8', label: 'Word' },
-  { value: '9', label: 'Lorem' },
-  { value: '10', label: 'Ipsum' },
-  { value: '11', label: 'Example' },
-  { value: '12', label: 'Word' },
-  { value: '13', label: 'Lorem' },
-  { value: '14', label: 'Ipsum' },
-  { value: '15', label: 'Example' },
-  { value: '16', label: 'Word' },
-  { value: '17', label: 'Lorem' },
-  { value: '18', label: 'Ipsum' },
-  { value: '19', label: 'Example' },
-  { value: '20', label: 'Word' },
-  { value: '21', label: 'Lorem' },
-  { value: '22', label: 'Ipsum' },
-  { value: '23', label: 'Example' },
-  { value: '24', label: 'Word' },
-];
-
-const MockLanguageList = [
-  { id: '1', name: 'English' },
-  { id: '2', name: 'Spanish' },
-  { id: '3', name: 'Danish' },
-];
+type ButtonListItemType = CrowdBibleUI.ButtonListItemType;
 
 export function SiteTextListPage() {
   const history = useHistory();
+  const { getColor } = useColorModeContext();
+  const { appId } = useParams<{ appId: Nanoid }>();
+  const {
+    states: {
+      global: { singletons },
+      documentTools: { sourceLanguage, targetLanguage },
+    },
+  } = useAppContext();
+  const { getSiteTextListByAppId } = useSiteText();
+  const { getMockAppById } = useLanguage();
 
-  const [source, setSource] = useState<LanguageDto | null>(null);
-  const [target, setTarget] = useState<LanguageDto | null>(null);
   const [searchStr, setSearchStr] = useState<string>('');
+  const [siteTextList, setSiteTextList] = useState<
+    SiteTextWithTranslationCntDto[]
+  >([]);
+  const [app, setApp] = useState<MockApp | null>(null);
+
+  // Fetch site Lists from db
+  useEffect(() => {
+    if (singletons) {
+      getSiteTextListByAppId(appId).then((list) => setSiteTextList(list));
+      getMockAppById(appId).then(setApp);
+    }
+  }, [getSiteTextListByAppId, getMockAppById, singletons, appId]);
 
   const handleChangeSearchStr = (str: string) => {
     setSearchStr(str);
@@ -59,20 +60,62 @@ export function SiteTextListPage() {
   };
 
   const handleClickPlusBtn = () => {
-    history.push(RouteConst.SITE_TEXT_EDITOR);
+    history.push(`${RouteConst.SITE_TEXT_EDITOR}/${appId}`);
   };
 
-  const handleClickItem = (value: unknown) => {
-    history.push(RouteConst.SITE_TEXT_DETAIL);
+  const handleClickItem = (value: string) => {
+    history.push(`${RouteConst.SITE_TEXT_DETAIL}/${value}`);
   };
 
-  const handleChangeSource = (lang: LanguageDto | null) => {
-    setSource(lang);
-  };
+  const items: ButtonListItemType[] = useMemo(() => {
+    return siteTextList.map((data) => {
+      const recommandedBadgeCom =
+        data.translated?.type === 'recommended' ? (
+          <Chip
+            component="span"
+            label="Recommended"
+            variant="outlined"
+            color="warning"
+            size="small"
+            sx={{ marginLeft: 2 }}
+          />
+        ) : null;
 
-  const handleChangeTarget = (lang: LanguageDto | null) => {
-    setTarget(lang);
-  };
+      const notranslatedBadgeCom = !data.translated ? (
+        <Chip
+          component="span"
+          label="Not translated"
+          variant="outlined"
+          color="error"
+          size="small"
+          sx={{ marginLeft: 2 }}
+        />
+      ) : null;
+
+      const labelCom = (
+        <>
+          {data.translated ? data.translated.siteText : data.siteText}
+          {recommandedBadgeCom}
+          {notranslatedBadgeCom}
+        </>
+      );
+
+      return {
+        value: data.id,
+        label: labelCom,
+        endIcon: (
+          <Typography variant="body1" color="text.dark">
+            {data.translationCnt}
+          </Typography>
+        ),
+      };
+    });
+  }, [siteTextList]);
+
+  const isDisabledPlusBtn =
+    app && sourceLanguage && app.languageId === sourceLanguage.id
+      ? false
+      : true;
 
   return (
     <IonContent>
@@ -84,20 +127,36 @@ export function SiteTextListPage() {
           onChange: handleChangeSearchStr,
           placeHolder: 'Search Site Text...',
         }}
-        languageSelector={{
-          languageList: MockLanguageList,
-          source,
-          target,
-          onChangeSource: handleChangeSource,
-          onChangeTarget: handleChangeTarget,
-        }}
       />
+
+      <Stack
+        direction="row"
+        justifyContent="flex-start"
+        alignItems="center"
+        gap="16px"
+        sx={{ padding: '16px 20px' }}
+      >
+        <Typography variant="body2" color="text.dark">
+          {sourceLanguage ? sourceLanguage.name : 'Unknown'}
+        </Typography>
+
+        <BiRightArrowAlt style={{ color: getColor('gray') }} />
+
+        <Typography variant="body2" color="text.dark">
+          {targetLanguage ? targetLanguage.name : 'Unknown'}
+        </Typography>
+      </Stack>
+
       <ButtonList
         label="List of site text"
         withUnderline
-        items={MockApps}
+        items={items}
         toolBtnGroup={
-          <PlusButton variant="primary" onClick={handleClickPlusBtn} />
+          <PlusButton
+            variant="primary"
+            onClick={handleClickPlusBtn}
+            disabled={isDisabledPlusBtn}
+          />
         }
         onClick={handleClickItem}
       />
