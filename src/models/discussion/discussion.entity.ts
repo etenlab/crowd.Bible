@@ -1,16 +1,17 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+
 import { Post } from './post.entity';
 
 @Entity({ name: 'discussions' })
 export class Discussion {
-  @PrimaryGeneratedColumn('increment', { type: 'integer', name: 'id' })
-  id!: number;
+  @PrimaryColumn('uuid', { type: 'varchar', length: 21, unique: true })
+  id!: string;
 
   @Column('varchar', { nullable: true })
   table_name!: string;
 
-  @Column('int', { nullable: true })
-  row!: number;
+  @Column('varchar', { nullable: true })
+  row!: string;
 
   @OneToMany(() => Post, (post) => post.discussion)
   posts!: Post[];

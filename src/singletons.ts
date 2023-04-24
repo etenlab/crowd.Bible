@@ -11,6 +11,7 @@ import { RelationshipRepository } from '@/repositories/relationship/relationship
 
 import { SyncSessionRepository } from '@/repositories/sync-session.repository';
 import { DiscussionRepository } from '@/repositories/discussion/discussion.repository';
+import { PostRepository } from '@/repositories/discussion/post.repository';
 
 import { ElectionTypeRepository } from '@/repositories/voting/election-type.repository';
 import { ElectionRepository } from '@/repositories/voting/election.repository';
@@ -54,6 +55,7 @@ export interface ISingletons {
   relationshipPropertyKeyRepo: RelationshipPropertyKeyRepository;
   relationshipPropertyValueRepo: RelationshipPropertyValueRepository;
   discussionRepo: DiscussionRepository;
+  postRepo: PostRepository;
   userRepo: UserRepository;
 
   electionTypeRepo: ElectionTypeRepository;
@@ -95,6 +97,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     syncService,
   );
   const discussionRepo = new DiscussionRepository(dbService);
+  const postRepo = new PostRepository(dbService);
   const userRepo = new UserRepository(dbService);
 
   const electionRepo = new ElectionRepository(dbService, syncService);
@@ -111,6 +114,8 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipTypeRepo,
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
+    discussionRepo,
+    postRepo,
   );
 
   const graphFirstLayerService = new GraphFirstLayerService(
@@ -189,6 +194,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
     discussionRepo,
+    postRepo,
     userRepo,
 
     electionRepo,

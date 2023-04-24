@@ -26,13 +26,13 @@ export function buildBibleBook(bible: Node, bookId: string) {
         id: id,
         identifier: {
           id: pkId,
-          values: propertyValues.map(({ property_value }) => ({
+          values: propertyValues.map(({ property_value, discussion }) => ({
             value: property_value
               ? (JSON.parse(property_value).value as string)
               : '',
             numUpVotes: 0,
             numDownVotes: 0,
-            numPosts: 0,
+            numPosts: discussion?.posts ? discussion.posts.length : 0,
           })),
         },
         verses: toNodeRelationships.map(
@@ -60,14 +60,16 @@ export function buildBibleBook(bible: Node, bookId: string) {
               id: id,
               identifier: {
                 id: pkId,
-                values: propertyValues.map(({ property_value }) => ({
-                  value: property_value
-                    ? (JSON.parse(property_value).value as string)
-                    : '',
-                  numUpVotes: 0,
-                  numDownVotes: 0,
-                  numPosts: 0,
-                })),
+                values: propertyValues.map(
+                  ({ property_value, discussion }) => ({
+                    value: property_value
+                      ? (JSON.parse(property_value).value as string)
+                      : '',
+                    numUpVotes: 0,
+                    numDownVotes: 0,
+                    numPosts: discussion?.posts ? discussion.posts.length : 0,
+                  }),
+                ),
               },
               text,
             };

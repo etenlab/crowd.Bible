@@ -6,6 +6,8 @@ import { type RelationshipPropertyKeyRepository } from '@/repositories/relations
 import { type RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
 import { type RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
 import { type RelationshipRepository } from '@/repositories/relationship/relationship.repository';
+import { type DiscussionRepository } from '@/repositories/discussion/discussion.repository';
+import { type PostRepository } from '@/repositories/discussion/post.repository';
 import { nanoid } from 'nanoid';
 import { SeedVersificationService } from './seed-versification.service';
 
@@ -27,6 +29,8 @@ export class SeedService {
     readonly relationshipTypeRepository: RelationshipTypeRepository,
     readonly relationshipPropertyKeyRepository: RelationshipPropertyKeyRepository,
     readonly relationshipPropertyValueRepository: RelationshipPropertyValueRepository,
+    readonly discussionRepository: DiscussionRepository,
+    readonly postRepository: PostRepository,
   ) {
     this.init();
   }

@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { nanoid } from 'nanoid';
 import { NodePropertyKey } from './node-property-key.entity';
+import { Discussion } from '../discussion/discussion.entity';
 import { Syncable } from '../Syncable';
 
 import { TableNameConst } from '@/constants/table-name.constant';
@@ -40,4 +41,9 @@ export class NodePropertyValue extends Syncable {
 
   @Column('varchar')
   node_property_key_id!: string;
+
+  // TODO: use the table_name field as well
+  @OneToOne(() => Discussion)
+  @JoinColumn([{ name: 'id', referencedColumnName: 'row' }])
+  discussion!: Discussion;
 }

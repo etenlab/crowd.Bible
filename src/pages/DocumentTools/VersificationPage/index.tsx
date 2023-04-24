@@ -48,13 +48,21 @@ export function VersificationPage() {
                 toNodeRelationships: {
                   toNode: {
                     propertyKeys: {
-                      propertyValues: true,
+                      propertyValues: {
+                        discussion: {
+                          posts: true,
+                        },
+                      },
                     },
                     // chapter-to-verse
                     toNodeRelationships: {
                       toNode: {
                         propertyKeys: {
-                          propertyValues: true,
+                          propertyValues: {
+                            discussion: {
+                              posts: true,
+                            },
+                          },
                         },
                       },
                     },

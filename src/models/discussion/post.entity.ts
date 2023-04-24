@@ -5,7 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from 'typeorm';
 import { Discussion } from './discussion.entity';
 import { Reaction } from './reaction.entity';
@@ -14,11 +14,11 @@ import { User } from '../user/user.entity';
 
 @Entity({ name: 'posts' })
 export class Post {
-  @PrimaryGeneratedColumn('increment', { type: 'integer' })
-  id!: number;
+  @PrimaryColumn('uuid', { type: 'varchar', length: 21, unique: true })
+  id!: string;
 
-  @Column('bigint')
-  discussion_id!: number;
+  @Column('text')
+  discussion_id!: string;
 
   @ManyToOne(() => Discussion, (discussion) => discussion.id, {
     nullable: false,

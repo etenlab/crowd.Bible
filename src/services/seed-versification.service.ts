@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid';
+
 import { type SeedService } from './seed.service';
 
 type SeedBible = {
@@ -50,7 +52,8 @@ export class SeedVersificationService {
       books: [book],
     };
 
-    await this.createBible(bible);
+    const bibleId = await this.createBible(bible);
+    await this.addPostsToChaptersAndVerses(bibleId);
   }
 
   async createBible(bible: SeedBible) {
@@ -65,6 +68,8 @@ export class SeedVersificationService {
         position: counter,
       });
     }
+
+    return bibleNode.id;
   }
 
   async createBook(book: SeedBook) {
@@ -168,5 +173,100 @@ export class SeedVersificationService {
         value,
       );
     }
+  }
+
+  async addPostsToChaptersAndVerses(bibleId: string) {
+    const bible = await this.seedService.nodeRepository.repository.findOne({
+      relations: {
+        // bible-to-book
+        toNodeRelationships: {
+          toNode: {
+            // book-to-chapter
+            toNodeRelationships: {
+              toNode: {
+                propertyKeys: {
+                  propertyValues: true,
+                },
+                // chapter-to-verse
+                toNodeRelationships: {
+                  toNode: {
+                    propertyKeys: {
+                      propertyValues: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      where: {
+        id: bibleId,
+      },
+    });
+
+    if (bible) {
+      for (const bookRel of bible.toNodeRelationships || []) {
+        for (const chapterRel of bookRel.toNode.toNodeRelationships || []) {
+          for (const propertyKey of chapterRel.toNode.propertyKeys || []) {
+            for (const propertyValue of propertyKey.propertyValues || []) {
+              await this.addRandomPosts(
+                'node_property_values',
+                propertyValue.id,
+              );
+            }
+          }
+          for (const verseRel of chapterRel.toNode.toNodeRelationships || []) {
+            for (const propertyKey of verseRel.toNode.propertyKeys || []) {
+              for (const propertyValue of propertyKey.propertyValues || []) {
+                await this.addRandomPosts(
+                  'node_property_values',
+                  propertyValue.id,
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  async addRandomPosts(table_name: string, id: string) {
+    const randomNum = Math.floor(Math.random() * 20) + 1;
+
+    for (let i = 0; i < randomNum; i += 1) {
+      await this.addPost(table_name, id, 'Lorem Ipsum...');
+    }
+  }
+
+  async addPost(table_name: string, row: string, plain_text: string) {
+    let discussion =
+      await this.seedService.discussionRepository.repository.findOne({
+        where: {
+          table_name,
+          row,
+        },
+      });
+
+    if (!discussion) {
+      discussion =
+        await this.seedService.discussionRepository.repository.create({
+          id: nanoid(),
+          table_name,
+          row,
+        });
+
+      await this.seedService.discussionRepository.repository.save(discussion);
+    }
+
+    const post = await this.seedService.postRepository.repository.create({
+      id: nanoid(),
+      discussion_id: discussion.id,
+      plain_text,
+      quill_text: plain_text,
+      user_id: 1,
+    });
+
+    await this.seedService.postRepository.repository.save(post);
   }
 }
