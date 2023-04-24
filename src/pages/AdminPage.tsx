@@ -13,7 +13,7 @@ import {
 
 import { useSingletons } from '@/hooks/useSingletons';
 
-import txtfile from '@/utils/iso-639-3-min.tab';
+import txtfile from '@/utils/iso_639_3_min.tab';
 import { LoadingStatus } from '../enums';
 import useSeedService from '../hooks/useSeedService';
 import { NodeTypeConst } from '../constants/graph.constant';
@@ -46,7 +46,7 @@ export function AdminPage() {
 
       setLoadingMessage('Creating table...');
       const table = await singletons.tableService.createTable(
-        'iso-639-3-min.tab',
+        'iso_639_3_min.tab',
       );
 
       const rows = data.split(/\r?\n/);
@@ -160,7 +160,7 @@ export function AdminPage() {
   }, [seedService]);
 
   const materialize = async () => {
-    singletons?.materializerService.materialize('iso-639-3-min.tab');
+    singletons?.materializerService.materialize('iso_639_3_min.tab');
   };
 
   return (
