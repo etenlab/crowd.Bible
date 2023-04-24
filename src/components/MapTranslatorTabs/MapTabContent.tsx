@@ -6,7 +6,11 @@ import { nanoid } from 'nanoid';
 import { useSingletons } from '@/src/hooks/useSingletons';
 import { LanguageDto } from '@/src/dtos/language.dto';
 import { FilterIcon } from '@/src/components/Icons';
-const { Box, Typography, styled, CircularProgress } = MuiMaterial;
+import {
+  StyledFilterButton,
+  StyledSectionTypography,
+} from './StyledComponents';
+const { Box, styled, CircularProgress } = MuiMaterial;
 
 //#region types
 enum eProcessStatus {
@@ -342,19 +346,9 @@ export const MapTabContent = () => {
         <>
           <StyledBox>
             <StyledSectionTypography>Uploaded Maps</StyledSectionTypography>
-            <Button
+            <StyledFilterButton
               onClick={handleClearLanguageFilter}
-              sx={{
-                backgroundColor: 'text.light-blue',
-                padding: '9px',
-                minWidth: 'fit-content',
-                ':hover': {
-                  backgroundColor: 'text.light-blue',
-                },
-              }}
-            >
-              <FilterIcon />
-            </Button>
+            ></StyledFilterButton>
           </StyledBox>
           <Box width={'100%'} marginTop={'-25px'}>
             <IonList>
@@ -435,16 +429,7 @@ function iterateOverINode(
 }
 
 //#region styled component
-const StyledSectionTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.gray,
-  fontWeight: 800,
-  fontSize: '14px',
-  lineHeight: '20px',
-  textTransform: 'uppercase',
-  padding: '15px 0px',
-  letterSpacing: '0.05em',
-  paddingTop: '20px',
-}));
+
 const StyledBox = styled(Box)(({}) => ({
   width: '100%',
   display: 'flex',
