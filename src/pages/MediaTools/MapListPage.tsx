@@ -1,3 +1,4 @@
+//!!!i'll work with it
 import {
   IonContent,
   IonItem,
@@ -18,7 +19,9 @@ import {
 import { nanoid } from 'nanoid';
 import { useSingletons } from '@/src/hooks/useSingletons';
 import { LanguageDto } from '@/src/dtos/language.dto';
-const { TitleWithIcon } = CrowdBibleUI;
+import { MapListComponent } from './MapListComponents/MapListComponent';
+import { MapStringsListComponent } from './MapListComponents/MapStringsListComponent';
+const { TitleWithIcon, HeadBox, ToggleButtons } = CrowdBibleUI;
 //#region types
 enum eProcessStatus {
   NONE = 'NONE',
@@ -27,6 +30,12 @@ enum eProcessStatus {
   COMPLETED = 'SAVED_IN_DB',
   FAILED = 'FAILED',
 }
+
+enum Modes {
+  MAP = 'Map',
+  WORD_LIST = 'Word List',
+}
+
 type MapDetail = {
   id?: string;
   tempId?: string;
@@ -49,7 +58,8 @@ export const MapListPage = () => {
     // { fileName: 'text name', status: eProcessStatus.FAILED },
   ]);
   const [selectedLang, setSelectedLang] = useState<string>('');
-  const [presentAlert] = useIonAlert();
+  const [selectedMode, setSelectedMode] = useState<Modes | null>(Modes.MAP);
+  const [presentAlert] = useIonAlert(); //!!!i'll TODO: take from context
   const singletons = useSingletons();
 
   useEffect(() => {
@@ -105,6 +115,7 @@ export const MapListPage = () => {
             status: eProcessStatus.COMPLETED,
           };
           try {
+            //!!!i'll look at map saving here
             const mapId = await singletons.graphThirdLayerService.saveMap(
               argMap.langId!,
               {
@@ -127,6 +138,7 @@ export const MapListPage = () => {
     }
   }, [mapList, singletons]);
 
+  //!!!i'll refactor it
   const showAlert = useCallback(
     (msg: string) => {
       presentAlert({
@@ -254,7 +266,27 @@ export const MapListPage = () => {
   const langLabels = langs.map((l) => l.name);
   return (
     <IonContent>
-      <Box
+      <HeadBox back={{ action: () => alert('back!') }} title="Map translator" />
+
+      <ToggleButtons
+        buttonsParams={[
+          { caption: Modes.MAP, value: Modes.MAP },
+          { caption: Modes.WORD_LIST, value: Modes.WORD_LIST },
+        ]}
+        onChange={(v) => setSelectedMode(v as Modes)}
+        buttonSxProps={{
+          paddingLeft: '0 !important',
+          paddingRight: '0 !important',
+          marginLeft: '0 !important',
+          marginRight: '0 !important',
+          borderRadius: '3px !important',
+        }}
+      />
+
+      {selectedMode === Modes.MAP ? <MapListComponent mapList={[]} /> : null}
+      {selectedMode === Modes.WORD_LIST ? <MapStringsListComponent /> : null}
+
+      {/* <Box
         display={'flex'}
         flexDirection={'column'}
         justifyContent={'start'}
@@ -267,11 +299,11 @@ export const MapListPage = () => {
           justifyContent={'space-between'}
           alignItems={'center'}
         >
-          <Button variant={'text'} href={'/map-list'} disabled>
-            Map List
+          <Button variant={'outlined'} href={'/map-list'} disabled>
+            Map
           </Button>
-          <Button variant={'text'} href={'/map-strings-list'}>
-            String List
+          <Button variant={'outlined'} href={'/map-strings-list'}>
+            Word List
           </Button>
         </Box>
 
@@ -407,7 +439,7 @@ export const MapListPage = () => {
         ) : (
           <></>
         )}
-      </Box>
+      </Box> */}
     </IonContent>
   );
 };

@@ -1,3 +1,4 @@
+//!!!i'll use it as reference
 import { useState, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
