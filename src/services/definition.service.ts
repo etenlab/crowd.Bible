@@ -119,7 +119,7 @@ export class DefinitionService {
       await this.graphFirstLayerService.getNodeByProp(
         NodeTypeConst.DEFINITION,
         {
-          key: PropertyKeyConst.TEXT,
+          key: PropertyKeyConst.DEFINITION,
           value: definitionText,
         },
         { from_node_id: forNodeId },
@@ -133,7 +133,7 @@ export class DefinitionService {
             {},
             forNodeId,
             NodeTypeConst.DEFINITION,
-            { [PropertyKeyConst.TEXT]: definitionText },
+            { [PropertyKeyConst.DEFINITION]: definitionText },
           )
         ).node;
 
@@ -158,16 +158,19 @@ export class DefinitionService {
    */
   async createWordAndDefinitionsElection(
     word: string,
-    langId: Nanoid,
+    languageId: Nanoid,
     langElectionId: Nanoid,
   ): Promise<{ wordId: Nanoid; electionId: Nanoid; wordCandidateId: Nanoid }> {
-    const wordId = await this.graphThirdLayerService.createWord(word, langId);
+    const wordId = await this.graphThirdLayerService.createOrFindWord({
+      word,
+      languageId,
+    });
     const wordCandidateId = await this.findOrCreateCandidateId(
       wordId,
       langElectionId,
-      langId,
+      languageId,
     );
-    const definitionEelection = await this.votingService.createElection(
+    const definitionEelection = await this.votingService.createOrFindElection(
       ElectionTypeConst.DEFINITION,
       wordId,
       TableNameConst.NODES,
@@ -180,50 +183,38 @@ export class DefinitionService {
    * Creates phrase and election of type 'definition' for this phrase
    *
    * @param word - phrase text
-   * @param langId - language of this phrase
+   * @param languageId - language of this phrase
    * @returns - created phrase Id and election Id (to add definition candidates to it)
    */
   async createPhraseAndDefinitionsElection(
     phrase: string,
-    langId: Nanoid,
+    languageId: Nanoid,
     langElectionId: Nanoid,
+    siteText?: boolean,
   ): Promise<{
     phraseId: Nanoid;
     electionId: Nanoid;
     phraseCandidateId: Nanoid;
   }> {
-    const existingPhraseNode = await this.graphFirstLayerService.getNodeByProp(
-      NodeTypeConst.PHRASE,
-      {
-        key: PropertyKeyConst.TEXT,
-        value: phrase,
-      },
-    );
-    const node = existingPhraseNode
-      ? existingPhraseNode
-      : (
-          await this.graphSecondLayerService.createRelatedFromNodeFromObject(
-            RelationshipTypeConst.PHRASE_TO_LANG,
-            {},
-            NodeTypeConst.PHRASE,
-            { name: phrase },
-            langId,
-          )
-        ).node;
+    const phraseId = await this.graphThirdLayerService.createOrFindPhrase({
+      phrase,
+      languageId,
+      siteText,
+    });
 
     const phraseCandidateId = await this.findOrCreateCandidateId(
-      node.id,
+      phraseId,
       langElectionId,
-      langId,
+      languageId,
     );
 
-    const election = await this.votingService.createElection(
+    const election = await this.votingService.createOrFindElection(
       ElectionTypeConst.DEFINITION,
-      node.id,
+      phraseId,
       TableNameConst.NODES,
       TableNameConst.RELATIONSHIPS,
     );
-    return { phraseId: node.id, electionId: election.id, phraseCandidateId };
+    return { phraseId, electionId: election.id, phraseCandidateId };
   }
 
   /**
@@ -294,7 +285,7 @@ export class DefinitionService {
       forNodeId,
       electionId,
       NodeTypeConst.DEFINITION,
-      PropertyKeyConst.TEXT,
+      PropertyKeyConst.DEFINITION,
     );
   }
 
@@ -313,7 +304,7 @@ export class DefinitionService {
       langNodeId,
       langElectionId,
       NodeTypeConst.PHRASE,
-      PropertyKeyConst.NAME,
+      PropertyKeyConst.PHRASE,
       false,
     );
 
@@ -322,7 +313,7 @@ export class DefinitionService {
         throw new Error(`phrase ${pc.content} desn't have an id`);
       }
       // if electionId exists, it won't be created, Just found and returned.
-      const election = await this.votingService.createElection(
+      const election = await this.votingService.createOrFindElection(
         ElectionTypeConst.DEFINITION,
         pc.id,
         TableNameConst.NODES,
@@ -352,7 +343,7 @@ export class DefinitionService {
       langNodeId,
       langElectionId,
       NodeTypeConst.WORD,
-      PropertyKeyConst.NAME,
+      PropertyKeyConst.WORD,
       false,
     );
 
@@ -361,7 +352,7 @@ export class DefinitionService {
         throw new Error(`word ${wc.content} desn't have an id`);
       }
       // if electionId exists, it won't be created, Just found and returned.
-      const election = await this.votingService.createElection(
+      const election = await this.votingService.createOrFindElection(
         ElectionTypeConst.DEFINITION,
         wc.id,
         TableNameConst.NODES,
@@ -419,13 +410,13 @@ export class DefinitionService {
     const languages = await this.graphThirdLayerService.getLanguages();
     const langPromises: Promise<LanguageWithElecitonsDto>[] = languages.map(
       async (l) => {
-        const electionWords = await this.votingService.createElection(
+        const electionWords = await this.votingService.createOrFindElection(
           ElectionTypeConst.WORD_LANGUAGE,
           l.id,
           TableNameConst.NODES,
           TableNameConst.RELATIONSHIPS,
         );
-        const electionPhrases = await this.votingService.createElection(
+        const electionPhrases = await this.votingService.createOrFindElection(
           ElectionTypeConst.PHRASE_LANGUAGE,
           l.id,
           TableNameConst.NODES,
@@ -473,7 +464,7 @@ export class DefinitionService {
     newDefinitionValue: string,
   ): Promise<void> {
     this.graphSecondLayerService.updateNodeObject(definitionNodeId, {
-      [PropertyKeyConst.TEXT]: newDefinitionValue,
+      [PropertyKeyConst.DEFINITION]: newDefinitionValue,
     });
   }
 }

@@ -38,6 +38,13 @@ import { TableService } from '@/services/table.service';
 import { LexiconService } from '@/services/lexicon.service';
 import { TranslationService } from '@/services/translation.service';
 import { MaterializerService } from '@/services/materializer.service';
+import { UserService } from '@/services/user.service';
+import { DocumentService } from '@/services/document.service';
+import { PhraseService } from '@/services/phrase.service';
+import { WordService } from '@/services/word.service';
+import { WordSequenceService } from '@/services/word-sequence.service';
+import { LanguageService } from '@/services/language.service';
+import { MapService } from '@/services/map.service';
 
 export interface ISingletons {
   dbService: DbService;
@@ -54,6 +61,13 @@ export interface ISingletons {
   lexiconService: LexiconService;
   materializerService: MaterializerService;
   translationService: TranslationService;
+  userService: UserService;
+  documentService: DocumentService;
+  wordService: WordService;
+  phraseService: PhraseService;
+  wordSequenceService: WordSequenceService;
+  languageService: LanguageService;
+  mapService: MapService;
 
   nodeRepo: NodeRepository;
   nodeTypeRepo: NodeTypeRepository;
@@ -147,7 +161,17 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     graphFirstLayerService,
   );
 
-  const graphThirdLayerService = new GraphThirdLayerService(
+  const userService = new UserService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+  );
+
+  const documentService = new DocumentService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+  );
+
+  const wordService = new WordService(
     graphFirstLayerService,
     graphSecondLayerService,
     nodeRepo,
@@ -155,6 +179,38 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     nodePropertyValueRepo,
     relationshipRepo,
     syncService,
+  );
+
+  const phraseService = new PhraseService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+  );
+
+  const languageService = new LanguageService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+  );
+
+  const wordSequenceService = new WordSequenceService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+    wordService,
+  );
+
+  const mapService = new MapService(
+    graphFirstLayerService,
+    graphSecondLayerService,
+    nodeRepo,
+  );
+
+  const graphThirdLayerService = new GraphThirdLayerService(
+    userService,
+    documentService,
+    wordService,
+    phraseService,
+    wordSequenceService,
+    languageService,
+    mapService,
   );
 
   const votingService = new VotingService(
@@ -180,7 +236,9 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   const translationService = new TranslationService(
     graphFirstLayerService,
     graphSecondLayerService,
-    graphThirdLayerService,
+    wordService,
+    phraseService,
+    wordSequenceService,
     votingService,
   );
 
@@ -211,6 +269,13 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     lexiconService,
     materializerService,
     translationService,
+    userService,
+    documentService,
+    wordService,
+    phraseService,
+    wordSequenceService,
+    languageService,
+    mapService,
 
     nodeRepo,
     nodeTypeRepo,

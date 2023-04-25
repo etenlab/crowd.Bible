@@ -11,7 +11,7 @@ export function useVote() {
     actions: { alertFeedback, setLoadingState },
   } = useAppContext();
 
-  const createElection = useCallback(
+  const createOrFindElection = useCallback(
     async (
       electionType: ElectionTypeConst,
       electionRef: Nanoid,
@@ -19,13 +19,13 @@ export function useVote() {
       candidateRefTableName: string,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createElection');
+        alertFeedback('error', 'Internal Error! at createOrFindElection');
         return null;
       }
 
       try {
         setLoadingState(true);
-        const electionId = await singletons.votingService.createElection(
+        const electionId = await singletons.votingService.createOrFindElection(
           electionType,
           electionRef,
           refTableName,
@@ -306,7 +306,7 @@ export function useVote() {
   );
 
   return {
-    createElection,
+    createOrFindElection,
     getElectionById,
     getElectionByRef,
     getElectionFull,

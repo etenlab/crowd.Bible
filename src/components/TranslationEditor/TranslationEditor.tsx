@@ -41,7 +41,7 @@ export function TranslationEditor({
 }: TranslationEditorProps) {
   const history = useHistory();
   const { createTranslation, createSubWordSequence } = useWordSequence();
-  const { createElection, addCandidate, getElectionByRef } = useVote();
+  const { createOrFindElection, addCandidate, getElectionByRef } = useVote();
   const { getColor } = useColorModeContext();
   const [text, setText] = useState<string>('');
 
@@ -59,7 +59,7 @@ export function TranslationEditor({
         return;
       }
 
-      const tmpElection = await createElection(
+      const tmpElection = await createOrFindElection(
         ElectionTypeConst.TRANSLATION,
         wordSequenceId,
         TableNameConst.NODES,

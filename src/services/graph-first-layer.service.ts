@@ -129,8 +129,12 @@ export class GraphFirstLayerService {
     return this.relationshipRepo.listAllRelationshipsByType(type_name);
   }
 
-  async readRelationship(rel_id: Nanoid): Promise<Relationship | null> {
-    return this.relationshipRepo.readRelationship(rel_id);
+  async readRelationship(
+    rel_id: Nanoid,
+    relations?: string[],
+    whereObj?: FindOptionsWhere<Relationship>,
+  ): Promise<Relationship | null> {
+    return this.relationshipRepo.readRelationship(rel_id, relations, whereObj);
   }
 
   // async listRelatedNodes(node_id: string): Promise<any> {

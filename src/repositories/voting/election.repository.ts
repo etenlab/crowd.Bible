@@ -16,7 +16,7 @@ export class ElectionRepository {
     return this.dbService.dataSource.getRepository(Election);
   }
 
-  async createElection(
+  async createOrFindElection(
     election_type: ElectionTypeConst,
     election_ref: Nanoid,
     ref_table_name: string,

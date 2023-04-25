@@ -15,13 +15,13 @@ export class VotingService {
     private readonly voteRepo: VoteRepository,
   ) {}
 
-  async createElection(
+  async createOrFindElection(
     election_type: ElectionTypeConst,
     election_ref: Nanoid,
     ref_table_name: string,
     candidate_ref_table_name: string,
   ): Promise<Election> {
-    return this.electionRepo.createElection(
+    return this.electionRepo.createOrFindElection(
       election_type,
       election_ref,
       ref_table_name,
@@ -78,6 +78,10 @@ export class VotingService {
     candidateRef: Nanoid,
   ): Promise<Candidate | null> {
     return this.candidateRepo.getCandidateByRef(electionId, candidateRef);
+  }
+
+  async getCandidateListByElectionId(electionId: Nanoid): Promise<Candidate[]> {
+    return this.candidateRepo.getCandidateListByElectionId(electionId);
   }
 
   async getVotesStats(candidateId: Nanoid): Promise<VotesStatsRow> {

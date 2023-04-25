@@ -124,12 +124,12 @@ export class SiteTextService {
     const translatedSiteText =
       (await this.graphFirstLayerService.getNodePropertyValue(
         siteTextTranslationEntity.word_ref,
-        PropertyKeyConst.NAME,
+        PropertyKeyConst.WORD,
       )) as string;
     const translatedDefinition =
       (await this.graphFirstLayerService.getNodePropertyValue(
         siteTextTranslationEntity.definition_ref,
-        PropertyKeyConst.TEXT,
+        PropertyKeyConst.DEFINITION,
       )) as string;
 
     return {
@@ -158,12 +158,12 @@ export class SiteTextService {
     const translatedSiteText =
       (await this.graphFirstLayerService.getNodePropertyValue(
         translationEntity.word_ref,
-        PropertyKeyConst.NAME,
+        PropertyKeyConst.WORD,
       )) as string;
     const translatedDefinition =
       (await this.graphFirstLayerService.getNodePropertyValue(
         translationEntity.definition_ref,
-        PropertyKeyConst.TEXT,
+        PropertyKeyConst.DEFINITION,
       )) as string;
 
     return {
@@ -194,7 +194,7 @@ export class SiteTextService {
       definitionId,
     );
 
-    await this.votingService.createElection(
+    await this.votingService.createOrFindElection(
       ElectionTypeConst.SITE_TEXT_TRANSLATION,
       siteTextEntity.id,
       TableNameConst.SITE_TEXT,
@@ -335,11 +335,11 @@ export class SiteTextService {
 
     const word = await this.graphFirstLayerService.getNodePropertyValue(
       siteText.word_ref,
-      PropertyKeyConst.NAME,
+      PropertyKeyConst.WORD,
     );
     const definition = await this.graphFirstLayerService.getNodePropertyValue(
       siteText.definition_ref,
-      PropertyKeyConst.TEXT,
+      PropertyKeyConst.DEFINITION,
     );
 
     const selectedSiteText = await this.getSelectedSiteTextTranslation(
@@ -458,12 +458,12 @@ export class SiteTextService {
     const translatedSiteText =
       (await this.graphFirstLayerService.getNodePropertyValue(
         siteTextTranslationEntity.word_ref,
-        PropertyKeyConst.NAME,
+        PropertyKeyConst.WORD,
       )) as string;
     const translatedDefinition =
       (await this.graphFirstLayerService.getNodePropertyValue(
         siteTextTranslationEntity.definition_ref,
-        PropertyKeyConst.TEXT,
+        PropertyKeyConst.DEFINITION,
       )) as string;
 
     let curElectionId = electionId;
@@ -512,11 +512,11 @@ export class SiteTextService {
 
     const word = await this.graphFirstLayerService.getNodePropertyValue(
       siteText.word_ref,
-      PropertyKeyConst.NAME,
+      PropertyKeyConst.WORD,
     );
     const definition = await this.graphFirstLayerService.getNodePropertyValue(
       siteText.definition_ref,
-      PropertyKeyConst.TEXT,
+      PropertyKeyConst.DEFINITION,
     );
 
     return {
@@ -592,7 +592,7 @@ export class SiteTextService {
     const existingWordNode = await this.graphFirstLayerService.getNodeByProp(
       NodeTypeConst.WORD,
       {
-        key: PropertyKeyConst.NAME,
+        key: PropertyKeyConst.WORD,
         value: siteText,
       },
       {

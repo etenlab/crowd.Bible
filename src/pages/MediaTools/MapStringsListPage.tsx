@@ -120,12 +120,11 @@ export const MapStringsListPage = () => {
 
   const storeTranslation = async (word: Item) => {
     if (!singletons) return;
-    const translatedWordId = await singletons.graphThirdLayerService.createWord(
-      word.translation!,
-      word.translationLangId!,
-    );
-    singletons.graphThirdLayerService
-      .createWordTranslationRelationship(word.id, translatedWordId)
+    singletons.translationService
+      .createOrFindWordTranslation(word.id, {
+        word: word.translation!,
+        languageId: word.translationLangId!,
+      })
       .then((res) => {
         console.log('word translation created', res);
       });
