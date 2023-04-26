@@ -122,12 +122,6 @@ export function reducer(
         },
       };
     }
-    case actions.SET_TRANSLATED_MAP: {
-      return {
-        ...prevState,
-        translatedMap: action.payload as TranslatedMap,
-      };
-    }
     case actions.SET_CONNECTIVITY: {
       return {
         ...prevState,
