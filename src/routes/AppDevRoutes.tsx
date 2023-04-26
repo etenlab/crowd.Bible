@@ -1,9 +1,8 @@
 import { Route, Switch } from 'react-router-dom';
 
 import { SiteTextAdminPage } from '@/pages/AppDev/SiteTextAdminPage';
-import { SiteTextTranslationPage } from '@/pages/AppDev/SiteTextTranslationPage';
 
-import { ApplicationsListPage } from '@/pages/AppDev/ApplicationsListPage';
+import { SiteTextAppListPage } from '@/src/pages/AppDev/SiteTextAppListPage';
 import { SiteTextListPage } from '@/pages/AppDev/SiteTextListPage';
 import { SiteTextEditorPage } from '@/pages/AppDev/SiteTextEditorPage';
 import { SiteTextDetailPage } from '@/pages/AppDev/SiteTextDetailPage';
@@ -17,32 +16,38 @@ export function AppDevRoutes() {
       <Route exact path="/site-text-admin">
         <SiteTextAdminPage />
       </Route>
-      <Route exact path="/site-text-translation">
-        <SiteTextTranslationPage />
+      <Route exact path={RouteConst.SITE_TEXT_TRANSLATION_APP_LIST}>
+        <SiteTextAppListPage />
       </Route>
 
-      <Route exact path={RouteConst.APPLICATIONS}>
-        <ApplicationsListPage />
-      </Route>
-      <Route exact path={RouteConst.SITE_TEXT_LIST}>
+      <Route exact path={`${RouteConst.SITE_TEXT_LIST}/:appId`}>
         <SiteTextListPage />
       </Route>
-      <Route exact path={RouteConst.SITE_TEXT_EDITOR}>
+
+      {/* create a new site text */}
+      <Route exact path={`${RouteConst.SITE_TEXT_EDITOR}/:appId`}>
         <SiteTextEditorPage />
       </Route>
-      <Route exact path={RouteConst.SITE_TEXT_DETAIL}>
-        <SiteTextDetailPage />
-      </Route>
-      <Route exact path={RouteConst.SITE_TEXT_TRANSLATION_EDITOR}>
-        <SiteTextTranslationEditorPage />
+      <Route exact path={`${RouteConst.SITE_TEXT_EDITOR}/:appId/:siteTextId`}>
+        <SiteTextEditorPage />
       </Route>
 
-      {/* <Route exact path={`${RouteConst.SITE_TEXT_EDITOR}/:appId`}>
-        <SiteTextEditorPage />
+      <Route exact path={`${RouteConst.SITE_TEXT_DETAIL}/:siteTextId`}>
+        <SiteTextDetailPage />
       </Route>
-      <Route exact path={`${RouteConst.SITE_TEXT_EDITOR}/:appId/:wordId`}>
-        <SiteTextEditorPage />
-      </Route> */}
+      <Route
+        exact
+        path={`${RouteConst.SITE_TEXT_CHANGE_TRANSLATION}/:siteTextId`}
+      >
+        <SiteTextDetailPage isChangeTranslationPage={true} />
+      </Route>
+
+      <Route
+        exact
+        path={`${RouteConst.SITE_TEXT_TRANSLATION_EDITOR}/:siteTextId`}
+      >
+        <SiteTextTranslationEditorPage />
+      </Route>
     </Switch>
   );
 }

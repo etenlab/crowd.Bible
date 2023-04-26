@@ -1,9 +1,12 @@
-export interface VotableContent {
-  content: string;
+export interface Votable {
   upVotes: number;
   downVotes: number;
-  id: Nanoid | null;
   candidateId: Nanoid | null;
+}
+
+export interface VotableContent extends Votable {
+  id: Nanoid | null;
+  content: string;
 }
 
 export interface VotableItem {
