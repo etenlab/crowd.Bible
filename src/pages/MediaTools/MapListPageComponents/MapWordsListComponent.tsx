@@ -20,7 +20,7 @@ type Item = {
 
 const PADDING = 15;
 
-export const MapStringsListComponent = () => {
+export const MapWordsListComponent = () => {
   const langIdRef = useRef('');
   const singletons = useSingletons();
   const [presentAlert] = useIonAlert();
