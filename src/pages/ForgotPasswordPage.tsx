@@ -1,3 +1,4 @@
+//i'll use it as sample
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';

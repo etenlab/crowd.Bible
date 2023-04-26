@@ -10,6 +10,8 @@ import {
   StyledFilterButton,
   StyledSectionTypography,
 } from './StyledComponents';
+import { gql, useApolloClient } from '@apollo/client';
+import { useAppContext } from '../../hooks/useAppContext';
 const { Box, styled, CircularProgress } = MuiMaterial;
 
 //#region types
@@ -39,9 +41,27 @@ type MapDetail = {
 //#endregion
 
 //#region data
+export const UPLOAD_FILE_MUTATION = gql`
+  mutation UploadFile($file: Upload!, $file_type: String!, $file_size: Int!) {
+    uploadFile(file: $file, file_type: $file_type, file_size: $file_size) {
+      id
+      fileHash
+      fileName
+      fileUrl
+    }
+  }
+`;
 //#endregion
 
 export const MapTabContent = () => {
+  const {
+    states: {
+      global: { singletons },
+    },
+    actions: { alertFeedback },
+  } = useAppContext();
+  const apolloClient = useApolloClient();
+
   const langIdRef = useRef('');
   const [langs, setLangs] = useState<LanguageDto[]>([]);
   const [mapList, setMapList] = useState<MapDetail[]>([]);
@@ -49,7 +69,6 @@ export const MapTabContent = () => {
   const [presentAlert] = useIonAlert();
   const [uploadMapBtnStatus, setUploadMapBtnStatus] =
     useState<eUploadMapBtnStatus>(eUploadMapBtnStatus.NONE);
-  const singletons = useSingletons();
 
   useEffect(() => {
     const loadLanguages = async () => {
@@ -127,6 +146,29 @@ export const MapTabContent = () => {
     }
   }, [mapList, singletons]);
 
+  const saveMapFile = useCallback(
+    async (file: File) => {
+      apolloClient
+        .mutate({
+          mutation: UPLOAD_FILE_MUTATION,
+          variables: {
+            file,
+            file_size: file.size,
+            file_type: file.type,
+          },
+        })
+        .then((res) => {
+          alertFeedback('success', `Map file (name:${file.name}) uploaded.`);
+          console.log(res);
+        })
+        .catch((error: any) => {
+          alertFeedback('error', `Error on map uploading: ${error.message}`);
+          console.log(JSON.stringify(error));
+        });
+    },
+    [alertFeedback, apolloClient],
+  );
+
   const showAlert = useCallback(
     (msg: string) => {
       presentAlert({
@@ -203,9 +245,10 @@ export const MapTabContent = () => {
         }
       };
       fileReader.readAsText(file);
+      saveMapFile(file);
       e.target.value = '';
     },
-    [showAlert],
+    [saveMapFile, showAlert],
   );
 
   const setMapsByLang = async (langId: string) => {
