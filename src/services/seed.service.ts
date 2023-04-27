@@ -8,6 +8,9 @@ import { type RelationshipTypeRepository } from '@/repositories/relationship/rel
 import { type RelationshipRepository } from '@/repositories/relationship/relationship.repository';
 import { type DiscussionRepository } from '@/repositories/discussion/discussion.repository';
 import { type PostRepository } from '@/repositories/discussion/post.repository';
+import { type ElectionRepository } from '@/repositories/voting/election.repository';
+import { type CandidateRepository } from '@/repositories/voting/candidate.repository';
+import { type VoteRepository } from '@/src/repositories/voting/vote.repository';
 import { nanoid } from 'nanoid';
 import { SeedVersificationService } from './seed-versification.service';
 
@@ -31,6 +34,9 @@ export class SeedService {
     readonly relationshipPropertyValueRepository: RelationshipPropertyValueRepository,
     readonly discussionRepository: DiscussionRepository,
     readonly postRepository: PostRepository,
+    readonly electionRepository: ElectionRepository,
+    readonly candidateRepository: CandidateRepository,
+    readonly voteRepository: VoteRepository,
   ) {
     this.init();
   }

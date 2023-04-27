@@ -1,5 +1,7 @@
 import { nanoid } from 'nanoid';
 
+import { ElectionTypeConst } from '@/constants/voting.constant';
+import { TableNameConst } from '@/constants/table-name.constant';
 import { type SeedService } from './seed.service';
 
 type SeedBible = {
@@ -53,7 +55,7 @@ export class SeedVersificationService {
     };
 
     const bibleId = await this.createBible(bible);
-    await this.addPostsToChaptersAndVerses(bibleId);
+    await this.addVotesAndPostsToChaptersAndVerses(bibleId);
   }
 
   async createBible(bible: SeedBible) {
@@ -175,7 +177,7 @@ export class SeedVersificationService {
     }
   }
 
-  async addPostsToChaptersAndVerses(bibleId: string) {
+  async addVotesAndPostsToChaptersAndVerses(bibleId: string) {
     const bible = await this.seedService.nodeRepository.repository.findOne({
       relations: {
         // bible-to-book
@@ -210,19 +212,15 @@ export class SeedVersificationService {
         for (const chapterRel of bookRel.toNode.toNodeRelationships || []) {
           for (const propertyKey of chapterRel.toNode.propertyKeys || []) {
             for (const propertyValue of propertyKey.propertyValues || []) {
-              await this.addRandomPosts(
-                'node_property_values',
-                propertyValue.id,
-              );
+              await this.addRandomVotes(propertyValue.id);
+              await this.addRandomPosts(propertyValue.id);
             }
           }
           for (const verseRel of chapterRel.toNode.toNodeRelationships || []) {
             for (const propertyKey of verseRel.toNode.propertyKeys || []) {
               for (const propertyValue of propertyKey.propertyValues || []) {
-                await this.addRandomPosts(
-                  'node_property_values',
-                  propertyValue.id,
-                );
+                await this.addRandomVotes(propertyValue.id);
+                await this.addRandomPosts(propertyValue.id);
               }
             }
           }
@@ -231,11 +229,44 @@ export class SeedVersificationService {
     }
   }
 
-  async addRandomPosts(table_name: string, id: string) {
+  async addRandomVotes(id: string) {
+    const election = await this.seedService.electionRepository.createElection(
+      ElectionTypeConst.TRANSLATION,
+      id,
+      TableNameConst.NODE_PROPERTY_VALUES,
+      TableNameConst.NODE_PROPERTY_VALUES,
+    );
+    const candidate =
+      await this.seedService.candidateRepository.createCandidate(
+        election.id,
+        id,
+      );
+
     const randomNum = Math.floor(Math.random() * 20) + 1;
 
     for (let i = 0; i < randomNum; i += 1) {
-      await this.addPost(table_name, id, 'Lorem Ipsum...');
+      await this.addVote(candidate.id);
+    }
+  }
+
+  async addVote(candidate_id: string) {
+    const vote = await this.seedService.voteRepository.repository.create({
+      candidate_id,
+      user_id: nanoid(),
+      vote: !Math.floor(Math.random() * 2),
+    });
+    await this.seedService.voteRepository.repository.save(vote);
+  }
+
+  async addRandomPosts(id: string) {
+    const randomNum = Math.floor(Math.random() * 20) + 1;
+
+    for (let i = 0; i < randomNum; i += 1) {
+      await this.addPost(
+        TableNameConst.NODE_PROPERTY_VALUES,
+        id,
+        'Lorem Ipsum...',
+      );
     }
   }
 

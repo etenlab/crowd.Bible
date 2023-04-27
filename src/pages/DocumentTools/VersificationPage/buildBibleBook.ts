@@ -1,6 +1,12 @@
 import { Node } from '@/models/node/node.entity';
 
-export function buildBibleBook(bible: Node, bookId: string) {
+import { NodePropertyValueDatas } from '.';
+
+export function buildBibleBook(
+  bible: Node,
+  nodePropertyValueDatas: NodePropertyValueDatas,
+  bookId: string,
+) {
   const bibleNamePropertyValue = bible.propertyKeys.find(
     ({ property_key }) => property_key === 'name',
   )?.propertyValues[0]?.property_value;
@@ -26,13 +32,15 @@ export function buildBibleBook(bible: Node, bookId: string) {
         id: id,
         identifier: {
           id: pkId,
-          values: propertyValues.map(({ property_value, discussion }) => ({
+          values: propertyValues.map(({ id, property_value }) => ({
             value: property_value
               ? (JSON.parse(property_value).value as string)
               : '',
-            numUpVotes: 0,
-            numDownVotes: 0,
-            numPosts: discussion?.posts ? discussion.posts.length : 0,
+            ...(nodePropertyValueDatas[id] || {
+              numUpVotes: 0,
+              numDownVotes: 0,
+              numPosts: 0,
+            }),
           })),
         },
         verses: toNodeRelationships.map(
@@ -60,16 +68,16 @@ export function buildBibleBook(bible: Node, bookId: string) {
               id: id,
               identifier: {
                 id: pkId,
-                values: propertyValues.map(
-                  ({ property_value, discussion }) => ({
-                    value: property_value
-                      ? (JSON.parse(property_value).value as string)
-                      : '',
+                values: propertyValues.map(({ id, property_value }) => ({
+                  value: property_value
+                    ? (JSON.parse(property_value).value as string)
+                    : '',
+                  ...(nodePropertyValueDatas[id] || {
                     numUpVotes: 0,
                     numDownVotes: 0,
-                    numPosts: discussion?.posts ? discussion.posts.length : 0,
+                    numPosts: 0,
                   }),
-                ),
+                })),
               },
               text,
             };

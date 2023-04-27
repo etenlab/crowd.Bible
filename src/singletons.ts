@@ -116,6 +116,9 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipPropertyValueRepo,
     discussionRepo,
     postRepo,
+    electionRepo,
+    candidateRepo,
+    voteRepo,
   );
 
   const graphFirstLayerService = new GraphFirstLayerService(
