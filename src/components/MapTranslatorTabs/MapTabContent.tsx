@@ -10,8 +10,8 @@ import {
   StyledFilterButton,
   StyledSectionTypography,
 } from './StyledComponents';
-import { gql, useApolloClient } from '@apollo/client';
 import { useAppContext } from '../../hooks/useAppContext';
+import { useMapTranslationTools } from '../../hooks/useMapTranslationTools';
 const { Box, styled, CircularProgress } = MuiMaterial;
 
 //#region types
@@ -34,23 +34,14 @@ type MapDetail = {
   tempId?: string;
   status: eProcessStatus;
   words?: string[];
-  map?: string;
+  // map?: string;
+  mapFileHash?: string;
   name?: string;
   langId?: string;
 };
 //#endregion
 
 //#region data
-export const UPLOAD_FILE_MUTATION = gql`
-  mutation UploadFile($file: Upload!, $file_type: String!, $file_size: Int!) {
-    uploadFile(file: $file, file_type: $file_type, file_size: $file_size) {
-      id
-      fileHash
-      fileName
-      fileUrl
-    }
-  }
-`;
 //#endregion
 
 export const MapTabContent = () => {
@@ -60,7 +51,6 @@ export const MapTabContent = () => {
     },
     actions: { alertFeedback },
   } = useAppContext();
-  const apolloClient = useApolloClient();
 
   const langIdRef = useRef('');
   const [langs, setLangs] = useState<LanguageDto[]>([]);
@@ -69,6 +59,7 @@ export const MapTabContent = () => {
   const [presentAlert] = useIonAlert();
   const [uploadMapBtnStatus, setUploadMapBtnStatus] =
     useState<eUploadMapBtnStatus>(eUploadMapBtnStatus.NONE);
+  const { sendMapFile } = useMapTranslationTools();
 
   useEffect(() => {
     const loadLanguages = async () => {
@@ -123,12 +114,14 @@ export const MapTabContent = () => {
           const newState: Partial<MapDetail> = {
             status: eProcessStatus.COMPLETED,
           };
+          ///
           try {
             const mapId = await singletons.graphThirdLayerService.saveMap(
               argMap.langId!,
               {
                 name: argMap.name!,
-                map: argMap.map!,
+                mapFileHash: argMap.mapFileHash!,
+                // map: argMap.map!,
                 ext: 'svg',
               },
             );
@@ -145,29 +138,6 @@ export const MapTabContent = () => {
       }
     }
   }, [mapList, singletons]);
-
-  const saveMapFile = useCallback(
-    async (file: File) => {
-      apolloClient
-        .mutate({
-          mutation: UPLOAD_FILE_MUTATION,
-          variables: {
-            file,
-            file_size: file.size,
-            file_type: file.type,
-          },
-        })
-        .then((res) => {
-          alertFeedback('success', `Map file (name:${file.name}) uploaded.`);
-          console.log(res);
-        })
-        .catch((error: any) => {
-          alertFeedback('error', `Error on map uploading: ${error.message}`);
-          console.log(JSON.stringify(error));
-        });
-    },
-    [alertFeedback, apolloClient],
-  );
 
   const showAlert = useCallback(
     (msg: string) => {
@@ -236,19 +206,19 @@ export const MapTabContent = () => {
           setMapStatus(id, { status: eProcessStatus.FAILED });
           showAlert('No text or textPath tags found');
         } else {
-          const base64Svg = Buffer.from(originalSvg, 'utf8').toString('base64');
-          setMapStatus(id, {
-            status: eProcessStatus.PARSING_COMPLETED,
-            map: base64Svg,
-            words: textArray,
+          sendMapFile(file, (sentFileData) => {
+            setMapStatus(id, {
+              status: eProcessStatus.PARSING_COMPLETED,
+              mapFileHash: sentFileData.fileHash,
+              words: textArray,
+            });
           });
         }
       };
       fileReader.readAsText(file);
-      saveMapFile(file);
       e.target.value = '';
     },
-    [saveMapFile, showAlert],
+    [sendMapFile, showAlert],
   );
 
   const setMapsByLang = async (langId: string) => {
