@@ -35,7 +35,7 @@ type MapDetail = {
   status: eProcessStatus;
   words?: string[];
   // map?: string;
-  mapFileHash?: string;
+  mapFileId?: string;
   name?: string;
   langId?: string;
 };
@@ -120,7 +120,7 @@ export const MapTabContent = () => {
               argMap.langId!,
               {
                 name: argMap.name!,
-                mapFileHash: argMap.mapFileHash!,
+                mapFileId: argMap.mapFileId!,
                 // map: argMap.map!,
                 ext: 'svg',
               },
@@ -166,18 +166,28 @@ export const MapTabContent = () => {
     (e) => {
       const file = e.target.files?.[0];
       if (file == null) return;
+      const fileName = file.name?.split('.')[0];
       const id = nanoid();
+      let alreadyExists = false;
+
       setMapList((prevList) => {
+        const existingIdx = prevList.findIndex((map) => map.name === fileName);
+        if (existingIdx >= 0) {
+          alertFeedback('error', 'File already exists');
+          alreadyExists = true;
+          return [...prevList];
+        }
         return [
           ...prevList,
           {
             tempId: id,
-            name: file.name?.split('.')[0],
+            name: fileName,
             status: eProcessStatus.PARSING_STARTED,
             langId: langIdRef.current,
           },
         ];
       });
+      if (alreadyExists) return;
       const fileReader = new FileReader();
       fileReader.onload = function (evt: ProgressEvent<FileReader>) {
         if (evt.target?.readyState !== 2) return;
@@ -209,7 +219,7 @@ export const MapTabContent = () => {
           sendMapFile(file, (sentFileData) => {
             setMapStatus(id, {
               status: eProcessStatus.PARSING_COMPLETED,
-              mapFileHash: sentFileData.fileHash,
+              mapFileId: sentFileData.id,
               words: textArray,
             });
           });

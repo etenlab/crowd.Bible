@@ -6,7 +6,7 @@ export interface MapDto {
   name: string;
   ext: string;
   // map: string;
-  mapFileHash: string;
+  mapFileId: string;
   langId: string;
   lang?: LanguageDto;
   words?: WordDto[];

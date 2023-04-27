@@ -13,13 +13,14 @@ export const UPLOAD_FILE_MUTATION = gql`
   }
 `;
 
-export const FETCH_FILES_QUERY = gql`
+export const FETCH_FILE_INFO_QUERY = gql`
   query Query($fileId: Int!) {
     file(id: $fileId) {
       id
       fileHash
       fileName
       fileType
+      fileUrl
     }
   }
 `;
@@ -66,18 +67,42 @@ export function useMapTranslationTools() {
     [alertFeedback, apolloClient],
   );
 
-  const fetchMapFiles = useCallback(
-    async (hash: string) => {
-      apolloClient.query({
-        query: FETCH_FILES_QUERY,
-        variables: { hash },
-      });
+  const getMapFileInfo = useCallback(
+    async (
+      id: string,
+    ): Promise<{
+      id?: string;
+      fileName?: string;
+      fileHash?: string;
+      fileUrl?: string;
+      fileType?: string;
+    }> => {
+      const res = await apolloClient
+        .query({
+          query: FETCH_FILE_INFO_QUERY,
+          variables: { fileId: parseInt(id) },
+        })
+        .catch((error: any) => {
+          alertFeedback(
+            'error',
+            `Error on getting map file info: ${error.message}`,
+          );
+          console.log(JSON.stringify(error));
+        });
+      if (!res) return {};
+      return {
+        id: res.data.file.id,
+        fileName: res.data.file.fileName,
+        fileHash: res.data.file.fileHash,
+        fileUrl: res.data.file.fileUrl,
+        fileType: res.data.file.fileType,
+      };
     },
-    [apolloClient],
+    [alertFeedback, apolloClient],
   );
 
   return {
     sendMapFile,
-    fetchMapFiles,
+    getMapFileInfo,
   };
 }

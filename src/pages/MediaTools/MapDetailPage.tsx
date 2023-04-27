@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { useSingletons } from '@/src/hooks/useSingletons';
 import { MapDto } from '@/src/dtos/map.dto';
 import { WordMapper } from '@/src/mappers/word.mapper';
+import { useMapTranslationTools } from '../../hooks/useMapTranslationTools';
+import axios from 'axios';
 const { TitleWithIcon } = CrowdBibleUI;
 
 const PADDING = 20;
@@ -16,7 +18,9 @@ export const MapDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [windowWidth, setWindowWidth] = useState(getWindowWidth());
   const [mapDetail, setMapDetail] = useState<MapDto>();
+  const [mapFileData, setMapFileData] = useState<string>();
   const singletons = useSingletons();
+  const { getMapFileInfo } = useMapTranslationTools();
 
   useEffect(() => {
     if (present) present({ message: 'Loading...', duration: 1000 });
@@ -58,6 +62,18 @@ export const MapDetailPage = () => {
     }
   }, [singletons, id, router]);
 
+  useEffect(() => {
+    if (!mapDetail?.mapFileId) return;
+    const getFileData = async (fileId: string) => {
+      const { fileUrl } = await getMapFileInfo(fileId);
+      if (!fileUrl) return;
+      const res = await axios.get(fileUrl, { responseType: 'arraybuffer' });
+      const f = Buffer.from(res.data, 'binary').toString('base64');
+      setMapFileData(f);
+    };
+    getFileData(mapDetail?.mapFileId);
+  }, [getMapFileInfo, mapDetail, mapDetail?.mapFileId]);
+
   if (!mapDetail) {
     return <></>;
   }
@@ -79,14 +95,14 @@ export const MapDetailPage = () => {
           withCloseIcon={false}
           label={mapDetail?.name || ''}
         ></TitleWithIcon>
-        {mapDetail?.map ? (
+        {mapFileData ? (
           <Box padding={'20px'}>
             <TransformWrapper>
               <TransformComponent>
                 <img
                   width={`${windowWidth - PADDING}px`}
                   height={'auto'}
-                  src={`data:image/svg+xml;base64,${mapDetail.map}`}
+                  src={`data:image/svg+xml;base64,${mapFileData}`}
                   alt="Original map"
                 />
               </TransformComponent>
