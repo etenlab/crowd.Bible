@@ -3,9 +3,7 @@ import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { type INode, parseSync } from 'svgson';
 import { Autocomplete, Input, MuiMaterial, Button } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
-import { useSingletons } from '@/src/hooks/useSingletons';
 import { LanguageDto } from '@/src/dtos/language.dto';
-import { FilterIcon } from '@/src/components/Icons';
 import {
   StyledFilterButton,
   StyledSectionTypography,
@@ -228,7 +226,7 @@ export const MapTabContent = () => {
       fileReader.readAsText(file);
       e.target.value = '';
     },
-    [sendMapFile, showAlert],
+    [alertFeedback, sendMapFile, showAlert],
   );
 
   const setMapsByLang = async (langId: string) => {
@@ -453,7 +451,7 @@ function iterateOverINode(
 
 //#region styled component
 
-const StyledBox = styled(Box)(({}) => ({
+const StyledBox = styled(Box)(() => ({
   width: '100%',
   display: 'flex',
   alignItems: 'center',

@@ -19,7 +19,6 @@ import {
   type RoleType,
   type IUser,
   type PrefersColorSchemeType,
-  TranslatedMap,
 } from '@/reducers/global.reducer';
 import { type ISingletons } from '@/src/singletons';
 

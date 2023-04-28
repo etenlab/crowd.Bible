@@ -27,9 +27,6 @@ export const FETCH_FILE_INFO_QUERY = gql`
 
 export function useMapTranslationTools() {
   const {
-    states: {
-      global: { singletons },
-    },
     actions: { alertFeedback },
   } = useAppContext();
   const apolloClient = useApolloClient();
@@ -59,7 +56,7 @@ export function useMapTranslationTools() {
           const { id, fileName, fileHash, fileUrl } = res.data.uploadFile;
           afterSuccess({ id, fileName, fileHash, fileUrl });
         })
-        .catch((error: any) => {
+        .catch((error) => {
           alertFeedback('error', `Error on map uploading: ${error.message}`);
           console.log(JSON.stringify(error));
         });
@@ -82,7 +79,7 @@ export function useMapTranslationTools() {
           query: FETCH_FILE_INFO_QUERY,
           variables: { fileId: parseInt(id) },
         })
-        .catch((error: any) => {
+        .catch((error) => {
           alertFeedback(
             'error',
             `Error on getting map file info: ${error.message}`,
