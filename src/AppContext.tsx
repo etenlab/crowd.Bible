@@ -8,7 +8,6 @@ import {
   type StateType as GlobalStateType,
   type FeedbackType,
   type PrefersColorSchemeType,
-  TranslatedMap,
 } from '@/reducers/global.reducer';
 import { type StateType as DocumentToolsStateType } from '@/reducers/documentTools.reducer';
 import { type LanguageDto } from '@/dtos/language.dto';

@@ -7,7 +7,7 @@ interface IProps {
   onClick?: React.MouseEventHandler;
 }
 export function FilterIcon(props: IProps) {
-  const { width = 20, height = 18, onClick, className } = props;
+  const { width = 20, height = 18, className } = props;
   return (
     <svg
       width={width}

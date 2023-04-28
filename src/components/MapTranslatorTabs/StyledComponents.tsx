@@ -13,6 +13,7 @@ export const StyledSectionTypography = styled(Typography)(({ theme }) => ({
   paddingTop: '20px',
 }));
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type StyledButtonProps = HTMLButtonElement & any;
 export const StyledFilterButton = styled((props: StyledButtonProps) => (
   <Button {...props}>

@@ -3,7 +3,6 @@ import {
   type RoleType,
   type IUser,
   type PrefersColorSchemeType,
-  TranslatedMap,
 } from './global.reducer';
 import { type ISingletons } from '@/src/singletons';
 
