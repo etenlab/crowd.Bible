@@ -756,7 +756,6 @@ export class GraphThirdLayerService {
     langId: Nanoid,
     mapInfo: {
       name: string;
-      //i'll map: string;
       mapFileId: string;
       ext: string;
     },
