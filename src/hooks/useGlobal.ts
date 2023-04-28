@@ -5,7 +5,6 @@ import {
   setUser as setUserAction,
   alertFeedback as alertFeedbackAction,
   closeFeedback as closeFeedbackAction,
-  setTranslatedMap as setTranslatedMapAction,
   setPrefersColorScheme as setPrefersColorSchemeAction,
   setConnectivity as setConnectivityAction,
   logout as logoutAction,
@@ -59,10 +58,6 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     [],
   );
 
-  const setTranslatedMap = useCallback((translatedMap: TranslatedMap) => {
-    dispatchRef.current.dispatch(setTranslatedMapAction(translatedMap));
-  }, []);
-
   const closeFeedback = useCallback(() => {
     dispatchRef.current.dispatch(closeFeedbackAction());
   }, []);
@@ -91,7 +86,6 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     setPrefersColorScheme,
     alertFeedback,
     closeFeedback,
-    setTranslatedMap,
     setLoadingState,
     setSingletons,
     setSqlPortalShown,
