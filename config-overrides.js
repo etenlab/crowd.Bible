@@ -1,8 +1,9 @@
+const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack');
 const { aliasWebpack, aliasJest } = require('react-app-alias');
 
-function mainOverride(config) {
+function mainOverride(config, env) {
   const fallback = config.resolve.fallback || {};
   Object.assign(fallback, {
     path: require.resolve('path-browserify'),
@@ -47,6 +48,16 @@ function mainOverride(config) {
       keep_fnames: true,
     },
   });
+
+  const workboxWebpackPluginIndex = config.plugins.findIndex(
+    (plugin) => plugin instanceof WorkboxWebpackPlugin.GenerateSW,
+  );
+
+  if (workboxWebpackPluginIndex !== -1) {
+    config.plugins[
+      workboxWebpackPluginIndex
+    ].config.maximumFileSizeToCacheInBytes = 6 * 1024 * 1024; // 6MB
+  }
 
   return config;
 }
