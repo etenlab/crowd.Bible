@@ -40,7 +40,7 @@ export function BookListPage() {
           {bibles.map(({ id: bibleId, propertyKeys, toNodeRelationships }) => {
             const propertyValue = propertyKeys.find(
               ({ property_key }) => property_key === 'name',
-            )?.propertyValues[0]?.property_value;
+            )?.propertyValue?.property_value;
             const bibleName = propertyValue
               ? JSON.parse(propertyValue).value
               : '';
@@ -51,7 +51,7 @@ export function BookListPage() {
                   ({ toNode: { id: bookId, propertyKeys } }, index) => {
                     const propertyValue = propertyKeys.find(
                       ({ property_key }) => property_key === 'name',
-                    )?.propertyValues[0]?.property_value;
+                    )?.propertyValue?.property_value;
                     const bookName = propertyValue
                       ? JSON.parse(propertyValue).value
                       : '';

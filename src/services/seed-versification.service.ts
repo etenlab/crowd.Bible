@@ -187,13 +187,13 @@ export class SeedVersificationService {
             toNodeRelationships: {
               toNode: {
                 propertyKeys: {
-                  propertyValues: true,
+                  propertyValue: true,
                 },
                 // chapter-to-verse
                 toNodeRelationships: {
                   toNode: {
                     propertyKeys: {
-                      propertyValues: true,
+                      propertyValue: true,
                     },
                   },
                 },
@@ -211,16 +211,16 @@ export class SeedVersificationService {
       for (const bookRel of bible.toNodeRelationships || []) {
         for (const chapterRel of bookRel.toNode.toNodeRelationships || []) {
           for (const propertyKey of chapterRel.toNode.propertyKeys || []) {
-            for (const propertyValue of propertyKey.propertyValues || []) {
-              await this.addRandomVotes(propertyValue.id);
-              await this.addRandomPosts(propertyValue.id);
+            if (propertyKey.propertyValue) {
+              await this.addRandomVotes(propertyKey.propertyValue.id);
+              await this.addRandomPosts(propertyKey.propertyValue.id);
             }
           }
           for (const verseRel of chapterRel.toNode.toNodeRelationships || []) {
             for (const propertyKey of verseRel.toNode.propertyKeys || []) {
-              for (const propertyValue of propertyKey.propertyValues || []) {
-                await this.addRandomVotes(propertyValue.id);
-                await this.addRandomPosts(propertyValue.id);
+              if (propertyKey.propertyValue) {
+                await this.addRandomVotes(propertyKey.propertyValue.id);
+                await this.addRandomPosts(propertyKey.propertyValue.id);
               }
             }
           }
@@ -270,11 +270,11 @@ export class SeedVersificationService {
     }
   }
 
-  async addPost(table_name: string, row: string, plain_text: string) {
+  async addPost(tableName: string, row: string, plainText: string) {
     let discussion =
       await this.seedService.discussionRepository.repository.findOne({
         where: {
-          table_name,
+          tableName,
           row,
         },
       });
@@ -283,7 +283,7 @@ export class SeedVersificationService {
       discussion =
         await this.seedService.discussionRepository.repository.create({
           id: nanoid(),
-          table_name,
+          tableName,
           row,
         });
 
@@ -292,10 +292,11 @@ export class SeedVersificationService {
 
     const post = await this.seedService.postRepository.repository.create({
       id: nanoid(),
-      discussion_id: discussion.id,
-      plain_text,
-      quill_text: plain_text,
-      user_id: 1,
+      discussionId: discussion.id,
+      plainText,
+      quillText: plainText,
+      userId: 1,
+      postgresLanguage: '',
     });
 
     await this.seedService.postRepository.repository.save(post);

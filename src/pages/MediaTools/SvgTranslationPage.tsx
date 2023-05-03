@@ -1,6 +1,6 @@
-import { MuiMaterial } from '@eten-lab/ui-kit';
-import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { IonContent } from '@ionic/react';
+
 import { type INode, parseSync, stringify } from 'svgson';
 import {
   Alert,
@@ -8,6 +8,7 @@ import {
   Button,
   Input,
   CrowdBibleUI,
+  MuiMaterial,
   BiRightArrowAlt,
   Typography,
 } from '@eten-lab/ui-kit';
@@ -121,9 +122,25 @@ export const SvgTranslationPage = () => {
     [],
   );
 
+  const items = useMemo(() => {
+    return translatedMapsList.map((item) => ({
+      ...item,
+      startIcon: <BiRightArrowAlt size={25} />,
+    }));
+  }, [translatedMapsList]);
+
   if (textContents.length === 0 && originalSvg) {
     debugger;
-    return <Alert severity="warning">No text or textPath tags found</Alert>;
+    return (
+      <Alert
+        severity="warning"
+        content={undefined}
+        rel={undefined}
+        rev={undefined}
+      >
+        No text or textPath tags found
+      </Alert>
+    );
   }
 
   return (
@@ -197,11 +214,10 @@ export const SvgTranslationPage = () => {
           <Box width={'100%'} paddingTop={`${PADDING}px`}>
             <ButtonList
               label="Translated Maps"
-              items={translatedMapsList}
+              items={items}
               onClick={() => {
                 history.push('/svg-translated-map');
               }}
-              startIcon={<BiRightArrowAlt size={25} />}
             ></ButtonList>
           </Box>
         )}

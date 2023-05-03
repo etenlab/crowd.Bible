@@ -1,15 +1,15 @@
-import { Node } from '@/models/node/node.entity';
+import { Node } from '@eten-lab/models';
 
-import { NodePropertyValueDatas } from '.';
+import { VersificationKeys } from '.';
 
 export function buildBibleBook(
   bible: Node,
-  nodePropertyValueDatas: NodePropertyValueDatas,
+  versificationKeys: VersificationKeys,
   bookId: string,
 ) {
   const bibleNamePropertyValue = bible.propertyKeys.find(
     ({ property_key }) => property_key === 'name',
-  )?.propertyValues[0]?.property_value;
+  )?.propertyValue?.property_value;
   const bibleName = bibleNamePropertyValue
     ? JSON.parse(bibleNamePropertyValue).value
     : '';
@@ -18,13 +18,13 @@ export function buildBibleBook(
   )!;
   const bookNamePropertyValue = book.propertyKeys.find(
     ({ property_key }) => property_key === 'name',
-  )?.propertyValues[0]?.property_value;
+  )?.propertyValue?.property_value;
   const bookName = bookNamePropertyValue
     ? JSON.parse(bookNamePropertyValue).value
     : '';
   const chapters = (book.toNodeRelationships || []).map(
     ({ toNode: { id, propertyKeys, toNodeRelationships = [] } }) => {
-      const { id: pkId, propertyValues } = propertyKeys.find(
+      const { id: pkId } = propertyKeys.find(
         ({ property_key }) => property_key === 'chapter-identifier',
       )!;
 
@@ -32,20 +32,18 @@ export function buildBibleBook(
         id: id,
         identifier: {
           id: pkId,
-          values: propertyValues.map(({ id, property_value }) => ({
-            value: property_value
-              ? (JSON.parse(property_value).value as string)
-              : '',
-            ...(nodePropertyValueDatas[id] || {
-              numUpVotes: 0,
-              numDownVotes: 0,
-              numPosts: 0,
+          values: (versificationKeys[pkId]?.propertyValues || []).map(
+            ({ property_value, ...restProps }) => ({
+              value: property_value
+                ? (JSON.parse(property_value).value as string)
+                : '',
+              ...restProps,
             }),
-          })),
+          ),
         },
         verses: toNodeRelationships.map(
           ({ toNode: { id, propertyKeys, toNodeRelationships = [] } }) => {
-            const { id: pkId, propertyValues } = propertyKeys.find(
+            const { id: pkId } = propertyKeys.find(
               ({ property_key }) => property_key === 'verse-identifier',
             )!;
             const text = toNodeRelationships
@@ -54,7 +52,7 @@ export function buildBibleBook(
                   .map(({ toNode: word }) => {
                     const propertyValue = word.propertyKeys.find(
                       ({ property_key }) => property_key === 'word_name',
-                    )!.propertyValues[0].property_value;
+                    )!.propertyValue.property_value;
 
                     return propertyValue
                       ? (JSON.parse(propertyValue).value as string)
@@ -68,16 +66,14 @@ export function buildBibleBook(
               id: id,
               identifier: {
                 id: pkId,
-                values: propertyValues.map(({ id, property_value }) => ({
-                  value: property_value
-                    ? (JSON.parse(property_value).value as string)
-                    : '',
-                  ...(nodePropertyValueDatas[id] || {
-                    numUpVotes: 0,
-                    numDownVotes: 0,
-                    numPosts: 0,
+                values: (versificationKeys[pkId]?.propertyValues || []).map(
+                  ({ property_value, ...restProps }) => ({
+                    value: property_value
+                      ? (JSON.parse(property_value).value as string)
+                      : '',
+                    ...restProps,
                   }),
-                })),
+                ),
               },
               text,
             };

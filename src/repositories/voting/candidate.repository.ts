@@ -1,7 +1,7 @@
 import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
 
-import { Candidate } from '@/models/voting/candidate.entity';
+import { Candidate } from '@/src/models/';
 
 export class CandidateRepository {
   constructor(

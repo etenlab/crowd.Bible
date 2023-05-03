@@ -23,11 +23,11 @@ function VerseTranslatorQA({ onClickCancel, onClickBack }: VerseFeedbackProps) {
     actions: { alertFeedback },
   } = useAppContext();
 
-  const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
+  const [selectedVerse, setSelectedVerse] = useState<string | null>(null);
 
   const handleChangeVerse = (
     _event: React.SyntheticEvent<Element, Event>,
-    verse: number,
+    verse: string,
   ) => {
     setSelectedVerse(verse);
   };

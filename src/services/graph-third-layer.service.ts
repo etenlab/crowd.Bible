@@ -4,8 +4,8 @@ import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 import { NodeRepository } from '@/repositories/node/node.repository';
 
-import { Node } from '@/models/node/node.entity';
-import { Relationship } from '@/models/relationship/relationship.entity';
+import { Node } from '@/src/models';
+import { Relationship } from '@/src/models';
 
 import { MapDto } from '@/dtos/map.dto';
 import { LanguageDto } from '@/dtos/language.dto';
@@ -147,7 +147,7 @@ export class GraphThirdLayerService {
         RelationshipTypeConst.WORD_TO_LANG,
         {},
         NodeTypeConst.WORD,
-        { name: word },
+        { [PropertyKeyConst.NAME]: word },
         langId,
       );
 

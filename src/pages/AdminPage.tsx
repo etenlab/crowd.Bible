@@ -13,7 +13,7 @@ import {
 
 import { useSingletons } from '@/hooks/useSingletons';
 
-import txtfile from '@/utils/iso-639-3-min.tab';
+import txtfile from '@/utils/iso_639_3_min.tab';
 import { LoadingStatus } from '../enums';
 import useSeedService from '../hooks/useSeedService';
 import { NodeTypeConst } from '../constants/graph.constant';
@@ -46,10 +46,10 @@ export function AdminPage() {
 
       setLoadingMessage('Creating table...');
       const table = await singletons.tableService.createTable(
-        'iso-639-3-min.tab',
+        'iso_639_3_min.tab',
       );
 
-      const rows = data.split('\r\n');
+      const rows = data.split(/\r?\n/);
       const columns = rows.shift()?.split('\t');
       if (!columns) {
         return;
@@ -159,6 +159,10 @@ export function AdminPage() {
     }
   }, [seedService]);
 
+  const materialize = async () => {
+    singletons?.materializerService.materialize('iso_639_3_min.tab');
+  };
+
   return (
     <IonContent>
       <IonCard>
@@ -202,6 +206,14 @@ export function AdminPage() {
               ? 'Syncing Out...'
               : 'Sync Out'}
           </IonButton>
+        </IonCardContent>
+      </IonCard>
+      <IonCard>
+        <IonCardHeader>
+          <IonCardTitle>Materialize Table</IonCardTitle>
+        </IonCardHeader>
+        <IonCardContent>
+          <IonButton onClick={materialize}>Materialize</IonButton>
         </IonCardContent>
       </IonCard>
       <IonLoading

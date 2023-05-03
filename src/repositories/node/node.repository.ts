@@ -2,8 +2,10 @@ import { FindOptionsWhere } from 'typeorm';
 
 import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
-import { NodeType } from '@/models/index';
-import { Node } from '@/models/node/node.entity';
+import { NodeType } from '@/src/models';
+import { Node } from '@/src/models';
+
+import { PropertyKeyConst } from '@/constants/graph.constant';
 
 export class NodeRepository {
   constructor(
@@ -92,6 +94,16 @@ export class NodeRepository {
     });
   }
 
+  async find(
+    relations: string[],
+    whereObj: FindOptionsWhere<Node>,
+  ): Promise<Node[]> {
+    return this.repository.find({
+      relations,
+      where: whereObj,
+    });
+  }
+
   async getNodeByProp(
     type: string,
     prop: { key: string; value: unknown },
@@ -113,20 +125,24 @@ export class NodeRepository {
     };
 
     if (relationship) {
-      relationsArray.push('toNodeRelationships');
-      whereObj.toNodeRelationships = {};
-
-      if (relationship.relationship_type) {
-        whereObj.toNodeRelationships.relationship_type =
-          relationship.relationship_type;
-      }
-
       if (relationship.from_node_id) {
-        whereObj.toNodeRelationships.from_node_id = relationship.from_node_id;
+        relationsArray.push('toNodeRelationships');
+        whereObj.fromNodeRelationships = {};
+        whereObj.fromNodeRelationships.from_node_id = relationship.from_node_id;
+        if (relationship.relationship_type) {
+          whereObj.fromNodeRelationships.relationship_type =
+            relationship.relationship_type;
+        }
       }
 
       if (relationship.to_node_id) {
+        relationsArray.push('toNodeRelationships');
+        whereObj.toNodeRelationships = {};
         whereObj.toNodeRelationships.to_node_id = relationship.to_node_id;
+        if (relationship.relationship_type) {
+          whereObj.toNodeRelationships.relationship_type =
+            relationship.relationship_type;
+        }
       }
     }
 
@@ -156,23 +172,23 @@ export class NodeRepository {
 
     const sqlStr = `
         select 
-          nodes.id
+          nodes.node_id
         from 
           nodes 
           inner join (
             select 
-              pk.id, 
+              pk.node_property_key_id, 
               pk.node_id, 
               count(pk.property_key) as property_keys
             from 
               node_property_keys as pk 
-              left join node_property_values as pv on pk.id = pv.node_property_key_id 
+              left join node_property_values as pv on pk.node_property_key_id = pv.node_property_key_id 
             where ${conditionStr}
             group by 
               pk.node_id 
             having 
               count(pk.property_key) = ${props.length}
-          ) as npk on nodes.id = npk.node_id 
+          ) as npk on nodes.node_id = npk.node_id 
         where 
           nodes.node_type = '${type}';
       `;
@@ -184,5 +200,36 @@ export class NodeRepository {
     }
 
     return nodes.map(({ id }) => id);
+  }
+
+  async getNodePropertyValue(
+    nodeId: Nanoid,
+    propertyName: PropertyKeyConst,
+  ): Promise<unknown> {
+    const nodeEntity = await this.readNode(nodeId, [
+      'propertyKeys',
+      'propertyKeys.propertyValue',
+    ]);
+
+    if (!nodeEntity) {
+      return null;
+    }
+
+    if (
+      !nodeEntity.propertyKeys?.length ||
+      nodeEntity.propertyKeys?.length < 1
+    ) {
+      return null;
+    }
+
+    const propertyIdx = nodeEntity.propertyKeys.findIndex(
+      (pk) => pk.property_key === propertyName,
+    );
+
+    const resJson =
+      nodeEntity.propertyKeys[propertyIdx].propertyValue.property_value;
+    const res = JSON.parse(resJson).value;
+
+    return res;
   }
 }

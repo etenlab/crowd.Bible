@@ -1,6 +1,6 @@
 import { DbService } from '@/services/db.service';
 
-import { Post } from '@/models/discussion/post.entity';
+import { Post } from '@/src/models';
 
 export class PostRepository {
   constructor(private readonly dbService: DbService) {}

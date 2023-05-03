@@ -2,25 +2,24 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { VersificationUI, MuiMaterial } from '@eten-lab/ui-kit';
-
-import { Node } from '@/models/node/node.entity';
+import { Node } from '@eten-lab/models';
 
 import { Layout } from './Layout';
 import { buildBibleBook } from './buildBibleBook';
-import { NodePropertyValueDatas, useVersificationContext } from '.';
+import { VersificationKeys, useVersificationContext } from '.';
 
 const { Table, NodeFilter } = VersificationUI;
 const { Box } = MuiMaterial;
 
 export function BookPage() {
   const { bibleId, bookId } = useParams<{ bibleId: string; bookId: string }>();
-  const { bibles, nodePropertyValueDatas } = useVersificationContext();
+  const { bibles, versificationKeys } = useVersificationContext();
   const bible = bibles.find(({ id }) => id === bibleId)!;
 
   return !bible ? null : (
     <Content
       bible={bible}
-      nodePropertyValueDatas={nodePropertyValueDatas}
+      versificationKeys={versificationKeys}
       bookId={bookId}
     />
   );
@@ -28,11 +27,11 @@ export function BookPage() {
 
 function Content({
   bible,
-  nodePropertyValueDatas,
+  versificationKeys,
   bookId,
 }: {
   bible: Node;
-  nodePropertyValueDatas: NodePropertyValueDatas;
+  versificationKeys: VersificationKeys;
   bookId: string;
 }) {
   const { onIdentifierAdd } = useVersificationContext();
@@ -40,7 +39,7 @@ function Content({
     null,
   );
   const [filteredVerseId, setFilteredVerseId] = useState<null | string>(null);
-  const bibleBook = buildBibleBook(bible, nodePropertyValueDatas, bookId);
+  const bibleBook = buildBibleBook(bible, versificationKeys, bookId);
   const filteredChapter = filteredChapterId
     ? bibleBook.chapters.find(({ id }) => (id || '') === filteredChapterId)
     : null;

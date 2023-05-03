@@ -26,11 +26,11 @@ export const mockChapters = [
 
 export function ChapterFeedbackPage() {
   const history = useHistory();
-  const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
 
   const handleChangeChapter = (
     _event: React.SyntheticEvent<Element, Event>,
-    chapter: number,
+    chapter: string,
   ) => {
     setSelectedChapter(chapter);
   };

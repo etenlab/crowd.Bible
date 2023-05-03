@@ -41,51 +41,51 @@ export function ChapterList({
 
 export const mockVerses = [
   {
-    value: 1,
+    value: '1',
     label: 'Ch. 1: Verse 1 Name of the Verse',
   },
   {
-    value: 2,
+    value: '2',
     label: 'Ch. 2: Verse 2 Name of the Verse',
   },
   {
-    value: 3,
+    value: '3',
     label: 'Ch. 3: Verse 3 Name of the Verse',
   },
   {
-    value: 4,
+    value: '4',
     label: 'Ch. 4: Verse 4 Name of the Verse',
   },
   {
-    value: 5,
+    value: '5',
     label: 'Ch. 5: Verse 5 Name of the Verse',
   },
   {
-    value: 6,
+    value: '6',
     label: 'Ch. 6: Verse 6 Name of the Verse',
   },
   {
-    value: 7,
+    value: '7',
     label: 'Ch. 7: Verse 1 Name of the Verse',
   },
   {
-    value: 8,
+    value: '8',
     label: 'Ch. 8: Verse 2 Name of the Verse',
   },
   {
-    value: 9,
+    value: '9',
     label: 'Ch. 9: Verse 3 Name of the Verse',
   },
   {
-    value: 10,
+    value: '10',
     label: 'Ch. 10: Verse 4 Name of the Verse',
   },
   {
-    value: 11,
+    value: '11',
     label: 'Ch. 11: Verse 5 Name of the Verse',
   },
   {
-    value: 12,
+    value: '12',
     label: 'Ch. 12: Verse 6 Name of the Verse',
   },
 ];

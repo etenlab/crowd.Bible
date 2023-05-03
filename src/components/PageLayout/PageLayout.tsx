@@ -1,211 +1,77 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useRef } from 'react';
+import { IonMenu, IonPage, IonContent, IonFooter } from '@ionic/react';
 
-import {
-  IonMenu,
-  IonPage,
-  IonHeader,
-  IonContent,
-  IonToolbar,
-  IonList,
-  IonItem,
-} from '@ionic/react';
+import { LinkGroup } from '../LinkGroup';
+import { AppHeader } from '../AppHeader';
+import { LogoutButton } from '../LogoutButton';
 
-import { LinkItem } from '../LinkItem';
 import './PageLayout.css';
 
-import {
-  Toolbar,
-  MuiMaterial,
-  Alert,
-  useColorModeContext,
-  Typography,
-} from '@eten-lab/ui-kit';
+import { MuiMaterial, Alert } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { SqlPortal } from '../../pages/DataTools/SqlRunner/SqlPortal';
+import { SqlPortal } from '@/pages/DataTools/SqlRunner/SqlPortal';
+import { RouteConst } from '@/constants/route.constant';
 
 const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
+
+const menuLinks = {
+  group: 'Menu',
+  linkItems: [
+    { to: RouteConst.HOME, label: 'Home', implemented: true },
+    {
+      to: RouteConst.LANGUAGE_PROFICIENCY,
+      label: 'Language proficiency setting',
+      implemented: true,
+    },
+    { to: RouteConst.SETTINGS, label: 'Settings', implemented: true },
+    {
+      to: RouteConst.ADMIN,
+      label: 'Admin',
+      onlineOnly: true,
+    },
+  ],
+};
 
 interface PageLayoutProps {
   children?: React.ReactNode;
 }
 
 export function PageLayout({ children }: PageLayoutProps) {
-  const history = useHistory();
-  const location = useLocation();
-  const { setColorMode } = useColorModeContext();
-
   const {
     states: {
-      global: {
-        user,
-        snack,
-        isNewDiscussion,
-        isNewNotification,
-        loading,
-        singletons,
-        isSqlPortalShown,
-      },
+      global: { snack, loading, singletons, isSqlPortalShown },
     },
-    actions: { closeFeedback, setPrefersColorScheme },
+    actions: { closeFeedback },
   } = useAppContext();
-
-  const [themeMode, setThemeMode] = useState<'dark' | 'light'>(() => {
-    if (user && user.prefersColorScheme) {
-      return user.prefersColorScheme;
-    } else {
-      return 'light';
-    }
-  });
   const ref = useRef<HTMLIonMenuElement>(null);
-  const prefersDarkRef = useRef<MediaQueryList | null>(null);
-  const bodyRef = useRef<HTMLElement | null>(null);
-
-  const toggleDarkTheme = useCallback(
-    (shouldToggle: boolean) => {
-      if (shouldToggle) {
-        setThemeMode('dark');
-        setColorMode('dark');
-      } else {
-        setThemeMode('light');
-        setColorMode('light');
-      }
-
-      bodyRef.current?.classList.toggle('dark', shouldToggle);
-    },
-    [setColorMode],
-  );
-
-  useEffect(() => {
-    bodyRef.current = window.document.body;
-
-    if (user && user.prefersColorScheme) {
-      toggleDarkTheme(user.prefersColorScheme === 'dark');
-      return;
-    }
-
-    prefersDarkRef.current = window.matchMedia('(prefers-color-scheme: dark)');
-    prefersDarkRef.current.addListener((e) => {
-      toggleDarkTheme(e.matches);
-    });
-    toggleDarkTheme(prefersDarkRef.current.matches);
-  }, [user, toggleDarkTheme]);
 
   const handleToggleMenu = () => {
     ref.current!.toggle();
   };
-
-  const handleToogleTheme = () => {
-    if (themeMode === 'light') {
-      toggleDarkTheme(true);
-      setPrefersColorScheme('dark');
-    } else {
-      toggleDarkTheme(false);
-      setPrefersColorScheme('light');
-    }
-  };
-
-  const handleGoToHomePage = () => {
-    history.push('/home');
-  };
-
-  const handleLogout = () => {
-    localStorage.clear();
-    history.push('/login');
-  };
-
-  let isHeader = true;
-
-  switch (location.pathname) {
-    case '/welcome': {
-      isHeader = false;
-      break;
-    }
-    case '/login': {
-      isHeader = false;
-      break;
-    }
-    case '/register': {
-      isHeader = false;
-      break;
-    }
-    default: {
-      break;
-    }
-  }
 
   const isLoading = loading || !singletons;
 
   return (
     <>
       <IonMenu ref={ref} contentId="crowd-bible-app">
-        {isHeader ? (
-          <IonHeader>
-            <IonToolbar>
-              <Toolbar
-                title="crowd.Bible"
-                buttons={{
-                  notification: false,
-                  discussion: false,
-                  menu: false,
-                }}
-                themeMode={themeMode}
-                onClickThemeModeBtn={handleToogleTheme}
-                onClickDiscussionBtn={() => {
-                  history.push('/discussions-list');
-                }}
-                onClickNotificationBtn={() => {
-                  history.push('/notifications');
-                }}
-                onClickMenuBtn={handleToggleMenu}
-              />
-            </IonToolbar>
-          </IonHeader>
-        ) : null}
+        <AppHeader kind="menu" onToggle={handleToggleMenu} />
+
         <IonContent>
-          <IonList>
-            <LinkItem to="/home" label="Home" />
-            <LinkItem
-              to="/language-proficiency"
-              label="Language proficiency setting"
-            />
-            <LinkItem to="/settings" label="Settings" />
-            <LinkItem to="/admin" label="Admin" />
-            {/* <LinkItem to="/home" label="Logout" /> */}
-            <IonItem button onClick={handleLogout}>
-              <Typography variant="body1" color="text.dark">
-                Logout
-              </Typography>
-            </IonItem>
-          </IonList>
+          <LinkGroup group={menuLinks.group} linkItems={menuLinks.linkItems} />
         </IonContent>
+
+        <IonFooter>
+          <LogoutButton />
+        </IonFooter>
       </IonMenu>
+
       <IonPage id="crowd-bible-app">
-        {isHeader ? (
-          <IonHeader>
-            <IonToolbar>
-              <Toolbar
-                title="crowd.Bible"
-                themeMode={themeMode}
-                onClickTitleBtn={handleGoToHomePage}
-                onClickThemeModeBtn={handleToogleTheme}
-                isNewDiscussion={isNewDiscussion}
-                isNewNotification={isNewNotification}
-                onClickDiscussionBtn={() => {
-                  history.push('/discussions-list');
-                }}
-                onClickNotificationBtn={() => {
-                  history.push('/notifications');
-                }}
-                onClickMenuBtn={handleToggleMenu}
-              />
-            </IonToolbar>
-          </IonHeader>
-        ) : null}
+        <AppHeader kind="page" onToggle={handleToggleMenu} />
 
         <IonContent fullscreen className="crowd-bible-ion-content">
           {children}
+
           <Snackbar
             open={snack.open}
             autoHideDuration={5000}
@@ -224,10 +90,14 @@ export function PageLayout({ children }: PageLayoutProps) {
               onClose={closeFeedback}
               severity={snack.severity}
               sx={{ width: '100%' }}
+              content={undefined}
+              rel={undefined}
+              rev={undefined}
             >
               {snack.message}
             </Alert>
           </Snackbar>
+
           <Backdrop sx={{ color: '#fff', zIndex: 1000 }} open={isLoading}>
             <Stack justifyContent="center">
               <div style={{ margin: 'auto' }}>
@@ -236,6 +106,7 @@ export function PageLayout({ children }: PageLayoutProps) {
               <div>LOADING</div>
             </Stack>
           </Backdrop>
+
           {isSqlPortalShown && <SqlPortal />}
         </IonContent>
       </IonPage>

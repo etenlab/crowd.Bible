@@ -7,22 +7,29 @@ import {
   useState,
 } from 'react';
 
+import { Node } from '@eten-lab/models';
+
 import { useSingletons } from '@/hooks/useSingletons';
-import { Node } from '@/models/node/node.entity';
 import { TableNameConst } from '@/constants/table-name.constant';
 
 import { BookListPage } from './BookListPage';
 import { BookPage } from './BookPage';
 
-type NodePropertyValueData = {
-  numUpVotes: number;
-  numDownVotes: number;
-  numPosts: number;
-};
-export type NodePropertyValueDatas = Record<string, NodePropertyValueData>;
+export type VersificationKeys = Record<
+  string,
+  {
+    propertyValues: {
+      id: string;
+      property_value: string;
+      numUpVotes: number;
+      numDownVotes: number;
+      numPosts: number;
+    }[];
+  }
+>;
 type VersificationContextType = {
   bibles: Node[];
-  nodePropertyValueDatas: NodePropertyValueDatas;
+  versificationKeys: VersificationKeys;
   onIdentifierAdd(id: string, value: string): void;
 };
 
@@ -35,8 +42,9 @@ export function useVersificationContext() {
 export function VersificationPage() {
   const singletons = useSingletons();
   const [bibles, setBibles] = useState<Node[]>([]);
-  const [nodePropertyValueDatas, setNodePropertyValueDatas] =
-    useState<NodePropertyValueDatas>({});
+  const [versificationKeys, setVersificationKeys] = useState<VersificationKeys>(
+    {},
+  );
 
   const fetchBibles = useCallback(() => {
     if (singletons) {
@@ -46,26 +54,22 @@ export function VersificationPage() {
         const bibles = await singletons!.nodeRepo.repository.find({
           relations: {
             propertyKeys: {
-              propertyValues: true,
+              propertyValue: true,
             },
             // bible-to-book
             toNodeRelationships: {
               toNode: {
                 propertyKeys: {
-                  propertyValues: true,
+                  propertyValue: true,
                 },
                 // book-to-chapter
                 toNodeRelationships: {
                   toNode: {
-                    propertyKeys: {
-                      propertyValues: true,
-                    },
+                    propertyKeys: true,
                     // chapter-to-verse
                     toNodeRelationships: {
                       toNode: {
-                        propertyKeys: {
-                          propertyValues: true,
-                        },
+                        propertyKeys: true,
                       },
                     },
                   },
@@ -78,7 +82,7 @@ export function VersificationPage() {
           },
         });
 
-        const nodePropertyValueIds: string[] = [];
+        const versificationKeyIds: string[] = [];
 
         // verse-to-word-sequence are being loaded separately since typeorm
         // generates too long regexp for the all nested relations and throws an
@@ -90,9 +94,7 @@ export function VersificationPage() {
                 ({ property_key }) => property_key === 'chapter-identifier',
               );
               if (propertyKey) {
-                for (const { id } of propertyKey.propertyValues || []) {
-                  nodePropertyValueIds.push(id);
-                }
+                versificationKeyIds.push(propertyKey.id);
               }
 
               for (const verseRel of chapterRel.toNode.toNodeRelationships ||
@@ -101,9 +103,7 @@ export function VersificationPage() {
                   ({ property_key }) => property_key === 'verse-identifier',
                 );
                 if (propertyKey) {
-                  for (const { id } of propertyKey.propertyValues || []) {
-                    nodePropertyValueIds.push(id);
-                  }
+                  versificationKeyIds.push(propertyKey.id);
                 }
 
                 // verse-to-word-sequence
@@ -112,16 +112,16 @@ export function VersificationPage() {
                     relations: {
                       toNode: {
                         propertyKeys: {
-                          propertyValues: true,
+                          propertyValue: true,
                         },
                         // word-sequence-to-word
                         toNodeRelationships: {
                           propertyKeys: {
-                            propertyValues: true,
+                            propertyValue: true,
                           },
                           toNode: {
                             propertyKeys: {
-                              propertyValues: true,
+                              propertyValue: true,
                             },
                           },
                         },
@@ -138,11 +138,11 @@ export function VersificationPage() {
                       const jsonA =
                         relA.propertyKeys.find(
                           ({ property_key }) => property_key === 'position',
-                        )?.propertyValues[0]?.property_value || '{"value": 0}';
+                        )?.propertyValue?.property_value || '{"value": 0}';
                       const jsonB =
                         relB.propertyKeys.find(
                           ({ property_key }) => property_key === 'position',
-                        )?.propertyValues[0]?.property_value || '{"value": 0}';
+                        )?.propertyValue?.property_value || '{"value": 0}';
                       const positionA = JSON.parse(jsonA).value as number;
                       const positionB = JSON.parse(jsonB).value as number;
 
@@ -159,50 +159,65 @@ export function VersificationPage() {
           }
         }
 
-        const nodePropertyValueDatas: Record<string, NodePropertyValueData> =
-          {};
+        const versificationKeys: VersificationKeys = {};
 
-        for (const id of nodePropertyValueIds) {
-          const discussion =
-            await singletons!.discussionRepo.repository.findOne({
-              relations: {
-                posts: true,
-              },
+        for (const keyId of versificationKeyIds) {
+          versificationKeys[keyId] = {
+            propertyValues: [],
+          };
+
+          const values =
+            await singletons!.nodePropertyValueRepo.repository.find({
               where: {
-                table_name: TableNameConst.NODE_PROPERTY_VALUES,
-                row: id,
+                node_property_key_id: keyId,
               },
             });
-          const candidate = await singletons!.candidateRepo.repository.findOne({
-            where: {
-              candidate_ref: id,
-            },
-          });
-          const upVotes = candidate
-            ? await singletons!.voteRepo.repository.find({
-                where: {
-                  candidate_id: candidate.id,
-                  vote: true,
+
+          for (const { id, property_value } of values) {
+            const discussion =
+              await singletons!.discussionRepo.repository.findOne({
+                relations: {
+                  posts: true,
                 },
-              })
-            : [];
-          const downVotes = candidate
-            ? await singletons!.voteRepo.repository.find({
                 where: {
-                  candidate_id: candidate.id,
-                  vote: false,
+                  tableName: TableNameConst.NODE_PROPERTY_VALUES,
+                  row: id,
                 },
-              })
-            : [];
-          nodePropertyValueDatas[id] = {
-            numUpVotes: upVotes.length,
-            numDownVotes: downVotes.length,
-            numPosts: discussion?.posts ? discussion.posts.length : 0,
-          };
+              });
+            const candidate =
+              await singletons!.candidateRepo.repository.findOne({
+                where: {
+                  candidate_ref: id,
+                },
+              });
+            const upVotes = candidate
+              ? await singletons!.voteRepo.repository.find({
+                  where: {
+                    candidate_id: candidate.id,
+                    vote: true,
+                  },
+                })
+              : [];
+            const downVotes = candidate
+              ? await singletons!.voteRepo.repository.find({
+                  where: {
+                    candidate_id: candidate.id,
+                    vote: false,
+                  },
+                })
+              : [];
+            versificationKeys[keyId].propertyValues.push({
+              id,
+              property_value,
+              numUpVotes: upVotes.length,
+              numDownVotes: downVotes.length,
+              numPosts: discussion?.posts ? discussion.posts.length : 0,
+            });
+          }
         }
 
         setBibles(bibles);
-        setNodePropertyValueDatas(nodePropertyValueDatas);
+        setVersificationKeys(versificationKeys);
       }
     }
   }, [singletons]);
@@ -222,7 +237,7 @@ export function VersificationPage() {
       <VersificationContext.Provider
         value={{
           bibles,
-          nodePropertyValueDatas,
+          versificationKeys,
           onIdentifierAdd: handleIdentifierAdd,
         }}
       >

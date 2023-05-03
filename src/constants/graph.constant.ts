@@ -3,6 +3,7 @@ export class NodeTypeConst {
   static readonly TABLE_COLUMN = 'table-column';
   static readonly TABLE_ROW = 'table-row';
   static readonly TABLE_CELL = 'table-cell';
+  static readonly TABLE_CELL_PSEUDO = 'table-cell-pseudo';
 
   static readonly ELECTION = 'election';
   static readonly BALLOT_ENTRY = 'ballot-entry';
@@ -76,4 +77,6 @@ export class PropertyKeyConst {
 
   static readonly ORIGINAL_WORD_SEQUENCE_ID = 'original-word-sequence-id';
   static readonly TEXT = 'text';
+
+  static readonly SITE_TEXT = 'site-text';
 }

@@ -1,12 +1,12 @@
-import { NodePropertyKey } from '@/models/node/node-property-key.entity';
-import { NodePropertyValue } from '@/models/node/node-property-value.entity';
-import { NodeType } from '@/models/node/node-type.entity';
-import { Node } from '@/models/node/node.entity';
+import { NodePropertyKey } from '@/src/models';
+import { NodePropertyValue } from '@/src/models';
+import { NodeType } from '@/src/models';
+import { Node } from '@/src/models';
 import axios from 'axios';
-import { Relationship } from '@/models/relationship/relationship.entity';
-import { RelationshipType } from '@/models/relationship/relationship-type.entity';
-import { RelationshipPropertyKey } from '@/models/relationship/relationship-property-key.entity';
-import { RelationshipPropertyValue } from '@/models/relationship/relationship-property-value.entity';
+import { Relationship } from '@/src/models';
+import { RelationshipType } from '@/src/models';
+import { RelationshipPropertyKey } from '@/src/models';
+import { RelationshipPropertyValue } from '@/src/models';
 import { DbService } from './db.service';
 import { SyncSessionRepository } from '@/repositories/sync-session.repository';
 
@@ -14,49 +14,58 @@ interface SyncTable {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   entity: any;
   tableName: string;
-  pk: string;
+  pkColumn: string; // since we have long column name (i.e. user.user_id) and short entiti's property name (i.e. user.id)
+  pkProperty: string; // we want to distinguish them  explicitly.
 }
 
 const syncTables: SyncTable[] = [
   {
     entity: Node,
     tableName: 'nodes',
-    pk: 'id',
+    pkColumn: 'node_id',
+    pkProperty: 'id',
   },
   {
     entity: NodeType,
     tableName: 'node_types',
-    pk: 'type_name',
+    pkColumn: 'type_name',
+    pkProperty: 'type_name',
   },
   {
     entity: NodePropertyKey,
     tableName: 'node_property_keys',
-    pk: 'id',
+    pkColumn: 'node_property_key_id',
+    pkProperty: 'id',
   },
   {
     entity: NodePropertyValue,
     tableName: 'node_property_values',
-    pk: 'id',
+    pkColumn: 'node_property_value_id',
+    pkProperty: 'id',
   },
   {
     entity: Relationship,
     tableName: 'relationships',
-    pk: 'id',
+    pkColumn: 'relationship_id',
+    pkProperty: 'id',
   },
   {
     entity: RelationshipType,
     tableName: 'relationship_types',
-    pk: 'type_name',
+    pkColumn: 'type_name',
+    pkProperty: 'type_name',
   },
   {
     entity: RelationshipPropertyKey,
     tableName: 'relationship_property_keys',
-    pk: 'id',
+    pkColumn: 'relationship_property_key_id',
+    pkProperty: 'id',
   },
   {
     entity: RelationshipPropertyValue,
     tableName: 'relationship_property_values',
-    pk: 'id',
+    pkColumn: 'relationship_property_value_id',
+    pkProperty: 'id',
   },
 ];
 
@@ -254,6 +263,11 @@ export class SyncService {
     }
   }
 
+  /**
+   *
+   * @param entries - Note: entries.rows has raw column names. We must pay attention on correct composition typeOrm
+   * query builder, especially with primary keys.
+   */
   private async saveSyncEntries(entries: SyncEntry[]) {
     if (entries.length < 1) {
       console.log('Nothing to sync in');
@@ -271,41 +285,41 @@ export class SyncService {
         throw new Error(`Unknown table ${table}`);
       }
 
-      const entity = syncTable.entity;
-      const pk = syncTable.pk;
+      const { entity, pkColumn, pkProperty } = syncTable;
 
       for (const row of rows) {
-        const pkValue = row[pk];
-
-        // TODO: implement upsertcout
+        const pkValue = row[pkColumn];
 
         const existing = await this.dbService.dataSource
           .getRepository(entity)
           .createQueryBuilder()
           .select('*')
-          .where(`${pk} = :pkValue`, {
+          .where(`${pkColumn} = :pkValue`, {
             pkValue,
           })
           .execute();
 
         if (existing.length) {
-          await this.dbService.dataSource
+          const q = this.dbService.dataSource
             .getRepository(entity)
             .createQueryBuilder()
             .update(entity)
-            .set(row)
-            .where(`${pk} = :pkValue`, {
+            .set({ [pkProperty]: pkValue }) //typeorm wants propery name as key here
+            //typeorm wants column name as clause here
+            .where(`${pkColumn} = :pkValue`, {
               pkValue,
-            })
-            .execute();
+            });
+          console.log(q.getSql(), q.getParameters());
+          await q.execute();
         } else {
-          await this.dbService.dataSource
+          const q = this.dbService.dataSource
             .getRepository(entity)
             .createQueryBuilder()
             .insert()
             .into(entity)
-            .values(row)
-            .execute();
+            .values({ ...row, [pkProperty]: row[pkColumn] }); //typeorm wants propery name as key here
+          console.log(q.getSql(), q.getParameters());
+          await q.execute();
         }
       }
     }
