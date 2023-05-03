@@ -41,8 +41,9 @@ export const CreateDiscussion: React.FC<PropsCreateDiscussion> = ({
           ...formData,
           userId: 1,
           tableName: '',
-          row: 0,
+          row: '',
           posts: [],
+          sync_layer: 0,
         })
         .then(() => {
           setIsCreateDiscussionShow(false);
