@@ -64,21 +64,6 @@ function mainOverride(config, env) {
     (plugin) => plugin instanceof WorkboxWebpackPlugin.GenerateSW,
   );
 
-  // if (workboxWebpackPluginIndex !== -1) {
-  //   config.plugins[
-  //     workboxWebpackPluginIndex
-  //   ].config.maximumFileSizeToCacheInBytes = 10 * 1024 * 1024; // 10MB
-  // } else {
-  //   const swPlugin = new WorkboxWebpackPlugin.InjectManifest({
-  //     // These are some common options, and not all are required.
-  //     // Consult the docs for more info.
-  //     // exclude: [/.../, '...'],
-  //     maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB
-  //     // swSrc: './src/service-worker.ts',
-  //   })
-  //   config.plugins.push(swPlugin)
-  // }
-
   return config;
 }
 

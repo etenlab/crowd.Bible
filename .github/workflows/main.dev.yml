@@ -31,6 +31,7 @@ jobs:
         run: |
           cat << EOF > .env
           ${{ env.ENV }}
+          CI=false
           EOF
 
       - name: Load env
