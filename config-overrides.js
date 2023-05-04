@@ -38,12 +38,23 @@ function mainOverride(config, env) {
   // inspired by https://github.com/typeorm/typeorm/issues/4526
   // to tackle bug with typerom entites metadata on finified calssnames,
   // we want to keep classnames not minified.
+
   const terserPluginIdx = config.optimization.minimizer.findIndex(
     (minimizer) => minimizer instanceof TerserPlugin,
   );
   config.optimization.minimizer[terserPluginIdx] = new TerserPlugin({
+    extractComments: true,
     parallel: true,
     terserOptions: {
+      compress: {
+        ecma: 5,
+        warnings: false,
+        comparisons: false,
+        inline: 2,
+      },
+      mangle: {
+        safari10: true,
+      },
       keep_classnames: true,
       keep_fnames: true,
     },
@@ -53,11 +64,20 @@ function mainOverride(config, env) {
     (plugin) => plugin instanceof WorkboxWebpackPlugin.GenerateSW,
   );
 
-  if (workboxWebpackPluginIndex !== -1) {
-    config.plugins[
-      workboxWebpackPluginIndex
-    ].config.maximumFileSizeToCacheInBytes = 6 * 1024 * 1024; // 6MB
-  }
+  // if (workboxWebpackPluginIndex !== -1) {
+  //   config.plugins[
+  //     workboxWebpackPluginIndex
+  //   ].config.maximumFileSizeToCacheInBytes = 10 * 1024 * 1024; // 10MB
+  // } else {
+  //   const swPlugin = new WorkboxWebpackPlugin.InjectManifest({
+  //     // These are some common options, and not all are required.
+  //     // Consult the docs for more info.
+  //     // exclude: [/.../, '...'],
+  //     maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB
+  //     // swSrc: './src/service-worker.ts',
+  //   })
+  //   config.plugins.push(swPlugin)
+  // }
 
   return config;
 }
