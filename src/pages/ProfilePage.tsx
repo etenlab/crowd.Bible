@@ -106,8 +106,27 @@ export function ProfilePage() {
         >
           My Profile
         </Typography>
-        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-        {successMessage && <Alert severity="success">{successMessage}</Alert>}
+        {errorMessage && (
+          <Alert
+            severity="error"
+            content={undefined}
+            rel={undefined}
+            rev={undefined}
+          >
+            {errorMessage}
+          </Alert>
+        )}
+        {successMessage && (
+          <Alert
+            severity="success"
+            content={undefined}
+            rel={undefined}
+            rev={undefined}
+          >
+            {' '}
+            {successMessage}
+          </Alert>
+        )}
         <Typography variant="h6" sx={{ color: '#5C6673', marginBottom: '5px' }}>
           EMAIL
         </Typography>

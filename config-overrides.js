@@ -1,8 +1,9 @@
+const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack');
 const { aliasWebpack, aliasJest } = require('react-app-alias');
 
-function mainOverride(config) {
+function mainOverride(config, env) {
   const fallback = config.resolve.fallback || {};
   Object.assign(fallback, {
     path: require.resolve('path-browserify'),
@@ -37,16 +38,31 @@ function mainOverride(config) {
   // inspired by https://github.com/typeorm/typeorm/issues/4526
   // to tackle bug with typerom entites metadata on finified calssnames,
   // we want to keep classnames not minified.
+
   const terserPluginIdx = config.optimization.minimizer.findIndex(
     (minimizer) => minimizer instanceof TerserPlugin,
   );
   config.optimization.minimizer[terserPluginIdx] = new TerserPlugin({
+    extractComments: true,
     parallel: true,
     terserOptions: {
+      compress: {
+        ecma: 5,
+        warnings: false,
+        comparisons: false,
+        inline: 2,
+      },
+      mangle: {
+        safari10: true,
+      },
       keep_classnames: true,
       keep_fnames: true,
     },
   });
+
+  const workboxWebpackPluginIndex = config.plugins.findIndex(
+    (plugin) => plugin instanceof WorkboxWebpackPlugin.GenerateSW,
+  );
 
   return config;
 }

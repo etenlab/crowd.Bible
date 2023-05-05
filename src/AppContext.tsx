@@ -8,7 +8,6 @@ import {
   type StateType as GlobalStateType,
   type FeedbackType,
   type PrefersColorSchemeType,
-  TranslatedMap,
 } from '@/reducers/global.reducer';
 import { type StateType as DocumentToolsStateType } from '@/reducers/documentTools.reducer';
 import { type LanguageDto } from '@/dtos/language.dto';
@@ -32,7 +31,6 @@ export interface ContextType {
     logout: () => void;
     alertFeedback: (feedbackType: FeedbackType, message: string) => void;
     closeFeedback: () => void;
-    setTranslatedMap: (translatedMap: TranslatedMap) => void;
     setSourceLanguage: (lang: LanguageDto | null) => void;
     setTargetLanguage: (lang: LanguageDto | null) => void;
     setLoadingState: (state: boolean) => void;
@@ -57,7 +55,6 @@ export function AppContextProvider({ children }: AppProviderProps) {
     setRole,
     setUser,
     setConnectivity,
-    setTranslatedMap,
     setPrefersColorScheme,
     logout,
     setLoadingState,
@@ -95,7 +92,6 @@ export function AppContextProvider({ children }: AppProviderProps) {
       setRole,
       setUser,
       setConnectivity,
-      setTranslatedMap,
       setPrefersColorScheme,
       setLoadingState,
       setSingletons,

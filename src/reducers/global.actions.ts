@@ -3,7 +3,6 @@ import {
   type RoleType,
   type IUser,
   type PrefersColorSchemeType,
-  TranslatedMap,
 } from './global.reducer';
 import { type ISingletons } from '@/src/singletons';
 
@@ -13,7 +12,6 @@ export const actions = {
   SET_ROLE: 'SET_ROLE',
   SET_USER: 'SET_USER',
   SET_PREFERS_COLOR_SCHEME: 'SET_PREFERS_COLOR_SCHEME',
-  SET_TRANSLATED_MAP: 'SET_TRANSLATED_MAP',
   SET_CONNECTIVITY: 'SET_CONNECTIVITY',
   LOGOUT: 'LOGOUT',
   SET_LOGING_STATE: 'SET_LOGING_STATE',
@@ -56,13 +54,6 @@ export function closeFeedback() {
   return {
     type: actions.CLOSE_FEEDBACK,
     payload: null,
-  };
-}
-
-export function setTranslatedMap(translatedMap: TranslatedMap) {
-  return {
-    type: actions.SET_TRANSLATED_MAP,
-    payload: translatedMap,
   };
 }
 

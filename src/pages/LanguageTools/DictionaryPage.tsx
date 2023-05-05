@@ -1,7 +1,7 @@
-import { MuiMaterial } from '@eten-lab/ui-kit';
+import { MuiMaterial, LangSelector } from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
-import { IonContent, useIonAlert } from '@ionic/react';
+import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
 import { LanguageWithElecitonsDto } from '@/dtos/language.dto';
 import { useAppContext } from '../../hooks/useAppContext';
@@ -9,15 +9,25 @@ import { useDefinition } from '../../hooks/useDefinition';
 import { VotableItem } from '../../dtos/votable-item.dto';
 const { Box, Divider } = MuiMaterial;
 
+type Lang = {
+  tag: string;
+  descriptions: Array<string>;
+};
+type Dialect = {
+  tag: string | null;
+  descriptions: Array<string>;
+};
+type Region = {
+  tag: string | null;
+  descriptions: Array<string>;
+};
+
 const {
   TitleWithIcon,
   ItemsClickableList,
   ItemContentListEdit,
   SimpleFormDialog,
-  FiltersAndSearch,
 } = CrowdBibleUI;
-
-const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
 
 // use as sample and for debugging purposes
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -101,12 +111,12 @@ export function DictionaryPage() {
   const [selectedWord, setSelectedWord] = useState<VotableItem | null>(null);
   const [isDialogOpened, setIsDialogOpened] = useState(false);
   const [words, setWords] = useState<VotableItem[]>([]);
-  const [presentAlert] = useIonAlert();
   const definitionService = singletons?.definitionService;
 
   const [selectedLanguageId, setSelectedLanguageId] = useState<
     string | null | undefined
   >(null);
+
   const [langs, setLangs] = useState<LanguageWithElecitonsDto[]>([]);
   const {
     addItem,
@@ -122,10 +132,19 @@ export function DictionaryPage() {
     setIsDialogOpened,
   );
 
-  const handleSelectLanguage = (value: string): void => {
-    const id = langs.find((l) => l.name === value)?.id;
-    setSelectedLanguageId(id);
-  };
+  const onChange = useCallback(
+    (
+      langTag: string,
+      selected: {
+        lang: Lang;
+        dialect: Dialect | undefined;
+        region: Region | undefined;
+      },
+    ): void => {
+      setSelectedLanguageId(langTag);
+    },
+    [setSelectedLanguageId],
+  );
 
   useEffect(() => {
     try {
@@ -219,16 +238,11 @@ export function DictionaryPage() {
 
   const handleAddWordButtonClick = useCallback(() => {
     if (!selectedLanguageId) {
-      presentAlert({
-        header: 'Alert',
-        subHeader: 'No Language selected!',
-        message: 'Before adding a word, select language',
-        buttons: ['Ok'],
-      });
+      alertFeedback('error', 'Please select a language before adding a word');
       return;
     }
     setIsDialogOpened(true);
-  }, [presentAlert, selectedLanguageId]);
+  }, [alertFeedback, selectedLanguageId]);
 
   return (
     <IonContent>
@@ -257,13 +271,11 @@ export function DictionaryPage() {
             </Box>
           </Box>
 
-          <FiltersAndSearch
-            ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
-            languageOptions={langs.map((l) => l.name)}
-            setEthnologue={() => console.log('setEthnologue!')}
-            setLanguage={handleSelectLanguage}
-            setSearch={(s: string) => console.log('setSearch' + s)}
-          />
+          <LangSelector
+            onChange={onChange}
+            setLoadingState={setLoadingState}
+          ></LangSelector>
+
           <Box display={'flex'} flexDirection="column" width={1}>
             <Box
               width={1}

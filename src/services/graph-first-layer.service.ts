@@ -15,7 +15,7 @@ import { type Node } from '@/src/models/';
 
 import { RelationshipType } from '@/src/models/';
 import { type Relationship } from '@/src/models/';
-import { NodeTypeConst } from '../constants/graph.constant';
+import { NodeTypeConst, PropertyKeyConst } from '@/constants/graph.constant';
 
 export class GraphFirstLayerService {
   constructor(
@@ -78,6 +78,13 @@ export class GraphFirstLayerService {
   // node-property-key
   async getNodePropertyKey(node_id: Nanoid, key_name: string): Promise<Nanoid> {
     return this.nodePropertyKeyRepo.getNodePropertyKey(node_id, key_name);
+  }
+
+  async getNodePropertyValue(
+    nodeId: Nanoid,
+    propertyName: PropertyKeyConst,
+  ): Promise<unknown> {
+    return this.nodeRepo.getNodePropertyValue(nodeId, propertyName);
   }
 
   // node-property-value

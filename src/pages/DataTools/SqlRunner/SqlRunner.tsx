@@ -33,12 +33,13 @@ const startingDefaultSqls: TSqls = {
       name: 'Word nodes',
       body: `
 --==========select all words and its values===================
-select n.id as "node_id", n.node_type, 
-npk.id as "key_id", 
-npv.id as "property_key", npv.property_value 
+select n.node_id, n.node_type, 
+npk.node_property_key_id,
+npv.node_property_value_id, 
+npv.property_value 
 from nodes n
-left join node_property_keys npk on n.id = npk.node_id 
-left join node_property_values npv on npk.id = npv.node_property_key_id
+left join node_property_keys npk on n.node_id = npk.node_id 
+left join node_property_values npv on npk.node_property_key_id = npv.node_property_key_id
 where n.node_type='word'
 --============================================================
 `,
@@ -47,28 +48,23 @@ where n.node_type='word'
       name: 'Info On node',
       body: `
 --=== Get info on nodes (relations TO/FROM this node, and info of this node's properties) ======
-select nodes.id as "nodeId", nodes.node_type, npk.property_key, npv.property_value,
+select nodes.node_id, nodes.node_type, npk.property_key, npv.property_value,
 
-r_to_other.id as "r_to_other", 
 n_to.node_type as "nToType",
 
-r_from_other.id as "r_from_other",
-n_from.id as "nFromId",
-n_from.node_type as "nFromType"
+n_from.node_type as "n_from_type"
 
 from nodes
 
-left join relationships r_to_other on nodes.id = r_to_other.from_node_id
-left join relationships r_from_other on nodes.id = r_from_other.to_node_id
+left join relationships r_to_other on nodes.node_id = r_to_other.from_node_id
+left join relationships r_from_other on nodes.node_id = r_from_other.to_node_id
 
-left join nodes n_to on r_to_other.to_node_id = n_to.id
-left join nodes n_from on r_from_other.from_node_id = n_from.id
+left join nodes n_to on r_to_other.to_node_id = n_to.node_id
+left join nodes n_from on r_from_other.from_node_id = n_from.node_id
 
 
-left join node_property_keys npk on nodes.id = npk.node_id
-left join node_property_values npv on npk.id = npv.node_property_key_id
-
-where nodes.id='BjEqDQXhxyT6H56dCkugL'
+left join node_property_keys npk on nodes.node_id = npk.node_id
+left join node_property_values npv on npk.node_property_key_id = npv.node_property_key_id
 --===========================================================================================
 
 `,

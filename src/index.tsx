@@ -4,12 +4,18 @@ import { createRoot } from 'react-dom/client';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import App from './App';
+
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { KeycloakClient, KeycloakProvider } from '@eten-lab/sso';
+import { createUploadLink } from 'apollo-upload-client';
+
+const uploadLink = createUploadLink({
+  uri: `${process.env.REACT_APP_CPG_SERVER_URL}/graphql`,
+});
 
 const client = new ApolloClient({
-  uri: `${process.env.REACT_APP_CPG_SERVER_URL}/graphql`,
   cache: new InMemoryCache(),
+  link: uploadLink,
 });
 
 const kcClient = new KeycloakClient({
