@@ -13,6 +13,8 @@ import { GraphSecondLayerService } from './graph-second-layer.service';
 import { GraphThirdLayerService } from './graph-third-layer.service';
 import { VotingService } from './voting.service';
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
+import { LanguageInfo } from '../pages/LanguageTools/DictionaryPage';
+import { makeFindPropsByLang } from '../utils/LangUtils';
 
 export class DefinitionService {
   constructor(
@@ -150,13 +152,31 @@ export class DefinitionService {
   }
 
   /**
-   * Creates word (as votable node for language) and election of type 'definition' for this word
+   * Creates word and election of type 'definition' for this word
    *
    * @param word - word text
    * @param langId - language of this word
    * @returns - created word Id and election Id (to add definition candidates to it)
    */
   async createWordAndDefinitionsElection(
+    word: string,
+    langInfo: LanguageInfo,
+  ): Promise<{ wordId: Nanoid; electionId: Nanoid }> {
+    const wordId = await this.graphThirdLayerService.createWordWithLang(
+      word,
+      langInfo,
+    );
+
+    const definitionEelection = await this.votingService.createElection(
+      ElectionTypeConst.DEFINITION,
+      wordId,
+      TableNameConst.NODES,
+      TableNameConst.RELATIONSHIPS,
+    );
+    return { wordId, electionId: definitionEelection.id };
+  }
+
+  async createWordAndDefinitionsElection_old(
     word: string,
     langId: Nanoid,
     langElectionId: Nanoid,
@@ -184,6 +204,7 @@ export class DefinitionService {
    * @returns - created phrase Id and election Id (to add definition candidates to it)
    */
   async createPhraseAndDefinitionsElection(
+    //ill TODO: maybe, make common method with word creation
     phrase: string,
     langId: Nanoid,
     langElectionId: Nanoid,
@@ -224,6 +245,48 @@ export class DefinitionService {
       TableNameConst.RELATIONSHIPS,
     );
     return { phraseId: node.id, electionId: election.id, phraseCandidateId };
+  }
+
+  /**
+   * Find nodes by votableNodesType and landgInfo and use propertyKeyText as key to find content property in these nodes
+   * Return these nodes as votable content.
+   * Candidates are found nodes by itself
+   * @param votableNodesType
+   * @param langInfo
+   * @param propertyKeyText
+   * @returns
+   */
+  async getSelfVotableContentByLang(
+    votableNodesType: NodeTypeConst,
+    langInfo: LanguageInfo,
+    propertyKeyText: PropertyKeyConst,
+  ): Promise<Array<VotableContent>> {
+    const findProps = makeFindPropsByLang(langInfo);
+    const votableNodesIds = await this.graphFirstLayerService.getNodesByProps(
+      votableNodesType as string,
+      findProps,
+    );
+
+    const vcPromises: Promise<VotableContent>[] = votableNodesIds.map(
+      async (votableNodeId) => {
+        const candidateSelfId = votableNodeId;
+        const { upVotes, downVotes } = await this.votingService.getVotesStats(
+          candidateSelfId,
+        );
+        const content = (await this.graphFirstLayerService.getNodePropertyValue(
+          votableNodeId,
+          propertyKeyText,
+        )) as string;
+        return {
+          content,
+          upVotes,
+          downVotes,
+          id: votableNodeId,
+          candidateId: candidateSelfId,
+        };
+      },
+    );
+    return Promise.all(vcPromises);
   }
 
   /**
@@ -339,12 +402,42 @@ export class DefinitionService {
   }
 
   /**
-   * Finds Words for given language Id as VotableItems
-   * For now, not quite sure how vote on phrases (not phrase definitions, but phrase itself, so it is still TODO)
+   * Finds Words with given languageInfo as VotableItems
    * @param langNodeId
    * @returns
    */
   async getWordsAsVotableItems(
+    languageInfo: LanguageInfo,
+  ): Promise<Array<VotableItem>> {
+    const wordsContents = await this.getSelfVotableContentByLang(
+      NodeTypeConst.WORD,
+      languageInfo,
+      PropertyKeyConst.NAME,
+    );
+
+    const viPromises = wordsContents.map(async (wc) => {
+      if (!wc.id) {
+        throw new Error(`word ${wc.content} desn't have an id`);
+      }
+      // if electionId exists, it won't be created, Just found and returned.
+      const election = await this.votingService.createElection(
+        ElectionTypeConst.DEFINITION,
+        wc.id,
+        TableNameConst.NODES,
+        TableNameConst.RELATIONSHIPS,
+      );
+
+      return {
+        title: wc,
+        contents: await this.getDefinitionsAsVotableContent(wc.id, election.id),
+        contentElectionId: election.id,
+      } as VotableItem;
+    });
+    const vi = await Promise.all(viPromises);
+    return vi;
+  }
+
+  async getWordsAsVotableItems_old(
     langNodeId: Nanoid,
     langElectionId: Nanoid,
   ): Promise<Array<VotableItem>> {
@@ -396,7 +489,7 @@ export class DefinitionService {
       return [];
     }
 
-    const wordVotables = await this.getWordsAsVotableItems(
+    const wordVotables = await this.getWordsAsVotableItems_old(
       langDto.id,
       langDto.electionWordsId,
     );

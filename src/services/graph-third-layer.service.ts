@@ -31,6 +31,8 @@ import { NodePropertyKeyRepository } from '../repositories/node/node-property-ke
 import { NodePropertyValueRepository } from '../repositories/node/node-property-value.repository';
 import { RelationshipRepository } from '../repositories/relationship/relationship.repository';
 import { SyncService } from './sync.service';
+import { LanguageInfo } from '../pages/LanguageTools/DictionaryPage';
+import { CreateWordDto } from '../dtos/create-word.dto';
 
 export class GraphThirdLayerService {
   constructor(
@@ -131,6 +133,45 @@ export class GraphThirdLayerService {
   }
 
   // --------- Word --------- //
+  async createWordWithLang(
+    word: string,
+    langInfo: LanguageInfo,
+    mapId?: Nanoid,
+  ): Promise<Nanoid> {
+    const word_id = await this.getWordWithLang(word, langInfo);
+
+    if (word_id) {
+      return word_id;
+    }
+
+    const wordNodeObject: CreateWordDto = {
+      [PropertyKeyConst.NAME]: word,
+      [PropertyKeyConst.LANGUAGE_TAG]: langInfo.lang.tag,
+    };
+    if (langInfo.dialect?.tag) {
+      wordNodeObject[PropertyKeyConst.DIALECT_TAG] = langInfo.dialect?.tag;
+    }
+    if (langInfo.region?.tag) {
+      wordNodeObject[PropertyKeyConst.REGION_TAG] = langInfo.region?.tag;
+    }
+
+    const node = await this.secondLayerService.createNodeFromObject(
+      NodeTypeConst.WORD,
+      wordNodeObject,
+    );
+
+    if (mapId) {
+      await this.secondLayerService.createRelationshipFromObject(
+        RelationshipTypeConst.WORD_MAP,
+        {},
+        node.id,
+        mapId,
+      );
+    }
+
+    return node.id;
+  }
+
   async createWord(
     word: string,
     langId: Nanoid,
@@ -271,6 +312,45 @@ export class GraphThirdLayerService {
       }
     }
     return storedWordStatus;
+  }
+
+  async getWordWithLang(
+    word: string,
+    languageInfo: LanguageInfo,
+  ): Promise<Nanoid | null> {
+    const wordSearchProps = [
+      {
+        key: PropertyKeyConst.NAME,
+        value: word,
+      },
+      {
+        key: PropertyKeyConst.LANGUAGE_TAG,
+        value: languageInfo.lang.tag,
+      },
+    ];
+    if (languageInfo.dialect?.tag) {
+      wordSearchProps.push({
+        key: PropertyKeyConst.DIALECT_TAG,
+        value: languageInfo.dialect.tag,
+      });
+    }
+    if (languageInfo.region?.tag) {
+      wordSearchProps.push({
+        key: PropertyKeyConst.REGION_TAG,
+        value: languageInfo.region.tag,
+      });
+    }
+
+    const wordNodeIds = await this.firstLayerService.getNodesByProps(
+      NodeTypeConst.WORD,
+      wordSearchProps,
+    );
+
+    if (wordNodeIds.length === 0) {
+      return null;
+    }
+
+    return wordNodeIds[0];
   }
 
   async getWord(word: string, language: Nanoid): Promise<Nanoid | null> {

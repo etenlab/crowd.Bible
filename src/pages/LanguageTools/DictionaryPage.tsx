@@ -1,25 +1,24 @@
-import { MuiMaterial, LangSelector } from '@eten-lab/ui-kit';
+import {
+  MuiMaterial,
+  LangSelector,
+  Lang,
+  Dialect,
+  Region,
+} from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
-import { LanguageWithElecitonsDto } from '@/dtos/language.dto';
 import { useAppContext } from '../../hooks/useAppContext';
-import { useDefinition } from '../../hooks/useDefinition';
 import { VotableItem } from '../../dtos/votable-item.dto';
+import { useDictionaryTools } from '../../hooks/useDictionaryTools';
 const { Box, Divider } = MuiMaterial;
 
-type Lang = {
-  tag: string;
-  descriptions: Array<string>;
-};
-type Dialect = {
-  tag: string | null;
-  descriptions: Array<string>;
-};
-type Region = {
-  tag: string | null;
-  descriptions: Array<string>;
+//ill TODO import from ui-kit/LangSelector
+export type LanguageInfo = {
+  lang: Lang;
+  dialect: Dialect | undefined;
+  region: Region | undefined;
 };
 
 const {
@@ -113,76 +112,39 @@ export function DictionaryPage() {
   const [words, setWords] = useState<VotableItem[]>([]);
   const definitionService = singletons?.definitionService;
 
-  const [selectedLanguageId, setSelectedLanguageId] = useState<
-    string | null | undefined
-  >(null);
+  const [selectedLanguageInfo, setSelectedLanguageInfo] =
+    useState<LanguageInfo | null>(null);
 
-  const [langs, setLangs] = useState<LanguageWithElecitonsDto[]>([]);
   const {
     addItem,
     changeItemVotes,
     addDefinition,
     changeDefinitionValue,
     changeDefinitionVotes,
-  } = useDefinition(
-    'word',
-    setWords,
-    langs,
-    selectedLanguageId,
-    setIsDialogOpened,
-  );
+  } = useDictionaryTools('word', setWords, setIsDialogOpened);
 
-  const onChange = useCallback(
+  const onChangeLang = useCallback(
     (
-      langTag: string,
+      langTag: string, // it isn't needed for now
       selected: {
         lang: Lang;
         dialect: Dialect | undefined;
         region: Region | undefined;
       },
     ): void => {
-      setSelectedLanguageId(langTag);
+      setSelectedLanguageInfo(selected);
     },
-    [setSelectedLanguageId],
+    [setSelectedLanguageInfo],
   );
 
   useEffect(() => {
-    try {
-      setLoadingState(true);
-      const loadLanguages = async () => {
-        if (!definitionService) return;
-        const langDtos = await definitionService.getLanguages();
-        setLangs(langDtos);
-      };
-      loadLanguages();
-      setLoadingState(false);
-    } catch (error) {
-      console.log(error);
-      alertFeedback('error', 'Internal Error!');
-    } finally {
-      setLoadingState(false);
-    }
-  }, [alertFeedback, definitionService, setLoadingState]);
-
-  useEffect(() => {
     if (!definitionService) return;
-    if (!selectedLanguageId) return;
+    if (!selectedLanguageInfo) return;
     try {
       setLoadingState(true);
-      const langsElectionWordsId = langs.find(
-        (l) => l.id === selectedLanguageId,
-      )?.electionWordsId;
-      if (!langsElectionWordsId) {
-        throw new Error(
-          `Language id ${selectedLanguageId} does't have electionWordsId to elect words`,
-        );
-      }
       const loadWords = async () => {
         const words: VotableItem[] =
-          await definitionService.getWordsAsVotableItems(
-            selectedLanguageId,
-            langsElectionWordsId,
-          );
+          await definitionService.getWordsAsVotableItems(selectedLanguageInfo);
         setWords(words);
       };
       loadWords();
@@ -192,27 +154,23 @@ export function DictionaryPage() {
     } finally {
       setLoadingState(false);
     }
-  }, [
-    alertFeedback,
-    definitionService,
-    langs,
-    selectedLanguageId,
-    setLoadingState,
-  ]);
+  }, [alertFeedback, definitionService, selectedLanguageInfo, setLoadingState]);
 
-  const addWord = (newWord: string) => {
-    addItem(words, newWord);
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const changeWordVotes = useCallback(
-    (candidateId: Nanoid | null, upOrDown: TUpOrDownVote) => {
-      changeItemVotes(candidateId, upOrDown, words);
+  const addWord = useCallback(
+    (newWord: string) => {
+      addItem(words, newWord, selectedLanguageInfo);
     },
-    [changeItemVotes, words],
+    [addItem, selectedLanguageInfo, words],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const changeWordVotes = useCallback(
+    (candidateId: Nanoid | null, upOrDown: TUpOrDownVote) => {
+      // changeItemVotes(candidateId, upOrDown, words);
+    },
+    // [changeItemVotes, words],
+    [],
+  );
+
   const addDefinitionToWord = useCallback(
     (text: string) => {
       addDefinition(text, words, selectedWord, setSelectedWord);
@@ -220,7 +178,6 @@ export function DictionaryPage() {
     [addDefinition, selectedWord, words],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changeWordDefinition = useCallback(
     (definitionId: Nanoid | null, newValue: string) => {
       changeDefinitionValue(words, selectedWord, definitionId, newValue);
@@ -237,12 +194,12 @@ export function DictionaryPage() {
   );
 
   const handleAddWordButtonClick = useCallback(() => {
-    if (!selectedLanguageId) {
+    if (!selectedLanguageInfo) {
       alertFeedback('error', 'Please select a language before adding a word');
       return;
     }
     setIsDialogOpened(true);
-  }, [alertFeedback, selectedLanguageId]);
+  }, [alertFeedback, selectedLanguageInfo]);
 
   return (
     <IonContent>
@@ -272,7 +229,7 @@ export function DictionaryPage() {
           </Box>
 
           <LangSelector
-            onChange={onChange}
+            onChange={onChangeLang}
             setLoadingState={setLoadingState}
           ></LangSelector>
 

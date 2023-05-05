@@ -42,7 +42,7 @@ export class SiteTextService {
     const langDto = await this.definitionService.getLanguageById(languageId);
 
     const { wordId, electionId } =
-      await this.definitionService.createWordAndDefinitionsElection(
+      await this.definitionService.createWordAndDefinitionsElection_old(
         siteText,
         languageId,
         langDto.electionWordsId!,

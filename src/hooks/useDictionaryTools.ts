@@ -1,14 +1,12 @@
 import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
-import { LanguageWithElecitonsDto } from '../dtos/language.dto';
 import { useVote } from './useVote';
+import { LanguageInfo } from '../pages/LanguageTools/DictionaryPage';
 
-export function useDefinition(
+export function useDictionaryTools(
   itemsType: 'word' | 'phrase',
   setItems: (items: VotableItem[]) => void,
-  langs: LanguageWithElecitonsDto[],
-  selectedLanguageId: Nanoid | null | undefined,
   setIsDialogOpened: (state: boolean) => void,
 ) {
   const {
@@ -22,14 +20,17 @@ export function useDefinition(
   const definitionService = singletons?.definitionService;
 
   const addItem = useCallback(
-    async (items: VotableItem[], itemText: string) => {
+    async (
+      items: VotableItem[],
+      itemText: string,
+      languageInfo: LanguageInfo | null,
+    ) => {
       try {
-        if (!definitionService || !selectedLanguageId) {
-          throw new Error(
-            `!definitionService || !selectedLanguageId when addNewWord`,
-          );
-        }
+        if (!definitionService)
+          throw new Error(`definitionService not defined`);
+        if (!languageInfo) throw new Error(`languageInfo not provided `);
         setLoadingState(true);
+
         const existingItem = items.find((it) => it.title.content === itemText);
         if (existingItem) {
           alertFeedback(
@@ -40,21 +41,11 @@ export function useDefinition(
           return;
         }
 
-        const langWordsElectionId = langs.find(
-          (l) => l.id === selectedLanguageId,
-        )?.electionWordsId;
-        if (!langWordsElectionId) {
-          throw new Error(
-            `Can't add word to language because language doesn't have electionId`,
-          );
-        }
-
-        const { wordId, electionId, wordCandidateId } =
-          await definitionService.createWordAndDefinitionsElection_old(
+        const { wordId, electionId } =
+          await definitionService.createWordAndDefinitionsElection(
             itemText,
-            selectedLanguageId,
-            langWordsElectionId,
-          );
+            languageInfo,
+          ); //ill TODO add ability to vote on words/phrases (items content) by itself
         setItems([
           ...items,
           {
@@ -63,7 +54,7 @@ export function useDefinition(
               upVotes: 0,
               downVotes: 0,
               id: wordId,
-              candidateId: wordCandidateId,
+              candidateId: wordId,
             },
             contents: [],
             contentElectionId: electionId,
@@ -79,9 +70,7 @@ export function useDefinition(
     },
     [
       definitionService,
-      selectedLanguageId,
       setLoadingState,
-      langs,
       setItems,
       alertFeedback,
       itemsType,
