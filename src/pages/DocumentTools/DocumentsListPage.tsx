@@ -63,9 +63,9 @@ export function DocumentsListPage() {
   };
 
   const handleClickDocument = (documentId: string) => {
-    if (user?.role === 'translator') {
+    if (user?.roles.includes('translator')) {
       history.push(`/translation/${documentId}`);
-    } else if (user?.role === 'reader') {
+    } else if (user?.roles.includes('reader')) {
       history.push(`/feedback/${documentId}`);
     }
   };
