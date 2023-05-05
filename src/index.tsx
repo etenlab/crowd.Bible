@@ -5,19 +5,30 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import App from './App';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { KeycloakClient, KeycloakProvider } from '@eten-lab/sso';
 
 const client = new ApolloClient({
   uri: `${process.env.REACT_APP_CPG_SERVER_URL}/graphql`,
   cache: new InMemoryCache(),
 });
 
+const kcClient = new KeycloakClient({
+  uri: process.env.REACT_APP_KEYCLOAK_URL!,
+  realm: process.env.REACT_APP_KEYCLOAK_REALM!,
+  clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID!,
+  clientSecret: process.env.REACT_APP_KEYCLOAK_CLIENT_SECRET!,
+});
+
+// console.log(kcClient);
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
   <React.StrictMode>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
+    <KeycloakProvider client={kcClient}>
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
+    </KeycloakProvider>
   </React.StrictMode>,
 );
 

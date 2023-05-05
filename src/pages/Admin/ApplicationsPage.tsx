@@ -1,7 +1,6 @@
 import { IonContent, IonItem } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import { MuiMaterial, CrowdBibleUI, Typography } from '@eten-lab/ui-kit';
-// import { sayHello } from 'keycloak-sso';
 
 const { Box } = MuiMaterial;
 const { HeadBox } = CrowdBibleUI;
