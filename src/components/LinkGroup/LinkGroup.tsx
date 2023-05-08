@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
+import { IonMenuToggle } from '@ionic/react';
 
 import {
   CrowdBibleUI,
@@ -56,11 +57,13 @@ export function LinkGroup({ group, linkItems }: LinkGroupType) {
   };
 
   return (
-    <ButtonList
-      label={group}
-      withUnderline
-      items={items}
-      onClick={handleClickItem}
-    />
+    <IonMenuToggle>
+      <ButtonList
+        label={group}
+        withUnderline
+        items={items}
+        onClick={handleClickItem}
+      />
+    </IonMenuToggle>
   );
 }

@@ -2,6 +2,10 @@
 export function decodeToken(str: string) {
   str = str.split('.')[1];
 
+  if (!str) {
+    return false;
+  }
+
   str = str.replace(/-/g, '+');
   str = str.replace(/_/g, '/');
   switch (str.length % 4) {
