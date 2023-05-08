@@ -3,6 +3,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
 import { useVote } from './useVote';
 import { LanguageInfo } from '../pages/LanguageTools/DictionaryPage';
+import { NodeTypeConst } from '../constants/graph.constant';
 
 export function useDictionaryTools(
   itemsType: 'word' | 'phrase',
@@ -21,6 +22,7 @@ export function useDictionaryTools(
 
   const addItem = useCallback(
     async (
+      type: NodeTypeConst,
       items: VotableItem[],
       itemText: string,
       languageInfo: LanguageInfo | null,
@@ -41,11 +43,35 @@ export function useDictionaryTools(
           return;
         }
 
-        const { wordId, electionId } =
-          await definitionService.createWordAndDefinitionsElection(
-            itemText,
-            languageInfo,
-          );
+        // const { wordId, electionId } =
+        //   await definitionService.createWordAndDefinitionsElection(
+        //     itemText,
+        //     languageInfo,
+        //   );
+        let itemId: Nanoid;
+
+        switch (type) {
+          case NodeTypeConst.WORD:
+            itemId = await singletons.graphThirdLayerService.createWordWithLang(
+              itemText,
+              languageInfo,
+            );
+            break;
+          case NodeTypeConst.PHRASE:
+            itemId = await singletons.graphThirdLayerService.createWordWithLang(
+              itemText,
+              languageInfo,
+              undefined,
+              NodeTypeConst.PHRASE,
+            );
+            break;
+          default:
+            alertFeedback('error', `can't add ${type} as votable item`);
+            throw new Error(`can't add ${type} as votable item`);
+        }
+        const { electionId } =
+          await singletons.definitionService.createDefinitionsElection(itemId);
+
         setItems([
           ...items,
           {
@@ -53,8 +79,8 @@ export function useDictionaryTools(
               content: itemText,
               upVotes: 0,
               downVotes: 0,
-              id: wordId,
-              candidateId: wordId,
+              id: itemId,
+              candidateId: itemId,
             },
             contents: [],
             contentElectionId: electionId,
@@ -71,6 +97,8 @@ export function useDictionaryTools(
     [
       definitionService,
       setLoadingState,
+      singletons?.definitionService,
+      singletons?.graphThirdLayerService,
       setItems,
       alertFeedback,
       itemsType,

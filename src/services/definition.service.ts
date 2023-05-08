@@ -152,28 +152,21 @@ export class DefinitionService {
   }
 
   /**
-   * Creates word and election of type 'definition' for this word
+   * Creates election of type 'definition' for given item (word/phrase/etc..)
    *
-   * @param word - word text
-   * @param langId - language of this word
-   * @returns - created word Id and election Id (to add definition candidates to it)
+   * @param itemId - Nanoid of the word/phrase/etc node
+   * @returns - created election Id (to add definition candidates to it)
    */
-  async createWordAndDefinitionsElection(
-    word: string,
-    langInfo: LanguageInfo,
-  ): Promise<{ wordId: Nanoid; electionId: Nanoid }> {
-    const wordId = await this.graphThirdLayerService.createWordWithLang(
-      word,
-      langInfo,
-    );
-
+  async createDefinitionsElection(
+    itemId: string,
+  ): Promise<{ electionId: Nanoid }> {
     const definitionEelection = await this.votingService.createElection(
       ElectionTypeConst.DEFINITION,
-      wordId,
+      itemId,
       TableNameConst.NODES,
       TableNameConst.RELATIONSHIPS,
     );
-    return { wordId, electionId: definitionEelection.id };
+    return { electionId: definitionEelection.id };
   }
 
   async createWordAndDefinitionsElection_old(

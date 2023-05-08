@@ -137,6 +137,7 @@ export class GraphThirdLayerService {
     word: string,
     langInfo: LanguageInfo,
     mapId?: Nanoid,
+    nodeType: NodeTypeConst = NodeTypeConst.WORD,
   ): Promise<Nanoid> {
     const word_id = await this.getWordWithLang(word, langInfo);
 
@@ -156,7 +157,7 @@ export class GraphThirdLayerService {
     }
 
     const node = await this.secondLayerService.createNodeFromObject(
-      NodeTypeConst.WORD,
+      nodeType as string,
       wordNodeObject,
     );
 

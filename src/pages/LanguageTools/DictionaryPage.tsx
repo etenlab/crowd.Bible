@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAppContext } from '../../hooks/useAppContext';
 import { VotableItem } from '../../dtos/votable-item.dto';
 import { useDictionaryTools } from '../../hooks/useDictionaryTools';
+import { NodeTypeConst } from '../../constants/graph.constant';
 const { Box, Divider } = MuiMaterial;
 
 // TODO import from ui-kit/LangSelector when next version ui-kit will be deployed
@@ -159,7 +160,7 @@ export function DictionaryPage() {
 
   const addWord = useCallback(
     (newWord: string) => {
-      addItem(words, newWord, selectedLanguageInfo || null);
+      addItem(NodeTypeConst.WORD, words, newWord, selectedLanguageInfo || null);
     },
     [addItem, selectedLanguageInfo, words],
   );
