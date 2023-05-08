@@ -123,7 +123,7 @@ export function DictionaryPage() {
     addDefinition,
     changeDefinitionValue,
     changeDefinitionVotes,
-  } = useDictionaryTools('word', setWords, setIsDialogOpened);
+  } = useDictionaryTools(NodeTypeConst.WORD, setWords, setIsDialogOpened);
 
   const onChangeLang = useCallback(
     (
@@ -145,8 +145,10 @@ export function DictionaryPage() {
     try {
       setLoadingState(true);
       const loadWords = async () => {
-        const words: VotableItem[] =
-          await definitionService.getWordsAsVotableItems(selectedLanguageInfo);
+        const words: VotableItem[] = await definitionService.getVotableItems(
+          selectedLanguageInfo,
+          NodeTypeConst.PHRASE,
+        );
         setWords(words);
       };
       loadWords();
@@ -163,13 +165,6 @@ export function DictionaryPage() {
       addItem(NodeTypeConst.WORD, words, newWord, selectedLanguageInfo || null);
     },
     [addItem, selectedLanguageInfo, words],
-  );
-
-  const changeWordVotes = useCallback(
-    (candidateId: Nanoid | null, upOrDown: TUpOrDownVote) => {
-      changeItemVotes(candidateId, upOrDown, words);
-    },
-    [changeItemVotes, words],
   );
 
   const addDefinitionToWord = useCallback(
@@ -263,9 +258,9 @@ export function DictionaryPage() {
             <ItemsClickableList
               items={words}
               setSelectedItem={setSelectedWord}
-              setLikeItem={(ballotId) => changeWordVotes(ballotId, 'upVote')}
-              setDislikeItem={(ballotId) =>
-                changeWordVotes(ballotId, 'downVote')
+              setLikeItem={(wordId) => changeItemVotes(wordId, 'upVote', words)}
+              setDislikeItem={(wordId) =>
+                changeItemVotes(wordId, 'downVote', words)
               }
             ></ItemsClickableList>
           </Box>

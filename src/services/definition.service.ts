@@ -241,7 +241,8 @@ export class DefinitionService {
   }
 
   /**
-   * Find nodes by votableNodesType and landgInfo and use propertyKeyText as key to find content property in these nodes
+   * Find nodes by votableNodesType and landgInfo (sic!: without filtering by ElectionId)
+   * and use propertyKeyText as key to find content property in these nodes
    * Return these nodes as votable content.
    * Candidates are found nodes by itself
    * @param votableNodesType
@@ -361,7 +362,7 @@ export class DefinitionService {
    * @param langNodeId
    * @returns
    */
-  async getPhrasesAsVotableItems(
+  async getPhrasesAsVotableItems_to_delete(
     langNodeId: string,
     langElectionId: Nanoid,
   ): Promise<Array<VotableItem>> {
@@ -395,23 +396,26 @@ export class DefinitionService {
   }
 
   /**
-   * Finds Words with given languageInfo as VotableItems
+   * Finds nodes with given languageInfo as VotableItems (self - votable
+   * items, i.e. we dont care if they have any relation to any Election)
    * @param langNodeId
    * @returns
    */
-  async getWordsAsVotableItems(
+  async getVotableItems(
     languageInfo: LanguageInfo,
+    type: NodeTypeConst,
   ): Promise<Array<VotableItem>> {
-    const wordsContents = await this.getSelfVotableContentByLang(
-      NodeTypeConst.WORD,
+    const itemContents = await this.getSelfVotableContentByLang(
+      type,
       languageInfo,
       PropertyKeyConst.NAME,
     );
 
-    const viPromises = wordsContents.map(async (wc) => {
+    const viPromises = itemContents.map(async (wc) => {
       if (!wc.id) {
         throw new Error(`word ${wc.content} desn't have an id`);
       }
+      // election for word to elect definitions.
       // if electionId exists, it won't be created, Just found and returned.
       const election = await this.votingService.createElection(
         ElectionTypeConst.DEFINITION,

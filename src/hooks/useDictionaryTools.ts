@@ -6,7 +6,7 @@ import { LanguageInfo } from '../pages/LanguageTools/DictionaryPage';
 import { NodeTypeConst } from '../constants/graph.constant';
 
 export function useDictionaryTools(
-  itemsType: 'word' | 'phrase',
+  itemsType: typeof NodeTypeConst.WORD | typeof NodeTypeConst.PHRASE,
   setItems: (items: VotableItem[]) => void,
   setIsDialogOpened: (state: boolean) => void,
 ) {
@@ -43,27 +43,24 @@ export function useDictionaryTools(
           return;
         }
 
-        // const { wordId, electionId } =
-        //   await definitionService.createWordAndDefinitionsElection(
-        //     itemText,
-        //     languageInfo,
-        //   );
         let itemId: Nanoid;
 
         switch (type) {
           case NodeTypeConst.WORD:
-            itemId = await singletons.graphThirdLayerService.createWordWithLang(
-              itemText,
-              languageInfo,
-            );
+            itemId =
+              await singletons.graphThirdLayerService.createWordOrPhraseWithLang(
+                itemText,
+                languageInfo,
+              );
             break;
           case NodeTypeConst.PHRASE:
-            itemId = await singletons.graphThirdLayerService.createWordWithLang(
-              itemText,
-              languageInfo,
-              undefined,
-              NodeTypeConst.PHRASE,
-            );
+            itemId =
+              await singletons.graphThirdLayerService.createWordOrPhraseWithLang(
+                itemText,
+                languageInfo,
+                undefined,
+                NodeTypeConst.PHRASE,
+              );
             break;
           default:
             alertFeedback('error', `can't add ${type} as votable item`);
