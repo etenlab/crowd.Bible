@@ -49,23 +49,12 @@ export class DefinitionService {
       ['nodeType'],
     );
     let relationshipType: RelationshipTypeConst;
-    let isDirectionToVotable: boolean;
     switch (electionTargetNode?.nodeType.type_name) {
       case NodeTypeConst.PHRASE:
         relationshipType = RelationshipTypeConst.PHRASE_TO_DEFINITION;
-        isDirectionToVotable = true; //relatinos are directed as from phrase to definition, voting is on definition
         break;
       case NodeTypeConst.WORD:
         relationshipType = RelationshipTypeConst.WORD_TO_DEFINITION;
-        isDirectionToVotable = true; //relatinos  are directed as from word to definition, voting is on definition
-        break;
-      case NodeTypeConst.LANGUAGE:
-        relationshipType =
-          votableNode?.nodeType.type_name === NodeTypeConst.PHRASE
-            ? RelationshipTypeConst.PHRASE_TO_LANG
-            : RelationshipTypeConst.WORD_TO_LANG;
-        isDirectionToVotable = false; //relatinos  are directed as  from phrase/word to language, voting is on phrase/word
-
         break;
       default:
         throw new Error(
@@ -76,18 +65,16 @@ export class DefinitionService {
           `,
         );
     }
-    const fromNode = isDirectionToVotable ? electionTargetId : votableNodeId;
-    const toNode = isDirectionToVotable ? votableNodeId : electionTargetId;
     let relationship = await this.graphFirstLayerService.findRelationship(
-      fromNode,
-      toNode,
+      electionTargetId,
+      votableNodeId,
       relationshipType as string,
     );
 
     if (!relationship) {
       relationship = await this.graphFirstLayerService.createRelationship(
-        fromNode,
-        toNode,
+        electionTargetId,
+        votableNodeId,
         relationshipType as string,
       );
     }
@@ -187,57 +174,6 @@ export class DefinitionService {
       TableNameConst.RELATIONSHIPS,
     );
     return { wordId, electionId: definitionEelection.id, wordCandidateId };
-  }
-
-  /**
-   * Creates phrase and election of type 'definition' for this phrase
-   *
-   * @param word - phrase text
-   * @param langId - language of this phrase
-   * @returns - created phrase Id and election Id (to add definition candidates to it)
-   */
-  async createPhraseAndDefinitionsElection(
-    //ill TODO: maybe, make common method with word creation
-    phrase: string,
-    langId: Nanoid,
-    langElectionId: Nanoid,
-  ): Promise<{
-    phraseId: Nanoid;
-    electionId: Nanoid;
-    phraseCandidateId: Nanoid;
-  }> {
-    const existingPhraseNode = await this.graphFirstLayerService.getNodeByProp(
-      NodeTypeConst.PHRASE,
-      {
-        key: PropertyKeyConst.TEXT,
-        value: phrase,
-      },
-    );
-    const node = existingPhraseNode
-      ? existingPhraseNode
-      : (
-          await this.graphSecondLayerService.createRelatedFromNodeFromObject(
-            RelationshipTypeConst.PHRASE_TO_LANG,
-            {},
-            NodeTypeConst.PHRASE,
-            { name: phrase },
-            langId,
-          )
-        ).node;
-
-    const phraseCandidateId = await this.findOrCreateCandidateId(
-      node.id,
-      langElectionId,
-      langId,
-    );
-
-    const election = await this.votingService.createElection(
-      ElectionTypeConst.DEFINITION,
-      node.id,
-      TableNameConst.NODES,
-      TableNameConst.RELATIONSHIPS,
-    );
-    return { phraseId: node.id, electionId: election.id, phraseCandidateId };
   }
 
   /**

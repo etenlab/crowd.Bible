@@ -147,7 +147,7 @@ export function DictionaryPage() {
       const loadWords = async () => {
         const words: VotableItem[] = await definitionService.getVotableItems(
           selectedLanguageInfo,
-          NodeTypeConst.PHRASE,
+          NodeTypeConst.WORD,
         );
         setWords(words);
       };
