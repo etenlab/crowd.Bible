@@ -14,7 +14,7 @@ import { VotableItem } from '../../dtos/votable-item.dto';
 import { useDictionaryTools } from '../../hooks/useDictionaryTools';
 const { Box, Divider } = MuiMaterial;
 
-//ill TODO import from ui-kit/LangSelector
+// TODO import from ui-kit/LangSelector when next version ui-kit will be deployed
 export type LanguageInfo = {
   lang: Lang;
   dialect: Dialect | undefined;
@@ -112,8 +112,9 @@ export function DictionaryPage() {
   const [words, setWords] = useState<VotableItem[]>([]);
   const definitionService = singletons?.definitionService;
 
-  const [selectedLanguageInfo, setSelectedLanguageInfo] =
-    useState<LanguageInfo | null>(null);
+  const [selectedLanguageInfo, setSelectedLanguageInfo] = useState<
+    LanguageInfo | undefined
+  >(undefined);
 
   const {
     addItem,
@@ -158,17 +159,16 @@ export function DictionaryPage() {
 
   const addWord = useCallback(
     (newWord: string) => {
-      addItem(words, newWord, selectedLanguageInfo);
+      addItem(words, newWord, selectedLanguageInfo || null);
     },
     [addItem, selectedLanguageInfo, words],
   );
 
   const changeWordVotes = useCallback(
     (candidateId: Nanoid | null, upOrDown: TUpOrDownVote) => {
-      // changeItemVotes(candidateId, upOrDown, words);
+      changeItemVotes(candidateId, upOrDown, words);
     },
-    // [changeItemVotes, words],
-    [],
+    [changeItemVotes, words],
   );
 
   const addDefinitionToWord = useCallback(
@@ -231,6 +231,7 @@ export function DictionaryPage() {
           <LangSelector
             onChange={onChangeLang}
             setLoadingState={setLoadingState}
+            selected={selectedLanguageInfo}
           ></LangSelector>
 
           <Box display={'flex'} flexDirection="column" width={1}>

@@ -45,7 +45,7 @@ export function useDictionaryTools(
           await definitionService.createWordAndDefinitionsElection(
             itemText,
             languageInfo,
-          ); //ill TODO add ability to vote on words/phrases (items content) by itself
+          );
         setItems([
           ...items,
           {
