@@ -3,7 +3,6 @@ export interface Votable {
   downVotes: number;
   candidateId: Nanoid;
 }
-
 export interface SiteTextTranslationDto {
   id: Nanoid;
   siteTextId: Nanoid;

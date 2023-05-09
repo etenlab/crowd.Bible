@@ -1,24 +1,21 @@
+import { Votable } from './site-text.dto';
+
 export interface WordSequenceDto {
   id: string;
-  wordSequence: string;
-  documentId: Nanoid;
-  creatorId: Nanoid;
-  importUid: string;
+  text: string;
   languageId: Nanoid;
-  isOrigin: boolean;
-  originalWordSequenceId?: Nanoid;
+  documentId?: Nanoid;
+  creatorId: Nanoid;
+  importUid?: string;
 }
 
-export type SubSequenceDto = {
-  id: Nanoid;
+export interface SubWordSequenceDto extends WordSequenceDto {
+  parentWordSequenceId: Nanoid;
   position: number;
-  len: number;
-};
-
-export interface WordSequenceWithSubDto extends WordSequenceDto {
-  subSequences: SubSequenceDto[];
+  length: number;
 }
 
-export interface WordSequenceWithVote extends WordSequenceDto {
-  vote: VotesStatsRow;
+export interface WordSequenceTranslationDto extends Votable {
+  originalId: Nanoid;
+  translationId: Nanoid;
 }

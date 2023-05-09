@@ -1,9 +1,5 @@
-import {
-  WordSequenceDto,
-  WordSequenceWithSubDto,
-  SubSequenceDto,
-} from '@/dtos/word-sequence.dto';
-import { Node } from '@/models/index';
+import { SubWordSequenceDto, WordSequenceDto } from '@/dtos/word-sequence.dto';
+import { Node, Relationship } from '@/models/index';
 import {
   PropertyKeyConst,
   RelationshipTypeConst,
@@ -17,17 +13,7 @@ export class WordSequenceMapper {
     entity.propertyKeys.forEach((key) => {
       switch (key.property_key) {
         case PropertyKeyConst.WORD_SEQUENCE: {
-          dto.wordSequence = JSON.parse(key.propertyValue.property_value).value;
-
-          return;
-        }
-        case PropertyKeyConst.DOCUMENT_ID: {
-          dto.documentId = JSON.parse(key.propertyValue.property_value).value;
-
-          return;
-        }
-        case PropertyKeyConst.CREATOR_ID: {
-          dto.creatorId = JSON.parse(key.propertyValue.property_value).value;
+          dto.text = JSON.parse(key.propertyValue.property_value).value;
 
           return;
         }
@@ -36,21 +22,21 @@ export class WordSequenceMapper {
 
           return;
         }
-        case PropertyKeyConst.LANGUAGE_ID: {
-          dto.languageId = JSON.parse(key.propertyValue.property_value).value;
+      }
+    });
 
+    entity.toNodeRelationships?.forEach((rel) => {
+      switch (rel.relationship_type) {
+        case RelationshipTypeConst.WORD_SEQUENCE_TO_CREATOR: {
+          dto.creatorId = rel.toNode.id;
           return;
         }
-        case PropertyKeyConst.IS_ORIGIN: {
-          dto.isOrigin = JSON.parse(key.propertyValue.property_value).value;
-
+        case RelationshipTypeConst.WORD_SEQUENCE_TO_DOCUMENT: {
+          dto.documentId = rel.toNode.id;
           return;
         }
-        case PropertyKeyConst.ORIGINAL_WORD_SEQUENCE_ID: {
-          dto.originalWordSequenceId = JSON.parse(
-            key.propertyValue.property_value,
-          ).value;
-
+        case RelationshipTypeConst.WORD_SEQUENCE_TO_LANGUAGE_ENTRY: {
+          dto.languageId = rel.toNode.id;
           return;
         }
       }
@@ -59,39 +45,20 @@ export class WordSequenceMapper {
     return dto;
   }
 
-  static entityToDtoWithSubSequence(entity: Node) {
-    const dto: WordSequenceWithSubDto = WordSequenceMapper.entityToDto(
-      entity,
-    ) as WordSequenceWithSubDto;
+  static relationshipToDto(rel: Relationship) {
+    const dto: SubWordSequenceDto = WordSequenceMapper.entityToDto(
+      rel.toNode,
+    ) as SubWordSequenceDto;
 
-    dto.subSequences = [];
+    dto.parentWordSequenceId = rel.from_node_id;
 
-    if (!entity.toNodeRelationships) {
-      return dto;
-    }
-    entity.toNodeRelationships.forEach((rel) => {
-      if (
-        rel.relationship_type !==
-        RelationshipTypeConst.WORD_SEQUENCE_TO_SUB_WORD_SEQUENCE
-      ) {
-        return;
+    rel.propertyKeys.forEach((key) => {
+      if (key.property_key === PropertyKeyConst.POSITION) {
+        dto.position = JSON.parse(key.propertyValue.property_value).value;
       }
-
-      const subSequence: SubSequenceDto = Object.create(null);
-      subSequence.id = rel.toNode.id;
-
-      rel.propertyKeys.forEach((key) => {
-        if (key.property_key === PropertyKeyConst.POSITION) {
-          subSequence.position = JSON.parse(
-            key.propertyValue.property_value,
-          ).value;
-        }
-        if (key.property_key === PropertyKeyConst.LENGTH) {
-          subSequence.len = JSON.parse(key.propertyValue.property_value).value;
-        }
-      });
-
-      dto.subSequences.push(subSequence);
+      if (key.property_key === PropertyKeyConst.LENGTH) {
+        dto.length = JSON.parse(key.propertyValue.property_value).value;
+      }
     });
 
     return dto;
