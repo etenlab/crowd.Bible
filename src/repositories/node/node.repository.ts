@@ -126,7 +126,7 @@ export class NodeRepository {
 
     if (relationship) {
       if (relationship.from_node_id) {
-        relationsArray.push('toNodeRelationships');
+        relationsArray.push('fromNodeRelationships');
         whereObj.fromNodeRelationships = {};
         whereObj.fromNodeRelationships.from_node_id = relationship.from_node_id;
         if (relationship.relationship_type) {

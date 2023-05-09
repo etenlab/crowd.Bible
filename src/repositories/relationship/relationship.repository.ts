@@ -1,3 +1,5 @@
+import { FindOptionsWhere } from 'typeorm';
+
 import { Node } from '@/src/models/';
 import { RelationshipType } from '@/src/models/';
 import { Relationship } from '@/src/models/';
@@ -90,35 +92,31 @@ export class RelationshipRepository {
     return relationships;
   }
 
-  async readRelationship(rel_id: Nanoid): Promise<Relationship | null> {
-    const relationship = await this.repository.findOneBy({
-      id: rel_id,
-    });
-
-    return relationship;
+  async readRelationship(
+    rel_id: Nanoid,
+    relations?: string[],
+    whereObj?: FindOptionsWhere<Relationship>,
+  ): Promise<Relationship | null> {
+    if (relations) {
+      if (whereObj) {
+        return this.repository.findOne({
+          relations,
+          where: whereObj,
+        });
+      } else {
+        return this.repository.findOne({
+          relations,
+          where: {
+            id: rel_id,
+          },
+        });
+      }
+    } else {
+      return this.repository.findOne({
+        where: {
+          id: rel_id,
+        },
+      });
+    }
   }
-
-  // async listRelatedNodes(node_id: string): Promise<any> {
-  //   const relationships_from = await this.repository.findBy({
-  //     to_id: node_id,
-  //   });
-  //   const related_from = relationships_from.map((rel) => {
-  //     return {
-  //       relationship: rel,
-  //       node: rel.from_node,
-  //     };
-  //   });
-
-  //   const relationships_to = await this.repository.findBy({
-  //     from_id: node_id,
-  //   });
-  //   const related_to = relationships_to.map((rel) => {
-  //     return {
-  //       relationship: rel,
-  //       node: rel.to_node,
-  //     };
-  //   });
-
-  //   return related_from.concat(related_to);
-  // }
 }
