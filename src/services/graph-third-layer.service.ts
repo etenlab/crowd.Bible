@@ -31,8 +31,8 @@ import { NodePropertyKeyRepository } from '../repositories/node/node-property-ke
 import { NodePropertyValueRepository } from '../repositories/node/node-property-value.repository';
 import { RelationshipRepository } from '../repositories/relationship/relationship.repository';
 import { SyncService } from './sync.service';
-import { LanguageInfo } from '../pages/LanguageTools/DictionaryPage';
 import { CreateWordDto } from '../dtos/create-word.dto';
+import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 
 export class GraphThirdLayerService {
   constructor(

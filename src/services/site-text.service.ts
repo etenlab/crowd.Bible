@@ -23,10 +23,13 @@ import { SiteTextTranslation } from '@/models/index';
 
 import { SiteTextRepository } from '@/repositories/site-text/site-text.repository';
 import { SiteTextTranslationRepository } from '@/repositories/site-text/site-text-translation.repository';
+import { GraphThirdLayerService } from './graph-third-layer.service';
+import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 
 export class SiteTextService {
   constructor(
     private readonly graphFirstLayerService: GraphFirstLayerService,
+    private readonly graphThirdLayerService: GraphThirdLayerService,
     private readonly votingService: VotingService,
     private readonly definitionService: DefinitionService,
 
@@ -39,19 +42,29 @@ export class SiteTextService {
     siteText: string,
     definitionText: string,
   ): Promise<{ wordId: Nanoid; definitionId: Nanoid }> {
-    const langDto = await this.definitionService.getLanguageById(languageId);
+    // TODO: refactor code that uses this method to provide proper LanguageInfo here and replace mocked value
+    const langInfo_mocked: LanguageInfo = {
+      lang: {
+        tag: 'ua',
+        descriptions: [
+          'mocked lang tag as "ua", use new language Selector to get LangInfo values from user',
+        ],
+      },
+    };
+    console.log(
+      `use langInfo_mocked ${JSON.stringify(
+        langInfo_mocked,
+      )} in place of langId ${languageId}`,
+    );
 
-    const { wordId, electionId } =
-      await this.definitionService.createWordAndDefinitionsElection_old(
-        siteText,
-        languageId,
-        langDto.electionWordsId!,
-      );
+    const wordId = await this.graphThirdLayerService.createWordOrPhraseWithLang(
+      siteText,
+      langInfo_mocked,
+    );
 
     const { definitionId } = await this.definitionService.createDefinition(
       definitionText,
       wordId,
-      electionId,
     );
 
     return {

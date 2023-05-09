@@ -2,6 +2,9 @@ import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 
 import { SiteTextWithTranslationCntDto } from '@/dtos/site-text.dto';
+import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { NodeTypeConst } from '../constants/graph.constant';
+import { VotableContent } from '../dtos/votable-item.dto';
 
 export function useSiteText() {
   const {
@@ -349,7 +352,7 @@ export function useSiteText() {
   );
 
   const getDefinitioinVotableContentByWord = useCallback(
-    async (word: string, langId: Nanoid) => {
+    async (word: string, langId: Nanoid): Promise<VotableContent[]> => {
       if (!singletons) {
         alertFeedback(
           'error',
@@ -358,18 +361,38 @@ export function useSiteText() {
         return [];
       }
 
+      // TODO: refactor code that uses this method to provide proper LanguageInfo here and replace mocked value
+      const langInfo_mocked: LanguageInfo = {
+        lang: {
+          tag: 'ua',
+          descriptions: [
+            'mocked lang tag as "ua", use new language Selector to get LangInfo values from user',
+          ],
+        },
+      };
+      console.log(
+        `use langInfo_mocked ${JSON.stringify(
+          langInfo_mocked,
+        )} in place of langId ${langId}`,
+      );
+
       try {
         setLoadingState(true);
-
-        const result =
-          await singletons.definitionService.getDefinitionVotableContentByWord(
-            word,
-            langId,
+        const wordAndDefinitions =
+          await singletons.definitionService.getVotableItems(
+            langInfo_mocked,
+            NodeTypeConst.WORD,
+            [
+              {
+                key: 'name',
+                value: word,
+              },
+            ],
           );
 
         setLoadingState(false);
 
-        return result;
+        return wordAndDefinitions[0].contents;
       } catch (err) {
         console.log(err);
         alertFeedback('error', 'Internal Error!');

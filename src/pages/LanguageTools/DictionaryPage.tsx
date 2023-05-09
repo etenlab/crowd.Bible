@@ -1,9 +1,10 @@
 import {
   MuiMaterial,
-  LangSelector,
   Lang,
   Dialect,
   Region,
+  LanguageInfo,
+  LangSelector,
 } from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
@@ -14,13 +15,6 @@ import { VotableItem } from '../../dtos/votable-item.dto';
 import { useDictionaryTools } from '../../hooks/useDictionaryTools';
 import { NodeTypeConst } from '../../constants/graph.constant';
 const { Box, Divider } = MuiMaterial;
-
-// TODO import from ui-kit/LangSelector when next version ui-kit will be deployed
-export type LanguageInfo = {
-  lang: Lang;
-  dialect: Dialect | undefined;
-  region: Region | undefined;
-};
 
 const {
   TitleWithIcon,

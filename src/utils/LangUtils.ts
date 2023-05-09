@@ -1,5 +1,5 @@
+import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 import { PropertyKeyConst } from '../constants/graph.constant';
-import { LanguageInfo } from '../pages/LanguageTools/DictionaryPage';
 
 export const makeFindPropsByLang = (
   langInfo: LanguageInfo,
