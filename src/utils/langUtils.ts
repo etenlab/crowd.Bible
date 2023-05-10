@@ -6,6 +6,8 @@ import {
 } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 import { PropertyKeyConst } from '../constants/graph.constant';
 import Tags from 'language-tags';
+// TODO: import from LangSelector when new version of ui-kit will be published
+export const DESCRIPTIONS_JOINER = '/';
 
 enum TagTypes {
   LANGUAGE = 'language',
@@ -130,4 +132,17 @@ export const langInfo2tag = ({
   region?.tag && (langTag += '-' + region?.tag);
   dialect?.tag && (langTag += '-' + dialect?.tag);
   return Tags(langTag).format();
+};
+
+export const langInfo2String = (langInfo: LanguageInfo | undefined): string => {
+  let res = langInfo?.lang.descriptions?.join(DESCRIPTIONS_JOINER);
+  if (!res) return '';
+  if (langInfo?.region?.descriptions) {
+    res += ' ' + langInfo.region?.descriptions.join(DESCRIPTIONS_JOINER);
+  }
+  if (langInfo?.dialect?.descriptions) {
+    res +=
+      ', dialect:' + langInfo?.dialect?.descriptions.join(DESCRIPTIONS_JOINER);
+  }
+  return res;
 };

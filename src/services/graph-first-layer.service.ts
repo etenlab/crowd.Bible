@@ -68,11 +68,19 @@ export class GraphFirstLayerService {
     return this.nodeRepo.getNodeByProp(type, prop, relationship);
   }
 
-  async getNodesByProps(
+  async getNodeIdsByProps(
     type: string,
     props: { key: string; value: unknown }[],
   ): Promise<Nanoid[]> {
-    return this.nodeRepo.getNodesByProps(type, props);
+    return this.nodeRepo.getNodeIdsByProps(type, props);
+  }
+
+  async getNodesByProps(
+    type: string,
+    props: { key: string; value: unknown }[],
+  ): Promise<Node[]> {
+    const nodeIds = await this.getNodeIdsByProps(type, props);
+    return this.nodeRepo.getNodesByIds(nodeIds);
   }
 
   // node-property-key

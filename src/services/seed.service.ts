@@ -34,7 +34,8 @@ export class SeedService {
     try {
       if (this.dataSeeded) return;
       console.log('*** data seeding started ***');
-      await Promise.allSettled([this.seedLanguages()]);
+      // No lang nodes are needed anymore
+      // await Promise.allSettled([this.seedLanguages()]);
       console.log('*** data seeding completed ***');
       this.dataSeeded = true;
     } catch (error) {
@@ -86,41 +87,43 @@ export class SeedService {
     );
   }
 
-  async seedLanguages(langs?: string[]) {
-    try {
-      const langNodes = await this.nodeRepository.repository.find({
-        relations: ['propertyKeys', 'propertyKeys.propertyValue'],
-        where: {
-          node_type: 'language',
-        },
-      });
+  // No lang nodes are needed anymore
+  //
+  // async seedLanguages(langs?: string[]) {
+  //   try {
+  //     const langNodes = await this.nodeRepository.repository.find({
+  //       relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+  //       where: {
+  //         node_type: 'language',
+  //       },
+  //     });
 
-      if (langNodes.length) return;
+  //     if (langNodes.length) return;
 
-      let langList = langs && langs.length > 0 ? langs : [];
-      if (!langList.length) {
-        langList = randomLangTags(10);
-      }
+  //     let langList = langs && langs.length > 0 ? langs : [];
+  //     if (!langList.length) {
+  //       langList = randomLangTags(10);
+  //     }
 
-      for (const lang of langList) {
-        const langNode = await this.nodeRepository.createNode('language');
-        for (const [key, value] of Object.entries({ name: lang })) {
-          const property_key_id =
-            await this.nodePropertyKeyRepository.getNodePropertyKey(
-              langNode.id,
-              key,
-            );
-          if (property_key_id) {
-            await this.nodePropertyValueRepository.setNodePropertyValue(
-              property_key_id,
-              value,
-            );
-          }
-        }
-      }
-    } catch (error) {
-      console.error('failed to seed languages::', error);
-      throw new Error('failed to seed languages');
-    }
-  }
+  //     for (const lang of langList) {
+  //       const langNode = await this.nodeRepository.createNode('language');
+  //       for (const [key, value] of Object.entries({ name: lang })) {
+  //         const property_key_id =
+  //           await this.nodePropertyKeyRepository.getNodePropertyKey(
+  //             langNode.id,
+  //             key,
+  //           );
+  //         if (property_key_id) {
+  //           await this.nodePropertyValueRepository.setNodePropertyValue(
+  //             property_key_id,
+  //             value,
+  //           );
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('failed to seed languages::', error);
+  //     throw new Error('failed to seed languages');
+  //   }
+  // }
 }

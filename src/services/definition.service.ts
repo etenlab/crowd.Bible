@@ -175,7 +175,7 @@ export class DefinitionService {
   ): Promise<Array<VotableContent>> {
     const findProps = makeFindPropsByLang(langInfo);
     customPropValues && findProps.push(...customPropValues);
-    const votableNodesIds = await this.graphFirstLayerService.getNodesByProps(
+    const votableNodesIds = await this.graphFirstLayerService.getNodeIdsByProps(
       votableNodesType as string,
       findProps,
     );
