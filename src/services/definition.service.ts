@@ -11,7 +11,7 @@ import { GraphSecondLayerService } from './graph-second-layer.service';
 import { GraphThirdLayerService } from './graph-third-layer.service';
 import { VotingService } from './voting.service';
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
-import { makeFindPropsByLang } from '../utils/LangUtils';
+import { makeFindPropsByLang } from '../utils/langUtils';
 import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 
 export class DefinitionService {
