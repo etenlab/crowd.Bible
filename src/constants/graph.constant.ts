@@ -82,5 +82,5 @@ export class PropertyKeyConst {
 
   static readonly LANGUAGE_TAG = 'language';
   static readonly DIALECT_TAG = 'dialect';
-  static readonly REGION_TAG = 'geo-tag';
+  static readonly REGION_TAG = 'region';
 }
