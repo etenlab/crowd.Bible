@@ -34,11 +34,11 @@ export function SettingsPage() {
     actions: { setRole, setConnectivity },
   } = useAppContext();
 
-  const [selectedRole, setSelectedRole] = useState<RoleType>('translator');
+  const [selectedRole, setSelectedRole] = useState<RoleType>(['translator']);
 
   useEffect(() => {
     if (user != null) {
-      setSelectedRole(user.role);
+      setSelectedRole(user.roles);
     }
   }, [user]);
 

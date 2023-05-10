@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
-import axios from 'axios';
+import { useKeycloakClient } from '@eten-lab/sso';
 
 import {
   Button,
@@ -15,7 +15,6 @@ import { useFormik } from 'formik';
 import { useAppContext } from '@/hooks/useAppContext';
 import * as Yup from 'yup';
 
-import * as querystring from 'qs';
 import { decodeToken } from '@/utils/AuthUtils';
 
 const { Box } = MuiMaterial;
@@ -31,10 +30,12 @@ const validationSchema = Yup.object().shape({
 });
 
 export function LoginPage() {
+  const kcClient = useKeycloakClient();
   const [show, setShow] = useState<boolean>(false);
   const [userToken, setUserToken] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const history = useHistory();
+
   const {
     actions: { setUser },
   } = useAppContext();
@@ -51,46 +52,29 @@ export function LoginPage() {
       console.log(values.email);
       console.log(values.password);
 
-      const keycloakUrl = `${process.env.REACT_APP_KEYCLOAK_URL}/realms/${process.env.REACT_APP_KEYCLOAK_REALM}/protocol/openid-connect`;
-      try {
-        await axios
-          .post(
-            `${keycloakUrl}/token`,
-            querystring.stringify({
-              client_id: process.env.REACT_APP_KEYCLOAK_CLIENT_ID,
-              // client_secret: process.env.REACT_APP_KEYCLOAK_CLIENT_SECRET,
-              username: values.email,
-              password: values.password,
-              grant_type: 'password', //'client_credentials'
-            }),
-            {
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
-            },
-          )
-          .then(async (response) => {
-            console.log('response.data.access_token');
-            setUserToken(response.data.access_token);
-            localStorage.setItem('userToken', response.data.access_token);
-            const token: any = decodeToken(response.data.access_token);
-            console.log(token.email);
+      await kcClient
+        .login({
+          username: values.email,
+          password: values.password,
+        })
+        .then((res) => {
+          if (res.name !== 'AxiosError') {
+            setUserToken(res.access_token);
+            localStorage.setItem('userToken', res.access_token);
+            const token: any = decodeToken(res.access_token);
             setUser({
-              userId: 1,
+              userId: token.sub,
               userEmail: token.email,
-              role: 'translator',
+              roles: [''],
             });
-            history.push('/profile');
-          })
-          .catch((error) => {
-            setErrorMessage(error.response.data.error_description);
-            console.log(error);
-          });
-      } catch (error: any) {
-        setErrorMessage(error.message);
-      }
-
-      // history.push('/home');
+            history.push('/home');
+          } else {
+            setErrorMessage(res.response.data.error_description);
+          }
+        })
+        .catch((err: any) => {
+          setErrorMessage(err.error_description);
+        });
     },
   });
 

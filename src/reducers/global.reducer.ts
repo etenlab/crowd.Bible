@@ -17,13 +17,13 @@ const initialTranslatedMap: TranslatedMap = {
   translatedMapStr: undefined,
 };
 
-export type RoleType = 'reader' | 'translator';
+export type RoleType = [unknown];
 export type PrefersColorSchemeType = 'light' | 'dark';
 
 export interface IUser {
-  userId: number;
+  userId: string;
   userEmail: string;
-  role: RoleType;
+  roles: RoleType;
   prefersColorScheme?: 'light' | 'dark';
 }
 
@@ -47,9 +47,9 @@ const initialSnact: SnackType = {
 
 export const initialState: StateType = {
   user: {
-    userId: 1,
+    userId: '',
     userEmail: 'hiroshi@test.com',
-    role: 'translator',
+    roles: ['translator'],
     prefersColorScheme: 'light',
   },
   snack: initialSnact,
@@ -98,11 +98,13 @@ export function reducer(
     }
     case actions.SET_ROLE: {
       if (prevState.user != null) {
+        const newRoles = prevState.user.roles;
+        newRoles.push(action.payload as string);
         return {
           ...prevState,
           user: {
             ...prevState.user,
-            role: action.payload as RoleType,
+            roles: newRoles,
           },
         };
       } else {

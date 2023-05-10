@@ -1,5 +1,11 @@
 import { useRef } from 'react';
-import { IonMenu, IonPage, IonContent, IonFooter } from '@ionic/react';
+import {
+  IonMenu,
+  IonPage,
+  IonContent,
+  IonFooter,
+  IonMenuToggle,
+} from '@ionic/react';
 
 import { LinkGroup } from '../LinkGroup';
 import { AppHeader } from '../AppHeader';
@@ -62,7 +68,9 @@ export function PageLayout({ children }: PageLayoutProps) {
         </IonContent>
 
         <IonFooter>
-          <LogoutButton />
+          <IonMenuToggle>
+            <LogoutButton />
+          </IonMenuToggle>
         </IonFooter>
       </IonMenu>
 
