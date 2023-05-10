@@ -1,12 +1,19 @@
-import { MuiMaterial } from '@eten-lab/ui-kit';
+import {
+  Dialect,
+  Lang,
+  LangSelector,
+  MuiMaterial,
+  Region,
+} from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
-import { IonContent, useIonAlert } from '@ionic/react';
+import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
-import { LanguageWithElecitonsDto } from '@/dtos/language.dto';
 import { VotableItem } from '../../dtos/votable-item.dto';
 import { useAppContext } from '../../hooks/useAppContext';
-import { useDefinition } from '../../hooks/useDefinition';
+import { useDictionaryTools } from '../../hooks/useDictionaryTools';
+import { NodeTypeConst } from '../../constants/graph.constant';
+import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 const { Box, Divider } = MuiMaterial;
 
 const {
@@ -14,10 +21,7 @@ const {
   ItemsClickableList,
   ItemContentListEdit,
   SimpleFormDialog,
-  FiltersAndSearch,
 } = CrowdBibleUI;
-
-const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
 
 // use as sample and for debugging purposes
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -96,6 +100,7 @@ export function PhraseBookPage() {
     states: {
       global: { singletons },
     },
+    actions: { setLoadingState, alertFeedback },
   } = useAppContext();
 
   const [selectedPhrase, setSelectedPhrase] = useState<VotableItem | null>(
@@ -104,73 +109,64 @@ export function PhraseBookPage() {
   const [isDialogOpened, setIsDialogOpened] = useState(false);
   const definitionService = singletons?.definitionService;
   const [phrases, setPhrases] = useState<VotableItem[]>([]);
-  const [presentAlert] = useIonAlert();
 
-  const [selectedLanguageId, setSelectedLanguageId] = useState<
-    string | null | undefined
-  >(null);
-  const [langs, setLangs] = useState<LanguageWithElecitonsDto[]>([]);
-
-  const handleSelectLanguage = (value: string): void => {
-    const id = langs.find((l) => l.name === value)?.id;
-    setSelectedLanguageId(id);
-  };
+  const [selectedLanguageInfo, setSelectedLanguageInfo] = useState<
+    LanguageInfo | undefined
+  >(undefined);
 
   const {
     addItem,
     changeItemVotes,
     addDefinition,
-    changeDefinitionVotes,
     changeDefinitionValue,
-  } = useDefinition(
-    'phrase',
-    setPhrases,
-    langs,
-    selectedLanguageId,
-    setIsDialogOpened,
+    changeDefinitionVotes,
+  } = useDictionaryTools(NodeTypeConst.PHRASE, setPhrases, setIsDialogOpened);
+
+  const onChangeLang = useCallback(
+    (
+      langTag: string, // it isn't needed for now
+      selected: {
+        lang: Lang;
+        dialect: Dialect | undefined;
+        region: Region | undefined;
+      },
+    ): void => {
+      setSelectedLanguageInfo(selected);
+    },
+    [setSelectedLanguageInfo],
   );
 
   useEffect(() => {
-    const loadLanguages = async () => {
-      if (!definitionService) return;
-      const langDtos = await definitionService.getLanguages();
-      setLangs(langDtos);
-    };
-    loadLanguages();
-  }, [definitionService]);
-
-  useEffect(() => {
     if (!definitionService) return;
-    if (!selectedLanguageId) return;
-    const langSlectionPhrasesId = langs.find(
-      (l) => l.id === selectedLanguageId,
-    )?.electionPhrasesId;
-    if (!langSlectionPhrasesId) {
-      throw new Error(
-        `Language id ${selectedLanguageId} does't have electionWordsId to elect words`,
-      );
-    }
-    const loadPhrases = async () => {
-      const phrases: VotableItem[] =
-        await definitionService.getPhrasesAsVotableItems(
-          selectedLanguageId,
-          langSlectionPhrasesId,
+    if (!selectedLanguageInfo) return;
+    try {
+      setLoadingState(true);
+      const loadPhrases = async () => {
+        const phrases: VotableItem[] = await definitionService.getVotableItems(
+          selectedLanguageInfo,
+          NodeTypeConst.PHRASE,
         );
-      setPhrases(phrases);
-    };
-    loadPhrases();
-  }, [definitionService, langs, selectedLanguageId]);
+        setPhrases(phrases);
+      };
+      loadPhrases();
+    } catch (error) {
+      console.log(error);
+      alertFeedback('error', 'Internal Error!');
+    } finally {
+      setLoadingState(false);
+    }
+  }, [alertFeedback, definitionService, selectedLanguageInfo, setLoadingState]);
 
-  const addPhrase = (newPhrase: string) => {
-    addItem(phrases, newPhrase);
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const changePhraseVotes = useCallback(
-    (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
-      changeItemVotes(ballotId, upOrDown, phrases);
+  const addPhrase = useCallback(
+    (newPhrase: string) => {
+      addItem(
+        NodeTypeConst.PHRASE,
+        phrases,
+        newPhrase,
+        selectedLanguageInfo || null,
+      );
     },
-    [changeItemVotes, phrases],
+    [addItem, phrases, selectedLanguageInfo],
   );
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -198,17 +194,12 @@ export function PhraseBookPage() {
   );
 
   const handleAddPhraseButtonClick = useCallback(() => {
-    if (!selectedLanguageId) {
-      presentAlert({
-        header: 'Alert',
-        subHeader: 'No Language selected!',
-        message: 'Before adding a phrase, select language',
-        buttons: ['Ok'],
-      });
+    if (!selectedLanguageInfo) {
+      alertFeedback('error', 'Please select a language before adding a word');
       return;
     }
     setIsDialogOpened(true);
-  }, [presentAlert, selectedLanguageId]);
+  }, [alertFeedback, selectedLanguageInfo]);
 
   return (
     <IonContent>
@@ -237,13 +228,11 @@ export function PhraseBookPage() {
             </Box>
           </Box>
 
-          <FiltersAndSearch
-            ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
-            languageOptions={langs.map((l) => l.name)}
-            setEthnologue={() => console.log('setEthnologue!')}
-            setLanguage={handleSelectLanguage}
-            setSearch={(s: string) => console.log('setSearch' + s)}
-          />
+          <LangSelector
+            onChange={onChangeLang}
+            setLoadingState={setLoadingState}
+            selected={selectedLanguageInfo}
+          ></LangSelector>
           <Box display={'flex'} flexDirection="column" width={1}>
             <Box
               width={1}
@@ -272,9 +261,11 @@ export function PhraseBookPage() {
             <ItemsClickableList
               items={phrases}
               setSelectedItem={setSelectedPhrase}
-              setLikeItem={(ballotId) => changePhraseVotes(ballotId, 'upVote')}
-              setDislikeItem={(ballotId) =>
-                changePhraseVotes(ballotId, 'downVote')
+              setLikeItem={(phraseId) =>
+                changeItemVotes(phraseId, 'upVote', phrases)
+              }
+              setDislikeItem={(phraseId) =>
+                changeItemVotes(phraseId, 'downVote', phrases)
               }
             ></ItemsClickableList>
           </Box>

@@ -177,6 +177,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
 
   const siteTextService = new SiteTextService(
     graphFirstLayerService,
+    graphThirdLayerService,
     votingService,
     definitionService,
     siteTextRepo,
