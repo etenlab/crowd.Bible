@@ -146,3 +146,19 @@ export const langInfo2String = (langInfo: LanguageInfo | undefined): string => {
   }
   return res;
 };
+
+export const subTags2LangInfo = ({
+  lang,
+  region,
+  dialect,
+}: {
+  lang: string;
+  region?: string;
+  dialect?: string;
+}): LanguageInfo | undefined => {
+  let langTag = lang;
+  region && (langTag += '-' + region);
+  dialect && (langTag += '-' + dialect);
+  langTag = Tags(langTag).format();
+  return tag2langInfo(langTag);
+};

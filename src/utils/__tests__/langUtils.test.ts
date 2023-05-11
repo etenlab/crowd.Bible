@@ -1,5 +1,5 @@
 import { LanguageInfo } from '@eten-lab/ui-kit';
-import { langInfo2tag, tag2langInfo } from '../langUtils';
+import { langInfo2tag, subTags2LangInfo, tag2langInfo } from '../langUtils';
 
 describe('langUtils tests', () => {
   describe('tag2langInfo', () => {
@@ -26,6 +26,19 @@ describe('langUtils tests', () => {
         },
       };
       const res = langInfo2tag(langInfo);
+      expect(res).toMatchSnapshot();
+    });
+  });
+  describe('subTags2LangInfo', () => {
+    it('convetrs subTags to LangInfo', () => {
+      const langSubtag = 'en';
+      const regionSubtag = 'UA';
+      const dialectSubtag = 'basiceng';
+      const res = subTags2LangInfo({
+        lang: langSubtag,
+        region: regionSubtag,
+        dialect: dialectSubtag,
+      });
       expect(res).toMatchSnapshot();
     });
   });

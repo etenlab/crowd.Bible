@@ -1,16 +1,13 @@
 import { IonItem, IonLabel, IonList, useIonAlert } from '@ionic/react';
-import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { MouseEvent, useCallback, useEffect, useState } from 'react';
 import { type INode, parseSync } from 'svgson';
 import {
-  Autocomplete,
-  Input,
   MuiMaterial,
   Button,
   LanguageInfo,
   LangSelector,
 } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
-import { LanguageDto } from '@/src/dtos/language.dto';
 import {
   StyledFilterButton,
   StyledSectionTypography,
@@ -58,24 +55,12 @@ export const MapTabContent = () => {
     actions: { alertFeedback },
   } = useAppContext();
 
-  // const langIdRef = useRef('');
-  // const [langs, setLangs] = useState<LanguageDto[]>([]);
   const [mapList, setMapList] = useState<MapDetail[]>([]);
   const [langInfo, setLangInfo] = useState<LanguageInfo | undefined>();
   const [presentAlert] = useIonAlert();
   const [uploadMapBtnStatus, setUploadMapBtnStatus] =
     useState<eUploadMapBtnStatus>(eUploadMapBtnStatus.NONE);
   const { sendMapFile } = useMapTranslationTools();
-
-  // useEffect(() => {
-  //   const loadLanguages = async () => {
-  //     if (!singletons) return;
-  //     const res = await singletons.graphThirdLayerService.getLanguages();
-  //     setLangs(res);
-  //     // if (res.length > 0) setSelectedLang(res.at(0)!.name);
-  //   };
-  //   loadLanguages();
-  // }, [singletons]);
 
   useEffect(() => {
     for (const mapState of mapList) {
@@ -236,22 +221,26 @@ export const MapTabContent = () => {
     [alertFeedback, langInfo, sendMapFile, showAlert],
   );
 
-  // const setMapsByLang = async (langId: string) => {
-  //   if (!singletons) return;
-  //   const res = await singletons.graphThirdLayerService.getMaps(langId);
-  //   setMapList(
-  //     res.map(
-  //       (m) =>
-  //         ({
-  //           id: m.id,
-  //           name: m.name,
-  //           map: m.map,
-  //           status: eProcessStatus.NONE,
-  //           words: [],
-  //         } as MapDetail),
-  //     ),
-  //   );
-  // };
+  const setMapsByLang = useCallback(
+    async (langInfo: LanguageInfo) => {
+      if (!singletons) return;
+      const res = await singletons.graphThirdLayerService.getMaps(langInfo);
+      setMapList(
+        res.map(
+          (m) =>
+            ({
+              id: m.id,
+              name: m.name,
+              map: m.map,
+              status: eProcessStatus.NONE,
+              words: [],
+              langInfo: m.langInfo,
+            } as MapDetail),
+        ),
+      );
+    },
+    [singletons],
+  );
 
   const handleUploadBtnClick = (
     e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
@@ -269,9 +258,13 @@ export const MapTabContent = () => {
     }
   };
 
-  const handleApplyLanguageFilter = (value: string) => {
-    // TODO setMapsByLang(curLangDetail.id);
-  };
+  const handleLangChange = useCallback(
+    (_langTag: string, langInfo: LanguageInfo) => {
+      setLangInfo(langInfo);
+      setMapsByLang(langInfo);
+    },
+    [setMapsByLang],
+  );
 
   const handleClearLanguageFilter = () => {
     setLangInfo(undefined);
@@ -292,9 +285,7 @@ export const MapTabContent = () => {
           <StyledSectionTypography>
             Select the source language
           </StyledSectionTypography>
-          <LangSelector
-            onChange={(_langTag, langInfo) => setLangInfo(langInfo)}
-          />
+          <LangSelector onChange={handleLangChange} selected={langInfo} />
         </>
       ) : (
         <></>
@@ -380,7 +371,7 @@ export const MapTabContent = () => {
                         padding: '12px 0px',
                       }}
                     >
-                      {langInfo.lang.descriptions?.join()}
+                      {langInfo2String(map.langInfo)}
                     </IonLabel>
                     {[
                       eProcessStatus.PARSING_STARTED,

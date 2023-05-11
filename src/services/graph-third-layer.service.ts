@@ -900,7 +900,7 @@ export class GraphThirdLayerService {
     return MapMapper.entityToDto(langNode);
   }
 
-  async getMaps(langInfo: LanguageInfo) {
+  async getMaps(langInfo: LanguageInfo): Promise<MapDto[]> {
     const mapNodeIds = await this.firstLayerService.getNodeIdsByProps(
       NodeTypeConst.MAP,
       makeFindPropsByLang(langInfo),

@@ -77,9 +77,11 @@ export class PropertyKeyConst {
   static readonly IS_ORIGIN = 'is_origin';
   static readonly CREATOR_ID = 'creator_id';
   static readonly DOCUMENT_ID = 'document_id';
-  static readonly LANGUAGE_ID = 'language_id';
   static readonly POSITION = 'position';
   static readonly LENGTH = 'length';
+
+  // TODO deprecated. Check and remove
+  static readonly LANGUAGE_ID = 'language_id';
 
   static readonly ORIGINAL_WORD_SEQUENCE_ID = 'original-word-sequence-id';
   static readonly TEXT = 'text';

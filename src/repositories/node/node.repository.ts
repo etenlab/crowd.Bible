@@ -203,7 +203,18 @@ export class NodeRepository {
   }
 
   async getNodesByIds(ids: Array<string>): Promise<Node[]> {
-    return this.repository.findBy({ id: In(ids) });
+    return this.repository.find({
+      where: { id: In(ids) },
+      relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+      select: {
+        propertyKeys: {
+          property_key: true,
+          propertyValue: {
+            property_value: true,
+          },
+        },
+      },
+    });
   }
 
   async getNodePropertyValue(
