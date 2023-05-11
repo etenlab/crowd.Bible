@@ -425,8 +425,7 @@ export class GraphThirdLayerService {
     });
   }
 
-  async getUnTranslatedWords(langId: Nanoid) {
-    // console.log('getUnTranslatedWords', langId);
+  async getUnTranslatedWords() {
     return this.getWords(
       [
         {

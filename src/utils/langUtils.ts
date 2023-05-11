@@ -123,11 +123,11 @@ export const tag2langInfo = (tagGiven: string): LanguageInfo | undefined => {
   return langInfo;
 };
 
-export const langInfo2tag = ({
-  lang,
-  region,
-  dialect,
-}: LanguageInfo): string => {
+export const langInfo2tag = (
+  langInfo: LanguageInfo | undefined,
+): string | undefined => {
+  if (!langInfo) return undefined;
+  const { lang, region, dialect } = langInfo;
   let langTag = lang.tag;
   region?.tag && (langTag += '-' + region?.tag);
   dialect?.tag && (langTag += '-' + dialect?.tag);
