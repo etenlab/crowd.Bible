@@ -7,6 +7,7 @@ import { ElectionTypeConst } from '@/constants/voting.constant';
 import { TableNameConst } from '@/constants/table-name.constant';
 
 import { LanguageWithElecitonsDto } from '@/dtos/language.dto';
+import { DefinitionDto } from '@/dtos/definition.dto';
 
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
@@ -466,5 +467,50 @@ export class DefinitionService {
     this.graphSecondLayerService.updateNodeObject(definitionNodeId, {
       [PropertyKeyConst.DEFINITION]: newDefinitionValue,
     });
+  }
+
+  /**
+   * Get Definition Dto from word-to-definition relationship.
+   *
+   * @param rel - rel Id
+   */
+  async getDefinitionWithWord(rel: Nanoid): Promise<DefinitionDto | null> {
+    const relEntity = await this.graphFirstLayerService.readRelationship(rel, [
+      'fromNode',
+      'fromNode.toNodeRelationships',
+    ]);
+
+    if (!relEntity) {
+      return null;
+    }
+
+    const wordText: string =
+      (await this.graphFirstLayerService.getNodePropertyValue(
+        relEntity.from_node_id,
+        PropertyKeyConst.WORD,
+      )) as string;
+    const definitionText: string =
+      (await this.graphFirstLayerService.getNodePropertyValue(
+        relEntity.to_node_id,
+        PropertyKeyConst.DEFINITION,
+      )) as string;
+    let languageId: Nanoid;
+
+    for (const relationship of relEntity!.fromNode!.toNodeRelationships!) {
+      if (
+        relationship.relationship_type === RelationshipTypeConst.WORD_TO_LANG
+      ) {
+        languageId = relationship.to_node_id;
+      }
+    }
+
+    return {
+      wordId: relEntity.from_node_id,
+      wordText: wordText,
+      definitionId: relEntity.to_node_id,
+      definitionText: definitionText,
+      languageId: languageId!,
+      relationshipId: relEntity.id,
+    };
   }
 }

@@ -18,11 +18,13 @@ import {
   NodePropertyValue,
 } from '@/src/models';
 
+import { WordDto } from '@/dtos/word.dto';
+import { WordMapper } from '@/mappers/word.mapper';
+
 import { NodeRepository } from '@/repositories/node/node.repository';
 import { NodePropertyKeyRepository } from '../repositories/node/node-property-key.repository';
 import { NodePropertyValueRepository } from '../repositories/node/node-property-value.repository';
 import { RelationshipRepository } from '../repositories/relationship/relationship.repository';
-
 export class WordService {
   constructor(
     private readonly graphFirstLayerService: GraphFirstLayerService,
@@ -115,6 +117,21 @@ export class WordService {
     }
 
     return node.id;
+  }
+
+  async getWordById(wordId: Nanoid): Promise<WordDto | null> {
+    const nodeEntity = await this.graphFirstLayerService.readNode(wordId, [
+      'propertyKeys',
+      'propertyKeys.propertyValue',
+      'toNodeRelationships',
+      'toNodeRelationships.toNode',
+    ]);
+
+    if (!nodeEntity) {
+      return null;
+    }
+
+    return WordMapper.entityToDto(nodeEntity);
   }
 
   async createWords(

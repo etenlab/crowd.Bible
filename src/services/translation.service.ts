@@ -120,6 +120,46 @@ export class TranslationService {
     };
   }
 
+  async createOrFindDefinitionTranslation(
+    originalDefinitionId: Nanoid,
+    translatedDefinitionId: Nanoid,
+  ): Promise<{
+    electionId: Nanoid;
+    candidateId: Nanoid;
+    definitionId: Nanoid;
+    translationRelationshipId: Nanoid;
+  }> {
+    const original = await this.graphFirstLayerService.readNode(
+      originalDefinitionId,
+    );
+
+    if (!original) {
+      throw new Error('Not exists original definition with given Id');
+    }
+
+    const translated = await this.graphFirstLayerService.readNode(
+      translatedDefinitionId,
+    );
+
+    if (!translated) {
+      throw new Error('Not exists translated definition with given Id');
+    }
+
+    const { electionId, candidateId, translatedId, translationRelationshipId } =
+      await this.createOrFindTranslation(
+        original.id,
+        translated.id,
+        RelationshipTypeConst.WORD_SEQUENCE_TO_TRANSLATION,
+      );
+
+    return {
+      electionId,
+      candidateId,
+      definitionId: translatedId,
+      translationRelationshipId: translationRelationshipId,
+    };
+  }
+
   async createOrFindWordTranslation(
     originalWordId: Nanoid,
     translation: {
