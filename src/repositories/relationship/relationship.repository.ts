@@ -71,7 +71,7 @@ export class RelationshipRepository {
       throw new Error(`Node not found '${node_2}'`);
     }
 
-    const translation = await this.repository.findOne({
+    const rel = await this.repository.findOne({
       where: {
         relationship_type: type_name,
         from_node_id: node_from.id,
@@ -79,7 +79,7 @@ export class RelationshipRepository {
       },
     });
 
-    return translation;
+    return rel;
   }
 
   async listAllRelationshipsByType(type_name: string): Promise<Relationship[]> {

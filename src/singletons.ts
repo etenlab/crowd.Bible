@@ -246,8 +246,8 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     graphFirstLayerService,
     votingService,
     definitionService,
-    siteTextRepo,
-    siteTextTranslationRepo,
+    translationService,
+    wordService,
   );
 
   const lexiconService = new LexiconService(graphSecondLayerService, nodeRepo);
