@@ -1,5 +1,5 @@
 export interface WordDto {
   id: string;
-  name: string;
+  word: string;
   [key: string]: unknown;
 }
