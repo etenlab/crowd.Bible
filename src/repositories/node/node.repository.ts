@@ -1,4 +1,4 @@
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, In } from 'typeorm';
 
 import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
@@ -154,7 +154,7 @@ export class NodeRepository {
     return node;
   }
 
-  async getNodesByProps(
+  async getNodeIdsByProps(
     type: string,
     props: { key: string; value: unknown }[],
   ): Promise<Nanoid[]> {
@@ -200,6 +200,21 @@ export class NodeRepository {
     }
 
     return nodes.map(({ node_id }) => node_id);
+  }
+
+  async getNodesByIds(ids: Array<string>): Promise<Node[]> {
+    return this.repository.find({
+      where: { id: In(ids) },
+      relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+      select: {
+        propertyKeys: {
+          property_key: true,
+          propertyValue: {
+            property_value: true,
+          },
+        },
+      },
+    });
   }
 
   async getNodePropertyValue(

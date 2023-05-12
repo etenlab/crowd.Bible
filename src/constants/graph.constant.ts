@@ -21,8 +21,9 @@ export class NodeTypeConst {
   static readonly WORD = 'word';
   static readonly WORD_SEQUENCE = 'word-sequence';
 
+  // TODO: deprecated - refactor, check and remove
   static readonly LANGUAGE = 'language';
-  static readonly MAP_LANG = 'map-language';
+  // static readonly MAP_LANG = 'map-language';
 
   static readonly USER = 'user';
   static readonly DEFINITION = 'definition';
@@ -37,12 +38,17 @@ export class RelationshipTypeConst {
 
   static readonly ELECTION_TO_BALLOT_ENTRY = 'election-to-ballot-entry';
 
+  // TODO: deprecated - refactor, check and remove
   static readonly WORD_TO_LANG = 'word-to-language-entry';
+
   static readonly WORD_MAP = 'word-map';
   static readonly WORD_TO_TRANSLATION = 'word-to-translation';
   static readonly WORD_SEQUENCE_TO_WORD = 'word-sequence-to-word';
+
+  // TODO: deprecated - refactor, check and remove
   static readonly WORD_SEQUENCE_TO_LANGUAGE_ENTRY =
     'word-sequence-to-language-entry';
+
   static readonly WORD_SEQUENCE_TO_DOCUMENT = 'word-sequence-to-document';
   static readonly WORD_SEQUENCE_TO_CREATOR = 'word-sequence-to-creator';
   static readonly WORD_SEQUENCE_TO_WORD_SEQUENCE =
@@ -53,7 +59,7 @@ export class RelationshipTypeConst {
 
   static readonly WORD_TO_DEFINITION = 'word-to-definition';
   static readonly PHRASE_TO_DEFINITION = 'phrase-to-definition';
-  static readonly PHRASE_TO_LANG = 'phrase-to-language-entry';
+  // static readonly PHRASE_TO_LANG = 'phrase-to-language-entry';
 }
 
 export class PropertyKeyConst {
@@ -71,9 +77,11 @@ export class PropertyKeyConst {
   static readonly IS_ORIGIN = 'is_origin';
   static readonly CREATOR_ID = 'creator_id';
   static readonly DOCUMENT_ID = 'document_id';
-  static readonly LANGUAGE_ID = 'language_id';
   static readonly POSITION = 'position';
   static readonly LENGTH = 'length';
+
+  // TODO deprecated. Check and remove
+  static readonly LANGUAGE_ID = 'language_id';
 
   static readonly ORIGINAL_WORD_SEQUENCE_ID = 'original-word-sequence-id';
   static readonly TEXT = 'text';
