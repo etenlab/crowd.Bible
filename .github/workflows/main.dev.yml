@@ -32,6 +32,7 @@ jobs:
           cat << EOF > .env
           ${{ env.ENV }}
           CI=false
+          NODE_OPTIONS=--max-old-space-size=4096
           EOF
 
       - name: Load env

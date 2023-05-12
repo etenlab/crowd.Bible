@@ -34,8 +34,7 @@ const startingDefaultSqls: TSqls = {
       body: `
 --==========select all words and its values===================
 select n.node_id, n.node_type, 
-npk.node_property_key_id,
-npv.node_property_value_id, 
+npk.property_key,
 npv.property_value 
 from nodes n
 left join node_property_keys npk on n.node_id = npk.node_id 
@@ -65,6 +64,7 @@ left join nodes n_from on r_from_other.from_node_id = n_from.node_id
 
 left join node_property_keys npk on nodes.node_id = npk.node_id
 left join node_property_values npv on npk.node_property_key_id = npv.node_property_key_id
+--where nodes.node_type='word'
 --===========================================================================================
 
 `,

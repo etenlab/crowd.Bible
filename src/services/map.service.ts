@@ -5,52 +5,56 @@ import { WordService } from './word.service';
 
 import {
   NodeTypeConst,
+  PropertyKeyConst,
   RelationshipTypeConst,
 } from '@/constants/graph.constant';
 
-import { NodeRepository } from '@/repositories/node/node.repository';
-
 import { MapDto } from '@/dtos/map.dto';
-
 import { MapMapper } from '@/mappers/map.mapper';
+import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 
+import { makeFindPropsByLang } from '@/utils/langUtils';
 export class MapService {
   constructor(
     private readonly graphFirstLayerService: GraphFirstLayerService,
     private readonly graphSecondLayerService: GraphSecondLayerService,
 
     private readonly wordService: WordService,
-
-    private readonly nodeRepo: NodeRepository,
   ) {}
 
   async saveMap(
-    langId: Nanoid,
+    langInfo: LanguageInfo,
     mapInfo: {
       name: string;
       mapFileId: string;
       ext: string;
     },
   ): Promise<Nanoid | null> {
-    const res =
-      await this.graphSecondLayerService.createRelatedFromNodeFromObject(
-        NodeTypeConst.MAP_LANG,
-        {},
-        NodeTypeConst.MAP,
-        mapInfo,
-        langId,
-      );
-    return res.node.id;
+    const langProps: { [key: string]: string } = {
+      [PropertyKeyConst.LANGUAGE_TAG]: langInfo.lang.tag,
+    };
+    if (langInfo?.dialect?.tag) {
+      langProps[PropertyKeyConst.DIALECT_TAG] = langInfo.dialect.tag;
+    }
+    if (langInfo?.region?.tag) {
+      langProps[PropertyKeyConst.REGION_TAG] = langInfo.region.tag;
+    }
+
+    const mapNode = await this.graphSecondLayerService.createNodeFromObject(
+      NodeTypeConst.MAP,
+      {
+        ...mapInfo,
+        ...langProps,
+      },
+    );
+    return mapNode.id;
   }
 
   async getMap(mapId: Nanoid): Promise<MapDto | null> {
-    const langNode = await this.nodeRepo.repository.findOne({
-      relations: ['propertyKeys', 'propertyKeys.propertyValue'],
-      where: {
-        id: mapId,
-        node_type: NodeTypeConst.MAP,
-      },
-    });
+    const langNode = await this.graphFirstLayerService.readNode(mapId, [
+      'propertyKeys',
+      'propertyKeys.propertyValue',
+    ]);
 
     if (!langNode) {
       return null;
@@ -59,22 +63,14 @@ export class MapService {
     return MapMapper.entityToDto(langNode);
   }
 
-  async getMaps(langId?: Nanoid) {
-    const mapNodes = await this.nodeRepo.repository.find({
-      relations: [
-        'propertyKeys',
-        'propertyKeys.propertyValue',
-        'toNodeRelationships',
-      ],
-      where: {
-        node_type: NodeTypeConst.MAP,
-        toNodeRelationships: {
-          relationship_type: NodeTypeConst.MAP_LANG,
-          to_node_id: langId,
-        },
-      },
-    });
-
+  async getMaps(langInfo: LanguageInfo): Promise<MapDto[]> {
+    const mapNodeIds = await this.graphFirstLayerService.getNodeIdsByProps(
+      NodeTypeConst.MAP,
+      makeFindPropsByLang(langInfo),
+    );
+    const mapNodes = await this.graphFirstLayerService.getNodesByIds(
+      mapNodeIds,
+    );
     const dtos = mapNodes.map((node) => MapMapper.entityToDto(node));
     return dtos;
   }

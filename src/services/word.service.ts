@@ -28,7 +28,6 @@ import { NodeRepository } from '@/repositories/node/node.repository';
 import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
 import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
 import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
-
 export class WordService {
   constructor(
     private readonly graphFirstLayerService: GraphFirstLayerService,
@@ -42,7 +41,11 @@ export class WordService {
     private readonly syncService: SyncService,
   ) {}
 
-  private async wordsExist(
+  /**
+   * @deprecated
+   * never use this function
+   */
+  async wordsExist(
     words: string[],
     langId: Nanoid,
   ): Promise<{ [key: string]: string }> {
@@ -55,7 +58,7 @@ export class WordService {
       where: {
         node_type: NodeTypeConst.WORD,
         propertyKeys: {
-          property_key: PropertyKeyConst.WORD,
+          property_key: PropertyKeyConst.NAME,
           propertyValue: {
             property_value: In(words.map((w) => JSON.stringify({ value: w }))),
           },
@@ -66,9 +69,7 @@ export class WordService {
         },
       },
     });
-
     const storedWordStatus: { [key: string]: string } = {};
-
     for (const node of nodes) {
       const storedWord = JSON.parse(
         node.propertyKeys?.at(0)?.propertyValue?.property_value || '{}',
@@ -78,25 +79,22 @@ export class WordService {
         storedWordStatus[storedWord] = node.id;
       }
     }
-
     return storedWordStatus;
   }
 
-  async createOrFindWord({
-    word,
-    languageId,
-    mapId,
-    siteText,
-  }: {
-    word: string;
-    languageId: Nanoid;
-    siteText?: boolean;
-    mapId?: Nanoid;
-  }): Promise<Nanoid> {
-    const wordId = await this.getWord(word, languageId);
+  /**
+   * @deprecated
+   * Use createWordsWithLang() instead.
+   */
+  async createWord(
+    word: string,
+    langId: Nanoid,
+    mapId?: Nanoid,
+  ): Promise<Nanoid> {
+    const word_id = await this.getWord(word, langId);
 
-    if (wordId) {
-      return wordId;
+    if (word_id) {
+      return word_id;
     }
 
     const { node } =
@@ -104,11 +102,8 @@ export class WordService {
         RelationshipTypeConst.WORD_TO_LANG,
         {},
         NodeTypeConst.WORD,
-        {
-          [PropertyKeyConst.WORD]: word,
-          [PropertyKeyConst.SITE_TEXT]: siteText,
-        },
-        languageId,
+        { [PropertyKeyConst.NAME]: word },
+        langId,
       );
 
     if (mapId) {
@@ -123,21 +118,10 @@ export class WordService {
     return node.id;
   }
 
-  async getWordById(wordId: Nanoid): Promise<WordDto | null> {
-    const nodeEntity = await this.graphFirstLayerService.readNode(wordId, [
-      'propertyKeys',
-      'propertyKeys.propertyValue',
-      'toNodeRelationships',
-      'toNodeRelationships.toNode',
-    ]);
-
-    if (!nodeEntity) {
-      return null;
-    }
-
-    return WordMapper.entityToDto(nodeEntity);
-  }
-
+  /**
+   * @deprecated
+   * Use createWordsWithLang() instead.
+   */
   async createWords(
     words: string[],
     langId: Nanoid,
@@ -211,6 +195,10 @@ export class WordService {
     return wordIds;
   }
 
+  /**
+   * @todo
+   * Need to refactor.
+   */
   async getWord(word: string, language: Nanoid): Promise<Nanoid | null> {
     const wordNode = await this.graphFirstLayerService.getNodeByProp(
       NodeTypeConst.WORD,
@@ -230,6 +218,10 @@ export class WordService {
     return wordNode.id;
   }
 
+  /**
+   * @todo make this function more simple, don't directly call repository functions
+   * Use graphFirstLayerService
+   */
   async getWords(
     relQuery?:
       | FindOptionsWhere<Relationship>
@@ -252,7 +244,22 @@ export class WordService {
     return wordNodes;
   }
 
-  async getUnTranslatedWords(langId: Nanoid) {
+  async getWordById(wordId: Nanoid): Promise<WordDto | null> {
+    const nodeEntity = await this.graphFirstLayerService.readNode(wordId, [
+      'propertyKeys',
+      'propertyKeys.propertyValue',
+      'toNodeRelationships',
+      'toNodeRelationships.toNode',
+    ]);
+
+    if (!nodeEntity) {
+      return null;
+    }
+
+    return WordMapper.entityToDto(nodeEntity);
+  }
+
+  async getUnTranslatedWords() {
     return this.getWords(
       [
         {
@@ -293,6 +300,22 @@ export class WordService {
       );
 
     return new_translation.id;
+  }
+
+  async createWordsWithLang(
+    words: string[],
+    langInfo: LanguageInfo,
+    mapId?: Nanoid,
+  ): Promise<Nanoid[]> {
+    const wordNodesPromises = words.map((word) => {
+      return this.createWordOrPhraseWithLang(
+        word,
+        langInfo,
+        mapId,
+        NodeTypeConst.WORD,
+      );
+    });
+    return Promise.all(wordNodesPromises);
   }
 
   async createWordOrPhraseWithLang(
@@ -359,7 +382,7 @@ export class WordService {
       });
     }
 
-    const wordNodeIds = await this.graphFirstLayerService.getNodesByProps(
+    const wordNodeIds = await this.graphFirstLayerService.getNodeIdsByProps(
       nodeType as string,
       wordSearchProps,
     );

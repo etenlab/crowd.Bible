@@ -151,14 +151,6 @@ export function AdminPage() {
     }
   };
 
-  const seedLandgData = useCallback(async () => {
-    if (seedService) {
-      setLoadingStatus(LoadingStatus.LOADING);
-      await seedService.seedLanguages();
-      setLoadingStatus(LoadingStatus.FINISHED);
-    }
-  }, [seedService]);
-
   const materialize = async () => {
     singletons?.materializerService.materialize('iso_639_3_min.tab');
   };
@@ -177,11 +169,6 @@ export function AdminPage() {
         <IonCardHeader>
           <IonCardTitle>Seed some random data</IonCardTitle>
         </IonCardHeader>
-        <IonCardContent>
-          {seedService && (
-            <IonButton onClick={seedLandgData}>Seed Languages</IonButton>
-          )}
-        </IonCardContent>
       </IonCard>
       <IonCard>
         <IonCardHeader>

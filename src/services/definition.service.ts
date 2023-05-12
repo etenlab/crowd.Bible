@@ -12,7 +12,7 @@ import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 import { VotingService } from './voting.service';
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
-import { makeFindPropsByLang } from '../utils/LangUtils';
+import { makeFindPropsByLang } from '../utils/langUtils';
 import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 
 export class DefinitionService {
@@ -175,7 +175,7 @@ export class DefinitionService {
   ): Promise<Array<VotableContent>> {
     const findProps = makeFindPropsByLang(langInfo);
     customPropValues && findProps.push(...customPropValues);
-    const votableNodesIds = await this.graphFirstLayerService.getNodesByProps(
+    const votableNodesIds = await this.graphFirstLayerService.getNodeIdsByProps(
       votableNodesType as string,
       findProps,
     );

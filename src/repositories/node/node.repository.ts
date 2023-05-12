@@ -1,11 +1,16 @@
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, In } from 'typeorm';
 
 import { DbService } from '@/services/db.service';
 import { SyncService } from '@/services/sync.service';
 import { NodeType } from '@/src/models';
 import { Node } from '@/src/models';
 
-import { PropertyKeyConst } from '@/constants/graph.constant';
+import { NodeTypeConst, PropertyKeyConst } from '@/constants/graph.constant';
+export interface getNodesByTypeAndRelatedNodesParams {
+  type: NodeTypeConst;
+  from_node_id?: Nanoid;
+  to_node_id?: Nanoid;
+}
 
 export class NodeRepository {
   constructor(
@@ -154,7 +159,7 @@ export class NodeRepository {
     return node;
   }
 
-  async getNodesByProps(
+  async getNodeIdsByProps(
     type: string,
     props: { key: string; value: unknown }[],
   ): Promise<Nanoid[]> {
@@ -200,6 +205,57 @@ export class NodeRepository {
     }
 
     return nodes.map(({ node_id }) => node_id);
+  }
+
+  async getNodesByIds(ids: Array<string>): Promise<Node[]> {
+    return this.repository.find({
+      where: { id: In(ids) },
+      relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+      select: {
+        propertyKeys: {
+          property_key: true,
+          propertyValue: {
+            property_value: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getNodesByTypeAndRelatedNodes({
+    type,
+    from_node_id,
+    to_node_id,
+  }: getNodesByTypeAndRelatedNodesParams): Promise<Node[]> {
+    try {
+      const foundNodesQB = await this.repository
+        .createQueryBuilder('node')
+        .leftJoinAndSelect('node.propertyKeys', 'propertyKeys')
+        .leftJoinAndSelect('propertyKeys.propertyValue', 'propertyValue')
+        .leftJoinAndSelect('node.toNodeRelationships', 'toNodeRelationships')
+        .leftJoinAndSelect(
+          'node.fromNodeRelationships',
+          'fromNodeRelationships',
+        )
+        .where('node.node_type = :type', { type });
+
+      from_node_id &&
+        foundNodesQB.andWhere(
+          'fromNodeRelationships.from_node_id = :from_node_id',
+          {
+            from_node_id,
+          },
+        );
+
+      to_node_id &&
+        foundNodesQB.andWhere('toNodeRelationships.to_node_id = :to_node_id', {
+          to_node_id,
+        });
+      return foundNodesQB.getMany();
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to get nodes by type ${type}`);
+    }
   }
 
   async getNodePropertyValue(

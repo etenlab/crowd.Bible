@@ -2,7 +2,10 @@ import { FindOptionsWhere } from 'typeorm';
 
 import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
 import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
-import { NodeRepository } from '@/repositories/node/node.repository';
+import {
+  NodeRepository,
+  type getNodesByTypeAndRelatedNodesParams,
+} from '@/repositories/node/node.repository';
 import { NodeTypeRepository } from '@/repositories/node/node-type.repository';
 
 import { RelationshipPropertyKeyRepository } from '@/repositories/relationship/relationship-property-key.repository';
@@ -15,7 +18,8 @@ import { type Node } from '@/src/models/';
 
 import { RelationshipType } from '@/src/models/';
 import { type Relationship } from '@/src/models/';
-import { NodeTypeConst, PropertyKeyConst } from '@/constants/graph.constant';
+
+import { PropertyKeyConst } from '@/constants/graph.constant';
 
 export class GraphFirstLayerService {
   constructor(
@@ -68,11 +72,35 @@ export class GraphFirstLayerService {
     return this.nodeRepo.getNodeByProp(type, prop, relationship);
   }
 
-  async getNodesByProps(
+  async getNodeIdsByProps(
     type: string,
     props: { key: string; value: unknown }[],
   ): Promise<Nanoid[]> {
-    return this.nodeRepo.getNodesByProps(type, props);
+    return this.nodeRepo.getNodeIdsByProps(type, props);
+  }
+
+  async getNodesByIds(ids: Array<string>): Promise<Node[]> {
+    return this.nodeRepo.getNodesByIds(ids);
+  }
+
+  async getNodesByProps(
+    type: string,
+    props: { key: string; value: unknown }[],
+  ): Promise<Node[]> {
+    const nodeIds = await this.getNodeIdsByProps(type, props);
+    return this.nodeRepo.getNodesByIds(nodeIds);
+  }
+
+  async getNodesByTypeAndRelatedNodes({
+    type,
+    from_node_id,
+    to_node_id,
+  }: getNodesByTypeAndRelatedNodesParams): Promise<Node[]> {
+    return this.nodeRepo.getNodesByTypeAndRelatedNodes({
+      type,
+      from_node_id,
+      to_node_id,
+    });
   }
 
   // node-property-key
@@ -162,46 +190,4 @@ export class GraphFirstLayerService {
       key_value,
     );
   }
-
-  async getNodesByTypeAndRelatedNodes({
-    type,
-    from_node_id,
-    to_node_id,
-  }: getNodesByTypeAndRelatedNodesParams): Promise<Node[]> {
-    try {
-      const foundNodesQB = await this.nodeRepo.repository
-        .createQueryBuilder('node')
-        .leftJoinAndSelect('node.propertyKeys', 'propertyKeys')
-        .leftJoinAndSelect('propertyKeys.propertyValue', 'propertyValue')
-        .leftJoinAndSelect('node.toNodeRelationships', 'toNodeRelationships')
-        .leftJoinAndSelect(
-          'node.fromNodeRelationships',
-          'fromNodeRelationships',
-        )
-        .where('node.node_type = :type', { type });
-
-      from_node_id &&
-        foundNodesQB.andWhere(
-          'fromNodeRelationships.from_node_id = :from_node_id',
-          {
-            from_node_id,
-          },
-        );
-
-      to_node_id &&
-        foundNodesQB.andWhere('toNodeRelationships.to_node_id = :to_node_id', {
-          to_node_id,
-        });
-      return foundNodesQB.getMany();
-    } catch (err) {
-      console.error(err);
-      throw new Error(`Failed to get nodes by type ${type}`);
-    }
-  }
-}
-
-interface getNodesByTypeAndRelatedNodesParams {
-  type: NodeTypeConst;
-  from_node_id?: Nanoid;
-  to_node_id?: Nanoid;
 }
