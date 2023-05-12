@@ -19,6 +19,7 @@ import {
 } from './StyledComponents';
 import { arrowForwardOutline } from 'ionicons/icons';
 import { langInfo2String, langInfo2tag } from '../../utils/langUtils';
+import { useAppContext } from '../../hooks/useAppContext';
 
 //#region types
 type Item = {
@@ -28,30 +29,19 @@ type Item = {
   translationLangInfo?: LanguageInfo;
 } & WordDto;
 
-// type LangInfo = {
-//   selectedLang?: string | null;
-//   selectedLangId?: string;
-//   langIdInput?: string;
-// };
-
 //#endregion
 
 const PADDING = 15;
 
 export const WordTabContent = () => {
+  const {
+    actions: { alertFeedback },
+  } = useAppContext();
   const singletons = useSingletons();
-  const [presentAlert] = useIonAlert();
   const [words, setWords] = useState<Item[]>([]);
   const [sourceLangInfo, setSourceLangInfo] = useState<LanguageInfo>();
   const [targetLangInfo, setTargetLangInfo] = useState<LanguageInfo>();
   const [step, setStep] = useState(0);
-
-  // const loadMapStrings = async () => {
-  //   if (!nodeService) return;
-  //   const wordNodes = await nodeService.getWords();
-  //   const words: Item[] = wordNodes.map((w) => WordMapper.entityToDto(w));
-  //   setWords(words);
-  // };
 
   const onShowStringListClick = () => {
     if (sourceLangInfo && targetLangInfo) {
@@ -78,6 +68,7 @@ export const WordTabContent = () => {
       for (const relNode of node.toNodeRelationships?.at(0)?.fromNode
         ?.toNodeRelationships || []) {
         if (relNode.relationship_type === RelationshipTypeConst.WORD_TO_LANG) {
+          //!!! change discovering lang forom node to props
           wordInfo.langId = relNode.to_node_id;
         }
         if (
@@ -85,7 +76,7 @@ export const WordTabContent = () => {
           RelationshipTypeConst.WORD_TO_TRANSLATION
         ) {
           const translationNode = relNode.toNode.toNodeRelationships?.find(
-            (nr) => nr.relationship_type === RelationshipTypeConst.WORD_TO_LANG,
+            (nr) => nr.relationship_type === RelationshipTypeConst.WORD_TO_LANG, //!!! remove because we chack lang not by node but by props
           );
           if (translationNode) {
             // if (translationNode.to_node_id === targetLang.selectedLangId) {
@@ -141,15 +132,6 @@ export const WordTabContent = () => {
       });
   };
 
-  const showAlert = (msg: string) => {
-    presentAlert({
-      header: 'Alert',
-      subHeader: 'Important Message!',
-      message: msg,
-      buttons: ['Ok'],
-    });
-  };
-
   // const langLabels = langs.map((l) => l.name);
   return (
     <Box
@@ -187,17 +169,6 @@ export const WordTabContent = () => {
             fullWidth
             onClick={onShowStringListClick}
             variant={'contained'}
-            sx={{
-              backgroundColor: 'text.blue-primary',
-              color: 'text.white',
-              fontSize: '14px',
-              fontWeight: 800,
-              padding: '14px 73px',
-              marginTop: '20px',
-              ':hover': {
-                backgroundColor: 'text.blue-primary',
-              },
-            }}
           >
             Show String List
           </Button>
@@ -272,7 +243,7 @@ export const WordTabContent = () => {
                         ? 'Already in target language'
                         : ''
                     }
-                    value={word.translation || ''}
+                    value={word.translation || ''} //!!!!
                     onChange={(e) => {
                       const clonedList = [...words];
                       clonedList[idx].translation = e.target.value;
@@ -284,7 +255,7 @@ export const WordTabContent = () => {
                     }
                     onClick={(e) => {
                       if (!targetLangInfo) {
-                        showAlert('Please choose target language!');
+                        alertFeedback('info', 'Please choose target language!');
                         e.stopPropagation();
                         e.preventDefault();
                       }

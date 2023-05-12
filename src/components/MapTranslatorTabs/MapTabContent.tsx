@@ -17,6 +17,8 @@ import { useMapTranslationTools } from '../../hooks/useMapTranslationTools';
 import { langInfo2String } from '../../utils/langUtils';
 const { Box, styled, CircularProgress } = MuiMaterial;
 
+const PADDING = 20;
+
 //#region types
 enum eProcessStatus {
   NONE = 'NONE',
@@ -279,6 +281,7 @@ export const MapTabContent = () => {
       justifyContent={'start'}
       alignItems={'start'}
       width={'100%'}
+      paddingTop={`${PADDING}px`}
     >
       {uploadMapBtnStatus > eUploadMapBtnStatus.NONE ? (
         <>
@@ -296,17 +299,6 @@ export const MapTabContent = () => {
         onClick={handleUploadBtnClick}
         variant={'contained'}
         component="label"
-        sx={{
-          backgroundColor: 'text.blue-primary',
-          color: 'text.white',
-          fontSize: '14px',
-          fontWeight: 800,
-          padding: '14px 73px',
-          marginTop: '20px',
-          ':hover': {
-            backgroundColor: 'text.blue-primary',
-          },
-        }}
       >
         Upload {langInfo2String(langInfo) || '.svg'} File
         {uploadMapBtnStatus === eUploadMapBtnStatus.SAVING_FILE ? (
