@@ -79,4 +79,8 @@ export enum PropertyKeyConst {
   SITE_TEXT = 'site-text',
   WORD = 'word',
   PHRASE = 'phrase',
+
+  LANGUAGE_TAG = 'language',
+  DIALECT_TAG = 'dialect',
+  REGION_TAG = 'region',
 }

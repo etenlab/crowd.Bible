@@ -6,7 +6,29 @@ import { type RelationshipPropertyKeyRepository } from '@/repositories/relations
 import { type RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
 import { type RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
 import { type RelationshipRepository } from '@/repositories/relationship/relationship.repository';
-import { nanoid } from 'nanoid';
+import tags from 'language-tags';
+
+type Lang = {
+  tag: string;
+  descriptions: Array<string>;
+};
+type Dialect = {
+  tag: string | null;
+  descriptions: Array<string>;
+};
+type Region = {
+  tag: string | null;
+  descriptions: Array<string>;
+};
+
+enum TagTypes {
+  LANGUAGE = 'language',
+  REGION = 'region',
+  DIALECT = 'variant',
+}
+enum TagSpecialDescriptions {
+  PRIVATE_USE = 'Private use',
+}
 
 const DATA_SEEDED = 'DATA_SEEDED';
 export class SeedService {
@@ -97,11 +119,9 @@ export class SeedService {
 
       if (langNodes.length) return;
 
-      const langList = langs && langs.length > 0 ? langs : [];
+      let langList = langs && langs.length > 0 ? langs : [];
       if (!langList.length) {
-        for (let index = 0; index < 10; index++) {
-          langList.push(`language_${nanoid(4)}`);
-        }
+        langList = randomLangTags(10);
       }
 
       for (const lang of langList) {
@@ -126,3 +146,60 @@ export class SeedService {
     }
   }
 }
+
+const randomLangTags = (amount: number): Array<string> => {
+  const allTags = tags.search(/.*/);
+  const langs: Array<Lang> = [];
+  const dialects: Array<Dialect> = [
+    { tag: null, descriptions: ['- not defined-'] },
+  ];
+  const regions: Array<Region> = [
+    { tag: null, descriptions: ['- not defined-'] },
+  ];
+
+  for (const currTag of allTags) {
+    if (
+      currTag.deprecated() ||
+      currTag.descriptions().includes(TagSpecialDescriptions.PRIVATE_USE)
+    ) {
+      continue;
+    }
+
+    if (currTag.type() === TagTypes.LANGUAGE) {
+      langs.push({
+        tag: currTag.format(),
+        descriptions: currTag.descriptions(),
+      });
+    }
+    if (currTag.type() === TagTypes.REGION) {
+      regions.push({
+        tag: currTag.format(),
+        descriptions: currTag.descriptions(),
+      });
+    }
+    if (currTag.type() === TagTypes.DIALECT) {
+      dialects.push({
+        tag: currTag.format(),
+        descriptions: currTag.descriptions(),
+      });
+    }
+  }
+  const langTagsList: Array<string> = [];
+  for (let index = 0; index < amount; index++) {
+    const li = Math.floor(Math.random() * langs.length);
+    const ri = Math.floor(Math.random() * regions.length);
+    const di = Math.floor(Math.random() * dialects.length);
+
+    const tag = `${langs[li].tag}-${regions[ri].tag}-${dialects[di].tag}`;
+    const isValid = tags(tag).valid();
+    if (!isValid) {
+      throw new Error(
+        `language seeding error: generated tag ${tag} is not valid`,
+      );
+    }
+
+    langTagsList.push(tag);
+  }
+
+  return langTagsList;
+};

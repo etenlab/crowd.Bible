@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
-
+import { useKeycloakClient } from '@eten-lab/sso';
+import { useAppContext } from '@/hooks/useAppContext';
 import {
   Button,
   MuiMaterial,
@@ -11,13 +12,8 @@ import {
   PasswordInput,
 } from '@eten-lab/ui-kit';
 import { useFormik } from 'formik';
-
+import { decodeToken } from '@/utils/AuthUtils';
 import * as Yup from 'yup';
-import axios from 'axios';
-
-import * as querystring from 'qs';
-// import { decodeToken } from '@/utils/AuthUtils';
-
 const { Box, Alert } = MuiMaterial;
 
 const validationSchema = Yup.object().shape({
@@ -38,6 +34,11 @@ export function RegisterPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const history = useHistory();
+  const kcClient = useKeycloakClient();
+  const {
+    actions: { setUser },
+  } = useAppContext();
+  // const [userToken, setUserToken] = useState('');
   const formik = useFormik<{
     email: string;
     username: string;
@@ -56,62 +57,40 @@ export function RegisterPage() {
       setErrorMessage('');
       setSuccessMessage('');
 
-      try {
-        await axios
-          .post(
-            `${process.env.REACT_APP_KEYCLOAK_URL}/realms/master/protocol/openid-connect/token`,
-            querystring.stringify({
-              client_id: 'admin-cli', //process.env.REACT_APP_KEYCLOAK_CLIENT_ID,
-              client_secret: process.env.REACT_APP_KEYCLOAK_CLIENT_SECRET,
-              grant_type: 'client_credentials', //'password'
-            }),
-            {
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
-            },
-          )
-          .then(async (response) => {
-            console.log('response.data.access_token');
-            // const token: any = decodeToken(response.data.access_token);
-
-            try {
-              await axios
-                .post(
-                  `${process.env.REACT_APP_KEYCLOAK_URL}/admin/realms/${process.env.REACT_APP_KEYCLOAK_REALM}/users`,
-                  {
-                    username: values.username,
-                    email: values.email,
-                    enabled: true,
-                    credentials: [
-                      {
-                        type: 'password',
-                        value: values.password,
-                      },
-                    ],
-                    emailVerified: true,
-                  },
-                  {
-                    headers: {
-                      'Content-Type': 'application/json',
-                      Authorization: `Bearer ${response.data.access_token}`,
-                    },
-                  },
-                )
-                .then((resp) => {
-                  setSuccessMessage('User registration successfull');
+      await kcClient
+        .register({
+          email: values.email,
+          username: values.email,
+          password: values.password,
+        })
+        .then(async (response: any) => {
+          if (response.name !== 'AxiosError') {
+            setSuccessMessage('User registration successfull');
+            await kcClient
+              .login({
+                username: values.email,
+                password: values.password,
+              })
+              .then((res) => {
+                localStorage.setItem('userToken', res.access_token);
+                const token: any = decodeToken(res.access_token);
+                setUser({
+                  userId: token.sub,
+                  userEmail: token.email,
+                  roles: [''],
                 });
-            } catch (error: any) {
-              setErrorMessage(error.response.data.errorMessage);
-              console.log(error);
-            }
-            // console.log(token.email);
-            // history.push('/home');
-          });
-      } catch (error: any) {
-        setErrorMessage(error.message);
-      }
-      //history.push('/login');
+                history.push('/home');
+              })
+              .catch((err: any) => {
+                setErrorMessage(err.response.data.error_description);
+              });
+          } else {
+            setErrorMessage(response.response.data.errorMessage);
+          }
+        })
+        .catch((error: any) => {
+          setErrorMessage(error.message);
+        });
     },
   });
 

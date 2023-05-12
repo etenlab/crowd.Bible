@@ -2,7 +2,6 @@ import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 
 import { WordService } from './word.service';
-import { PhraseService } from './phrase.service';
 import { WordSequenceService } from './word-sequence.service';
 import { VotingService } from './voting.service';
 
@@ -27,7 +26,6 @@ export class TranslationService {
     private readonly graphSecondLayerService: GraphSecondLayerService,
 
     private readonly wordService: WordService,
-    private readonly phraseService: PhraseService,
     private readonly wordSequenceService: WordSequenceService,
 
     private readonly votingService: VotingService,
@@ -202,50 +200,50 @@ export class TranslationService {
     };
   }
 
-  async createOrFindPhraseTranslation(
-    originalPhraseId: Nanoid,
-    translation: {
-      phrase: string;
-      languageId: Nanoid;
-      siteText?: boolean;
-    },
-  ): Promise<{
-    electionId: Nanoid;
-    candidateId: Nanoid;
-    phraseId: Nanoid;
-    phraseTranslationRelationshipId: Nanoid;
-  }> {
-    const original = await this.phraseService.getPhrase(
-      translation.phrase,
-      translation.languageId,
-    );
+  // async createOrFindPhraseTranslation(
+  //   originalPhraseId: Nanoid,
+  //   translation: {
+  //     phrase: string;
+  //     languageId: Nanoid;
+  //     siteText?: boolean;
+  //   },
+  // ): Promise<{
+  //   electionId: Nanoid;
+  //   candidateId: Nanoid;
+  //   phraseId: Nanoid;
+  //   phraseTranslationRelationshipId: Nanoid;
+  // }> {
+  //   const original = await this.phraseService.getPhrase(
+  //     translation.phrase,
+  //     translation.languageId,
+  //   );
 
-    if (!original) {
-      throw new Error('Not exists original phrase with given Id');
-    }
+  //   if (!original) {
+  //     throw new Error('Not exists original phrase with given Id');
+  //   }
 
-    const translatedId = await this.phraseService.createOrFindPhrase({
-      ...translation,
-    });
+  //   const translatedId = await this.phraseService.createOrFindPhrase({
+  //     ...translation,
+  //   });
 
-    const {
-      electionId,
-      candidateId,
-      translatedId: phraseId,
-      translationRelationshipId,
-    } = await this.createOrFindTranslation(
-      originalPhraseId,
-      translatedId,
-      RelationshipTypeConst.WORD_TO_TRANSLATION,
-    );
+  //   const {
+  //     electionId,
+  //     candidateId,
+  //     translatedId: phraseId,
+  //     translationRelationshipId,
+  //   } = await this.createOrFindTranslation(
+  //     originalPhraseId,
+  //     translatedId,
+  //     RelationshipTypeConst.WORD_TO_TRANSLATION,
+  //   );
 
-    return {
-      electionId,
-      candidateId,
-      phraseId,
-      phraseTranslationRelationshipId: translationRelationshipId,
-    };
-  }
+  //   return {
+  //     electionId,
+  //     candidateId,
+  //     phraseId,
+  //     phraseTranslationRelationshipId: translationRelationshipId,
+  //   };
+  // }
 
   async getRecommendedTranslationId(
     originalId: Nanoid,

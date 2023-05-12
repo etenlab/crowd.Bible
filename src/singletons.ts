@@ -19,16 +19,12 @@ import { VoteRepository } from '@/repositories/voting/vote.repository';
 
 import { UserRepository } from '@/repositories/user.repository';
 
-import { SiteTextRepository } from '@/repositories/site-text/site-text.repository';
-import { SiteTextTranslationRepository } from '@/repositories/site-text/site-text-translation.repository';
-
 import { DbService } from '@/services/db.service';
 import { SeedService } from '@/services/seed.service';
 import { SyncService } from '@/services/sync.service';
 
 import { GraphFirstLayerService } from '@/services/graph-first-layer.service';
 import { GraphSecondLayerService } from '@/services/graph-second-layer.service';
-import { GraphThirdLayerService } from './services/graph-third-layer.service';
 
 import { VotingService } from '@/services/voting.service';
 
@@ -40,10 +36,8 @@ import { TranslationService } from '@/services/translation.service';
 import { MaterializerService } from '@/services/materializer.service';
 import { UserService } from '@/services/user.service';
 import { DocumentService } from '@/services/document.service';
-import { PhraseService } from '@/services/phrase.service';
 import { WordService } from '@/services/word.service';
 import { WordSequenceService } from '@/services/word-sequence.service';
-import { LanguageService } from '@/services/language.service';
 import { MapService } from '@/services/map.service';
 
 export interface ISingletons {
@@ -53,7 +47,7 @@ export interface ISingletons {
 
   graphFirstLayerService: GraphFirstLayerService;
   graphSecondLayerService: GraphSecondLayerService;
-  graphThirdLayerService: GraphThirdLayerService;
+
   votingService: VotingService;
   tableService: TableService;
   definitionService: DefinitionService;
@@ -64,9 +58,7 @@ export interface ISingletons {
   userService: UserService;
   documentService: DocumentService;
   wordService: WordService;
-  phraseService: PhraseService;
   wordSequenceService: WordSequenceService;
-  languageService: LanguageService;
   mapService: MapService;
 
   nodeRepo: NodeRepository;
@@ -79,8 +71,6 @@ export interface ISingletons {
   relationshipPropertyValueRepo: RelationshipPropertyValueRepository;
   discussionRepo: DiscussionRepository;
   userRepo: UserRepository;
-  siteTextRepo: SiteTextRepository;
-  siteTextTranslationRepo: SiteTextTranslationRepository;
 
   electionTypeRepo: ElectionTypeRepository;
   electionRepo: ElectionRepository;
@@ -123,12 +113,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   const discussionRepo = new DiscussionRepository(dbService);
 
   const userRepo = new UserRepository(dbService);
-
-  const siteTextRepo = new SiteTextRepository(dbService, syncService);
-  const siteTextTranslationRepo = new SiteTextTranslationRepository(
-    dbService,
-    syncService,
-  );
 
   const electionRepo = new ElectionRepository(dbService, syncService);
   const electionTypeRepo = new ElectionTypeRepository(dbService, syncService);
@@ -181,16 +165,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     syncService,
   );
 
-  const phraseService = new PhraseService(
-    graphFirstLayerService,
-    graphSecondLayerService,
-  );
-
-  const languageService = new LanguageService(
-    graphFirstLayerService,
-    graphSecondLayerService,
-  );
-
   const wordSequenceService = new WordSequenceService(
     graphFirstLayerService,
     graphSecondLayerService,
@@ -200,17 +174,8 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   const mapService = new MapService(
     graphFirstLayerService,
     graphSecondLayerService,
-    nodeRepo,
-  );
-
-  const graphThirdLayerService = new GraphThirdLayerService(
-    userService,
-    documentService,
     wordService,
-    phraseService,
-    wordSequenceService,
-    languageService,
-    mapService,
+    nodeRepo,
   );
 
   const votingService = new VotingService(
@@ -229,7 +194,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   const definitionService = new DefinitionService(
     graphFirstLayerService,
     graphSecondLayerService,
-    graphThirdLayerService,
     votingService,
   );
 
@@ -237,7 +201,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     graphFirstLayerService,
     graphSecondLayerService,
     wordService,
-    phraseService,
     wordSequenceService,
     votingService,
   );
@@ -261,7 +224,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
 
     graphFirstLayerService,
     graphSecondLayerService,
-    graphThirdLayerService,
     votingService,
     tableService,
     definitionService,
@@ -272,9 +234,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     userService,
     documentService,
     wordService,
-    phraseService,
     wordSequenceService,
-    languageService,
     mapService,
 
     nodeRepo,
@@ -287,8 +247,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipPropertyValueRepo,
     discussionRepo,
     userRepo,
-    siteTextRepo,
-    siteTextTranslationRepo,
 
     electionRepo,
     electionTypeRepo,

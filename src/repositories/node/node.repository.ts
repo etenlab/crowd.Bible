@@ -193,13 +193,13 @@ export class NodeRepository {
           nodes.node_type = '${type}';
       `;
 
-    const nodes: [{ id: Nanoid }] = await this.repository.query(sqlStr);
+    const nodes: [{ node_id: Nanoid }] = await this.repository.query(sqlStr);
 
     if (!nodes) {
       return [];
     }
 
-    return nodes.map(({ id }) => id);
+    return nodes.map(({ node_id }) => node_id);
   }
 
   async getNodePropertyValue(

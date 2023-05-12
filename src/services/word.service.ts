@@ -21,10 +21,14 @@ import {
 import { WordDto } from '@/dtos/word.dto';
 import { WordMapper } from '@/mappers/word.mapper';
 
+import { CreateWordDto } from '@/dtos/create-word.dto';
+import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+
 import { NodeRepository } from '@/repositories/node/node.repository';
-import { NodePropertyKeyRepository } from '../repositories/node/node-property-key.repository';
-import { NodePropertyValueRepository } from '../repositories/node/node-property-value.repository';
-import { RelationshipRepository } from '../repositories/relationship/relationship.repository';
+import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
+import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
+import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
+
 export class WordService {
   constructor(
     private readonly graphFirstLayerService: GraphFirstLayerService,
@@ -248,15 +252,7 @@ export class WordService {
     return wordNodes;
   }
 
-  async getMapWords(mapId: Nanoid) {
-    return this.getWords({
-      to_node_id: mapId,
-      relationship_type: RelationshipTypeConst.WORD_MAP,
-    });
-  }
-
   async getUnTranslatedWords(langId: Nanoid) {
-    // console.log('getUnTranslatedWords', langId);
     return this.getWords(
       [
         {
@@ -297,5 +293,79 @@ export class WordService {
       );
 
     return new_translation.id;
+  }
+
+  async createWordOrPhraseWithLang(
+    word: string,
+    langInfo: LanguageInfo,
+    mapId?: Nanoid,
+    nodeType: NodeTypeConst = NodeTypeConst.WORD,
+  ): Promise<Nanoid> {
+    const word_id = await this.getWordOrPhraseWithLang(word, langInfo);
+    if (word_id) {
+      return word_id;
+    }
+    const wordNodeObject: CreateWordDto = {
+      [PropertyKeyConst.NAME]: word,
+      [PropertyKeyConst.LANGUAGE_TAG]: langInfo.lang.tag,
+    };
+    if (langInfo.dialect?.tag) {
+      wordNodeObject[PropertyKeyConst.DIALECT_TAG] = langInfo.dialect?.tag;
+    }
+    if (langInfo.region?.tag) {
+      wordNodeObject[PropertyKeyConst.REGION_TAG] = langInfo.region?.tag;
+    }
+
+    const node = await this.graphSecondLayerService.createNodeFromObject(
+      nodeType as string,
+      wordNodeObject,
+    );
+    if (mapId) {
+      await this.graphSecondLayerService.createRelationshipFromObject(
+        RelationshipTypeConst.WORD_MAP,
+        {},
+        node.id,
+        mapId,
+      );
+    }
+    return node.id;
+  }
+
+  async getWordOrPhraseWithLang(
+    word: string,
+    languageInfo: LanguageInfo,
+    nodeType: NodeTypeConst = NodeTypeConst.WORD,
+  ): Promise<Nanoid | null> {
+    const wordSearchProps = [
+      {
+        key: PropertyKeyConst.NAME,
+        value: word,
+      },
+      {
+        key: PropertyKeyConst.LANGUAGE_TAG,
+        value: languageInfo.lang.tag,
+      },
+    ];
+    if (languageInfo.dialect?.tag) {
+      wordSearchProps.push({
+        key: PropertyKeyConst.DIALECT_TAG,
+        value: languageInfo.dialect.tag,
+      });
+    }
+    if (languageInfo.region?.tag) {
+      wordSearchProps.push({
+        key: PropertyKeyConst.REGION_TAG,
+        value: languageInfo.region.tag,
+      });
+    }
+
+    const wordNodeIds = await this.graphFirstLayerService.getNodesByProps(
+      nodeType as string,
+      wordSearchProps,
+    );
+    if (wordNodeIds.length === 0) {
+      return null;
+    }
+    return wordNodeIds[0];
   }
 }

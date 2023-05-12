@@ -1,24 +1,17 @@
-import {
-  IonContent,
-  IonItem,
-  IonLabel,
-  IonList,
-  useIonAlert,
-} from '@ionic/react';
+import { IonItem, IonLabel, IonList, useIonAlert } from '@ionic/react';
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { type INode, parseSync } from 'svgson';
-import { Box, Typography } from '@mui/material';
-import {
-  Autocomplete,
-  Button,
-  Input,
-  CrowdBibleUI,
-  BiTrashAlt,
-} from '@eten-lab/ui-kit';
+import { Autocomplete, Input, MuiMaterial, Button } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
-import { useSingletons } from '@/src/hooks/useSingletons';
 import { LanguageDto } from '@/src/dtos/language.dto';
-const { TitleWithIcon } = CrowdBibleUI;
+import {
+  StyledFilterButton,
+  StyledSectionTypography,
+} from './StyledComponents';
+import { useAppContext } from '../../hooks/useAppContext';
+import { useMapTranslationTools } from '../../hooks/useMapTranslationTools';
+const { Box, styled, CircularProgress } = MuiMaterial;
+
 //#region types
 enum eProcessStatus {
   NONE = 'NONE',
@@ -27,36 +20,51 @@ enum eProcessStatus {
   COMPLETED = 'SAVED_IN_DB',
   FAILED = 'FAILED',
 }
+enum eUploadMapBtnStatus {
+  NONE,
+  LANG_SELECTION,
+  UPLOAD_FILE,
+  SAVING_FILE,
+  COMPLETED,
+}
 type MapDetail = {
   id?: string;
   tempId?: string;
   status: eProcessStatus;
   words?: string[];
-  map?: string;
+  // map?: string;
+  mapFileId?: string;
   name?: string;
   langId?: string;
 };
 //#endregion
 
 //#region data
-const PADDING = 15;
 //#endregion
 
-export const MapListPage = () => {
+export const MapTabContent = () => {
+  const {
+    states: {
+      global: { singletons },
+    },
+    actions: { alertFeedback },
+  } = useAppContext();
+
   const langIdRef = useRef('');
   const [langs, setLangs] = useState<LanguageDto[]>([]);
-  const [mapList, setMapList] = useState<MapDetail[]>([
-    // { fileName: 'text name', status: eProcessStatus.FAILED },
-  ]);
+  const [mapList, setMapList] = useState<MapDetail[]>([]);
   const [selectedLang, setSelectedLang] = useState<string>('');
   const [presentAlert] = useIonAlert();
-  const singletons = useSingletons();
+  const [uploadMapBtnStatus, setUploadMapBtnStatus] =
+    useState<eUploadMapBtnStatus>(eUploadMapBtnStatus.NONE);
+  const { sendMapFile } = useMapTranslationTools();
 
   useEffect(() => {
     const loadLanguages = async () => {
       if (!singletons) return;
-      const res = await singletons.graphThirdLayerService.getLanguages();
-      setLangs(res);
+      // const res = await singletons.graphThirdLayerService.getLanguages();
+      // setLangs(res);
+      // if (res.length > 0) setSelectedLang(res.at(0)!.name);
     };
     loadLanguages();
   }, [singletons]);
@@ -86,7 +94,7 @@ export const MapListPage = () => {
               batchWords,
             );
             createdWords.push(
-              ...(await singletons.graphThirdLayerService.createWords(
+              ...(await singletons.wordService.createWords(
                 batchWords.map((w) => w.trim()).filter((w) => w !== ''),
                 langId,
                 mapId,
@@ -104,15 +112,14 @@ export const MapListPage = () => {
           const newState: Partial<MapDetail> = {
             status: eProcessStatus.COMPLETED,
           };
+          ///
           try {
-            const mapId = await singletons.graphThirdLayerService.saveMap(
-              argMap.langId!,
-              {
-                name: argMap.name!,
-                map: argMap.map!,
-                ext: 'svg',
-              },
-            );
+            const mapId = await singletons.mapService.saveMap(argMap.langId!, {
+              name: argMap.name!,
+              mapFileId: argMap.mapFileId!,
+              // map: argMap.map!,
+              ext: 'svg',
+            });
             if (mapId) {
               newState.id = mapId;
               processMapWords(argMap.words!, argMap.langId!, mapId);
@@ -154,18 +161,28 @@ export const MapListPage = () => {
     (e) => {
       const file = e.target.files?.[0];
       if (file == null) return;
+      const fileName = file.name?.split('.')[0];
       const id = nanoid();
+      let alreadyExists = false;
+
       setMapList((prevList) => {
+        const existingIdx = prevList.findIndex((map) => map.name === fileName);
+        if (existingIdx >= 0) {
+          alertFeedback('error', 'File already exists');
+          alreadyExists = true;
+          return [...prevList];
+        }
         return [
           ...prevList,
           {
             tempId: id,
-            name: file.name?.split('.')[0],
+            name: fileName,
             status: eProcessStatus.PARSING_STARTED,
             langId: langIdRef.current,
           },
         ];
       });
+      if (alreadyExists) return;
       const fileReader = new FileReader();
       fileReader.onload = function (evt: ProgressEvent<FileReader>) {
         if (evt.target?.readyState !== 2) return;
@@ -194,31 +211,20 @@ export const MapListPage = () => {
           setMapStatus(id, { status: eProcessStatus.FAILED });
           showAlert('No text or textPath tags found');
         } else {
-          const base64Svg = Buffer.from(originalSvg, 'utf8').toString('base64');
-          setMapStatus(id, {
-            status: eProcessStatus.PARSING_COMPLETED,
-            map: base64Svg,
-            words: textArray,
+          sendMapFile(file, (sentFileData) => {
+            setMapStatus(id, {
+              status: eProcessStatus.PARSING_COMPLETED,
+              mapFileId: sentFileData.id,
+              words: textArray,
+            });
           });
         }
       };
       fileReader.readAsText(file);
       e.target.value = '';
     },
-    [showAlert],
+    [alertFeedback, sendMapFile, showAlert],
   );
-
-  const fileUploadPreCheck = (e: MouseEvent<HTMLInputElement>) => {
-    let msg = '';
-    if (!selectedLang) {
-      msg = 'Please choose the language first and then Add Map';
-    }
-    if (msg) {
-      showAlert(msg);
-      e?.preventDefault();
-      e?.stopPropagation();
-    }
-  };
 
   const setMapsByLang = async (langId: string) => {
     if (!singletons) return;
@@ -237,6 +243,22 @@ export const MapListPage = () => {
     );
   };
 
+  const handleUploadBtnClick = (
+    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
+  ): void => {
+    if (uploadMapBtnStatus === eUploadMapBtnStatus.NONE) {
+      setUploadMapBtnStatus(eUploadMapBtnStatus.LANG_SELECTION);
+    } else if (uploadMapBtnStatus === eUploadMapBtnStatus.LANG_SELECTION) {
+      if (selectedLang) {
+        setUploadMapBtnStatus(eUploadMapBtnStatus.UPLOAD_FILE);
+      } else {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+    } else if (uploadMapBtnStatus === eUploadMapBtnStatus.SAVING_FILE) {
+    }
+  };
+
   const handleApplyLanguageFilter = (value: string) => {
     setSelectedLang(value);
     const curLangDetail = langs.find((l) => l.name === value);
@@ -249,143 +271,134 @@ export const MapListPage = () => {
   const handleClearLanguageFilter = () => {
     setSelectedLang('');
     setMapList([]);
+    setUploadMapBtnStatus(eUploadMapBtnStatus.LANG_SELECTION);
   };
 
   const langLabels = langs.map((l) => l.name);
   return (
-    <IonContent>
-      <Box
-        display={'flex'}
-        flexDirection={'column'}
-        justifyContent={'start'}
-        alignItems={'start'}
-        paddingTop={`${PADDING}px`}
-      >
-        <Box
-          width={'100%'}
-          display={'flex'}
-          justifyContent={'space-between'}
-          alignItems={'center'}
-        >
-          <Button variant={'text'} href={'/map-list'} disabled>
-            Map List
-          </Button>
-          <Button variant={'text'} href={'/map-strings-list'}>
-            String List
-          </Button>
-        </Box>
-
-        <Box
-          width={'100%'}
-          padding={`${PADDING}px 0 ${PADDING}px`}
-          display={'flex'}
-          flexDirection={'column'}
-          justifyContent={'space-between'}
-          gap={`${PADDING}px`}
-        >
-          <Box>
-            <TitleWithIcon
-              onClose={() => {}}
-              onBack={() => {}}
-              withBackIcon={false}
-              withCloseIcon={false}
-              label="Filter by Language"
-            ></TitleWithIcon>
-          </Box>
-          <Box>
+    <Box
+      display={'flex'}
+      flexDirection={'column'}
+      justifyContent={'start'}
+      alignItems={'start'}
+      width={'100%'}
+    >
+      {uploadMapBtnStatus > eUploadMapBtnStatus.NONE ? (
+        <>
+          <StyledSectionTypography>
+            Select the source language
+          </StyledSectionTypography>
+          <Box
+            display={'flex'}
+            width={'100%'}
+            gap={'20px'}
+            flexDirection={'row'}
+            alignItems={'center'}
+            justifyContent={'space-between'}
+          >
             <Autocomplete
-              fullWidth
               options={langLabels}
               value={selectedLang}
               onChange={(_, value) => {
                 handleApplyLanguageFilter(value || '');
               }}
-              label="Languages"
-            ></Autocomplete>
-          </Box>
-        </Box>
-
-        <Box
-          width={'100%'}
-          padding={`${PADDING}px 0 ${PADDING}px`}
-          display={'flex'}
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          gap={`${PADDING}px`}
-        >
-          <Box flex={1} alignSelf={'center'}>
-            <TitleWithIcon
-              onClose={() => {}}
-              onBack={() => {}}
-              withBackIcon={false}
-              withCloseIcon={false}
-              label="Language ID"
-            ></TitleWithIcon>
-          </Box>
-          <Box flex={1}>
-            <Input fullWidth label=""></Input>
-          </Box>
-        </Box>
-
-        {selectedLang ? (
-          <Box
-            width={'100%'}
-            padding={`${PADDING}px 0 ${PADDING}px`}
-            display={'flex'}
-            flexDirection={'row'}
-            justifyContent={'flex-end'}
-            gap={`${PADDING}px`}
-          >
-            <Button
-              variant="contained"
-              endIcon={<BiTrashAlt />}
-              color={'error'}
-              size="small"
-              onClick={() => {
-                handleClearLanguageFilter();
+              label=""
+              sx={{
+                flex: 1,
+                borderColor: 'text.gray',
+                color: 'text.dark',
+                fontWeight: 700,
               }}
-            >
-              Clear language filter
-            </Button>
+            />
+            <Input label="" placeholder="Language ID" sx={{ flex: 1 }} />
           </Box>
+        </>
+      ) : (
+        <></>
+      )}
+
+      <Button
+        fullWidth
+        onClick={handleUploadBtnClick}
+        variant={'contained'}
+        component="label"
+        sx={{
+          backgroundColor: 'text.blue-primary',
+          color: 'text.white',
+          fontSize: '14px',
+          fontWeight: 800,
+          padding: '14px 73px',
+          marginTop: '20px',
+          ':hover': {
+            backgroundColor: 'text.blue-primary',
+          },
+        }}
+      >
+        Upload {selectedLang || '.svg'} File
+        {uploadMapBtnStatus === eUploadMapBtnStatus.SAVING_FILE ? (
+          <>
+            <CircularProgress
+              disableShrink
+              sx={{
+                color: 'text.white',
+                fontWeight: 800,
+                marginLeft: '10px',
+              }}
+              size={24}
+            />
+          </>
         ) : (
           <></>
         )}
+        <input
+          hidden
+          multiple={false}
+          accept="image/svg+xml"
+          onChange={fileHandler}
+          type="file"
+        />
+      </Button>
 
-        <Box
-          width={'100%'}
-          padding={`${PADDING}px 0 ${PADDING}px`}
-          display={'flex'}
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          gap={`${PADDING}px`}
-        >
-          <Typography fontWeight={700}>Map List</Typography>
-          <Button variant={'contained'} component="label">
-            Add Map
-            <input
-              hidden
-              multiple
-              accept="image/svg+xml"
-              onClick={fileUploadPreCheck}
-              onChange={fileHandler}
-              type="file"
-            />
-          </Button>
-        </Box>
-
-        {mapList.length > 0 ? (
-          <Box width={'100%'} paddingTop={`${PADDING}px`}>
+      {/* Uploaded Maps */}
+      {selectedLang && mapList.length ? (
+        <>
+          <StyledBox>
+            <StyledSectionTypography>Uploaded Maps</StyledSectionTypography>
+            <StyledFilterButton
+              onClick={handleClearLanguageFilter}
+            ></StyledFilterButton>
+          </StyledBox>
+          <Box width={'100%'} marginTop={'-25px'}>
             <IonList>
               {mapList.map((map, idx) => {
                 return (
                   <IonItem
                     key={idx}
-                    lines="none"
                     href={`/map-detail/${map.id}`}
                     disabled={!map.id}
                   >
-                    <IonLabel>{map.name}</IonLabel>
+                    <IonLabel
+                      style={{
+                        color: '#1B1B1B',
+                        fontSize: '16px',
+                        lineHeight: '26px',
+                        fontWeight: 400,
+                        padding: '12px 0px',
+                      }}
+                    >
+                      {map.name}
+                    </IonLabel>
+                    <IonLabel
+                      style={{
+                        color: '#616F82',
+                        fontSize: '14px',
+                        lineHeight: '20px',
+                        fontWeight: 500,
+                        padding: '12px 0px',
+                      }}
+                    >
+                      {selectedLang}
+                    </IonLabel>
                     {[
                       eProcessStatus.PARSING_STARTED,
                       eProcessStatus.PARSING_COMPLETED,
@@ -404,11 +417,11 @@ export const MapListPage = () => {
               })}
             </IonList>
           </Box>
-        ) : (
-          <></>
-        )}
-      </Box>
-    </IonContent>
+        </>
+      ) : (
+        <></>
+      )}
+    </Box>
   );
 };
 
@@ -432,3 +445,14 @@ function iterateOverINode(
     iterateOverINode(child, skipNodeNames, cb);
   }
 }
+
+//#region styled component
+
+const StyledBox = styled(Box)(() => ({
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '15px 0px',
+}));
+//#endregion

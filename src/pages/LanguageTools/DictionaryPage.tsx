@@ -1,12 +1,19 @@
-import { MuiMaterial } from '@eten-lab/ui-kit';
+import {
+  MuiMaterial,
+  Lang,
+  Dialect,
+  Region,
+  LanguageInfo,
+  LangSelector,
+} from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
-import { IonContent, useIonAlert } from '@ionic/react';
+import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
-import { LanguageWithElecitonsDto } from '@/dtos/language.dto';
 import { useAppContext } from '../../hooks/useAppContext';
-import { useDefinition } from '../../hooks/useDefinition';
 import { VotableItem } from '../../dtos/votable-item.dto';
+import { useDictionaryTools } from '../../hooks/useDictionaryTools';
+import { NodeTypeConst } from '../../constants/graph.constant';
 const { Box, Divider } = MuiMaterial;
 
 const {
@@ -14,10 +21,7 @@ const {
   ItemsClickableList,
   ItemContentListEdit,
   SimpleFormDialog,
-  FiltersAndSearch,
 } = CrowdBibleUI;
-
-const MOCK_ETHNOLOGUE_OPTIONS = ['Ethnologue1', 'Ethnologue2'];
 
 // use as sample and for debugging purposes
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -101,69 +105,44 @@ export function DictionaryPage() {
   const [selectedWord, setSelectedWord] = useState<VotableItem | null>(null);
   const [isDialogOpened, setIsDialogOpened] = useState(false);
   const [words, setWords] = useState<VotableItem[]>([]);
-  const [presentAlert] = useIonAlert();
   const definitionService = singletons?.definitionService;
 
-  const [selectedLanguageId, setSelectedLanguageId] = useState<
-    string | null | undefined
-  >(null);
-  const [langs, setLangs] = useState<LanguageWithElecitonsDto[]>([]);
+  const [selectedLanguageInfo, setSelectedLanguageInfo] = useState<
+    LanguageInfo | undefined
+  >(undefined);
+
   const {
     addItem,
     changeItemVotes,
     addDefinition,
     changeDefinitionValue,
     changeDefinitionVotes,
-  } = useDefinition(
-    'word',
-    setWords,
-    langs,
-    selectedLanguageId,
-    setIsDialogOpened,
+  } = useDictionaryTools(NodeTypeConst.WORD, setWords, setIsDialogOpened);
+
+  const onChangeLang = useCallback(
+    (
+      langTag: string, // it isn't needed for now
+      selected: {
+        lang: Lang;
+        dialect: Dialect | undefined;
+        region: Region | undefined;
+      },
+    ): void => {
+      setSelectedLanguageInfo(selected);
+    },
+    [setSelectedLanguageInfo],
   );
-
-  const handleSelectLanguage = (value: string): void => {
-    const id = langs.find((l) => l.name === value)?.id;
-    setSelectedLanguageId(id);
-  };
-
-  useEffect(() => {
-    try {
-      setLoadingState(true);
-      const loadLanguages = async () => {
-        if (!definitionService) return;
-        const langDtos = await definitionService.getLanguages();
-        setLangs(langDtos);
-      };
-      loadLanguages();
-      setLoadingState(false);
-    } catch (error) {
-      console.log(error);
-      alertFeedback('error', 'Internal Error!');
-    } finally {
-      setLoadingState(false);
-    }
-  }, [alertFeedback, definitionService, setLoadingState]);
 
   useEffect(() => {
     if (!definitionService) return;
-    if (!selectedLanguageId) return;
+    if (!selectedLanguageInfo) return;
     try {
       setLoadingState(true);
-      const langsElectionWordsId = langs.find(
-        (l) => l.id === selectedLanguageId,
-      )?.electionWordsId;
-      if (!langsElectionWordsId) {
-        throw new Error(
-          `Language id ${selectedLanguageId} does't have electionWordsId to elect words`,
-        );
-      }
       const loadWords = async () => {
-        const words: VotableItem[] =
-          await definitionService.getWordsAsVotableItems(
-            selectedLanguageId,
-            langsElectionWordsId,
-          );
+        const words: VotableItem[] = await definitionService.getVotableItems(
+          selectedLanguageInfo,
+          NodeTypeConst.WORD,
+        );
         setWords(words);
       };
       loadWords();
@@ -173,27 +152,15 @@ export function DictionaryPage() {
     } finally {
       setLoadingState(false);
     }
-  }, [
-    alertFeedback,
-    definitionService,
-    langs,
-    selectedLanguageId,
-    setLoadingState,
-  ]);
+  }, [alertFeedback, definitionService, selectedLanguageInfo, setLoadingState]);
 
-  const addWord = (newWord: string) => {
-    addItem(words, newWord);
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const changeWordVotes = useCallback(
-    (candidateId: Nanoid | null, upOrDown: TUpOrDownVote) => {
-      changeItemVotes(candidateId, upOrDown, words);
+  const addWord = useCallback(
+    (newWord: string) => {
+      addItem(NodeTypeConst.WORD, words, newWord, selectedLanguageInfo || null);
     },
-    [changeItemVotes, words],
+    [addItem, selectedLanguageInfo, words],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addDefinitionToWord = useCallback(
     (text: string) => {
       addDefinition(text, words, selectedWord, setSelectedWord);
@@ -201,7 +168,6 @@ export function DictionaryPage() {
     [addDefinition, selectedWord, words],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changeWordDefinition = useCallback(
     (definitionId: Nanoid | null, newValue: string) => {
       changeDefinitionValue(words, selectedWord, definitionId, newValue);
@@ -218,17 +184,12 @@ export function DictionaryPage() {
   );
 
   const handleAddWordButtonClick = useCallback(() => {
-    if (!selectedLanguageId) {
-      presentAlert({
-        header: 'Alert',
-        subHeader: 'No Language selected!',
-        message: 'Before adding a word, select language',
-        buttons: ['Ok'],
-      });
+    if (!selectedLanguageInfo) {
+      alertFeedback('error', 'Please select a language before adding a word');
       return;
     }
     setIsDialogOpened(true);
-  }, [presentAlert, selectedLanguageId]);
+  }, [alertFeedback, selectedLanguageInfo]);
 
   return (
     <IonContent>
@@ -257,13 +218,12 @@ export function DictionaryPage() {
             </Box>
           </Box>
 
-          <FiltersAndSearch
-            ethnologueOptions={MOCK_ETHNOLOGUE_OPTIONS}
-            languageOptions={langs.map((l) => l.name)}
-            setEthnologue={() => console.log('setEthnologue!')}
-            setLanguage={handleSelectLanguage}
-            setSearch={(s: string) => console.log('setSearch' + s)}
-          />
+          <LangSelector
+            onChange={onChangeLang}
+            setLoadingState={setLoadingState}
+            selected={selectedLanguageInfo}
+          ></LangSelector>
+
           <Box display={'flex'} flexDirection="column" width={1}>
             <Box
               width={1}
@@ -292,9 +252,9 @@ export function DictionaryPage() {
             <ItemsClickableList
               items={words}
               setSelectedItem={setSelectedWord}
-              setLikeItem={(ballotId) => changeWordVotes(ballotId, 'upVote')}
-              setDislikeItem={(ballotId) =>
-                changeWordVotes(ballotId, 'downVote')
+              setLikeItem={(wordId) => changeItemVotes(wordId, 'upVote', words)}
+              setDislikeItem={(wordId) =>
+                changeItemVotes(wordId, 'downVote', words)
               }
             ></ItemsClickableList>
           </Box>

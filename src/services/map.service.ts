@@ -1,7 +1,12 @@
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 
-import { NodeTypeConst } from '@/constants/graph.constant';
+import { WordService } from './word.service';
+
+import {
+  NodeTypeConst,
+  RelationshipTypeConst,
+} from '@/constants/graph.constant';
 
 import { NodeRepository } from '@/repositories/node/node.repository';
 
@@ -14,6 +19,8 @@ export class MapService {
     private readonly graphFirstLayerService: GraphFirstLayerService,
     private readonly graphSecondLayerService: GraphSecondLayerService,
 
+    private readonly wordService: WordService,
+
     private readonly nodeRepo: NodeRepository,
   ) {}
 
@@ -21,7 +28,7 @@ export class MapService {
     langId: Nanoid,
     mapInfo: {
       name: string;
-      map: string;
+      mapFileId: string;
       ext: string;
     },
   ): Promise<Nanoid | null> {
@@ -70,5 +77,12 @@ export class MapService {
 
     const dtos = mapNodes.map((node) => MapMapper.entityToDto(node));
     return dtos;
+  }
+
+  async getMapWords(mapId: Nanoid) {
+    return this.wordService.getWords({
+      to_node_id: mapId,
+      relationship_type: RelationshipTypeConst.WORD_MAP,
+    });
   }
 }

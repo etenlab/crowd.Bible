@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function decodeToken(str: string) {
+  if (!str) {
+    return false;
+  }
   str = str.split('.')[1];
 
   str = str.replace(/-/g, '+');
