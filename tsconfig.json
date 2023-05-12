@@ -20,5 +20,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
-  "include": ["src", "../models/src/models/site-text"]
+  "include": ["src", "../models/src/models/site-text", "test"]
+
 }
