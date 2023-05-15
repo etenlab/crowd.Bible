@@ -1,18 +1,18 @@
-import { LanguageDto } from '@/dtos/language.dto';
+import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 
 export const actions = {
   SET_SOURCE_LANGUAGE: 'SET_SOURCE_LANGUAGE',
   SET_TARGET_LANGUAGE: 'SET_TARGET_LANGUAGE',
 };
 
-export function setSourceLanguage(lang: LanguageDto | null) {
+export function setSourceLanguage(lang: LanguageInfo | null) {
   return {
     type: actions.SET_SOURCE_LANGUAGE,
     payload: lang,
   };
 }
 
-export function setTargetLanguage(lang: LanguageDto | null) {
+export function setTargetLanguage(lang: LanguageInfo | null) {
   return {
     type: actions.SET_TARGET_LANGUAGE,
     payload: lang,
