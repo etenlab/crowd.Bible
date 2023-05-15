@@ -1,5 +1,5 @@
 import { IonIcon, useIonAlert } from '@ionic/react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Divider } from '@mui/material';
 import {
   Input,
@@ -10,26 +10,31 @@ import {
   LanguageInfo,
 } from '@eten-lab/ui-kit';
 import { useSingletons } from '@/src/hooks/useSingletons';
-import { LanguageDto } from '@/src/dtos/language.dto';
 import { WordDto } from '@/src/dtos/word.dto';
-import { RelationshipTypeConst } from '@/src/constants/graph.constant';
+import {
+  NodeTypeConst,
+  PropertyKeyConst,
+  RelationshipTypeConst,
+} from '@/src/constants/graph.constant';
 import {
   StyledFilterButton,
   StyledSectionTypography,
 } from './StyledComponents';
 import { arrowForwardOutline } from 'ionicons/icons';
-import { langInfo2String, langInfo2tag } from '../../utils/langUtils';
+import {
+  langInfo2String,
+  langInfo2tag,
+  wordProps2LangInfo,
+} from '../../utils/langUtils';
 import { useAppContext } from '../../hooks/useAppContext';
+import { WordMapper } from '../../mappers/word.mapper';
 
-//#region types
 type Item = {
-  langInfo?: LanguageInfo;
-  translation?: string;
-  translatedWordId?: string;
-  translationLangInfo?: LanguageInfo;
+  // langInfo?: LanguageInfo;
+  // translations?: string[];
+  // translationsLangInfo?: LanguageInfo;
+  translations?: WordDto[];
 } & WordDto;
-
-//#endregion
 
 const PADDING = 15;
 
@@ -43,60 +48,119 @@ export const WordTabContent = () => {
   const [targetLangInfo, setTargetLangInfo] = useState<LanguageInfo>();
   const [step, setStep] = useState(0);
 
-  const onShowStringListClick = () => {
-    if (sourceLangInfo && targetLangInfo) {
-      getWordsBasedOnLang(sourceLangInfo);
-      setStep(1);
-    }
-  };
+  const getWordsWithLangs = useCallback(
+    async (
+      sourceLangInfo: LanguageInfo,
+      targetLangInfo: LanguageInfo,
+      // TODO: change to Item[] VotableItem[] if we need voting on translations
+    ): Promise<Item[]> => {
+      if (!singletons) return [];
+      const wordNodes =
+        await singletons.graphThirdLayerService.getWordsWithLangAndRelationships(
+          sourceLangInfo,
+          [RelationshipTypeConst.WORD_MAP],
+        );
+      if (!wordNodes) return [];
+      const wordItemList: Array<Item> = [];
 
-  const getWordsBasedOnLang = async (langInfo: LanguageInfo) => {
-    if (!singletons) return;
-    const res = await singletons.graphThirdLayerService.getUnTranslatedWords();
-    const wordList: Item[] = [];
-    for (const node of res) {
-      const wordInfo: Item = Object.create(null);
-      wordInfo.id = node.id;
-      for (const pk of node.propertyKeys) {
-        wordInfo[pk.property_key] = undefined;
-        if (pk.propertyValue && pk.propertyValue.property_value) {
-          wordInfo[pk.property_key] = JSON.parse(
-            pk.propertyValue.property_value,
-          ).value;
-        }
-      }
-      for (const relNode of node.toNodeRelationships?.at(0)?.fromNode
-        ?.toNodeRelationships || []) {
-        if (relNode.relationship_type === RelationshipTypeConst.WORD_TO_LANG) {
-          //!!! change discovering lang forom node to props
-          wordInfo.langId = relNode.to_node_id;
-        }
-        if (
-          relNode.relationship_type ===
-          RelationshipTypeConst.WORD_TO_TRANSLATION
-        ) {
-          const translationNode = relNode.toNode.toNodeRelationships?.find(
-            (nr) => nr.relationship_type === RelationshipTypeConst.WORD_TO_LANG, //!!! remove because we chack lang not by node but by props
-          );
-          if (translationNode) {
-            // if (translationNode.to_node_id === targetLang.selectedLangId) {
-            wordInfo.translationLangId = translationNode.to_node_id;
-            const jsonStrValue = relNode.toNode.propertyKeys.find(
-              (pk) => pk.property_key === 'name',
-            )?.propertyValue?.property_value;
-            if (jsonStrValue) {
-              wordInfo.translation = JSON.parse(jsonStrValue).value;
+      for (const wordNode of wordNodes) {
+        const currWordItem: Item = WordMapper.entityToDto(wordNode);
+        currWordItem.translations = [];
+
+        for (const relationship of wordNode.toNodeRelationships || []) {
+          if (
+            relationship.relationship_type ===
+            RelationshipTypeConst.WORD_TO_TRANSLATION
+          ) {
+            const translationNode = (
+              await singletons.graphFirstLayerService.getNodesByIds([
+                relationship.to_node_id,
+              ])
+            )[0];
+
+            let isMatchesTargetLang = true;
+            const translatedWord = WordMapper.entityToDto(translationNode);
+            isMatchesTargetLang =
+              isMatchesTargetLang &&
+              translatedWord[PropertyKeyConst.LANGUAGE_TAG] ===
+                targetLangInfo.lang.tag;
+
+            isMatchesTargetLang =
+              isMatchesTargetLang &&
+              (translatedWord[PropertyKeyConst.REGION_TAG] || undefined) ===
+                targetLangInfo.region?.tag;
+
+            isMatchesTargetLang =
+              isMatchesTargetLang &&
+              (translatedWord[PropertyKeyConst.DIALECT_TAG] || undefined) ===
+                targetLangInfo.dialect?.tag;
+
+            if (isMatchesTargetLang) {
+              currWordItem.translations.push(translatedWord);
             }
-            wordInfo.translatedWordId = relNode.toNode.id;
-            // }
           }
         }
+        wordItemList.push(currWordItem);
       }
-      wordList.push(wordInfo);
+      return wordItemList;
+    },
+    [singletons],
+  );
+
+  const onShowStringListClick = useCallback(async () => {
+    if (sourceLangInfo && targetLangInfo) {
+      setWords(await getWordsWithLangs(sourceLangInfo, targetLangInfo));
+      setStep(1);
     }
-    console.log('formatted wordList', wordList);
-    setWords(wordList);
-  };
+  }, [getWordsWithLangs, sourceLangInfo, targetLangInfo]);
+
+  // const getWordsBasedOnLang = async (langInfo: LanguageInfo) => {
+  //   if (!singletons) return;
+  //   const res = await singletons.graphThirdLayerService.getUnTranslatedWords();
+  //   const wordList: Item[] = [];
+  //   for (const node of res) {
+  //     const wordInfo: Item = Object.create(null);
+  //     wordInfo.id = node.id;
+  //     for (const pk of node.propertyKeys) {
+  //       wordInfo[pk.property_key] = undefined;
+  //       if (pk.propertyValue && pk.propertyValue.property_value) {
+  //         wordInfo[pk.property_key] = JSON.parse(
+  //           pk.propertyValue.property_value,
+  //         ).value;
+  //       }
+  //     }
+  //     for (const relNode of node.toNodeRelationships?.at(0)?.fromNode
+  //       ?.toNodeRelationships || []) {
+  //       if (relNode.relationship_type === RelationshipTypeConst.WORD_TO_LANG) {
+  //         //!!! change discovering lang forom node to props
+  //         wordInfo.langId = relNode.to_node_id;
+  //       }
+  //       if (
+  //         relNode.relationship_type ===
+  //         RelationshipTypeConst.WORD_TO_TRANSLATION
+  //       ) {
+  //         const translationNode = relNode.toNode.toNodeRelationships?.find(
+  //           (nr) => nr.relationship_type === RelationshipTypeConst.WORD_TO_LANG, //!!! remove because we check lang not by node but by props
+  //         );
+  //         if (translationNode) {
+  //           // if (translationNode.to_node_id === targetLang.selectedLangId) {
+  //           wordInfo.translationLangId = translationNode.to_node_id;
+  //           const jsonStrValue = relNode.toNode.propertyKeys.find(
+  //             (pk) => pk.property_key === 'name',
+  //           )?.propertyValue?.property_value;
+  //           if (jsonStrValue) {
+  //             wordInfo.translation = JSON.parse(jsonStrValue).value;
+  //           }
+  //           wordInfo.translatedWordId = relNode.toNode.id;
+  //           // }
+  //         }
+  //       }
+  //     }
+  //     wordList.push(wordInfo);
+  //   }
+  //   console.log('formatted wordList', wordList);
+  //   setWords(wordList);
+  // };
 
   const onTranslationCapture = (
     idx: number,
@@ -110,26 +174,35 @@ export const WordTabContent = () => {
       translation: value,
       translationLangInfo: targetLangInfo,
     };
-    storeTranslation(stateCopy[idx]);
+    storeTranslations(stateCopy[idx]);
   };
 
-  const storeTranslation = async (word: Item) => {
+  const storeTranslations = async (word: Item) => {
     if (!singletons) return;
-    if (!word.translation)
-      throw new Error(`No translation value is specified for word ${word}`);
-    if (!word.translationLangInfo)
-      throw new Error(`No translation language is specified for word ${word}`);
-
-    const translatedWordId =
-      await singletons.graphThirdLayerService.createWordOrPhraseWithLang(
-        word.translation,
-        word.translationLangInfo,
+    if (!word.translations)
+      throw new Error(
+        `No translation value is specified for word ${JSON.stringify(word)}`,
       );
-    singletons.graphThirdLayerService
-      .createWordTranslationRelationship(word.id, translatedWordId)
-      .then((res) => {
-        console.log('word translation created', res);
-      });
+
+    for (const translation of word.translations || []) {
+      if (!translation.language)
+        throw new Error(
+          `No translation language is specified for word ${JSON.stringify(
+            word,
+          )}`,
+        );
+      const translatedWordId =
+        await singletons.graphThirdLayerService.createWordOrPhraseWithLang(
+          translation.name,
+          wordProps2LangInfo({ language: translation.language }),
+          NodeTypeConst.WORD,
+        );
+      singletons.graphThirdLayerService
+        .createWordTranslationRelationship(word.id, translatedWordId)
+        .then((res) => {
+          console.log('word translation created', res);
+        });
+    }
   };
 
   // const langLabels = langs.map((l) => l.name);
@@ -249,10 +322,10 @@ export const WordTabContent = () => {
                       clonedList[idx].translation = e.target.value;
                       setWords(clonedList);
                     }}
-                    disabled={
-                      langInfo2tag(word.langInfo) ===
-                      langInfo2tag(targetLangInfo)
-                    }
+                    // disabled={
+                    //   langInfo2tag(word.langInfo) ===
+                    //   langInfo2tag(targetLangInfo)
+                    // }
                     onClick={(e) => {
                       if (!targetLangInfo) {
                         alertFeedback('info', 'Please choose target language!');

@@ -5,7 +5,10 @@ import { SyncService } from '@/services/sync.service';
 import { NodeType } from '@/src/models';
 import { Node } from '@/src/models';
 
-import { PropertyKeyConst } from '@/constants/graph.constant';
+import {
+  PropertyKeyConst,
+  RelationshipTypeConst,
+} from '@/constants/graph.constant';
 
 export class NodeRepository {
   constructor(
@@ -152,6 +155,50 @@ export class NodeRepository {
     });
 
     return node;
+  }
+
+  async getNodesByPropAndRelTypes(
+    nodeType: string,
+    prop: { key: string; value: string }[],
+    relationshipTypes: RelationshipTypeConst[],
+  ): Promise<Node[] | null> {
+    const relationsArray = [
+      'propertyKeys',
+      'propertyKeys.propertyValue',
+      'toNodeRelationships',
+      'toNodeRelationships.relationshipType',
+      'fromNodeRelationships',
+      'fromNodeRelationships.relationshipType',
+    ];
+
+    const propertyKeyValueArray = prop.map(({ key, value }) => ({
+      property_key: key,
+      propertyValue: {
+        property_value: JSON.stringify({ value }),
+      },
+    }));
+
+    const nodes = await this.repository.find({
+      relations: relationsArray,
+      where: [
+        {
+          node_type: nodeType,
+          propertyKeys: propertyKeyValueArray,
+          toNodeRelationships: {
+            relationshipType: In(relationshipTypes),
+          },
+        },
+        {
+          node_type: nodeType,
+          propertyKeys: propertyKeyValueArray,
+          fromNodeRelationships: {
+            relationshipType: In(relationshipTypes),
+          },
+        },
+      ],
+    });
+
+    return nodes;
   }
 
   async getNodeIdsByProps(

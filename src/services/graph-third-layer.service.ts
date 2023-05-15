@@ -199,14 +199,14 @@ export class GraphThirdLayerService {
       });
     }
 
-    const wordNodeIds = await this.firstLayerService.getNodeIdsByProps(
+    const foundNodeIds = await this.firstLayerService.getNodeIdsByProps(
       nodeType as string,
       wordSearchProps,
     );
-    if (wordNodeIds.length === 0) {
+    if (foundNodeIds.length === 0) {
       return null;
     }
-    return wordNodeIds[0];
+    return foundNodeIds[0];
   }
 
   async createWordsWithLang(
@@ -223,6 +223,28 @@ export class GraphThirdLayerService {
       );
     });
     return Promise.all(wordNodesPromises);
+  }
+
+  async getWordsWithLang(langInfo: LanguageInfo): Promise<Node[] | null> {
+    const langSearchProps = makeFindPropsByLang(langInfo);
+    const nodes = await this.firstLayerService.getNodesByProps(
+      NodeTypeConst.WORD,
+      langSearchProps,
+    );
+    return nodes;
+  }
+
+  async getWordsWithLangAndRelationships(
+    langInfo: LanguageInfo,
+    relationships: Array<RelationshipTypeConst>,
+  ): Promise<Node[] | null> {
+    const langSearchProps = makeFindPropsByLang(langInfo);
+    const nodes = await this.nodeRepo.getNodesByPropAndRelTypes(
+      NodeTypeConst.WORD,
+      langSearchProps,
+      relationships,
+    );
+    return nodes;
   }
 
   // --------- Word --------- //
@@ -418,13 +440,16 @@ export class GraphThirdLayerService {
     return wordNodes;
   }
 
-  async getMapWords(mapId: Nanoid) {
+  async getMapWords(mapId: Nanoid, langInfo?: LanguageInfo) {
     return this.getWords({
       to_node_id: mapId,
       relationship_type: RelationshipTypeConst.WORD_MAP,
     });
   }
 
+  /**
+   * @deprecated check and delete
+   */
   async getUnTranslatedWords() {
     return this.getWords(
       [
