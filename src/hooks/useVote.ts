@@ -240,7 +240,7 @@ export function useVote() {
 
       try {
         setLoadingState(true);
-        const userDto = await singletons.graphThirdLayerService.createUser(
+        const userDto = await singletons.userService.createOrFindUser(
           user.userEmail,
         );
 
@@ -274,7 +274,7 @@ export function useVote() {
 
       try {
         setLoadingState(true);
-        const userDto = await singletons.graphThirdLayerService.createUser(
+        const userDto = await singletons.userService.createOrFindUser(
           user.userEmail,
         );
 
