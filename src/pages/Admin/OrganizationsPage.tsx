@@ -1,12 +1,5 @@
 import { IonContent, IonItem } from '@ionic/react';
-import {
-  Alert,
-  Button,
-  Input,
-  MuiMaterial,
-  PasswordInput,
-  Typography,
-} from '@eten-lab/ui-kit';
+import { MuiMaterial, Typography } from '@eten-lab/ui-kit';
 
 const { Box } = MuiMaterial;
 

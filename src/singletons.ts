@@ -175,7 +175,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     graphFirstLayerService,
     graphSecondLayerService,
     wordService,
-    nodeRepo,
   );
 
   const votingService = new VotingService(
