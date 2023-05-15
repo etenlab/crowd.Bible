@@ -11,9 +11,11 @@ import { DefinitionDto } from '@/dtos/definition.dto';
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 import { VotingService } from './voting.service';
+
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
 import { makeFindPropsByLang } from '../utils/langUtils';
 import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageMapper } from '@/mappers/language.mapper';
 
 export class DefinitionService {
   constructor(
@@ -293,7 +295,7 @@ export class DefinitionService {
     const itemContents = await this.getSelfVotableContentByLang(
       type,
       languageInfo,
-      PropertyKeyConst.NAME,
+      PropertyKeyConst.WORD,
       customPropValues,
     );
 
@@ -321,6 +323,9 @@ export class DefinitionService {
   }
 
   /**
+   * @deprecated
+   * This is invalid function, graph-schema data is immutable, never update.
+   *
    * Updates definition (as text property of given node Id).
    *
    * @param definitionNodeId - node Id to be updated
@@ -343,7 +348,8 @@ export class DefinitionService {
   async getDefinitionWithWord(rel: Nanoid): Promise<DefinitionDto | null> {
     const relEntity = await this.graphFirstLayerService.readRelationship(rel, [
       'fromNode',
-      'fromNode.toNodeRelationships',
+      'fromNode.propertyKeys',
+      'fromNode.propertyKeys.propertyValue',
     ]);
 
     if (!relEntity) {
@@ -360,22 +366,15 @@ export class DefinitionService {
         relEntity.to_node_id,
         PropertyKeyConst.DEFINITION,
       )) as string;
-    let languageId: Nanoid;
 
-    for (const relationship of relEntity!.fromNode!.toNodeRelationships!) {
-      if (
-        relationship.relationship_type === RelationshipTypeConst.WORD_TO_LANG
-      ) {
-        languageId = relationship.to_node_id;
-      }
-    }
+    const languageInfo = LanguageMapper.entityToDto(relEntity.fromNode);
 
     return {
       wordId: relEntity.from_node_id,
       wordText: wordText,
       definitionId: relEntity.to_node_id,
       definitionText: definitionText,
-      languageId: languageId!,
+      languageInfo: languageInfo!,
       relationshipId: relEntity.id,
     };
   }
