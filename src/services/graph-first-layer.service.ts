@@ -104,8 +104,43 @@ export class GraphFirstLayerService {
   }
 
   // node-property-key
+  async createNodePropertyKey(
+    node_id: Nanoid,
+    key_name: string,
+  ): Promise<Nanoid> {
+    return this.nodePropertyKeyRepo.createNodePropertyKey(node_id, key_name);
+  }
+
+  async findNodePropertyKey(
+    node_id: Nanoid,
+    key_name: string,
+  ): Promise<Nanoid | null> {
+    return this.nodePropertyKeyRepo.findNodePropertyKey(node_id, key_name);
+  }
+
+  /**
+   * @deprecated
+   * Never use this function, because graph-schema is immutable data-structure.
+   * If you want to get a propertyKey id, use findPropertyKey()
+   * And if you want to create a new propertyKey entity, then user createRelationshipPropertyKey() function
+   *
+   * @param rel_id
+   * @param key_name
+   * @returns
+   */
   async getNodePropertyKey(node_id: Nanoid, key_name: string): Promise<Nanoid> {
     return this.nodePropertyKeyRepo.getNodePropertyKey(node_id, key_name);
+  }
+
+  // node-property-value
+  async createNodePropertyValue(
+    key_id: Nanoid,
+    key_value: unknown,
+  ): Promise<Nanoid> {
+    return this.nodePropertyValueRepo.createNodePropertyValue(
+      key_id,
+      key_value,
+    );
   }
 
   async getNodePropertyValue(
@@ -115,7 +150,13 @@ export class GraphFirstLayerService {
     return this.nodeRepo.getNodePropertyValue(nodeId, propertyName);
   }
 
-  // node-property-value
+  /**
+   * @deprecated
+   *
+   * @param key_id
+   * @param key_value
+   * @returns
+   */
   async setNodePropertyValue(
     key_id: Nanoid,
     key_value: unknown,
@@ -170,6 +211,36 @@ export class GraphFirstLayerService {
   // }
 
   // relationship property key
+  async createRelationshipPropertyKey(
+    rel_id: Nanoid,
+    key_name: string,
+  ): Promise<Nanoid> {
+    return this.relationshipPropertyKeyRepo.createRelationshipPropertyKey(
+      rel_id,
+      key_name,
+    );
+  }
+
+  async findRelationshipPropertyKey(
+    rel_id: Nanoid,
+    key_name: string,
+  ): Promise<Nanoid | null> {
+    return this.relationshipPropertyKeyRepo.createRelationshipPropertyKey(
+      rel_id,
+      key_name,
+    );
+  }
+
+  /**
+   * @deprecated
+   * Never use this function, because graph-schema is immutable data-structure.
+   * If you want to get a propertyKey id, use findPropertyKey()
+   * And if you want to create a new propertyKey entity, then user createRelationshipPropertyKey() function
+   *
+   * @param rel_id
+   * @param key_name
+   * @returns
+   */
   async getRelationshipPropertyKey(
     rel_id: Nanoid,
     key_name: string,
@@ -181,6 +252,30 @@ export class GraphFirstLayerService {
   }
 
   // relationship property value
+  async createRelationshipPropertyValue(
+    key_id: Nanoid,
+    key_value: unknown,
+  ): Promise<Nanoid> {
+    return this.relationshipPropertyValueRepo.createRelationshipPropertyValue(
+      key_id,
+      key_value,
+    );
+  }
+
+  async getRelationshipPropertyValue(
+    nodeId: Nanoid,
+    propertyName: PropertyKeyConst,
+  ): Promise<unknown> {
+    return this.relationshipRepo.getRelationshipPropertyValue(
+      nodeId,
+      propertyName,
+    );
+  }
+
+  /**
+   * @deprecated
+   * Never use it, delete everything you used
+   */
   async setRelationshipPropertyValue(
     key_id: Nanoid,
     key_value: unknown,
