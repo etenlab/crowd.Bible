@@ -104,6 +104,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "4.6.1",
+    "@playwright/test": "^1.33.0",
     "@types/apollo-upload-client": "^17.0.2",
     "@types/language-tags": "^1.0.1",
     "@types/node": "^18.14.6",

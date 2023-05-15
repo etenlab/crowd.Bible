@@ -20,6 +20,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
-  "include": ["src", "../models/src/models/site-text", "test"]
+  "include": ["src", "../models/src/models/site-text", "tests", "playwright.config.ts"]
 
 }
