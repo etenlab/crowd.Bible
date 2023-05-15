@@ -9,10 +9,7 @@ import {
 import { WordDto } from '@/dtos/word.dto';
 import { VotableContent } from '@/dtos/votable-item.dto';
 
-import {
-  NodeTypeConst,
-  RelationshipTypeConst,
-} from '@/constants/graph.constant';
+import { RelationshipTypeConst } from '@/constants/graph.constant';
 
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { VotingService } from './voting.service';
@@ -23,19 +20,21 @@ import { WordService } from './word.service';
 import { Candidate } from '@/src/models/';
 
 import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageMapper } from '@/mappers/language.mapper';
 
 export class SiteTextService {
   constructor(
     private readonly graphFirstLayerService: GraphFirstLayerService,
+
     private readonly votingService: VotingService,
     private readonly definitionService: DefinitionService,
     private readonly translationService: TranslationService,
     private readonly wordService: WordService,
   ) {}
 
-  private async filterDefinitionCanddiatesByLanguage(
+  private async filterDefinitionCandidatesByLanguage(
     candidates: Candidate[],
-    languageId: Nanoid,
+    languageInfo: LanguageInfo,
   ): Promise<Candidate[]> {
     const filteredCandidates: Candidate[] = [];
 
@@ -44,20 +43,32 @@ export class SiteTextService {
 
       const relEntity = await this.graphFirstLayerService.readRelationship(
         rel,
-        ['fromNode', 'fromNode.toNodeRelationships'],
+        [
+          'fromNode',
+          'fromNode.propertyKeys',
+          'fromNode.propertyKeys.propertyValue',
+        ],
         {
           id: rel,
-          fromNode: {
-            node_type: NodeTypeConst.WORD,
-            toNodeRelationships: {
-              relationship_type: RelationshipTypeConst.WORD_TO_LANG,
-              to_node_id: languageId,
-            },
-          },
         },
       );
 
       if (relEntity === null) {
+        continue;
+      }
+
+      const nodeLanguageInfo = LanguageMapper.entityToDto(relEntity.fromNode);
+
+      if (!nodeLanguageInfo) {
+        continue;
+      }
+
+      // check if the node entity has the same languageInfo
+      if (
+        nodeLanguageInfo.lang.tag !== languageInfo.lang.tag ||
+        nodeLanguageInfo.dialect?.tag !== languageInfo.dialect?.tag ||
+        nodeLanguageInfo.region?.tag !== languageInfo.region?.tag
+      ) {
         continue;
       }
 
@@ -68,28 +79,13 @@ export class SiteTextService {
   }
 
   private async createOrFindSiteTextOnGraph(
-    languageId: Nanoid,
+    languageInfo: LanguageInfo,
     siteText: string,
     definitionText: string,
   ): Promise<{ wordId: Nanoid; definitionId: Nanoid; relationshipId: Nanoid }> {
-    // TODO: refactor code that uses this method to provide proper LanguageInfo here and replace mocked value
-    const langInfo_mocked: LanguageInfo = {
-      lang: {
-        tag: 'ua',
-        descriptions: [
-          'mocked lang tag as "ua", use new language Selector to get LangInfo values from user',
-        ],
-      },
-    };
-    console.log(
-      `use langInfo_mocked ${JSON.stringify(
-        langInfo_mocked,
-      )} in place of langId ${languageId}`,
-    );
-
     const wordId = await this.wordService.createWordOrPhraseWithLang(
       siteText,
-      langInfo_mocked,
+      languageInfo,
     );
 
     const { definitionId } = await this.definitionService.createDefinition(
@@ -137,7 +133,7 @@ export class SiteTextService {
     return {
       siteTextId,
       relationshipId: relationship.id,
-      languageId: definitionDto.languageId,
+      languageInfo: definitionDto.languageInfo,
       siteText: definitionDto.wordText,
       definition: definitionDto.definitionText,
     } as SiteTextDto;
@@ -193,13 +189,13 @@ export class SiteTextService {
 
   async createOrFindSiteText(
     appId: Nanoid,
-    languageId: Nanoid,
+    languageInfo: LanguageInfo,
     siteText: string,
     definitionText: string,
   ): Promise<{ wordId: Nanoid; definitionId: Nanoid; relationshipId: Nanoid }> {
     const { wordId, definitionId, relationshipId } =
       await this.createOrFindSiteTextOnGraph(
-        languageId,
+        languageInfo,
         siteText,
         definitionText,
       );
@@ -233,7 +229,7 @@ export class SiteTextService {
 
   async createOrFindTranslation(
     definitionRelationshipId: Nanoid,
-    languageId: Nanoid,
+    languageInfo: LanguageInfo,
     translatedSiteText: string,
     translatedDefinitionText: string,
   ): Promise<{ wordId: Nanoid; definitionId: Nanoid; relationshipId: Nanoid }> {
@@ -249,7 +245,7 @@ export class SiteTextService {
 
     const { wordId, definitionId, relationshipId } =
       await this.createOrFindSiteTextOnGraph(
-        languageId,
+        languageInfo,
         translatedSiteText,
         translatedDefinitionText,
       );
@@ -258,7 +254,7 @@ export class SiteTextService {
       rel.from_node_id,
       {
         word: translatedSiteText,
-        languageId,
+        languageInfo,
       },
     );
 
@@ -314,7 +310,7 @@ export class SiteTextService {
   async getTranslationListBySiteTextRel(
     appId: Nanoid,
     original: SiteTextDto,
-    languageId: Nanoid,
+    languageInfo: LanguageInfo,
   ): Promise<SiteTextTranslationDto[]> {
     const election = await this.votingService.getElectionByRef(
       ElectionTypeConst.SITE_TEXT_TRANSLATION,
@@ -334,7 +330,7 @@ export class SiteTextService {
       await this.votingService.getCandidateListByElectionId(election.id);
 
     const filteredCandidates: Candidate[] =
-      await this.filterDefinitionCanddiatesByLanguage(candidates, languageId);
+      await this.filterDefinitionCandidatesByLanguage(candidates, languageInfo);
 
     const translatedSiteTexts: SiteTextTranslationDto[] = [];
 
@@ -351,7 +347,7 @@ export class SiteTextService {
 
       const translated = {
         original,
-        languageId,
+        languageInfo,
         translatedSiteText: definitionDto.wordText,
         translatedDefinition: definitionDto.definitionText,
         ...votingStatus,
@@ -366,7 +362,7 @@ export class SiteTextService {
   async getRecommendedSiteText(
     appId: Nanoid,
     siteTextId: Nanoid,
-    languageId: Nanoid,
+    languageInfo: LanguageInfo,
   ): Promise<SiteTextTranslationDto | null> {
     const recommended = await this.getRecommendedDefinition(appId, siteTextId);
 
@@ -376,10 +372,15 @@ export class SiteTextService {
 
     const original = await this.getSiteTextDto(siteTextId, recommended.id!);
 
-    if (original.languageId === languageId) {
+    // check if the node entity has the same languageInfo
+    if (
+      original.languageInfo.lang.tag === languageInfo.lang.tag ||
+      original.languageInfo.dialect?.tag === languageInfo.dialect?.tag ||
+      original.languageInfo.region?.tag === languageInfo.region?.tag
+    ) {
       return {
         original,
-        languageId: languageId,
+        languageInfo: languageInfo,
         translatedSiteText: original.siteText,
         translatedDefinition: original.definition,
         upVotes: 0,
@@ -391,7 +392,7 @@ export class SiteTextService {
     const translationList = await this.getTranslationListBySiteTextRel(
       appId,
       original,
-      languageId,
+      languageInfo,
     );
 
     if (translationList.length === 0) {
@@ -416,8 +417,8 @@ export class SiteTextService {
 
   async getTranslatedSiteTextListByAppId(
     appId: Nanoid,
-    sourceLanguageId: Nanoid,
-    targetLanguageId: Nanoid,
+    sourceLanguageInfo: LanguageInfo,
+    targetLanguageInfo: LanguageInfo,
   ): Promise<TranslatedSiteTextDto[]> {
     const siteTextList = await this.getSiteTextListByAppId(appId);
 
@@ -427,7 +428,7 @@ export class SiteTextService {
       const recommended = await this.getRecommendedSiteText(
         appId,
         siteText.id,
-        sourceLanguageId,
+        sourceLanguageInfo,
       );
 
       let translationCnt = 0;
@@ -438,7 +439,7 @@ export class SiteTextService {
         const translationList = await this.getTranslationListBySiteTextRel(
           appId,
           original,
-          targetLanguageId,
+          targetLanguageInfo,
         );
         translationCnt += translationList.length;
       }
