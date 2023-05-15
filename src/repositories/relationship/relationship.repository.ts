@@ -6,6 +6,8 @@ import { Relationship } from '@/src/models/';
 import { type DbService } from '@/services/db.service';
 import { type SyncService } from '@/services/sync.service';
 
+import { PropertyKeyConst } from '@/constants/graph.constant';
+
 export class RelationshipRepository {
   constructor(
     private readonly dbService: DbService,
@@ -118,5 +120,33 @@ export class RelationshipRepository {
         },
       });
     }
+  }
+
+  async getRelationshipPropertyValue(
+    relId: Nanoid,
+    propertyName: PropertyKeyConst,
+  ): Promise<unknown> {
+    const relEntity = await this.readRelationship(relId, [
+      'propertyKeys',
+      'propertyKeys.propertyValue',
+    ]);
+
+    if (!relEntity) {
+      return null;
+    }
+
+    if (!relEntity.propertyKeys?.length || relEntity.propertyKeys?.length < 1) {
+      return null;
+    }
+
+    const propertyIdx = relEntity.propertyKeys.findIndex(
+      (pk) => pk.property_key === propertyName,
+    );
+
+    const resJson =
+      relEntity.propertyKeys[propertyIdx].propertyValue.property_value;
+    const res = JSON.parse(resJson).value;
+
+    return res;
   }
 }
