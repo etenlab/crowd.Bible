@@ -11,12 +11,10 @@ import {
 
 import { Node, Relationship } from '@/src/models';
 
-import {
-  WordSequenceDto,
-  // WordSequenceWithSubDto,
-} from '@/dtos/word-sequence.dto';
+import { WordSequenceDto, SubWordSequenceDto } from '@/dtos/word-sequence.dto';
 
 import { WordSequenceMapper } from '@/mappers/word-sequence.mapper';
+import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 
 export class WordSequenceService {
   constructor(
@@ -29,14 +27,14 @@ export class WordSequenceService {
   async createWordSequence({
     text,
     creatorId,
-    languageId,
+    languageInfo,
     documentId,
     withWordsRelationship = true,
     importUid,
   }: {
     text: string;
     creatorId: Nanoid;
-    languageId: Nanoid;
+    languageInfo: LanguageInfo;
     documentId?: Nanoid;
     withWordsRelationship?: boolean;
     importUid?: Nanoid;
@@ -53,6 +51,9 @@ export class WordSequenceService {
         {
           [PropertyKeyConst.WORD_SEQUENCE]: text,
           [PropertyKeyConst.IMPORT_UID]: importUid,
+          [PropertyKeyConst.LANGUAGE_TAG]: languageInfo.lang.tag,
+          [PropertyKeyConst.DIALECT_TAG]: languageInfo.dialect?.tag,
+          [PropertyKeyConst.REGION_TAG]: languageInfo.region?.tag,
         },
       );
 
@@ -60,10 +61,10 @@ export class WordSequenceService {
       const words = text.split(' ');
 
       for (const [i, word] of words.entries()) {
-        const new_word_id = await this.wordService.createOrFindWord({
+        const new_word_id = await this.wordService.createWordOrPhraseWithLang(
           word,
-          languageId,
-        });
+          languageInfo,
+        );
         await this.graphSecondLayerService.createRelationshipFromObject(
           RelationshipTypeConst.WORD_SEQUENCE_TO_WORD,
           { position: i + 1 },
@@ -72,13 +73,6 @@ export class WordSequenceService {
         );
       }
     }
-
-    await this.graphSecondLayerService.createRelationshipFromObject(
-      RelationshipTypeConst.WORD_SEQUENCE_TO_LANGUAGE_ENTRY,
-      {},
-      word_sequence.id,
-      languageId,
-    );
 
     if (documentId) {
       await this.graphSecondLayerService.createRelationshipFromObject(
@@ -127,7 +121,7 @@ export class WordSequenceService {
     const subWordSequence = await this.createWordSequence({
       text: subText,
       creatorId: creatorId,
-      languageId: parentWordSequence.languageId,
+      languageInfo: parentWordSequence.languageInfo,
       withWordsRelationship: false,
     });
 
@@ -200,7 +194,7 @@ export class WordSequenceService {
     return word_sequence_connection;
   }
 
-  async getWordSequence(text: string): Promise<Nanoid[]> {
+  async getWordSequenceFromText(text: string): Promise<Nanoid[]> {
     const word_sequences = await this.graphFirstLayerService.listAllNodesByType(
       NodeTypeConst.WORD_SEQUENCE,
     );
@@ -214,5 +208,95 @@ export class WordSequenceService {
     );
 
     return filtered_word_sequences.map((sequence) => sequence.id);
+  }
+
+  async getWordSequenceByDocumentId(
+    documentId: Nanoid,
+  ): Promise<Nanoid | null> {
+    const document = await this.graphFirstLayerService.readNode(documentId);
+
+    if (!document) {
+      throw new Error('Not exists such documentId!');
+    }
+
+    const wordSequence = await this.graphFirstLayerService.readNode(
+      '',
+      [
+        'propertyKeys',
+        'propertyKeys.propertyValue',
+        'toNodeRelationships',
+        'toNodeRelationships.toNode',
+      ],
+      {
+        node_type: NodeTypeConst.WORD_SEQUENCE,
+        toNodeRelationships: {
+          relationship_type: RelationshipTypeConst.WORD_SEQUENCE_TO_DOCUMENT,
+          toNode: {
+            id: documentId,
+          },
+        },
+      },
+    );
+
+    if (wordSequence === null) {
+      return null;
+    }
+
+    return wordSequence.id;
+  }
+
+  async listSubWordSequenceByWordSequenceId(
+    wordSequenceId: Nanoid,
+    creatorId?: Nanoid,
+  ): Promise<SubWordSequenceDto[]> {
+    const wordSequence = await this.graphFirstLayerService.readNode(
+      '',
+      [
+        'toNodeRelationships',
+        'toNodeRelationships.propertyKeys',
+        'toNodeRelationships.propertyKeys.propertyValues',
+        'toNodeRelationships.toNode',
+        'toNodeRelationships.toNode.toNodeRelationships',
+        'toNodeRelationships.toNode.toNodeRelationships.toNode',
+      ],
+      {
+        id: wordSequenceId,
+        node_type: NodeTypeConst.WORD_SEQUENCE,
+        toNodeRelationships: {
+          relationship_type:
+            RelationshipTypeConst.WORD_SEQUENCE_TO_SUB_WORD_SEQUENCE,
+        },
+      },
+    );
+
+    if (!wordSequence || !wordSequence.toNodeRelationships) {
+      return [];
+    }
+
+    const subWordSequences: SubWordSequenceDto[] = [];
+
+    for (const toNodeRelationship of wordSequence.toNodeRelationships) {
+      if (!toNodeRelationship.toNode.id) {
+        continue;
+      }
+
+      const subWordSequence = await WordSequenceMapper.relationshipToDto(
+        toNodeRelationship,
+      );
+
+      if (!subWordSequence) {
+        continue;
+      }
+
+      if (creatorId && subWordSequence.creatorId !== creatorId) {
+        continue;
+      }
+
+      subWordSequences.push({
+        ...subWordSequence,
+      });
+    }
+
+    return subWordSequences;
   }
 }

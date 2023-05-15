@@ -58,7 +58,7 @@ export class WordService {
       where: {
         node_type: NodeTypeConst.WORD,
         propertyKeys: {
-          property_key: PropertyKeyConst.NAME,
+          property_key: PropertyKeyConst.WORD,
           propertyValue: {
             property_value: In(words.map((w) => JSON.stringify({ value: w }))),
           },
@@ -102,7 +102,7 @@ export class WordService {
         RelationshipTypeConst.WORD_TO_LANG,
         {},
         NodeTypeConst.WORD,
-        { [PropertyKeyConst.NAME]: word },
+        { [PropertyKeyConst.WORD]: word },
         langId,
       );
 
@@ -147,7 +147,7 @@ export class WordService {
     for (const entity of wordNodeEntities) {
       const node = new NodePropertyKey();
       node.node_id = entity.id;
-      node.property_key = PropertyKeyConst.NAME;
+      node.property_key = PropertyKeyConst.WORD;
       node.sync_layer = syncLayer;
       pkNodes.push(node);
     }
@@ -197,7 +197,7 @@ export class WordService {
 
   /**
    * @todo
-   * Need to refactor.
+   * Need to refactor. This function using legacy language model.
    */
   async getWord(word: string, language: Nanoid): Promise<Nanoid | null> {
     const wordNode = await this.graphFirstLayerService.getNodeByProp(
@@ -329,7 +329,7 @@ export class WordService {
       return word_id;
     }
     const wordNodeObject: CreateWordDto = {
-      [PropertyKeyConst.NAME]: word,
+      [PropertyKeyConst.WORD]: word,
       [PropertyKeyConst.LANGUAGE_TAG]: langInfo.lang.tag,
     };
     if (langInfo.dialect?.tag) {
@@ -361,7 +361,7 @@ export class WordService {
   ): Promise<Nanoid | null> {
     const wordSearchProps = [
       {
-        key: PropertyKeyConst.NAME,
+        key: PropertyKeyConst.WORD,
         value: word,
       },
       {
