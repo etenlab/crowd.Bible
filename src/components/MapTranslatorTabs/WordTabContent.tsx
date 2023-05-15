@@ -1,16 +1,14 @@
-import { IonIcon, useIonAlert } from '@ionic/react';
-import React, { useEffect, useState } from 'react';
-import { Box, Divider } from '@mui/material';
+import { IonIcon } from '@ionic/react';
+import React, { useState } from 'react';
+import { Box } from '@mui/material';
 import {
   Input,
-  Autocomplete,
   Button,
   Typography,
   LangSelector,
   LanguageInfo,
 } from '@eten-lab/ui-kit';
 import { useSingletons } from '@/src/hooks/useSingletons';
-import { LanguageDto } from '@/src/dtos/language.dto';
 import { WordDto } from '@/src/dtos/word.dto';
 import { RelationshipTypeConst } from '@/src/constants/graph.constant';
 import {
@@ -52,7 +50,7 @@ export const WordTabContent = () => {
 
   const getWordsBasedOnLang = async (langInfo: LanguageInfo) => {
     if (!singletons) return;
-    const res = await singletons.graphThirdLayerService.getUnTranslatedWords();
+    const res = await singletons.wordService.getUnTranslatedWords();
     const wordList: Item[] = [];
     for (const node of res) {
       const wordInfo: Item = Object.create(null);
@@ -121,11 +119,11 @@ export const WordTabContent = () => {
       throw new Error(`No translation language is specified for word ${word}`);
 
     const translatedWordId =
-      await singletons.graphThirdLayerService.createWordOrPhraseWithLang(
+      await singletons.wordService.createWordOrPhraseWithLang(
         word.translation,
         word.translationLangInfo,
       );
-    singletons.graphThirdLayerService
+    singletons.wordService
       .createWordTranslationRelationship(word.id, translatedWordId)
       .then((res) => {
         console.log('word translation created', res);
@@ -232,7 +230,7 @@ export const WordTabContent = () => {
               >
                 <Box flex={1} alignSelf={'center'}>
                   <Typography variant="subtitle1" fontWeight={400}>
-                    {word.name}
+                    {word.word}
                   </Typography>
                 </Box>
                 <Box flex={1}>
