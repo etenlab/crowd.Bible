@@ -4,11 +4,14 @@ import {
   PropertyKeyConst,
   RelationshipTypeConst,
 } from '@/constants/graph.constant';
+import { subTags2LangInfo } from '@/utils/langUtils';
 
 export class WordSequenceMapper {
   static entityToDto(entity: Node) {
     const dto: WordSequenceDto = Object.create(null);
     dto.id = entity.id;
+
+    const languageTag: Record<string, string> = {};
 
     entity.propertyKeys.forEach((key) => {
       switch (key.property_key) {
@@ -19,6 +22,27 @@ export class WordSequenceMapper {
         }
         case PropertyKeyConst.IMPORT_UID: {
           dto.importUid = JSON.parse(key.propertyValue.property_value).value;
+
+          return;
+        }
+        case PropertyKeyConst.LANGUAGE_TAG: {
+          languageTag.langTag = JSON.parse(
+            key.propertyValue.property_value,
+          ).value;
+
+          return;
+        }
+        case PropertyKeyConst.DIALECT_TAG: {
+          languageTag.dialectTag = JSON.parse(
+            key.propertyValue.property_value,
+          ).value;
+
+          return;
+        }
+        case PropertyKeyConst.REGION_TAG: {
+          languageTag.regionTag = JSON.parse(
+            key.propertyValue.property_value,
+          ).value;
 
           return;
         }
@@ -35,12 +59,14 @@ export class WordSequenceMapper {
           dto.documentId = rel.toNode.id;
           return;
         }
-        case RelationshipTypeConst.WORD_SEQUENCE_TO_LANGUAGE_ENTRY: {
-          dto.languageId = rel.toNode.id;
-          return;
-        }
       }
     });
+
+    dto.languageInfo = subTags2LangInfo({
+      lang: languageTag.langTag,
+      dialect: languageTag.dialectTag,
+      region: languageTag.regionTag,
+    })!;
 
     return dto;
   }

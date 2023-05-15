@@ -1,9 +1,10 @@
+import { LanguageInfo } from '@eten-lab/ui-kit';
 import { Votable } from './site-text.dto';
 
 export interface WordSequenceDto {
   id: string;
   text: string;
-  languageId: Nanoid;
+  languageInfo: LanguageInfo;
   documentId?: Nanoid;
   creatorId: Nanoid;
   importUid?: string;

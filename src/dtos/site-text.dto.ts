@@ -1,3 +1,5 @@
+import { LanguageInfo } from '@eten-lab/ui-kit';
+
 export interface Votable {
   upVotes: number;
   downVotes: number;
@@ -7,7 +9,7 @@ export interface Votable {
 export interface SiteTextDto extends Votable {
   siteTextId: Nanoid;
   relationshipId: Nanoid;
-  languageId: Nanoid;
+  languageInfo: LanguageInfo;
   siteText: string;
   definition: string;
 }
@@ -16,7 +18,7 @@ export interface SiteTextTranslationDto extends Votable {
   original: SiteTextDto;
   translatedSiteText: string;
   translatedDefinition: string;
-  languageId: Nanoid;
+  languageInfo: LanguageInfo;
 }
 
 export interface TranslatedSiteTextDto {

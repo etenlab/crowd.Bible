@@ -27,6 +27,11 @@ export enum NodeTypeConst {
   LANGUAGE = 'language',
   // MAP_LANG = 'map-language',
 
+  /**
+   * @deprecated
+   */
+  MOCK_APP = 'mock-app',
+
   USER = 'user',
   DEFINITION = 'definition',
   PHRASE = 'phrase',
