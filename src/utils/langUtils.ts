@@ -159,15 +159,15 @@ export const subTags2LangInfo = ({
 };
 
 export const compareLangInfo = (a: LanguageInfo, b: LanguageInfo): boolean => {
-  if (a.lang !== b.lang) {
+  if (a.lang.tag !== b.lang.tag) {
     return false;
   }
 
-  if (a.dialect !== b.dialect) {
+  if (a.dialect?.tag !== b.dialect?.tag) {
     return false;
   }
 
-  if (a.region !== b.region) {
+  if (a.region?.tag !== b.region?.tag) {
     return false;
   }
 
