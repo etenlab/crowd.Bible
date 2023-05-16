@@ -17,7 +17,7 @@ import { Link } from '@/components/Link';
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useAppContext } from '@/hooks/useAppContext';
 
-import { WordSequenceWithSubDto } from '@/dtos/word-sequence.dto';
+import { WordSequenceDto, SubWordSequenceDto } from '@/dtos/word-sequence.dto';
 
 const { DotsText } = CrowdBibleUI;
 const { Stack, Backdrop } = MuiMaterial;
@@ -56,35 +56,57 @@ export const mockDocument =
 export function TranslationPage() {
   const { documentId } = useParams<{ documentId: Nanoid }>();
   const { getColor } = useColorModeContext();
-  const { getOriginWordSequenceByDocumentId } = useWordSequence();
+  const {
+    getWordSequenceByDocumentId,
+    getWordSequenceById,
+    listSubWordSequenceByWordSequenceId,
+  } = useWordSequence();
   const {
     states: {
       global: { singletons },
     },
   } = useAppContext();
 
-  const [wordSequenceId, setWordSequenceId] = useState<Nanoid | null>(null);
+  const [selectedSubWordSequenceId, setSelectedSubWordSequenceId] =
+    useState<Nanoid | null>(null);
   const [originalWordSequence, setOriginalWordSequence] =
-    useState<WordSequenceWithSubDto | null>(null);
+    useState<WordSequenceDto | null>(null);
+  const [subWordSequences, setSubWordSequences] = useState<
+    SubWordSequenceDto[]
+  >([]);
 
   useEffect(() => {
-    if (singletons && documentId) {
-      getOriginWordSequenceByDocumentId(documentId, true).then(
-        (wordSequence) => {
-          setOriginalWordSequence(
-            wordSequence as WordSequenceWithSubDto | null,
-          );
-        },
-      );
-    }
-  }, [documentId, singletons, getOriginWordSequenceByDocumentId]);
+    (async () => {
+      if (singletons && documentId) {
+        const wordSequenceId = await getWordSequenceByDocumentId(documentId);
+
+        if (!wordSequenceId) {
+          return;
+        }
+
+        const wordSequence = await getWordSequenceById(wordSequenceId);
+        const subWordSequences = await listSubWordSequenceByWordSequenceId(
+          wordSequenceId,
+        );
+
+        setOriginalWordSequence(wordSequence);
+        setSubWordSequences(subWordSequences);
+      }
+    })();
+  }, [
+    documentId,
+    singletons,
+    getWordSequenceById,
+    getWordSequenceByDocumentId,
+    listSubWordSequenceByWordSequenceId,
+  ]);
 
   const handleDotClick = (id: unknown) => {
-    setWordSequenceId(id as Nanoid);
+    setSelectedSubWordSequenceId(id as Nanoid);
   };
 
   const handleClose = () => {
-    setWordSequenceId(null);
+    setSelectedSubWordSequenceId(null);
   };
 
   const handleCancelBubbling = (event: MouseEvent<HTMLElement>) => {
@@ -100,20 +122,18 @@ export function TranslationPage() {
     }
 
     return {
-      text: originalWordSequence.wordSequence,
-      ranges: originalWordSequence.subSequences.map(
-        ({ id, position, len }) => ({
-          id,
-          start: position,
-          end: position + len - 1,
-        }),
-      ),
+      text: originalWordSequence.text,
+      ranges: subWordSequences.map(({ id, position, length }) => ({
+        id,
+        start: position,
+        end: position + length - 1,
+      })),
     };
-  }, [originalWordSequence]);
+  }, [originalWordSequence, subWordSequences]);
 
-  const backdropOpened = wordSequenceId ? true : false;
-  const goToEditorLink = wordSequenceId
-    ? `/translation-edit/${documentId}/${wordSequenceId}`
+  const backdropOpened = selectedSubWordSequenceId ? true : false;
+  const goToEditorLink = selectedSubWordSequenceId
+    ? `/translation-edit/${documentId}/${selectedSubWordSequenceId}`
     : `/translation-edit/${documentId}`;
 
   return (
@@ -142,6 +162,7 @@ export function TranslationPage() {
             startIcon={<FiPlus />}
             fullWidth
             sx={{ margin: '10px 0' }}
+            disabled={true}
           >
             Add My Translation
           </Button>
@@ -175,7 +196,7 @@ export function TranslationPage() {
         >
           <TranslationList
             documentId={documentId}
-            wordSequenceId={wordSequenceId}
+            wordSequenceId={selectedSubWordSequenceId}
             isCheckbox={false}
           />
         </Stack>

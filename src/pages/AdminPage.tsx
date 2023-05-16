@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import {
   IonButton,
@@ -15,7 +15,7 @@ import { useSingletons } from '@/hooks/useSingletons';
 
 import txtfile from '@/utils/iso_639_3_min.tab';
 import { LoadingStatus } from '../enums';
-import useSeedService from '../hooks/useSeedService';
+// import useSeedService from '../hooks/useSeedService';
 import { NodeTypeConst } from '../constants/graph.constant';
 
 export function AdminPage() {
@@ -31,7 +31,7 @@ export function AdminPage() {
     useState<LoadingStatus>(LoadingStatus.INITIAL);
 
   const [loadResult, setLoadResult] = useState('');
-  const seedService = useSeedService();
+  // const seedService = useSeedService();
 
   const [loadingMessage, setLoadingMessage] = useState('Loading table...');
 

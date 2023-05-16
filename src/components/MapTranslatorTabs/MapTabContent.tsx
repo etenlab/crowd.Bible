@@ -89,7 +89,7 @@ export const MapTabContent = () => {
               batchWords,
             );
             createdWords.push(
-              ...(await singletons.graphThirdLayerService.createWordsWithLang(
+              ...(await singletons.wordService.createWordsWithLang(
                 batchWords.map((w) => w.trim()).filter((w) => w !== ''),
                 langInfo,
                 mapId,
@@ -108,14 +108,11 @@ export const MapTabContent = () => {
             status: eProcessStatus.COMPLETED,
           };
           try {
-            const mapId = await singletons.graphThirdLayerService.saveMap(
-              argMap.langInfo,
-              {
-                name: argMap.name!,
-                mapFileId: argMap.mapFileId!,
-                ext: 'svg',
-              },
-            );
+            const mapId = await singletons.mapService.saveMap(argMap.langInfo, {
+              name: argMap.name!,
+              mapFileId: argMap.mapFileId!,
+              ext: 'svg',
+            });
             if (mapId) {
               newState.id = mapId;
               processMapWords(argMap.words!, argMap.langInfo, mapId);
@@ -226,7 +223,7 @@ export const MapTabContent = () => {
   const setMapsByLang = useCallback(
     async (langInfo: LanguageInfo) => {
       if (!singletons) return;
-      const res = await singletons.graphThirdLayerService.getMaps(langInfo);
+      const res = await singletons.mapService.getMaps(langInfo);
       setMapList(
         res.map(
           (m) =>

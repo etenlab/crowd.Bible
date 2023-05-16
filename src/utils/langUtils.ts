@@ -1,9 +1,4 @@
-import {
-  Dialect,
-  Lang,
-  LanguageInfo,
-  Region,
-} from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { Dialect, Lang, LanguageInfo, Region } from '@eten-lab/ui-kit';
 import { PropertyKeyConst } from '../constants/graph.constant';
 import Tags from 'language-tags';
 // TODO: import from LangSelector when new version of ui-kit will be published
@@ -161,4 +156,20 @@ export const subTags2LangInfo = ({
   dialect && (langTag += '-' + dialect);
   langTag = Tags(langTag).format();
   return tag2langInfo(langTag);
+};
+
+export const compareLangInfo = (a: LanguageInfo, b: LanguageInfo): boolean => {
+  if (a.lang.tag !== b.lang.tag) {
+    return false;
+  }
+
+  if (a.dialect?.tag !== b.dialect?.tag) {
+    return false;
+  }
+
+  if (a.region?.tag !== b.region?.tag) {
+    return false;
+  }
+
+  return true;
 };

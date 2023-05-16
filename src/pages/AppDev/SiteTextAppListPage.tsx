@@ -6,12 +6,19 @@ import { CrowdBibleUI, PlusButton } from '@eten-lab/ui-kit';
 
 import { RouteConst } from '@/constants/route.constant';
 
-import { LanguageDto } from '@/dtos/language.dto';
+// import { LanguageDto } from '@/dtos/language.dto';
+import { AppDto } from '@/dtos/document.dto';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { useLanguage, MockApp } from '@/hooks/useLanguage';
+import { useDocument } from '@/hooks/useDocument';
+// import { useLanguage, MockApp } from '@/hooks/useLanguage';
 
-const { HeadBox, ButtonList } = CrowdBibleUI;
+// import { LanguageInfo } from '@eten-lab/ui-kit';
+
+import { LanguageSelectionBox } from '@/components/LanguageSelectionBox';
+
+const { ButtonList } = CrowdBibleUI;
+// const { HeadBox, ButtonList } = CrowdBibleUI;
 
 type ButtonListItemType = CrowdBibleUI.ButtonListItemType;
 
@@ -20,43 +27,44 @@ export function SiteTextAppListPage() {
   const {
     states: {
       global: { singletons },
-      documentTools: { sourceLanguage, targetLanguage },
+      // documentTools: { sourceLanguage, targetLanguage },
     },
-    actions: { setSourceLanguage, setTargetLanguage },
+    // actions: { setSourceLanguage, setTargetLanguage },
   } = useAppContext();
-  const { getLanguages, getMockAppList } = useLanguage();
 
-  const [appList, setAppList] = useState<MockApp[]>([]);
-  const [languageList, setLanguageList] = useState<LanguageDto[]>([]);
+  const { listApp } = useDocument();
+
+  const [appList, setAppList] = useState<AppDto[]>([]);
+  // const [languageList, setLanguageList] = useState<LanguageDto[]>([]);
 
   // Fetch language Lists from db
-  useEffect(() => {
-    if (singletons) {
-      getLanguages().then(setLanguageList);
-    }
-  }, [singletons, getLanguages]);
+  // useEffect(() => {
+  //   if (singletons) {
+  //     getLanguages().then(setLanguageList);
+  //   }
+  // }, [singletons, getLanguages]);
 
   // Fetch Mock App Lists from db
   useEffect(() => {
     if (singletons) {
-      getMockAppList().then(setAppList);
+      listApp().then(setAppList);
     }
-  }, [singletons, getMockAppList]);
+  }, [listApp, singletons]);
 
-  const handleSetSourceLanguage = (value: LanguageDto | null) => {
-    setSourceLanguage(value);
-  };
+  // const handleSetSourceLanguage = (value: LanguageInfo | null) => {
+  //   setSourceLanguage(value);
+  // };
 
-  const handleSetTargetLanguage = (value: LanguageDto | null) => {
-    setTargetLanguage(value);
-  };
+  // const handleSetTargetLanguage = (value: LanguageInfo | null) => {
+  //   setTargetLanguage(value);
+  // };
 
-  const handleClickBackBtn = () => {
-    history.goBack();
-  };
+  // const handleClickBackBtn = () => {
+  //   history.goBack();
+  // };
 
   const handleClickPlusBtn = () => {
-    console.log('Clicked Plus Btn');
+    alert('This button is in WIP');
   };
 
   const handleClickItem = (value: string) => {
@@ -72,7 +80,7 @@ export function SiteTextAppListPage() {
 
   return (
     <IonContent>
-      <HeadBox
+      {/* <HeadBox
         back={{ action: handleClickBackBtn }}
         title="Applications"
         languageSelector={{
@@ -82,13 +90,14 @@ export function SiteTextAppListPage() {
           onChangeSource: handleSetSourceLanguage,
           onChangeTarget: handleSetTargetLanguage,
         }}
-      />
+      /> */}
+      <LanguageSelectionBox />
       <ButtonList
         label="Select a chapter"
         withUnderline
         items={items}
         toolBtnGroup={
-          <PlusButton variant="primary" onClick={handleClickPlusBtn} disabled />
+          <PlusButton variant="primary" onClick={handleClickPlusBtn} />
         }
         onClick={handleClickItem}
       />

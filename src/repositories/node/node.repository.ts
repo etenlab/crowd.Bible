@@ -5,7 +5,12 @@ import { SyncService } from '@/services/sync.service';
 import { NodeType } from '@/src/models';
 import { Node } from '@/src/models';
 
-import { PropertyKeyConst } from '@/constants/graph.constant';
+import { NodeTypeConst, PropertyKeyConst } from '@/constants/graph.constant';
+export interface getNodesByTypeAndRelatedNodesParams {
+  type: NodeTypeConst;
+  from_node_id?: Nanoid;
+  to_node_id?: Nanoid;
+}
 
 export class NodeRepository {
   constructor(
@@ -126,7 +131,7 @@ export class NodeRepository {
 
     if (relationship) {
       if (relationship.from_node_id) {
-        relationsArray.push('toNodeRelationships');
+        relationsArray.push('fromNodeRelationships');
         whereObj.fromNodeRelationships = {};
         whereObj.fromNodeRelationships.from_node_id = relationship.from_node_id;
         if (relationship.relationship_type) {
@@ -215,6 +220,42 @@ export class NodeRepository {
         },
       },
     });
+  }
+
+  async getNodesByTypeAndRelatedNodes({
+    type,
+    from_node_id,
+    to_node_id,
+  }: getNodesByTypeAndRelatedNodesParams): Promise<Node[]> {
+    try {
+      const foundNodesQB = await this.repository
+        .createQueryBuilder('node')
+        .leftJoinAndSelect('node.propertyKeys', 'propertyKeys')
+        .leftJoinAndSelect('propertyKeys.propertyValue', 'propertyValue')
+        .leftJoinAndSelect('node.toNodeRelationships', 'toNodeRelationships')
+        .leftJoinAndSelect(
+          'node.fromNodeRelationships',
+          'fromNodeRelationships',
+        )
+        .where('node.node_type = :type', { type });
+
+      from_node_id &&
+        foundNodesQB.andWhere(
+          'fromNodeRelationships.from_node_id = :from_node_id',
+          {
+            from_node_id,
+          },
+        );
+
+      to_node_id &&
+        foundNodesQB.andWhere('toNodeRelationships.to_node_id = :to_node_id', {
+          to_node_id,
+        });
+      return foundNodesQB.getMany();
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to get nodes by type ${type}`);
+    }
   }
 
   async getNodePropertyValue(

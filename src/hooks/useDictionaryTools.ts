@@ -47,20 +47,18 @@ export function useDictionaryTools(
 
         switch (type) {
           case NodeTypeConst.WORD:
-            itemId =
-              await singletons.graphThirdLayerService.createWordOrPhraseWithLang(
-                itemText,
-                languageInfo,
-              );
+            itemId = await singletons.wordService.createWordOrPhraseWithLang(
+              itemText,
+              languageInfo,
+            );
             break;
           case NodeTypeConst.PHRASE:
-            itemId =
-              await singletons.graphThirdLayerService.createWordOrPhraseWithLang(
-                itemText,
-                languageInfo,
-                undefined,
-                NodeTypeConst.PHRASE,
-              );
+            itemId = await singletons.wordService.createWordOrPhraseWithLang(
+              itemText,
+              languageInfo,
+              undefined,
+              NodeTypeConst.PHRASE,
+            );
             break;
           default:
             alertFeedback('error', `can't add ${type} as votable item`);
@@ -95,7 +93,7 @@ export function useDictionaryTools(
       definitionService,
       setLoadingState,
       singletons?.definitionService,
-      singletons?.graphThirdLayerService,
+      singletons?.wordService,
       setItems,
       alertFeedback,
       itemsType,
