@@ -58,7 +58,6 @@ export function useDictionaryTools(
               await singletons.graphThirdLayerService.createWordOrPhraseWithLang(
                 itemText,
                 languageInfo,
-                undefined,
                 NodeTypeConst.PHRASE,
               );
             break;

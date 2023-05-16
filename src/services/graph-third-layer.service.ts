@@ -138,7 +138,6 @@ export class GraphThirdLayerService {
   async createWordOrPhraseWithLang(
     word: string,
     langInfo: LanguageInfo,
-    mapId?: Nanoid,
     nodeType: NodeTypeConst = NodeTypeConst.WORD,
   ): Promise<Nanoid> {
     const word_id = await this.getWordOrPhraseWithLang(word, langInfo);
@@ -160,14 +159,6 @@ export class GraphThirdLayerService {
       nodeType as string,
       wordNodeObject,
     );
-    if (mapId) {
-      await this.secondLayerService.createRelationshipFromObject(
-        RelationshipTypeConst.WORD_MAP,
-        {},
-        node.id,
-        mapId,
-      );
-    }
     return node.id;
   }
 
@@ -212,17 +203,32 @@ export class GraphThirdLayerService {
   async createWordsWithLang(
     words: string[],
     langInfo: LanguageInfo,
-    mapId?: Nanoid,
   ): Promise<Nanoid[]> {
     const wordNodesPromises = words.map((word) => {
       return this.createWordOrPhraseWithLang(
         word,
         langInfo,
-        mapId,
         NodeTypeConst.WORD,
       );
     });
     return Promise.all(wordNodesPromises);
+  }
+
+  async createWordsWithLangForMap(
+    words: string[],
+    langInfo: LanguageInfo,
+    mapId: Nanoid,
+  ): Promise<Nanoid[]> {
+    const wordNodeIds = await this.createWordsWithLang(words, langInfo);
+    for (const wordNodeId of wordNodeIds) {
+      await this.secondLayerService.createRelationshipFromObject(
+        RelationshipTypeConst.WORD_MAP,
+        {},
+        wordNodeId,
+        mapId,
+      );
+    }
+    return wordNodeIds;
   }
 
   async getWordsWithLang(langInfo: LanguageInfo): Promise<Node[] | null> {
@@ -239,10 +245,13 @@ export class GraphThirdLayerService {
     relationships: Array<RelationshipTypeConst>,
   ): Promise<Node[] | null> {
     const langSearchProps = makeFindPropsByLang(langInfo);
-    const nodes = await this.nodeRepo.getNodesByPropAndRelTypes(
+    const nodesIds = await this.nodeRepo.getNodesIdsByPropAndRelTypes(
       NodeTypeConst.WORD,
       langSearchProps,
       relationships,
+    );
+    const nodes = await this.firstLayerService.getNodesWithRelationshipsByIds(
+      nodesIds,
     );
     return nodes;
   }

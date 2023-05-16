@@ -157,11 +157,11 @@ export class NodeRepository {
     return node;
   }
 
-  async getNodesByPropAndRelTypes(
+  async getNodesIdsByPropAndRelTypes(
     nodeType: string,
     prop: { key: string; value: string }[],
     relationshipTypes: RelationshipTypeConst[],
-  ): Promise<Node[] | null> {
+  ): Promise<Nanoid[]> {
     const relationsArray = [
       'propertyKeys',
       'propertyKeys.propertyValue',
@@ -198,7 +198,7 @@ export class NodeRepository {
       ],
     });
 
-    return nodes;
+    return nodes.map((n) => n.id);
   }
 
   async getNodeIdsByProps(
@@ -249,10 +249,17 @@ export class NodeRepository {
     return nodes.map(({ node_id }) => node_id);
   }
 
-  async getNodesByIds(ids: Array<string>): Promise<Node[]> {
+  async getNodesByIds(
+    ids: Array<string>,
+    additionalRelations: Array<string> = [],
+  ): Promise<Node[]> {
     return this.repository.find({
       where: { id: In(ids) },
-      relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+      relations: [
+        'propertyKeys',
+        'propertyKeys.propertyValue',
+        ...additionalRelations,
+      ],
       select: {
         propertyKeys: {
           property_key: true,
