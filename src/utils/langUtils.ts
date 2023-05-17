@@ -163,9 +163,7 @@ export const subTags2LangInfo = ({
   return tag2langInfo(langTag);
 };
 
-export const wordProps2LangInfo = (
-  wordDto: Partial<WordDto> & { language: string },
-): LanguageInfo => {
+export const wordProps2LangInfo = (wordDto: WordDto): LanguageInfo => {
   return subTags2LangInfo({
     lang: wordDto.language,
     dialect: wordDto.dialect,

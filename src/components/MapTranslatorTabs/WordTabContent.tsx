@@ -19,7 +19,11 @@ import {
   StyledSectionTypography,
 } from './StyledComponents';
 import { arrowForwardOutline } from 'ionicons/icons';
-import { langInfo2String } from '../../utils/langUtils';
+import {
+  compareLangInfo,
+  langInfo2String,
+  wordProps2LangInfo,
+} from '../../utils/langUtils';
 import { WordMapper } from '../../mappers/word.mapper';
 import { useAppContext } from '../../hooks/useAppContext';
 
@@ -68,25 +72,10 @@ export const WordTabContent = () => {
                 [relationship.to_node_id],
               )
             )[0];
-
-            let isMatchesTargetLang = true;
             const translatedWord = WordMapper.entityToDto(translationNode);
-            isMatchesTargetLang =
-              isMatchesTargetLang &&
-              translatedWord[PropertyKeyConst.LANGUAGE_TAG] ===
-                targetLangInfo.lang.tag;
+            const translatedWordLangInfo = wordProps2LangInfo(translatedWord);
 
-            isMatchesTargetLang =
-              isMatchesTargetLang &&
-              (translatedWord[PropertyKeyConst.REGION_TAG] || undefined) ===
-                targetLangInfo.region?.tag;
-
-            isMatchesTargetLang =
-              isMatchesTargetLang &&
-              (translatedWord[PropertyKeyConst.DIALECT_TAG] || undefined) ===
-                targetLangInfo.dialect?.tag;
-
-            if (isMatchesTargetLang) {
+            if (compareLangInfo(translatedWordLangInfo, targetLangInfo)) {
               currWordItem.translations.push({
                 ...translatedWord,
                 isNew: false,
@@ -115,7 +104,8 @@ export const WordTabContent = () => {
       translationIdx: number,
     ) => {
       const w = [...words];
-      w[wordIdx].translations![translationIdx].name = e.target.value;
+      w[wordIdx].translations![translationIdx][PropertyKeyConst.WORD] =
+        e.target.value;
       setWords(w);
     },
     [words],
@@ -124,7 +114,12 @@ export const WordTabContent = () => {
   const addEmptyTranslation = useCallback(
     (wordIdx: number) => {
       const w = [...words];
-      const emptyTranslation = { id: '', word: '', isNew: true };
+      const emptyTranslation = {
+        id: '',
+        word: '',
+        language: '',
+        isNew: true,
+      };
       if (w[wordIdx].translations) {
         w[wordIdx].translations?.push(emptyTranslation);
       } else {
@@ -276,7 +271,7 @@ export const WordTabContent = () => {
                                   ? ''
                                   : 'Already in target language'
                               }
-                              value={translation.name}
+                              value={translation[PropertyKeyConst.WORD]}
                               onChange={(e) =>
                                 handleTranslationChange(e, idx, tIdx)
                               }
