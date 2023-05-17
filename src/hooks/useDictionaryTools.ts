@@ -56,7 +56,6 @@ export function useDictionaryTools(
             itemId = await singletons.wordService.createWordOrPhraseWithLang(
               itemText,
               languageInfo,
-              undefined,
               NodeTypeConst.PHRASE,
             );
             break;

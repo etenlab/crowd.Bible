@@ -5,7 +5,11 @@ import { SyncService } from '@/services/sync.service';
 import { NodeType } from '@/src/models';
 import { Node } from '@/src/models';
 
-import { NodeTypeConst, PropertyKeyConst } from '@/constants/graph.constant';
+import {
+  NodeTypeConst,
+  PropertyKeyConst,
+  RelationshipTypeConst,
+} from '@/constants/graph.constant';
 export interface getNodesByTypeAndRelatedNodesParams {
   type: NodeTypeConst;
   from_node_id?: Nanoid;
@@ -159,6 +163,50 @@ export class NodeRepository {
     return node;
   }
 
+  async getNodesIdsByPropAndRelTypes(
+    nodeType: string,
+    prop: { key: string; value: string }[],
+    relationshipTypes: RelationshipTypeConst[],
+  ): Promise<Nanoid[]> {
+    const relationsArray = [
+      'propertyKeys',
+      'propertyKeys.propertyValue',
+      'toNodeRelationships',
+      'toNodeRelationships.relationshipType',
+      'fromNodeRelationships',
+      'fromNodeRelationships.relationshipType',
+    ];
+
+    const propertyKeyValueArray = prop.map(({ key, value }) => ({
+      property_key: key,
+      propertyValue: {
+        property_value: JSON.stringify({ value }),
+      },
+    }));
+
+    const nodes = await this.repository.find({
+      relations: relationsArray,
+      where: [
+        {
+          node_type: nodeType,
+          propertyKeys: propertyKeyValueArray,
+          toNodeRelationships: {
+            relationshipType: In(relationshipTypes),
+          },
+        },
+        {
+          node_type: nodeType,
+          propertyKeys: propertyKeyValueArray,
+          fromNodeRelationships: {
+            relationshipType: In(relationshipTypes),
+          },
+        },
+      ],
+    });
+
+    return nodes.map((n) => n.id);
+  }
+
   async getNodeIdsByProps(
     type: string,
     props: { key: string; value: unknown }[],
@@ -207,10 +255,17 @@ export class NodeRepository {
     return nodes.map(({ node_id }) => node_id);
   }
 
-  async getNodesByIds(ids: Array<string>): Promise<Node[]> {
+  async getNodesByIds(
+    ids: Array<string>,
+    additionalRelations: Array<string> = [],
+  ): Promise<Node[]> {
     return this.repository.find({
       where: { id: In(ids) },
-      relations: ['propertyKeys', 'propertyKeys.propertyValue'],
+      relations: [
+        'propertyKeys',
+        'propertyKeys.propertyValue',
+        ...additionalRelations,
+      ],
       select: {
         propertyKeys: {
           property_key: true,
@@ -281,6 +336,8 @@ export class NodeRepository {
     const propertyIdx = nodeEntity.propertyKeys.findIndex(
       (pk) => pk.property_key === propertyName,
     );
+
+    if (propertyIdx < 0) return null;
 
     const resJson =
       nodeEntity.propertyKeys[propertyIdx].propertyValue.property_value;

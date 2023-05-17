@@ -1,4 +1,5 @@
 import {
+  MainKeyName,
   NodeTypeConst,
   PropertyKeyConst,
   RelationshipTypeConst,
@@ -284,18 +285,19 @@ export class DefinitionService {
    * From the other hand, VotableItem have own content(not contents!) witch represent item's own value(i.e. word by itself)
    * this item's own content also can be voted, but it isn't connected to anything, we dont care if they have any relation to any ElectionId.
    * Note: Here we vote on word by itself (not relation)
-   * @param langNodeId
+   * @param languageInfo
+   * @param type: NodeTypeConst.WORD | NodeTypeConst.PHRASE, you can add other NodeTypeConst's if you specify for them MainKeyName
    * @returns
    */
   async getVotableItems(
     languageInfo: LanguageInfo,
-    type: NodeTypeConst,
+    type: NodeTypeConst.WORD | NodeTypeConst.PHRASE,
     customPropValues?: [{ key: string; value: string }],
   ): Promise<Array<VotableItem>> {
     const itemContents = await this.getSelfVotableContentByLang(
       type,
       languageInfo,
-      PropertyKeyConst.WORD,
+      MainKeyName[type],
       customPropValues,
     );
 

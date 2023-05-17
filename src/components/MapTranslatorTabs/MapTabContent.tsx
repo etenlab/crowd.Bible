@@ -19,7 +19,6 @@ const { Box, styled, CircularProgress } = MuiMaterial;
 
 const PADDING = 20;
 
-//#region types
 enum eProcessStatus {
   NONE = 'NONE',
   PARSING_STARTED = 'PARSING_STARTED',
@@ -39,15 +38,10 @@ type MapDetail = {
   tempId?: string;
   status: eProcessStatus;
   words?: string[];
-  // map?: string;
   mapFileId?: string;
   name?: string;
   langInfo: LanguageInfo;
 };
-//#endregion
-
-//#region data
-//#endregion
 
 export const MapTabContent = () => {
   const {
@@ -70,7 +64,7 @@ export const MapTabContent = () => {
         const processMapWords = async (
           words: string[],
           langInfo: LanguageInfo,
-          mapId?: string,
+          mapId: string,
         ) => {
           if (!singletons || !words.length || !langInfo) return;
           let hasNextBatch = true;
@@ -89,7 +83,7 @@ export const MapTabContent = () => {
               batchWords,
             );
             createdWords.push(
-              ...(await singletons.wordService.createWordsWithLang(
+              ...(await singletons.wordService.createWordsWithLangForMap(
                 batchWords.map((w) => w.trim()).filter((w) => w !== ''),
                 langInfo,
                 mapId,
@@ -409,8 +403,6 @@ function iterateOverINode(
   }
 }
 
-//#region styled component
-
 const StyledBox = styled(Box)(() => ({
   width: '100%',
   display: 'flex',
@@ -418,4 +410,3 @@ const StyledBox = styled(Box)(() => ({
   justifyContent: 'space-between',
   padding: '15px 0px',
 }));
-//#endregion
