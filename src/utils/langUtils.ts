@@ -171,7 +171,12 @@ export const wordProps2LangInfo = (wordDto: WordDto): LanguageInfo => {
   });
 };
 
-export const compareLangInfo = (a: LanguageInfo, b: LanguageInfo): boolean => {
+export const compareLangInfo = (
+  a: LanguageInfo | null | undefined,
+  b: LanguageInfo | null | undefined,
+): boolean => {
+  if (a === b) return true; // case both null or both undefined
+  if (!a || !b) return false; // case one of them null or undefined
   if (a.lang.tag !== b.lang.tag) {
     return false;
   }

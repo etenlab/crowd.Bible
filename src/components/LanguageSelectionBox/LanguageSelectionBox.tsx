@@ -7,6 +7,7 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { compareLangInfo } from '../../utils/langUtils';
 
 const { Stack } = MuiMaterial;
 
@@ -23,6 +24,7 @@ export function LanguageSelectionBox() {
     _langTag: string,
     selected: LanguageInfo,
   ) => {
+    if (compareLangInfo(selected, sourceLanguage)) return;
     setSourceLanguage(selected);
   };
 
@@ -30,6 +32,7 @@ export function LanguageSelectionBox() {
     _langTag: string,
     selected: LanguageInfo,
   ) => {
+    if (compareLangInfo(selected, targetLanguage)) return;
     setTargetLanguage(selected);
   };
 
