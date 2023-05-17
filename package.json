@@ -2,6 +2,9 @@
   "name": "crowd-bible",
   "version": "0.0.1",
   "private": true,
+  "devServer": {
+    "historyApiFallback": true
+  },
   "dependencies": {
     "@apollo/client": "^3.7.11",
     "@capacitor/app": "4.1.1",
