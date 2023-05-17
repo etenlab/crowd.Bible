@@ -1,14 +1,15 @@
 name: Playwright Tests
 on:
-  pull_request:
-    branches: [feat/playwrite-workflow]
-    types: [closed]
-
+  # pull_request:
+  #   branches: [feat/playwrite-workflow]
+  #   types: [closed]
+  push:
+    branches: [feat/playwright-workflow]
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
 
     steps:
       - uses: actions/checkout@v3
@@ -42,11 +43,17 @@ jobs:
       - name: npm ci --force
         run: npm ci --force
       
-      - name: npm start
-        run: npm start
+      - name: Start React app
+        run: |
+          npm start &
+
+      - name: Wait for server to start up
+        run: |
+          npx wait-on http://localhost:3000/home
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: |
+          npx playwright test
 
       - name: Merge pull request
         if: success()
