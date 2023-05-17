@@ -34,7 +34,7 @@ jobs:
         run: |
           cat << EOF > .env
           ${{ env.ENV }}
-          CI=false
+          CI=true
           NODE_OPTIONS=--max-old-space-size=4096
           EOF
 
