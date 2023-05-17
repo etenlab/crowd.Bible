@@ -47,7 +47,7 @@ export const WordTabContent = () => {
     ): Promise<Item[]> => {
       if (!singletons) return [];
       const wordNodes =
-        await singletons.graphThirdLayerService.getWordsWithLangAndRelationships(
+        await singletons.wordService.getWordsWithLangAndRelationships(
           sourceLangInfo,
           [RelationshipTypeConst.WORD_MAP],
         );
@@ -124,7 +124,7 @@ export const WordTabContent = () => {
   const addEmptyTranslation = useCallback(
     (wordIdx: number) => {
       const w = [...words];
-      const emptyTranslation = { id: '', name: '', isNew: true };
+      const emptyTranslation = { id: '', word: '', isNew: true };
       if (w[wordIdx].translations) {
         w[wordIdx].translations?.push(emptyTranslation);
       } else {
@@ -146,12 +146,12 @@ export const WordTabContent = () => {
       for (const translation of word.translations || []) {
         if (!translation.isNew) continue;
         const translationWordId =
-          await singletons.graphThirdLayerService.createWordOrPhraseWithLang(
-            translation.name,
+          await singletons.wordService.createWordOrPhraseWithLang(
+            translation.word,
             targetLangInfo!,
             NodeTypeConst.WORD,
           );
-        await singletons.graphThirdLayerService.createWordTranslationRelationship(
+        await singletons.wordService.createWordTranslationRelationship(
           word.id,
           translationWordId,
         );
@@ -260,7 +260,7 @@ export const WordTabContent = () => {
                 >
                   <Box flex={1} alignSelf={'flex-start'}>
                     <Typography variant="subtitle1" fontWeight={400}>
-                      {word.name}
+                      {word.word}
                     </Typography>
                   </Box>
                   <Box flex={1} alignSelf={'flex-start'}>
