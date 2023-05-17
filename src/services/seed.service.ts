@@ -86,44 +86,4 @@ export class SeedService {
       Math.random().toString(36).substring(2, 10),
     );
   }
-
-  // No lang nodes are needed anymore
-  //
-  // async seedLanguages(langs?: string[]) {
-  //   try {
-  //     const langNodes = await this.nodeRepository.repository.find({
-  //       relations: ['propertyKeys', 'propertyKeys.propertyValue'],
-  //       where: {
-  //         node_type: 'language',
-  //       },
-  //     });
-
-  //     if (langNodes.length) return;
-
-  //     let langList = langs && langs.length > 0 ? langs : [];
-  //     if (!langList.length) {
-  //       langList = randomLangTags(10);
-  //     }
-
-  //     for (const lang of langList) {
-  //       const langNode = await this.nodeRepository.createNode('language');
-  //       for (const [key, value] of Object.entries({ name: lang })) {
-  //         const property_key_id =
-  //           await this.nodePropertyKeyRepository.getNodePropertyKey(
-  //             langNode.id,
-  //             key,
-  //           );
-  //         if (property_key_id) {
-  //           await this.nodePropertyValueRepository.setNodePropertyValue(
-  //             property_key_id,
-  //             value,
-  //           );
-  //         }
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error('failed to seed languages::', error);
-  //     throw new Error('failed to seed languages');
-  //   }
-  // }
 }

@@ -7,6 +7,7 @@ import {
   PropertyKeyConst,
   NodeTypeConst,
   RelationshipTypeConst,
+  MainKeyName,
 } from '@/constants/graph.constant';
 
 import { Node, Relationship } from '@/src/models';
@@ -14,7 +15,6 @@ import { Node, Relationship } from '@/src/models';
 import { WordDto } from '@/dtos/word.dto';
 import { WordMapper } from '@/mappers/word.mapper';
 
-import { CreateWordDto } from '@/dtos/create-word.dto';
 import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 
 import { NodeRepository } from '@/repositories/node/node.repository';
@@ -151,28 +151,28 @@ export class WordService {
   }
 
   async createWordOrPhraseWithLang(
-    word: string,
+    value: string,
     langInfo: LanguageInfo,
-    nodeType: NodeTypeConst = NodeTypeConst.WORD,
+    nodeType: NodeTypeConst.WORD | NodeTypeConst.PHRASE = NodeTypeConst.WORD,
   ): Promise<Nanoid> {
-    const word_id = await this.getWordOrPhraseWithLang(word, langInfo);
+    const word_id = await this.getWordOrPhraseWithLang(value, langInfo);
     if (word_id) {
       return word_id;
     }
-    const wordNodeObject: CreateWordDto = {
-      [PropertyKeyConst.WORD]: word,
+    const nodeObj = {
+      [MainKeyName[nodeType]]: value,
       [PropertyKeyConst.LANGUAGE_TAG]: langInfo.lang.tag,
     };
     if (langInfo.dialect?.tag) {
-      wordNodeObject[PropertyKeyConst.DIALECT_TAG] = langInfo.dialect?.tag;
+      nodeObj[PropertyKeyConst.DIALECT_TAG] = langInfo.dialect?.tag;
     }
     if (langInfo.region?.tag) {
-      wordNodeObject[PropertyKeyConst.REGION_TAG] = langInfo.region?.tag;
+      nodeObj[PropertyKeyConst.REGION_TAG] = langInfo.region?.tag;
     }
 
     const node = await this.graphSecondLayerService.createNodeFromObject(
       nodeType as string,
-      wordNodeObject,
+      nodeObj,
     );
     return node.id;
   }
@@ -180,11 +180,11 @@ export class WordService {
   async getWordOrPhraseWithLang(
     word: string,
     languageInfo: LanguageInfo,
-    nodeType: NodeTypeConst = NodeTypeConst.WORD,
+    nodeType: NodeTypeConst.WORD | NodeTypeConst.PHRASE = NodeTypeConst.WORD,
   ): Promise<Nanoid | null> {
     const wordSearchProps = [
       {
-        key: PropertyKeyConst.WORD,
+        key: MainKeyName[nodeType],
         value: word,
       },
       {

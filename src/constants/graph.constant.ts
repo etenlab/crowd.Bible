@@ -104,3 +104,8 @@ export enum PropertyKeyConst {
   DIALECT_TAG = 'dialect',
   REGION_TAG = 'region',
 }
+
+export const MainKeyName = {
+  [NodeTypeConst.WORD]: PropertyKeyConst.WORD,
+  [NodeTypeConst.PHRASE]: PropertyKeyConst.PHRASE,
+};

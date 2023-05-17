@@ -337,6 +337,8 @@ export class NodeRepository {
       (pk) => pk.property_key === propertyName,
     );
 
+    if (propertyIdx < 0) return null;
+
     const resJson =
       nodeEntity.propertyKeys[propertyIdx].propertyValue.property_value;
     const res = JSON.parse(resJson).value;
