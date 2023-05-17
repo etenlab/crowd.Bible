@@ -1,9 +1,13 @@
-import { Dialect, Lang, LanguageInfo, Region } from '@eten-lab/ui-kit';
+import {
+  DESCRIPTIONS_JOINER,
+  Dialect,
+  Lang,
+  LanguageInfo,
+  Region,
+} from '@eten-lab/ui-kit';
 import { PropertyKeyConst } from '../constants/graph.constant';
 import Tags from 'language-tags';
 import { WordDto } from '../dtos/word.dto';
-// TODO: import from LangSelector when new version of ui-kit will be published
-export const DESCRIPTIONS_JOINER = '/';
 
 enum TagTypes {
   LANGUAGE = 'language',
