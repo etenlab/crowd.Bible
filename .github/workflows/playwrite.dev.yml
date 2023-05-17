@@ -4,7 +4,8 @@ on:
   #   branches: [feat/playwrite-workflow]
   #   types: [closed]
   push:
-    branches: [feat/playwright-workflow]
+    branches:
+      - feat/playwrite-workflow
 jobs:
   test:
     timeout-minutes: 60
