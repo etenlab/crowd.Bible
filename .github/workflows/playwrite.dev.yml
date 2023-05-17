@@ -48,10 +48,6 @@ jobs:
         run: |
           npm start &
 
-      - name: Wait for server to start up
-        run: |
-          npx wait-on http://localhost:3000/home
-
       - name: Run Playwright tests
         run: |
           npx playwright test
