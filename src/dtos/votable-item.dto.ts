@@ -7,8 +7,6 @@ export interface Votable {
 export interface VotableContent extends Votable {
   id: Nanoid | null;
   content: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  details?: any;
 }
 
 export interface VotableItem {

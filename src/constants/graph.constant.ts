@@ -20,13 +20,6 @@ export enum NodeTypeConst {
   MAP = 'map',
   WORD = 'word',
   WORD_SEQUENCE = 'word-sequence',
-
-  /**
-   * @deprecated Check and remove
-   */
-  LANGUAGE = 'language',
-  // MAP_LANG = 'map-language',
-
   /**
    * @deprecated
    */
@@ -43,19 +36,10 @@ export enum RelationshipTypeConst {
   TABLE_COLUMN_TO_CELL = 'table-column-to-cell',
   TABLE_ROW_TO_CELL = 'table-row-to-cell',
 
-  /**
-   * @deprecated Check and remove
-   */
-  WORD_TO_LANG = 'word-to-language-entry',
-
   WORD_MAP = 'word-map',
   WORD_TO_TRANSLATION = 'word-to-translation',
 
   WORD_SEQUENCE_TO_WORD = 'word-sequence-to-word',
-  /**
-   * @deprecated Check and remove
-   */
-  WORD_SEQUENCE_TO_LANGUAGE_ENTRY = 'word-sequence-to-language-entry',
   WORD_SEQUENCE_TO_DOCUMENT = 'word-sequence-to-document',
   WORD_SEQUENCE_TO_CREATOR = 'word-sequence-to-creator',
   WORD_SEQUENCE_TO_WORD_SEQUENCE = 'word-sequence-to-word-sequence',
@@ -64,10 +48,6 @@ export enum RelationshipTypeConst {
 
   WORD_TO_DEFINITION = 'word-to-definition',
   PHRASE_TO_DEFINITION = 'phrase-to-definition',
-  /**
-   * @deprecated Check and remove
-   */
-  // PHRASE_TO_LANG = 'phrase-to-language-entry',
 }
 
 export enum PropertyKeyConst {
@@ -87,11 +67,6 @@ export enum PropertyKeyConst {
   DOCUMENT_ID = 'document_id',
   POSITION = 'position',
   LENGTH = 'length',
-
-  /**
-   * @deprecated Check and remove
-   */
-  LANGUAGE_ID = 'language_id',
 
   ORIGINAL_WORD_SEQUENCE_ID = 'original-word-sequence-id',
   DEFINITION = 'definition',
