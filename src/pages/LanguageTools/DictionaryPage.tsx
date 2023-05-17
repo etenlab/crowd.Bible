@@ -10,10 +10,10 @@ import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
-import { useAppContext } from '../../hooks/useAppContext';
-import { VotableItem } from '../../dtos/votable-item.dto';
-import { useDictionaryTools } from '../../hooks/useDictionaryTools';
-import { NodeTypeConst } from '../../constants/graph.constant';
+import { useAppContext } from '@/hooks/useAppContext';
+import { VotableItem } from '@/dtos/votable-item.dto';
+import { useDictionaryTools } from '@/hooks/useDictionaryTools';
+import { NodeTypeConst } from '@/constants/graph.constant';
 const { Box, Divider } = MuiMaterial;
 
 const {

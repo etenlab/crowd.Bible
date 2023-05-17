@@ -148,7 +148,7 @@ export class TableService {
         value,
         NodeTypeConst.TABLE_CELL_PSEUDO,
       );
-      election = await this.votingService.createElection(
+      election = await this.votingService.createOrFindElection(
         ElectionTypeConst.TABLE_CELL,
         pseudo_cell_id,
         'nodes',

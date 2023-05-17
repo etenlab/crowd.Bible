@@ -16,11 +16,16 @@ export class ElectionRepository {
     return this.dbService.dataSource.getRepository(Election);
   }
 
-  async createElection(
+  async createOrFindElection(
     election_type: ElectionTypeConst,
     election_ref: Nanoid,
     ref_table_name: string,
     candidate_ref_table_name: string,
+    options?: {
+      appId?: Nanoid;
+      siteText?: boolean;
+      siteTextTranslation?: boolean;
+    },
   ): Promise<Election> {
     const electionType = await this.dbService.dataSource
       .getRepository(ElectionType)
@@ -48,6 +53,9 @@ export class ElectionRepository {
       election_ref,
       ref_table_name,
       candidate_ref_table_name,
+      app: options?.appId,
+      site_text: options?.siteText,
+      site_text_translation: options?.siteTextTranslation,
       sync_layer: this.syncService.syncLayer,
     });
 
@@ -62,11 +70,39 @@ export class ElectionRepository {
     election_type: ElectionTypeConst,
     election_ref: Nanoid,
     ref_table_name: string,
+    options?: {
+      appId?: Nanoid;
+      siteText?: boolean;
+      siteTextTranslation?: boolean;
+    },
   ): Promise<Election | null> {
     return this.repository.findOneBy({
       election_type,
       election_ref,
       ref_table_name,
+      app: options?.appId,
+      site_text: options?.siteText,
+      site_text_translation: options?.siteTextTranslation,
     });
+  }
+
+  async getSiteTextElectionList({
+    appId,
+    siteText,
+    siteTextTranslation,
+  }: {
+    appId: string;
+    siteText?: boolean;
+    siteTextTranslation?: boolean;
+  }): Promise<Election[]> {
+    const elections = await this.repository.find({
+      where: {
+        app: appId,
+        site_text: siteText,
+        site_text_translation: siteTextTranslation,
+      },
+    });
+
+    return elections;
   }
 }

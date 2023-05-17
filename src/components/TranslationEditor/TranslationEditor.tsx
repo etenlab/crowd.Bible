@@ -13,12 +13,13 @@ import {
 import { Link } from '@/components/Link';
 
 import { useWordSequence } from '@/hooks/useWordSequence';
-import { useVote } from '@/hooks/useVote';
+import { useTranslation } from '@/hooks/useTranslation';
+// import { useVote } from '@/hooks/useVote';
 
 import { WordSequenceDto } from '@/dtos/word-sequence.dto';
 
-import { ElectionTypeConst } from '@/constants/voting.constant';
-import { TableNameConst } from '@/constants/table-name.constant';
+// import { ElectionTypeConst } from '@/constants/voting.constant';
+// import { TableNameConst } from '@/constants/table-name.constant';
 
 const { Box } = MuiMaterial;
 
@@ -40,18 +41,21 @@ export function TranslationEditor({
   documentId,
 }: TranslationEditorProps) {
   const history = useHistory();
-  const { createTranslation, createSubWordSequence } = useWordSequence();
-  const { createElection, addCandidate, getElectionByRef } = useVote();
   const { getColor } = useColorModeContext();
+
+  const { createSubWordSequence } = useWordSequence();
+  const { createOrFindWordSequenceTranslation } = useTranslation();
+  // const { createOrFindElection, addCandidate, getElectionByRef } = useVote();
+
   const [text, setText] = useState<string>('');
 
   const handleSaveTranslation = async () => {
     let subWordSequenceId: Nanoid;
-    let electionId: Nanoid;
+    // let electionId: Nanoid;
 
     if (typeof subWordSequence !== 'string') {
       const wordSequenceId = await createSubWordSequence(
-        subWordSequence.origin,
+        subWordSequence.origin.id,
         subWordSequence.range,
       );
 
@@ -59,43 +63,46 @@ export function TranslationEditor({
         return;
       }
 
-      const tmpElection = await createElection(
-        ElectionTypeConst.TRANSLATION,
-        wordSequenceId,
-        TableNameConst.NODES,
-        TableNameConst.NODES,
-      );
+      // const tmpElection = await createOrFindElection(
+      //   ElectionTypeConst.TRANSLATION,
+      //   wordSequenceId,
+      //   TableNameConst.NODES,
+      //   TableNameConst.NODES,
+      // );
 
-      if (!tmpElection) {
-        return;
-      }
+      // if (!tmpElection) {
+      //   return;
+      // }
 
-      electionId = tmpElection.id;
+      // electionId = tmpElection.id;
 
       subWordSequenceId = wordSequenceId;
     } else {
       subWordSequenceId = subWordSequence;
 
-      const tmpElection = await getElectionByRef(
-        ElectionTypeConst.TRANSLATION,
-        subWordSequenceId,
-        TableNameConst.NODES,
-      );
+      // const tmpElection = await getElectionByRef(
+      //   ElectionTypeConst.TRANSLATION,
+      //   subWordSequenceId,
+      //   TableNameConst.NODES,
+      // );
 
-      if (!tmpElection) {
-        return;
-      }
+      // if (!tmpElection) {
+      //   return;
+      // }
 
-      electionId = tmpElection.id;
+      // electionId = tmpElection.id;
     }
 
-    const translationId = await createTranslation(subWordSequenceId, text);
+    const translationId = await createOrFindWordSequenceTranslation(
+      subWordSequenceId,
+      {
+        text,
+      },
+    );
 
     if (!translationId) {
       return;
     }
-
-    await addCandidate(electionId, translationId);
 
     history.push(`/translation/${documentId}`);
   };

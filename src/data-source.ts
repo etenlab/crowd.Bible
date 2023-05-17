@@ -20,8 +20,6 @@ import {
   Election,
   Candidate,
   Vote,
-  SiteText,
-  SiteTextTranslation,
 } from '@/models/index';
 import initSqlJs, { SqlJsStatic } from 'sql.js';
 import localforage from 'localforage';
@@ -86,8 +84,6 @@ const options: SqljsConnectionOptions = {
     Election,
     Candidate,
     Vote,
-    SiteText,
-    SiteTextTranslation,
     SyncSession,
   ],
   migrations: ['migrations/*.ts'],

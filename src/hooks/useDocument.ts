@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 
+import { LanguageInfo } from '@eten-lab/ui-kit';
+
 export function useDocument() {
   const {
     states: {
@@ -17,7 +19,7 @@ export function useDocument() {
 
     try {
       setLoadingState(true);
-      const result = await singletons.graphThirdLayerService.listDocument();
+      const result = await singletons.documentService.listDocument();
       setLoadingState(false);
       return result;
     } catch (err) {
@@ -42,9 +44,7 @@ export function useDocument() {
 
       try {
         setLoadingState(true);
-        const result = await singletons.graphThirdLayerService.getDocument(
-          name,
-        );
+        const result = await singletons.documentService.getDocument(name);
         setLoadingState(false);
         return result;
       } catch (err) {
@@ -57,7 +57,7 @@ export function useDocument() {
     [singletons, alertFeedback, setLoadingState],
   );
 
-  const createDocument = useCallback(
+  const createOrFindDocument = useCallback(
     async (name: string) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at createDocument');
@@ -71,7 +71,7 @@ export function useDocument() {
 
       try {
         setLoadingState(true);
-        const document = await singletons.graphThirdLayerService.getDocument(
+        const document = await singletons.documentService.getDocument(
           name.trim(),
         );
 
@@ -80,7 +80,104 @@ export function useDocument() {
           alertFeedback('warning', 'Already exists a document with same name!');
           return null;
         }
-        const result = await singletons.graphThirdLayerService.createDocument(
+        const result = await singletons.documentService.createOrFindDocument(
+          name,
+        );
+
+        setLoadingState(false);
+        alertFeedback('success', 'Created a new document!');
+
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
+  /**
+   * @deprecated
+   */
+  const listApp = useCallback(async () => {
+    if (!singletons) {
+      alertFeedback('error', 'Internal Error! at listApp');
+      return [];
+    }
+
+    try {
+      setLoadingState(true);
+      const result = await singletons.documentService.listApp();
+      setLoadingState(false);
+      return result;
+    } catch (err) {
+      console.log(err);
+      setLoadingState(false);
+      alertFeedback('error', 'Internal Error!');
+      return [];
+    }
+  }, [singletons, alertFeedback, setLoadingState]);
+
+  /**
+   * @deprecated
+   */
+  const getApp = useCallback(
+    async (name: string) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at getApp');
+        return null;
+      }
+
+      if (name.trim() === '') {
+        alertFeedback('warning', 'Document name cannot be empty string!');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.documentService.getApp(name);
+        setLoadingState(false);
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
+  /**
+   * @deprecated
+   */
+  const createOrFindApp = useCallback(
+    async (name: string, languageInfo: LanguageInfo) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at createApp');
+        return null;
+      }
+
+      if (name.trim() === '') {
+        alertFeedback('warning', 'App name cannot be empty string!');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const document = await singletons.documentService.createOrFindApp(
+          name.trim(),
+          languageInfo,
+        );
+
+        if (document) {
+          setLoadingState(false);
+          alertFeedback('warning', 'Already exists a document with same name!');
+          return null;
+        }
+        const result = await singletons.documentService.createOrFindDocument(
           name,
         );
 
@@ -99,8 +196,11 @@ export function useDocument() {
   );
 
   return {
-    createDocument,
+    createOrFindDocument,
     listDocument,
     getDocument,
+    createOrFindApp,
+    listApp,
+    getApp,
   };
 }

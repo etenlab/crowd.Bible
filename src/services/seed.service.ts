@@ -6,7 +6,6 @@ import { type RelationshipPropertyKeyRepository } from '@/repositories/relations
 import { type RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
 import { type RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
 import { type RelationshipRepository } from '@/repositories/relationship/relationship.repository';
-import { randomLangTags } from '../utils/langUtils';
 
 const DATA_SEEDED = 'DATA_SEEDED';
 export class SeedService {
@@ -65,10 +64,11 @@ export class SeedService {
       relationshipType,
     );
 
-    const nodePropKey = await this.nodePropertyKeyRepository.getNodePropertyKey(
-      node1.id,
-      Math.random().toString(36).substring(2, 10),
-    );
+    const nodePropKey =
+      await this.nodePropertyKeyRepository.createNodePropertyKey(
+        node1.id,
+        Math.random().toString(36).substring(2, 10),
+      );
 
     await this.nodePropertyValueRepository.setNodePropertyValue(
       nodePropKey,
@@ -76,7 +76,7 @@ export class SeedService {
     );
 
     const relationshipPropKey =
-      await this.relationshipPropertyKeyRepository.getRelationshipPropertyKey(
+      await this.relationshipPropertyKeyRepository.createRelationshipPropertyKey(
         relationship!.id,
         Math.random().toString(36).substring(2, 10),
       );

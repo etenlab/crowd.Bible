@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import {
   Tabs,
@@ -15,10 +15,14 @@ import {
 import { Link } from '@/components/Link';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { useWordSequence } from '@/src/hooks/useWordSequence';
-import { useVote } from '@/src/hooks/useVote';
+import { useWordSequence } from '@/hooks/useWordSequence';
+import { useVote } from '@/hooks/useVote';
+import { useTranslation } from '@/hooks/useTranslation';
 
-import { WordSequenceWithVote } from '@/dtos/word-sequence.dto';
+import {
+  WordSequenceDto,
+  WordSequenceTranslationDto,
+} from '@/dtos/word-sequence.dto';
 
 const { Stack, Divider, IconButton } = MuiMaterial;
 
@@ -51,18 +55,44 @@ function Voting({
 function Translation({
   translation,
   isCheckbox,
-  onChangeVote,
-}: {
-  translation: WordSequenceWithVote;
+}: // onChangeVote,
+{
+  translation: WordSequenceTranslationDto;
   isCheckbox: boolean;
-  onChangeVote: (translationId: Nanoid, candidateId: Nanoid) => void;
+  // onChangeVote: (translationId: Nanoid, candidateId: Nanoid) => void;
 }) {
-  const { id, wordSequence, vote } = translation;
+  const { translationId, upVotes, downVotes, candidateId } = translation;
 
   const { getColor } = useColorModeContext();
+  const { getWordSequenceById } = useWordSequence();
+  const {
+    states: {
+      global: { singletons },
+    },
+  } = useAppContext();
+
+  const [translatedWordSequence, setTranslatedWordSequence] =
+    useState<WordSequenceDto | null>(null);
+
+  const reloadTranslation = useCallback(async () => {
+    if (!singletons) {
+      return;
+    }
+
+    const wordSequence = await getWordSequenceById(translationId);
+    setTranslatedWordSequence(wordSequence);
+  }, [singletons, translationId, getWordSequenceById]);
+
+  useEffect(() => {
+    reloadTranslation();
+  }, [reloadTranslation]);
 
   const handleClickDiscussionButton = () => {
     // history.push(`/discussion/table-name/${text}/row/${id}`);
+  };
+
+  const handleChangeVote = () => {
+    reloadTranslation();
   };
 
   const checkbox = isCheckbox ? <Checkbox sx={{ marginLeft: '-9px' }} /> : null;
@@ -80,7 +110,7 @@ function Translation({
             variant="body3"
             sx={{ padding: '9px 0', color: getColor('dark') }}
           >
-            {wordSequence}
+            {translatedWordSequence?.text || 'No Translation Exists'}
           </Typography>
           <Stack
             direction="row"
@@ -88,8 +118,12 @@ function Translation({
             alignItems="center"
           >
             <Voting
-              vote={vote}
-              onChangeVote={() => onChangeVote(id, vote.candidateId)}
+              vote={{
+                candidateId,
+                upVotes,
+                downVotes,
+              }}
+              onChangeVote={handleChangeVote}
             />
 
             <IconButton onClick={handleClickDiscussionButton}>
@@ -122,20 +156,16 @@ export function TranslationList({
   wordSequenceId,
   isCheckbox = true,
 }: TranslationListProps) {
-  const {
-    listTranslationsByDocumentId,
-    listTranslationsByWordSequenceId,
-    listMyTranslationsByDocumentId,
-    listMyTranslationsByWordSequenceId,
-  } = useWordSequence();
-  const { getVotesStats } = useVote();
+  const { listTranslationsByWordSequenceId } = useTranslation();
   const {
     states: {
       global: { singletons },
     },
   } = useAppContext();
   const [currentTab, setCurrentTab] = useState<'all' | 'mine'>('all');
-  const [translations, setTranslations] = useState<WordSequenceWithVote[]>([]);
+  const [translations, setTranslations] = useState<
+    WordSequenceTranslationDto[]
+  >([]);
 
   useEffect(() => {
     if (!documentId || !singletons) {
@@ -143,16 +173,16 @@ export function TranslationList({
     }
 
     if (!wordSequenceId) {
-      if (currentTab === 'all') {
-        listTranslationsByDocumentId(documentId).then(setTranslations);
-      } else if (currentTab === 'mine') {
-        listMyTranslationsByDocumentId(documentId).then(setTranslations);
-      }
+      // if (currentTab === 'all') {
+      //   listTranslationsByDocumentId(documentId).then(setTranslations);
+      // } else if (currentTab === 'mine') {
+      //   listMyTranslationsByDocumentId(documentId).then(setTranslations);
+      // }
     } else {
       if (currentTab === 'all') {
         listTranslationsByWordSequenceId(wordSequenceId).then(setTranslations);
       } else if (currentTab === 'mine') {
-        listMyTranslationsByWordSequenceId(wordSequenceId).then(
+        listTranslationsByWordSequenceId(wordSequenceId, true).then(
           setTranslations,
         );
       }
@@ -162,10 +192,7 @@ export function TranslationList({
     documentId,
     wordSequenceId,
     currentTab,
-    listTranslationsByDocumentId,
     listTranslationsByWordSequenceId,
-    listMyTranslationsByWordSequenceId,
-    listMyTranslationsByDocumentId,
   ]);
 
   const handleTabChange = (
@@ -189,28 +216,28 @@ export function TranslationList({
       </Link>
     ) : null;
 
-  const handleChangeVote = async (
-    translationId: Nanoid,
-    candidateId: Nanoid,
-  ) => {
-    const vote = await getVotesStats(candidateId);
+  // const handleChangeVote = async (
+  //   translationId: Nanoid,
+  //   candidateId: Nanoid,
+  // ) => {
+  //   const vote = await getVotesStats(candidateId);
 
-    if (!vote) {
-      return;
-    }
+  //   if (!vote) {
+  //     return;
+  //   }
 
-    setTranslations((translations) =>
-      translations.map((translation) => {
-        if (translation.id === translationId) {
-          return {
-            ...translation,
-            vote,
-          };
-        }
-        return translation;
-      }),
-    );
-  };
+  //   setTranslations((translations) =>
+  //     translations.map((translation) => {
+  //       if (translation.id === translationId) {
+  //         return {
+  //           ...translation,
+  //           vote,
+  //         };
+  //       }
+  //       return translation;
+  //     }),
+  //   );
+  // };
 
   return (
     <>
@@ -227,10 +254,10 @@ export function TranslationList({
       <Stack sx={{ flexGrow: 1, overflowY: 'auto' }}>
         {translations.map((item) => (
           <Translation
-            key={item.id}
+            key={item.translationId}
             translation={item}
             isCheckbox={isCheckbox}
-            onChangeVote={handleChangeVote}
+            // onChangeVote={handleChangeVote}
           />
         ))}
       </Stack>

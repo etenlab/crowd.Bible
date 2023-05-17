@@ -1,24 +1,24 @@
 import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 
-import { SiteTextWithTranslationCntDto } from '@/dtos/site-text.dto';
 import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
-import { NodeTypeConst } from '../constants/graph.constant';
 import { VotableContent } from '../dtos/votable-item.dto';
+
+import { SiteTextDto } from '@/dtos/site-text.dto';
 
 export function useSiteText() {
   const {
     states: {
       global: { singletons },
-      documentTools: { sourceLanguage, targetLanguage },
+      // documentTools: { sourceLanguage, targetLanguage },
     },
     actions: { alertFeedback, setLoadingState },
   } = useAppContext();
 
-  const createSiteText = useCallback(
+  const createOrFindSiteText = useCallback(
     async (
       appId: Nanoid,
-      languageId: Nanoid,
+      languageInfo: LanguageInfo,
       siteText: string,
       definitionText: string,
     ) => {
@@ -30,22 +30,10 @@ export function useSiteText() {
       try {
         setLoadingState(true);
 
-        const oldSiteTexts = await singletons.siteTextService.getSiteTextsByRef(
-          appId,
-          languageId,
-          siteText,
-        );
-
-        if (oldSiteTexts.length > 0) {
-          alertFeedback('error', 'Already exists same site text!');
-          setLoadingState(false);
-          return null;
-        }
-
         const siteTextEntity =
           await singletons.siteTextService.createOrFindSiteText(
             appId,
-            languageId,
+            languageInfo,
             siteText,
             definitionText,
           );
@@ -53,7 +41,7 @@ export function useSiteText() {
         setLoadingState(false);
         alertFeedback('success', 'Created a new Site Text!');
 
-        return siteTextEntity.id;
+        return siteTextEntity.definitionId;
       } catch (err) {
         console.log(err);
         setLoadingState(false);
@@ -64,36 +52,31 @@ export function useSiteText() {
     [singletons, alertFeedback, setLoadingState],
   );
 
-  const createOrFindSiteTextTranslationCandidate = useCallback(
+  const createOrFindTranslation = useCallback(
     async (
-      siteTextId: Nanoid,
+      definitionRelationshipId: Nanoid,
+      languageInfo: LanguageInfo,
       translatedSiteText: string,
-      translatedDescription: string,
+      translatedDefinitionText: string,
     ) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at listElections');
         return null;
       }
 
-      if (targetLanguage === null) {
-        alertFeedback('error', 'Not selected Target Language!');
-        return null;
-      }
-
       try {
         setLoadingState(true);
 
-        const result =
-          await singletons.siteTextService.createOrFindSiteTextTranslationCandidate(
-            siteTextId,
-            targetLanguage.id,
-            translatedSiteText,
-            translatedDescription,
-          );
+        const result = await singletons.siteTextService.createOrFindTranslation(
+          definitionRelationshipId,
+          languageInfo,
+          translatedSiteText,
+          translatedDefinitionText,
+        );
 
         setLoadingState(false);
 
-        return result.id;
+        return result;
       } catch (err) {
         console.log(err);
         setLoadingState(false);
@@ -101,33 +84,22 @@ export function useSiteText() {
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, targetLanguage],
+    [singletons, alertFeedback, setLoadingState],
   );
 
-  const getSiteTextListByAppId = useCallback(
-    async (appId: Nanoid): Promise<SiteTextWithTranslationCntDto[]> => {
+  const getDefinitionList = useCallback(
+    async (appId: Nanoid, siteTextId: Nanoid): Promise<VotableContent[]> => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at listElections');
-        return [];
-      }
-
-      if (sourceLanguage === null) {
-        alertFeedback('error', 'Not selected Source Language!');
-        return [];
-      }
-
-      if (targetLanguage === null) {
-        alertFeedback('error', 'Not selected Target Language!');
         return [];
       }
 
       try {
         setLoadingState(true);
 
-        const result = await singletons.siteTextService.getSiteTextListByAppId(
+        const result = await singletons.siteTextService.getDefinitionList(
           appId,
-          sourceLanguage.id,
-          targetLanguage.id,
+          siteTextId,
         );
 
         setLoadingState(false);
@@ -140,44 +112,28 @@ export function useSiteText() {
         return [];
       }
     },
-    [
-      singletons,
-      alertFeedback,
-      setLoadingState,
-      sourceLanguage,
-      targetLanguage,
-    ],
+    [singletons, alertFeedback, setLoadingState],
   );
 
-  const getSiteTextWithTranslationCandidates = useCallback(
+  const getTranslationListBySiteTextRel = useCallback(
     async (
-      siteTextId: Nanoid,
-      sourceLanguageId?: Nanoid,
-      targetLanguageId?: Nanoid,
+      appId: Nanoid,
+      original: SiteTextDto,
+      languageInfo: LanguageInfo,
     ) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at getElectionFull');
         return null;
       }
 
-      if (sourceLanguage === null && !sourceLanguageId) {
-        alertFeedback('error', 'Not selected Source Language!');
-        return null;
-      }
-
-      if (targetLanguage === null && !targetLanguageId) {
-        alertFeedback('error', 'Not selected Target Language!');
-        return null;
-      }
-
       try {
         setLoadingState(true);
 
         const result =
-          await singletons.siteTextService.getSiteTextWithTranslationCandidates(
-            siteTextId,
-            sourceLanguageId ? sourceLanguageId : sourceLanguage!.id,
-            targetLanguageId ? targetLanguageId : targetLanguage!.id,
+          await singletons.siteTextService.getTranslationListBySiteTextRel(
+            appId,
+            original,
+            languageInfo,
           );
 
         setLoadingState(false);
@@ -190,50 +146,11 @@ export function useSiteText() {
         return null;
       }
     },
-    [
-      singletons,
-      alertFeedback,
-      setLoadingState,
-      sourceLanguage,
-      targetLanguage,
-    ],
+    [singletons, alertFeedback, setLoadingState],
   );
 
-  const getSelectedSiteTextTranslation = useCallback(
-    async (siteTextId: Nanoid, langId?: Nanoid) => {
-      if (!singletons) {
-        alertFeedback('error', 'Internal Error! at addBallotEntry');
-        return null;
-      }
-
-      if (targetLanguage === null && !langId) {
-        alertFeedback('error', 'Not selected Target Language!');
-        return null;
-      }
-
-      try {
-        setLoadingState(true);
-        const result =
-          await singletons.siteTextService.getSelectedSiteTextTranslation(
-            siteTextId,
-            langId ? langId : targetLanguage!.id,
-          );
-
-        setLoadingState(false);
-
-        return result;
-      } catch (err) {
-        console.log(err);
-        setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
-        return null;
-      }
-    },
-    [singletons, alertFeedback, setLoadingState, targetLanguage],
-  );
-
-  const getSiteTextTranslationVotableById = useCallback(
-    async (id: Nanoid, electionId?: Nanoid) => {
+  const getRecommendedSiteText = useCallback(
+    async (appId: Nanoid, siteTextId: Nanoid, languageInfo: LanguageInfo) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at addBallotEntry');
         return null;
@@ -241,11 +158,11 @@ export function useSiteText() {
 
       try {
         setLoadingState(true);
-        const result =
-          await singletons.siteTextService.getSiteTextTranslationVotableById(
-            id,
-            electionId,
-          );
+        const result = await singletons.siteTextService.getRecommendedSiteText(
+          appId,
+          siteTextId,
+          languageInfo,
+        );
 
         setLoadingState(false);
 
@@ -260,259 +177,55 @@ export function useSiteText() {
     [singletons, alertFeedback, setLoadingState],
   );
 
-  const changeSiteTextDefinitionRef = useCallback(
-    async (siteTextId: Nanoid, definitionRef: Nanoid) => {
+  const getTranslatedSiteTextListByAppId = useCallback(
+    async (
+      appId: Nanoid,
+      sourceLanguageInfo: LanguageInfo,
+      targetLanguageInfo: LanguageInfo,
+    ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at listElections');
-        return null;
-      }
-
-      if (sourceLanguage === null) {
-        alertFeedback('error', 'Not selected Source Language!');
-        return null;
-      }
-
-      try {
-        setLoadingState(true);
-
-        await singletons.siteTextService.changeSiteTextDefinitionRef(
-          siteTextId,
-          sourceLanguage.id,
-          definitionRef,
-        );
-        setLoadingState(false);
-
-        return null;
-      } catch (err) {
-        console.log(err);
-        setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
-        return null;
-      }
-    },
-    [singletons, alertFeedback, setLoadingState, sourceLanguage],
-  );
-
-  const selectSiteTextTranslationCandidate = useCallback(
-    async (siteTextTranslationId: Nanoid, siteTextId: Nanoid) => {
-      if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getBallotEntryId');
-        return false;
-      }
-
-      try {
-        setLoadingState(true);
-
-        await singletons.siteTextService.selectSiteTextTranslationCandidate(
-          siteTextTranslationId,
-          siteTextId,
-        );
-
-        setLoadingState(false);
-
-        return true;
-      } catch (err) {
-        console.log(err);
-        setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
-        return false;
-      }
-    },
-    [singletons, alertFeedback, setLoadingState],
-  );
-
-  const cancelSiteTextTranslationCandidate = useCallback(
-    async (siteTextId: Nanoid) => {
-      if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getVotesStats');
-        return null;
-      }
-
-      if (targetLanguage === null) {
-        alertFeedback('error', 'Not selected Target Language!');
-        return null;
-      }
-
-      try {
-        setLoadingState(true);
-        await singletons.siteTextService.cancelSiteTextTranslationCandidate(
-          siteTextId,
-          targetLanguage.id,
-        );
-        setLoadingState(false);
-        return null;
-      } catch (err) {
-        console.log(err);
-        setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
-        return null;
-      }
-    },
-    [singletons, alertFeedback, setLoadingState, targetLanguage],
-  );
-
-  const getDefinitioinVotableContentByWord = useCallback(
-    async (word: string, langId: Nanoid): Promise<VotableContent[]> => {
-      if (!singletons) {
-        alertFeedback(
-          'error',
-          'Internal Error! at getDefinitioinVotableContentByWord',
-        );
+        alertFeedback('error', 'Internal Error! at addBallotEntry');
         return [];
       }
 
-      // TODO: refactor code that uses this method to provide proper LanguageInfo here and replace mocked value
-      const langInfo_mocked: LanguageInfo = {
-        lang: {
-          tag: 'ua',
-          descriptions: [
-            'mocked lang tag as "ua", use new language Selector to get LangInfo values from user',
-          ],
-        },
-      };
-      console.log(
-        `use langInfo_mocked ${JSON.stringify(
-          langInfo_mocked,
-        )} in place of langId ${langId}`,
-      );
+      // if (!sourceLanguage) {
+      //   alertFeedback('error', 'Not exists target language!');
+      //   return null;
+      // }
+
+      // if (!targetLanguage) {
+      //   alertFeedback('error', 'Not exists target language!');
+      //   return null;
+      // }
 
       try {
         setLoadingState(true);
-        const wordAndDefinitions =
-          await singletons.definitionService.getVotableItems(
-            langInfo_mocked,
-            NodeTypeConst.WORD,
-            [
-              {
-                key: 'name',
-                value: word,
-              },
-            ],
+        const result =
+          await singletons.siteTextService.getTranslatedSiteTextListByAppId(
+            appId,
+            sourceLanguageInfo,
+            targetLanguageInfo,
           );
 
         setLoadingState(false);
 
-        return wordAndDefinitions[0].contents;
+        return result;
       } catch (err) {
         console.log(err);
-        alertFeedback('error', 'Internal Error!');
         setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
     [singletons, alertFeedback, setLoadingState],
-  );
-
-  const getSiteTextById = useCallback(
-    async (id: Nanoid) => {
-      if (!singletons) {
-        alertFeedback(
-          'error',
-          'Internal Error! at getDefinitioinVotableContentByWord',
-        );
-        return null;
-      }
-
-      try {
-        setLoadingState(true);
-
-        const result = await singletons.siteTextService.getSiteTextById(id);
-
-        setLoadingState(false);
-
-        return result;
-      } catch (err) {
-        console.log(err);
-        alertFeedback('error', 'Internal Error!');
-        setLoadingState(false);
-        return null;
-      }
-    },
-    [singletons, alertFeedback, setLoadingState],
-  );
-
-  const editSiteTextWordAndDescription = useCallback(
-    async (siteTextId: Nanoid, word: string, description: string) => {
-      if (!singletons) {
-        alertFeedback(
-          'error',
-          'Internal Error! at getDefinitioinVotableContentByWord',
-        );
-        return null;
-      }
-
-      try {
-        setLoadingState(true);
-
-        await singletons.siteTextService.editSiteTextWordAndDescription(
-          siteTextId,
-          word,
-          description,
-        );
-
-        setLoadingState(false);
-
-        return true;
-      } catch (err) {
-        console.log(err);
-        alertFeedback('error', 'Internal Error!');
-        setLoadingState(false);
-        return null;
-      }
-    },
-    [singletons, alertFeedback, setLoadingState],
-  );
-
-  const getTranslatedSiteText = useCallback(
-    async (siteTextId: Nanoid) => {
-      if (!singletons) {
-        alertFeedback(
-          'error',
-          'Internal Error! at getDefinitioinVotableContentByWord',
-        );
-        return null;
-      }
-
-      if (sourceLanguage === null) {
-        alertFeedback('error', 'Not selected Source Language!');
-        return null;
-      }
-
-      try {
-        setLoadingState(true);
-
-        const result =
-          await singletons.siteTextService.getSiteTextByIdAndLanguageId(
-            siteTextId,
-            sourceLanguage.id,
-          );
-
-        setLoadingState(false);
-
-        return result;
-      } catch (err) {
-        console.log(err);
-        alertFeedback('error', 'Internal Error!');
-        setLoadingState(false);
-        return null;
-      }
-    },
-    [singletons, sourceLanguage, alertFeedback, setLoadingState],
   );
 
   return {
-    createSiteText,
-    createOrFindSiteTextTranslationCandidate,
-    getSiteTextListByAppId,
-    getSiteTextWithTranslationCandidates,
-    getSiteTextTranslationVotableById,
-    changeSiteTextDefinitionRef,
-    selectSiteTextTranslationCandidate,
-    cancelSiteTextTranslationCandidate,
-    getSelectedSiteTextTranslation,
-    getDefinitioinVotableContentByWord,
-    getSiteTextById,
-    editSiteTextWordAndDescription,
-    getTranslatedSiteText,
+    createOrFindSiteText,
+    createOrFindTranslation,
+    getDefinitionList,
+    getTranslationListBySiteTextRel,
+    getRecommendedSiteText,
+    getTranslatedSiteTextListByAppId,
   };
 }

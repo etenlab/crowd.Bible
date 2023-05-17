@@ -7,6 +7,7 @@ import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
 
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useAppContext } from '@/hooks/useAppContext';
+
 import { TranslationEditor } from '@/components/TranslationEditor';
 import { WordSequenceDto } from '@/dtos/word-sequence.dto';
 
@@ -18,7 +19,7 @@ export function TranslationEditPage() {
     documentId: Nanoid;
     wordSequenceId?: Nanoid;
   }>();
-  const { getOriginWordSequenceByDocumentId, getWordSequenceById } =
+  const { getWordSequenceById, getWordSequenceByDocumentId } =
     useWordSequence();
   const {
     states: {
@@ -34,23 +35,30 @@ export function TranslationEditPage() {
     useState<WordSequenceDto | null>(null);
 
   useEffect(() => {
-    if (!singletons || !documentId) {
-      return;
-    }
+    (async () => {
+      if (!singletons || !documentId) {
+        return;
+      }
 
-    if (!wordSequenceId) {
-      getOriginWordSequenceByDocumentId(documentId).then(
-        setOriginalWordSequence,
-      );
-    } else {
-      getWordSequenceById(wordSequenceId).then(setOriginalWordSequence);
-    }
+      if (!wordSequenceId) {
+        const wsId = await getWordSequenceByDocumentId(documentId);
+
+        if (!wsId) {
+          return;
+        }
+
+        const wordSequence = await getWordSequenceById(wsId);
+        setOriginalWordSequence(wordSequence);
+      } else {
+        getWordSequenceById(wordSequenceId).then(setOriginalWordSequence);
+      }
+    })();
   }, [
+    singletons,
     documentId,
     wordSequenceId,
-    singletons,
-    getOriginWordSequenceByDocumentId,
     getWordSequenceById,
+    getWordSequenceByDocumentId,
   ]);
 
   const handleChangeRange = ({
@@ -82,7 +90,7 @@ export function TranslationEditPage() {
   ) : null;
 
   const documentOriginalText = originalWordSequence
-    ? originalWordSequence.wordSequence || ''
+    ? originalWordSequence.text || ''
     : '';
 
   const originalTextComponent = wordSequenceId ? (

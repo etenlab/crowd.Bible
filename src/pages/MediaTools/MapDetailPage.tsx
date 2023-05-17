@@ -37,10 +37,10 @@ export const MapDetailPage = () => {
     if (singletons && id) {
       const getMapDetail = async (id: string) => {
         try {
-          if (!singletons.graphThirdLayerService) return;
+          if (!singletons.mapService) return;
           const [mapRes, mapWordsRes] = await Promise.allSettled([
-            singletons.graphThirdLayerService.getMap(id),
-            singletons.graphThirdLayerService.getMapWords(id),
+            singletons.mapService.getMap(id),
+            singletons.mapService.getMapWords(id),
           ]);
           if (mapRes.status === 'fulfilled' && mapRes.value) {
             setMapDetail({
@@ -117,7 +117,7 @@ export const MapDetailPage = () => {
           Total Words: ({mapDetail?.words?.length})
         </Typography>
         {mapDetail?.words?.map((w) => (
-          <IonChip key={w.id}>{w.name}</IonChip>
+          <IonChip key={w.id}>{w.word}</IonChip>
         ))}
       </Box>
     </IonContent>

@@ -1,9 +1,4 @@
-import {
-  Dialect,
-  Lang,
-  LanguageInfo,
-  Region,
-} from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { Dialect, Lang, LanguageInfo, Region } from '@eten-lab/ui-kit';
 import { PropertyKeyConst } from '../constants/graph.constant';
 import Tags from 'language-tags';
 import { WordDto } from '../dtos/word.dto';
@@ -172,4 +167,20 @@ export const wordProps2LangInfo = (
     dialect: wordDto.dialect,
     region: wordDto.region,
   });
+};
+
+export const compareLangInfo = (a: LanguageInfo, b: LanguageInfo): boolean => {
+  if (a.lang.tag !== b.lang.tag) {
+    return false;
+  }
+
+  if (a.dialect?.tag !== b.dialect?.tag) {
+    return false;
+  }
+
+  if (a.region?.tag !== b.region?.tag) {
+    return false;
+  }
+
+  return true;
 };

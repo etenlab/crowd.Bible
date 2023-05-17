@@ -1,5 +1,6 @@
 export interface CreateWordDto {
   id?: string;
-  name: string;
+  word: string;
+  // name: string;
   [key: string]: unknown;
 }

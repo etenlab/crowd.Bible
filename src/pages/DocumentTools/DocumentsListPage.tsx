@@ -5,16 +5,16 @@ import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, PlusButton, BiFile } from '@eten-lab/ui-kit';
 
-import { LanguageDto } from '@/dtos/language.dto';
-import { DocumentDto } from '@/src/dtos/document.dto';
+import { DocumentDto } from '@/dtos/document.dto';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { useLanguage } from '@/hooks/useLanguage';
 import { useDocument } from '@/hooks/useDocument';
 
 import { Link } from '@/components/Link';
+import { LanguageSelectionBox } from '@/components/LanguageSelectionBox';
 
-const { ButtonList, HeadBox } = CrowdBibleUI;
+const { ButtonList } = CrowdBibleUI;
+// const { ButtonList, HeadBox } = CrowdBibleUI;
 
 type ButtonListItemType = CrowdBibleUI.ButtonListItemType;
 
@@ -22,26 +22,17 @@ export function DocumentsListPage() {
   const history = useHistory();
 
   const { listDocument } = useDocument();
-  const { getLanguages } = useLanguage();
 
-  const [languageList, setLanguageList] = useState<LanguageDto[]>([]);
   const [documents, setDocuments] = useState<DocumentDto[]>([]);
   const [searchStr, setSearchStr] = useState<string>('');
 
   const {
     states: {
       global: { user, singletons },
-      documentTools: { sourceLanguage, targetLanguage },
+      // documentTools: { sourceLanguage, targetLanguage },
     },
-    actions: { setSourceLanguage, setTargetLanguage },
+    // actions: { setSourceLanguage, setTargetLanguage },
   } = useAppContext();
-
-  // Fetch language Lists from db
-  useEffect(() => {
-    if (singletons) {
-      getLanguages().then(setLanguageList);
-    }
-  }, [singletons, getLanguages]);
 
   // Fetch Document Lists from db
   useEffect(() => {
@@ -50,13 +41,13 @@ export function DocumentsListPage() {
     }
   }, [listDocument, singletons]);
 
-  const handleSetSourceLanguage = (value: LanguageDto | null) => {
-    setSourceLanguage(value);
-  };
+  // const handleSetSourceLanguage = (value: LanguageDto | null) => {
+  //   setSourceLanguage(value);
+  // };
 
-  const handleSetTargetLanguage = (value: LanguageDto | null) => {
-    setTargetLanguage(value);
-  };
+  // const handleSetTargetLanguage = (value: LanguageDto | null) => {
+  //   setTargetLanguage(value);
+  // };
 
   const handleChangeSearchStr = (str: string) => {
     setSearchStr(str);
@@ -89,7 +80,7 @@ export function DocumentsListPage() {
 
   return (
     <IonContent>
-      <HeadBox
+      {/* <HeadBox
         title="Documents"
         languageSelector={{
           languageList,
@@ -98,7 +89,8 @@ export function DocumentsListPage() {
           onChangeSource: handleSetSourceLanguage,
           onChangeTarget: handleSetTargetLanguage,
         }}
-      />
+      /> */}
+      <LanguageSelectionBox />
       <ButtonList
         label="List of Docs"
         search={{
