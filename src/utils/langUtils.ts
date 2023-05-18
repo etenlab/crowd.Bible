@@ -1,13 +1,8 @@
-import {
-  DESCRIPTIONS_JOINER,
-  Dialect,
-  Lang,
-  LanguageInfo,
-  Region,
-} from '@eten-lab/ui-kit';
+import { Dialect, Lang, LanguageInfo, Region } from '@eten-lab/ui-kit';
 import { PropertyKeyConst } from '../constants/graph.constant';
 import Tags from 'language-tags';
 import { WordDto } from '../dtos/word.dto';
+export const DESCRIPTIONS_JOINER = '/';
 
 enum TagTypes {
   LANGUAGE = 'language',
