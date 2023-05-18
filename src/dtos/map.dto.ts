@@ -7,10 +7,7 @@ export interface MapDto {
   id: string;
   name: string;
   ext: string;
-  // map: string;
   mapFileId: string;
-  // langId: string;
-  // lang?: LanguageDto;
   langInfo: LanguageInfo;
   words?: WordDto[];
   [PropertyKeyConst.LANGUAGE_TAG]: string;

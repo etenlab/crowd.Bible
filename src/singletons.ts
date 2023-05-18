@@ -159,10 +159,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     graphFirstLayerService,
     graphSecondLayerService,
     nodeRepo,
-    nodePropertyKeyRepo,
-    nodePropertyValueRepo,
-    relationshipRepo,
-    syncService,
   );
 
   const wordSequenceService = new WordSequenceService(

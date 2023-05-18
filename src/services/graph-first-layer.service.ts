@@ -83,6 +83,13 @@ export class GraphFirstLayerService {
     return this.nodeRepo.getNodesByIds(ids);
   }
 
+  async getNodesWithRelationshipsByIds(nodeIds: string[]): Promise<Node[]> {
+    return this.nodeRepo.getNodesByIds(nodeIds, [
+      'toNodeRelationships',
+      'fromNodeRelationships',
+    ]);
+  }
+
   async getNodesByProps(
     type: string,
     props: { key: string; value: unknown }[],

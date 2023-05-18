@@ -1,8 +1,14 @@
-import { Dialect, Lang, LanguageInfo, Region } from '@eten-lab/ui-kit';
+import {
+  Dialect,
+  Lang,
+  LanguageInfo,
+  Region,
+  DESCRIPTIONS_JOINER,
+} from '@eten-lab/ui-kit';
 import { PropertyKeyConst } from '../constants/graph.constant';
 import Tags from 'language-tags';
-// TODO: import from LangSelector when new version of ui-kit will be published
-export const DESCRIPTIONS_JOINER = '/';
+import { WordDto } from '../dtos/word.dto';
+// export const DESCRIPTIONS_JOINER = '/';
 
 enum TagTypes {
   LANGUAGE = 'language',
@@ -94,7 +100,7 @@ export const randomLangTags = (amount: number): Array<string> => {
   return langTagsList;
 };
 
-export const tag2langInfo = (tagGiven: string): LanguageInfo | undefined => {
+export const tag2langInfo = (tagGiven: string): LanguageInfo => {
   const complexTag = Tags(tagGiven);
 
   const lang = complexTag.find(TagTypes.LANGUAGE);
@@ -150,7 +156,7 @@ export const subTags2LangInfo = ({
   lang: string;
   region?: string;
   dialect?: string;
-}): LanguageInfo | undefined => {
+}): LanguageInfo => {
   let langTag = lang;
   region && (langTag += '-' + region);
   dialect && (langTag += '-' + dialect);
@@ -158,7 +164,20 @@ export const subTags2LangInfo = ({
   return tag2langInfo(langTag);
 };
 
-export const compareLangInfo = (a: LanguageInfo, b: LanguageInfo): boolean => {
+export const wordProps2LangInfo = (wordDto: WordDto): LanguageInfo => {
+  return subTags2LangInfo({
+    lang: wordDto.language,
+    dialect: wordDto.dialect,
+    region: wordDto.region,
+  });
+};
+
+export const compareLangInfo = (
+  a: LanguageInfo | null | undefined,
+  b: LanguageInfo | null | undefined,
+): boolean => {
+  if (a === b) return true; // case both null or both undefined
+  if (!a || !b) return false; // case one of them null or undefined
   if (a.lang.tag !== b.lang.tag) {
     return false;
   }
