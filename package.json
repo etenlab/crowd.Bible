@@ -78,7 +78,7 @@
     "build": "react-app-rewired build",
     "format": "prettier --write \"src/**/*.{ts,tsx,md,mdx,js,jsx}\"",
     "precommit": "lint-staged",
-    "test": "react-app-rewired test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons|swiper|swiper/css|swiper/react|ssr-window|dom7|@etan-lab/ui-kit|@fontsource|react-quill|nanoid|axios))'",
+    "test": "react-app-rewired test --transformIgnorePatterns 'none'",
     "eject": "react-app-rewired eject",
     "ionic:serve": "react-app-rewired start",
     "prepare": "husky install",
