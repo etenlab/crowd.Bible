@@ -17,6 +17,7 @@ import { useDocumentTools } from '@/hooks/useDocumentTools';
 
 import { getAppDataSource } from './data-source';
 import getSingletons from './singletons';
+import { LoggerAdapter } from './logger';
 
 export interface ContextType {
   states: {
@@ -36,6 +37,7 @@ export interface ContextType {
     setLoadingState: (state: boolean) => void;
     setSqlPortalShown: (isSqlPortalShown: boolean) => void;
   };
+  log: ReturnType<typeof LoggerAdapter.init>;
 }
 
 export const AppContext = createContext<ContextType | undefined>(undefined);
@@ -100,6 +102,7 @@ export function AppContextProvider({ children }: AppProviderProps) {
       logout,
       setSqlPortalShown,
     },
+    log: LoggerAdapter.init(),
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

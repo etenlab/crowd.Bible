@@ -14,6 +14,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { VotableItem } from '@/dtos/votable-item.dto';
 import { useDictionaryTools } from '@/hooks/useDictionaryTools';
 import { NodeTypeConst } from '@/constants/graph.constant';
+
 const { Box, Divider } = MuiMaterial;
 
 const {
@@ -101,6 +102,7 @@ export function DictionaryPage() {
       global: { singletons },
     },
     actions: { setLoadingState, alertFeedback },
+    log,
   } = useAppContext();
   const [selectedWord, setSelectedWord] = useState<VotableItem | null>(null);
   const [isDialogOpened, setIsDialogOpened] = useState(false);
@@ -138,6 +140,10 @@ export function DictionaryPage() {
     if (!selectedLanguageInfo) return;
     try {
       setLoadingState(true);
+      console.log('-------------------');
+      log.trace({ context: { custom: 'context' } }, 'load words');
+      log.error('load words2');
+      console.log('-------------------');
       const loadWords = async () => {
         const words: VotableItem[] = await definitionService.getVotableItems(
           selectedLanguageInfo,
@@ -152,7 +158,13 @@ export function DictionaryPage() {
     } finally {
       setLoadingState(false);
     }
-  }, [alertFeedback, definitionService, selectedLanguageInfo, setLoadingState]);
+  }, [
+    alertFeedback,
+    definitionService,
+    log,
+    selectedLanguageInfo,
+    setLoadingState,
+  ]);
 
   const addWord = useCallback(
     (newWord: string) => {
