@@ -13,6 +13,7 @@ import {
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useState } from 'react';
+import { useAppContext } from '../hooks/useAppContext';
 
 const { Box } = MuiMaterial;
 
@@ -32,6 +33,7 @@ const RESET_UPDATE_PASSWORD = gql`
 `;
 
 export function ProfilePage() {
+  const { logger } = useAppContext();
   const [show, setShow] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -59,7 +61,7 @@ export function ProfilePage() {
         })
         .then((res) => {
           setSuccessMessage('Password reset successfully');
-          console.log(res);
+          logger.error(res);
         })
         .catch((error: any) => {
           setErrorMessage(error.message);

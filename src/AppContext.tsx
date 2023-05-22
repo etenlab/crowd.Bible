@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useReducer,
-  useEffect,
-  useRef,
-  MutableRefObject,
-} from 'react';
+import React, { createContext, useReducer, useEffect, useRef } from 'react';
 
 import { reducer, loadPersistedStore } from '@/reducers/index';
 
@@ -23,7 +17,8 @@ import { useDocumentTools } from '@/hooks/useDocumentTools';
 
 import { getAppDataSource } from './data-source';
 import getSingletons from './singletons';
-import { LoggerAdapter } from './logger';
+import { LoggerService } from './services/logger.service';
+import { Roarr } from 'roarr';
 
 export interface ContextType {
   states: {
@@ -43,7 +38,7 @@ export interface ContextType {
     setLoadingState: (state: boolean) => void;
     setSqlPortalShown: (isSqlPortalShown: boolean) => void;
   };
-  log: LoggerAdapter;
+  logger: LoggerService;
 }
 
 export const AppContext = createContext<ContextType | undefined>(undefined);
@@ -76,7 +71,7 @@ export function AppContextProvider({ children }: AppProviderProps) {
     dispatch,
   });
 
-  const logger = useRef(new LoggerAdapter());
+  const logger = useRef(new LoggerService());
 
   useEffect(() => {
     window.addEventListener('offline', () => {
@@ -110,7 +105,7 @@ export function AppContextProvider({ children }: AppProviderProps) {
       logout,
       setSqlPortalShown,
     },
-    log: logger.current,
+    logger: state?.global?.singletons?.loggerService || logger.current,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

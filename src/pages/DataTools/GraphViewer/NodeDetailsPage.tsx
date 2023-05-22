@@ -1,22 +1,27 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { IonContent } from '@ionic/react';
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
-import { useSingletons } from '@/src/hooks/useSingletons';
 import { useGlobal } from '@/src/hooks/useGlobal';
 import { initialState, reducer } from '@/src/reducers';
 import { useHistory, useParams } from 'react-router';
+import { useAppContext } from '../../../hooks/useAppContext';
 
 const { NodeDetails, TitleWithIcon } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
 export function NodeDetailsPage() {
+  const {
+    states: {
+      global: { singletons },
+    },
+    logger,
+  } = useAppContext();
   const [, dispatch] = useReducer(reducer, initialState);
   const { setLoadingState } = useGlobal({ dispatch });
   const history = useHistory();
   const { nodeId } = useParams<{ nodeId: string }>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [node, setNode] = useState<any>(null);
-  const singletons = useSingletons();
 
   useEffect(() => {
     const searchNode = async () => {
@@ -122,9 +127,9 @@ export function NodeDetailsPage() {
       .then((filtered_node) => {
         setNode(filtered_node);
       })
-      .catch((err) => console.log(err))
+      .catch((err) => logger.error(err))
       .finally(() => setLoadingState(false));
-  }, [singletons, setLoadingState, nodeId]);
+  }, [singletons, setLoadingState, nodeId, logger]);
 
   const nodeClickHandler = (id: string) => {
     history.push(`/graph-viewer/${id}`);

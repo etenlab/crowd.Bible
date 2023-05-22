@@ -13,6 +13,7 @@ export function useWordSequence() {
       global: { singletons, user },
     },
     actions: { alertFeedback, setLoadingState },
+    logger,
   } = useAppContext();
 
   const createWordSequence = useCallback(
@@ -65,13 +66,13 @@ export function useWordSequence() {
         setLoadingState(false);
         return wordSequenceNode.id;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, user, setLoadingState],
+    [singletons, alertFeedback, user, setLoadingState, logger],
   );
 
   const createSubWordSequence = useCallback(
@@ -110,13 +111,13 @@ export function useWordSequence() {
         setLoadingState(false);
         return subWordSequenceNode.id;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, user, setLoadingState],
+    [singletons, alertFeedback, user, setLoadingState, logger],
   );
 
   const getTextFromWordSequenceId = useCallback(
@@ -148,13 +149,13 @@ export function useWordSequence() {
 
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getWordSequenceById = useCallback(
@@ -172,13 +173,13 @@ export function useWordSequence() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const appendWordSequence = useCallback(
@@ -197,13 +198,13 @@ export function useWordSequence() {
         setLoadingState(false);
         return result.id;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getWordSequenceFromText = useCallback(
@@ -220,13 +221,13 @@ export function useWordSequence() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getWordSequenceByDocumentId = useCallback(
@@ -245,13 +246,13 @@ export function useWordSequence() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const listSubWordSequenceByWordSequenceId = useCallback(
@@ -293,13 +294,13 @@ export function useWordSequence() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, user, setLoadingState],
+    [singletons, alertFeedback, user, setLoadingState, logger],
   );
 
   return {

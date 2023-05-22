@@ -5,13 +5,15 @@ import { IonItem } from '@ionic/react';
 import { Typography } from '@eten-lab/ui-kit';
 import { RouteConst } from '@/src/constants/route.constant';
 import { decodeToken, isTokenValid } from '@/src/utils/AuthUtils';
+import { useAppContext } from '../../hooks/useAppContext';
 
 export function LogoutButton() {
+  const { logger } = useAppContext();
   const history = useHistory();
   const userToken = localStorage.getItem('userToken');
   const tokenObj = decodeToken(userToken!);
-  console.log('userToken aaaaaaaaaaaaa');
-  console.log(userToken);
+  logger.error('userToken aaaaaaaaaaaaa');
+  logger.error(userToken);
 
   const handleLogout = () => {
     localStorage.clear();

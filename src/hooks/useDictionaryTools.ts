@@ -15,6 +15,7 @@ export function useDictionaryTools(
       global: { singletons },
     },
     actions: { alertFeedback, setLoadingState },
+    logger,
   } = useAppContext();
   const { getVotesStats, toggleVote } = useVote();
 
@@ -81,7 +82,7 @@ export function useDictionaryTools(
           },
         ]);
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         alertFeedback('error', 'Internal Error!');
       } finally {
         setIsDialogOpened(false);
@@ -97,6 +98,7 @@ export function useDictionaryTools(
       alertFeedback,
       itemsType,
       setIsDialogOpened,
+      logger,
     ],
   );
 
@@ -123,13 +125,20 @@ export function useDictionaryTools(
 
         setItems([...items]);
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         alertFeedback('error', 'Internal Error!');
       } finally {
         setLoadingState(false);
       }
     },
-    [setLoadingState, toggleVote, getVotesStats, setItems, alertFeedback],
+    [
+      setLoadingState,
+      toggleVote,
+      getVotesStats,
+      setItems,
+      alertFeedback,
+      logger,
+    ],
   );
 
   const addDefinition = useCallback(
@@ -184,7 +193,7 @@ export function useDictionaryTools(
         setSelectedItem(items[itemIdx]);
         setItems([...items]);
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         alertFeedback('error', 'Internal Error!');
       } finally {
         setIsDialogOpened(false);
@@ -198,6 +207,7 @@ export function useDictionaryTools(
       alertFeedback,
       setIsDialogOpened,
       setLoadingState,
+      logger,
     ],
   );
 
@@ -235,11 +245,11 @@ export function useDictionaryTools(
         items[itemIdx].contents[definitionIndex].content = newContentValue;
         setItems([...items]);
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         alertFeedback('error', 'Internal Error!');
       }
     },
-    [alertFeedback, definitionService, setItems],
+    [alertFeedback, definitionService, setItems, logger],
   );
 
   const changeDefinitionVotes = useCallback(
@@ -280,7 +290,7 @@ export function useDictionaryTools(
         };
         setItems([...items]);
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         alertFeedback('error', 'Internal Error!');
       } finally {
         setLoadingState(false);
@@ -293,6 +303,7 @@ export function useDictionaryTools(
       itemsType,
       alertFeedback,
       setLoadingState,
+      logger,
     ],
   );
 

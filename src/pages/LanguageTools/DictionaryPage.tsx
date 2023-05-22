@@ -102,7 +102,7 @@ export function DictionaryPage() {
       global: { singletons },
     },
     actions: { setLoadingState, alertFeedback },
-    log,
+    logger,
   } = useAppContext();
   const [selectedWord, setSelectedWord] = useState<VotableItem | null>(null);
   const [isDialogOpened, setIsDialogOpened] = useState(false);
@@ -140,10 +140,7 @@ export function DictionaryPage() {
     if (!selectedLanguageInfo) return;
     try {
       setLoadingState(true);
-      console.log('-------------------');
-      log.trace({ context: { custom: 'context' } }, 'load words');
-      log.error('load words2');
-      console.log('-------------------');
+      logger.info({ context: { custom: 'context' } }, 'load words');
       const loadWords = async () => {
         const words: VotableItem[] = await definitionService.getVotableItems(
           selectedLanguageInfo,
@@ -153,7 +150,7 @@ export function DictionaryPage() {
       };
       loadWords();
     } catch (error) {
-      console.log(error);
+      logger.error(error);
       alertFeedback('error', 'Internal Error!');
     } finally {
       setLoadingState(false);
@@ -161,9 +158,9 @@ export function DictionaryPage() {
   }, [
     alertFeedback,
     definitionService,
-    log,
     selectedLanguageInfo,
     setLoadingState,
+    logger,
   ]);
 
   const addWord = useCallback(

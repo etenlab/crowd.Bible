@@ -13,6 +13,7 @@ import {
 import { useFormik } from 'formik';
 
 import * as Yup from 'yup';
+import { useAppContext } from '../hooks/useAppContext';
 
 const { Box, Alert } = MuiMaterial;
 
@@ -42,6 +43,7 @@ const RESET_PASSWORD_MUTATION = gql`
 `;
 
 export function ResetPasswordPage() {
+  const { logger } = useAppContext();
   const [tokenValid, setTokenValid] = useState<boolean>(false);
   const [show, setShow] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -71,7 +73,7 @@ export function ResetPasswordPage() {
           })
           .then((res) => {
             setSuccessMessage('Password reset successfully');
-            console.log(res);
+            logger.error(res);
           })
           .catch((error: any) => {
             setErrorMessage(error.message);
@@ -108,7 +110,7 @@ export function ResetPasswordPage() {
       })
       .then((res) => {
         setTokenValid(true);
-        console.log(res);
+        logger.error(res);
       })
       .catch((error: any) => {
         setTokenValid(false);

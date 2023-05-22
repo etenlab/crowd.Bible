@@ -2,14 +2,14 @@
 import { Roarr, ROARR, Message, getLogLevelName } from 'roarr';
 
 export interface ICustormLogger {
-  trace(...args: any): void;
-  debug(...args: any): void;
-  info(...args: any): void;
-  warn(...args: any): void;
-  error(...args: any): void;
-  fatal(...args: any): void;
+  trace(...args: any): void; // corresponds to numeric level 10
+  debug(...args: any): void; // corresponds to numeric level 20
+  info(...args: any): void; // corresponds to numeric level 30
+  warn(...args: any): void; // corresponds to numeric level 40
+  error(...args: any): void; // corresponds to numeric level 50
+  fatal(...args: any): void; // corresponds to numeric level 60
 }
-export class LoggerAdapter {
+export class LoggerService {
   private thresholdLevel: number;
   private logger: ICustormLogger;
   constructor(customLogger?: ICustormLogger) {
@@ -23,7 +23,11 @@ export class LoggerAdapter {
       const messageJson = JSON.parse(messageStr) as Message;
       const logLevel = Number(messageJson.context.logLevel);
       if (!isNaN(logLevel) && logLevel >= this.thresholdLevel) {
-        console.log(`[${getLogLevelName(logLevel)}] ${messageJson.message}`);
+        console.log(
+          `[${getLogLevelName(logLevel)}]: ${
+            messageJson.message
+          } [context]: ${JSON.stringify(messageJson.context)}`,
+        );
       }
     };
   }

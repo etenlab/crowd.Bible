@@ -9,6 +9,7 @@ import {
 import { type Node } from '@eten-lab/models';
 import { VotingService } from './voting.service';
 import { ElectionTypeConst } from '../constants/voting.constant';
+import { LoggerService } from './logger.service';
 
 export class TableService {
   constructor(
@@ -16,6 +17,7 @@ export class TableService {
     private readonly nodeRepo: NodeRepository,
     private readonly nodePropertyValueRepo: NodePropertyValueRepository,
     private readonly votingService: VotingService,
+    private logger: LoggerService,
   ) {}
   async createTable(name: string): Promise<Nanoid> {
     const table_id = await this.getTable(name);
@@ -252,13 +254,13 @@ export class TableService {
         cell.propertyKeys[0].propertyValue.property_value,
       ).value;
 
-      console.log(election!.id);
-      console.log(cell.id);
+      this.logger.error(election!.id);
+      this.logger.error(cell.id);
       const candidate = await this.votingService.getCandidateByRef(
         election!.id,
         cell.id,
       );
-      console.log(candidate);
+      this.logger.error(candidate);
 
       const votes = await this.votingService.getVotesStats(candidate!.id);
       const vote = votes.upVotes - votes.downVotes;

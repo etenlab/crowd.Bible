@@ -13,6 +13,7 @@ export function useSiteText() {
       // documentTools: { sourceLanguage, targetLanguage },
     },
     actions: { alertFeedback, setLoadingState },
+    logger,
   } = useAppContext();
 
   const createOrFindSiteText = useCallback(
@@ -43,13 +44,13 @@ export function useSiteText() {
 
         return siteTextEntity.definitionId;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const createOrFindTranslation = useCallback(
@@ -78,13 +79,13 @@ export function useSiteText() {
 
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getDefinitionList = useCallback(
@@ -106,13 +107,13 @@ export function useSiteText() {
 
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getTranslationListBySiteTextRel = useCallback(
@@ -140,13 +141,13 @@ export function useSiteText() {
 
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getRecommendedSiteText = useCallback(
@@ -168,13 +169,13 @@ export function useSiteText() {
 
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getTranslatedSiteTextListByAppId = useCallback(
@@ -211,13 +212,13 @@ export function useSiteText() {
 
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   return {

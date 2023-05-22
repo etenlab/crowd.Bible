@@ -11,6 +11,7 @@ export function useTranslation() {
       documentTools: { targetLanguage },
     },
     actions: { alertFeedback, setLoadingState },
+    logger,
   } = useAppContext();
 
   const createOrFindWordSequenceTranslation = useCallback(
@@ -70,13 +71,13 @@ export function useTranslation() {
         setLoadingState(false);
         return wordSequenceTranslationRelationshipId;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, user, targetLanguage, setLoadingState],
+    [singletons, alertFeedback, user, targetLanguage, setLoadingState, logger],
   );
 
   const createOrFindDefinitionTranslation = useCallback(
@@ -103,13 +104,13 @@ export function useTranslation() {
         setLoadingState(false);
         return translationRelationshipId;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const createOrFindWordTranslation = useCallback(
@@ -154,13 +155,13 @@ export function useTranslation() {
         setLoadingState(false);
         return wordTranslationRelationshipId;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, targetLanguage, setLoadingState],
+    [singletons, alertFeedback, targetLanguage, setLoadingState, logger],
   );
 
   const getRecommendedTranslationId = useCallback(
@@ -192,13 +193,13 @@ export function useTranslation() {
         setLoadingState(false);
         return recommendedId;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, targetLanguage, setLoadingState],
+    [singletons, alertFeedback, targetLanguage, setLoadingState, logger],
   );
 
   const listTranslationsByWordSequenceId = useCallback(
@@ -246,13 +247,13 @@ export function useTranslation() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, user, targetLanguage, setLoadingState],
+    [singletons, alertFeedback, user, targetLanguage, setLoadingState, logger],
   );
 
   return {

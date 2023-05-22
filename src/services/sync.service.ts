@@ -9,6 +9,7 @@ import { RelationshipPropertyKey } from '@/src/models';
 import { RelationshipPropertyValue } from '@/src/models';
 import { DbService } from './db.service';
 import { SyncSessionRepository } from '@/repositories/sync-session.repository';
+import { LoggerService } from './logger.service';
 
 interface SyncTable {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,6 +87,7 @@ export class SyncService {
   constructor(
     private readonly dbService: DbService,
     private readonly syncSessionRepository: SyncSessionRepository,
+    private readonly logger: LoggerService,
   ) {
     this.currentSyncLayer = Number(
       localStorage.getItem(CURRENT_SYNC_LAYER_KEY) || '0',
@@ -109,7 +111,7 @@ export class SyncService {
   private incrementSyncCounter() {
     this.currentSyncLayer++;
 
-    console.log(`currentSyncLayer = ${this.currentSyncLayer}`);
+    this.logger.error(`currentSyncLayer = ${this.currentSyncLayer}`);
 
     localStorage.setItem(CURRENT_SYNC_LAYER_KEY, String(this.currentSyncLayer));
   }
@@ -117,7 +119,7 @@ export class SyncService {
   private setLastSyncLayer(value: number) {
     this.lastLayerSync = value;
 
-    console.log(`lastSyncLayer = ${this.lastLayerSync}`);
+    this.logger.error(`lastSyncLayer = ${this.lastLayerSync}`);
 
     localStorage.setItem(LAST_SYNC_LAYER_KEY, String(this.lastLayerSync));
   }
@@ -133,7 +135,7 @@ export class SyncService {
   async syncOut() {
     const toSyncLayer = this.currentSyncLayer;
     const fromSyncLayer = this.lastLayerSync + 1;
-    console.log(`Sync: from ${fromSyncLayer} to ${toSyncLayer}`);
+    this.logger.error(`Sync: from ${fromSyncLayer} to ${toSyncLayer}`);
     this.incrementSyncCounter();
 
     const syncData: SyncEntry[] = [];
@@ -164,7 +166,7 @@ export class SyncService {
     }
 
     if (syncData.length === 0) {
-      console.log('Nothing to sync out');
+      this.logger.error('Nothing to sync out');
       return null;
     }
 
@@ -185,7 +187,7 @@ export class SyncService {
 
     await this.syncSessionRepository.completeSyncSession(sessionId);
 
-    console.log(
+    this.logger.error(
       `Sync completed successfully (${
         syncData.length
       } tables, ${syncData.reduce(
@@ -203,7 +205,7 @@ export class SyncService {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
 
-    console.log('Starting sync out...');
+    this.logger.error('Starting sync out...');
 
     try {
       const response = await axios.post(
@@ -214,7 +216,7 @@ export class SyncService {
 
       return response.data;
     } catch (err) {
-      console.log('Sync failed');
+      this.logger.error('Sync failed');
 
       throw err;
     }
@@ -224,7 +226,7 @@ export class SyncService {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
 
-    console.log('Starting sync in...');
+    this.logger.error('Starting sync in...');
 
     const lastSyncParam = this.getLastSyncFromServerTime();
 
@@ -234,9 +236,9 @@ export class SyncService {
 
       if (lastSyncParam) {
         params['last-sync'] = lastSyncParam;
-        console.log(`Doing sync from ${lastSyncParam}`);
+        this.logger.error(`Doing sync from ${lastSyncParam}`);
       } else {
-        console.log('Doing first sync');
+        this.logger.error('Doing first sync');
       }
 
       const response = await axios.get(`${this.serverUrl}/sync/from-server`, {
@@ -249,7 +251,7 @@ export class SyncService {
       const entries = data.entries;
 
       if (entries.length === 0) {
-        console.log('No new sync entries from server');
+        this.logger.error('No new sync entries from server');
         return null;
       }
 
@@ -257,7 +259,7 @@ export class SyncService {
 
       this.setLastSyncFromServerTime(lastSync);
     } catch (err) {
-      console.log('Sync failed');
+      this.logger.error('Sync failed');
 
       throw err;
     }
@@ -270,9 +272,9 @@ export class SyncService {
    */
   private async saveSyncEntries(entries: SyncEntry[]) {
     if (entries.length < 1) {
-      console.log('Nothing to sync in');
+      this.logger.error('Nothing to sync in');
     } else {
-      console.log('Saving sync entries...');
+      this.logger.error('Saving sync entries...');
     }
 
     for (const entry of entries) {
@@ -309,7 +311,7 @@ export class SyncService {
             .where(`${pkColumn} = :pkValue`, {
               pkValue,
             });
-          console.log(q.getSql(), q.getParameters());
+          this.logger.error(q.getSql(), q.getParameters());
           await q.execute();
         } else {
           const q = this.dbService.dataSource
@@ -318,12 +320,12 @@ export class SyncService {
             .insert()
             .into(entity)
             .values({ ...row, [pkProperty]: row[pkColumn] }); //typeorm wants propery name as key here
-          console.log(q.getSql(), q.getParameters());
+          this.logger.error(q.getSql(), q.getParameters());
           await q.execute();
         }
       }
     }
 
-    console.log('Sync entries saved');
+    this.logger.error('Sync entries saved');
   }
 }
