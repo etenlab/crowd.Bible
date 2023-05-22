@@ -1,4 +1,10 @@
-import React, { createContext, useReducer, useEffect } from 'react';
+import React, {
+  createContext,
+  useReducer,
+  useEffect,
+  useRef,
+  MutableRefObject,
+} from 'react';
 
 import { reducer, loadPersistedStore } from '@/reducers/index';
 
@@ -37,7 +43,7 @@ export interface ContextType {
     setLoadingState: (state: boolean) => void;
     setSqlPortalShown: (isSqlPortalShown: boolean) => void;
   };
-  log: ReturnType<typeof LoggerAdapter.init>;
+  log: LoggerAdapter;
 }
 
 export const AppContext = createContext<ContextType | undefined>(undefined);
@@ -69,6 +75,8 @@ export function AppContextProvider({ children }: AppProviderProps) {
   const { setTargetLanguage, setSourceLanguage } = useDocumentTools({
     dispatch,
   });
+
+  const logger = useRef(new LoggerAdapter());
 
   useEffect(() => {
     window.addEventListener('offline', () => {
@@ -102,7 +110,7 @@ export function AppContextProvider({ children }: AppProviderProps) {
       logout,
       setSqlPortalShown,
     },
-    log: LoggerAdapter.init(),
+    log: logger.current,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
