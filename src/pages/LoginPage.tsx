@@ -50,8 +50,8 @@ export function LoginPage() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      logger.error(values.email);
-      logger.error(values.password);
+      logger.info(values.email);
+      logger.info(values.password);
 
       await kcClient
         .login({

@@ -61,7 +61,7 @@ export function ProfilePage() {
         })
         .then((res) => {
           setSuccessMessage('Password reset successfully');
-          logger.error(res);
+          logger.info(res);
         })
         .catch((error: any) => {
           setErrorMessage(error.message);

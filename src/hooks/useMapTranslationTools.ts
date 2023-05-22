@@ -53,7 +53,7 @@ export function useMapTranslationTools() {
         })
         .then((res) => {
           alertFeedback('success', `Map file (name:${file.name}) uploaded.`);
-          logger.error(res);
+          logger.info(res);
           const { id, fileName, fileHash, fileUrl } = res.data.uploadFile;
           afterSuccess({ id, fileName, fileHash, fileUrl });
         })

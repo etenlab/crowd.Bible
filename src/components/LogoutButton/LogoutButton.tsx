@@ -12,8 +12,7 @@ export function LogoutButton() {
   const history = useHistory();
   const userToken = localStorage.getItem('userToken');
   const tokenObj = decodeToken(userToken!);
-  logger.error('userToken aaaaaaaaaaaaa');
-  logger.error(userToken);
+  logger.info({ at: 'LogoutButton' }, 'userToken', userToken);
 
   const handleLogout = () => {
     localStorage.clear();

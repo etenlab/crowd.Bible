@@ -34,10 +34,10 @@ export class SeedService {
   async init() {
     try {
       if (this.dataSeeded) return;
-      this.logger.error('*** data seeding started ***');
+      this.logger.info('*** data seeding started ***');
       // No lang nodes are needed anymore
       // await Promise.allSettled([this.seedLanguages()]);
-      this.logger.error('*** data seeding completed ***');
+      this.logger.info('*** data seeding completed ***');
       this.dataSeeded = true;
     } catch (error) {
       this.logger.error('seeding failed::', error);

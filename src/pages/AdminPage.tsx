@@ -145,10 +145,10 @@ export function AdminPage() {
     setSyncInLoadingStatus(LoadingStatus.LOADING);
     try {
       const syncInRes = await singletons.syncService.syncIn();
-      logger.error('syncInRes', syncInRes);
+      logger.fatal('syncInRes', syncInRes);
       setLoadResult('Syncing In was successful!');
     } catch (error) {
-      console.error('Error occurred while syncing in::', error);
+      logger.fatal('Error occurred while syncing in::', error);
       setLoadResult('Error occurred while syncing in.');
     } finally {
       setSyncInLoadingStatus(LoadingStatus.FINISHED);

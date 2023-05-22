@@ -54,7 +54,7 @@ export function RegisterPage() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      logger.error(values.email);
+      logger.info(values.email);
       setErrorMessage('');
       setSuccessMessage('');
 
@@ -72,7 +72,7 @@ export function RegisterPage() {
                 username: values.email,
                 password: values.password,
               })
-              .then((res) => {
+              .then((res: any) => {
                 localStorage.setItem('userToken', res.access_token);
                 const token: any = decodeToken(res.access_token);
                 setUser({

@@ -254,8 +254,8 @@ export class TableService {
         cell.propertyKeys[0].propertyValue.property_value,
       ).value;
 
-      this.logger.error(election!.id);
-      this.logger.error(cell.id);
+      this.logger.info(election!.id);
+      this.logger.info(cell.id);
       const candidate = await this.votingService.getCandidateByRef(
         election!.id,
         cell.id,

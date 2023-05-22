@@ -76,7 +76,7 @@ export const MapTabContent = () => {
             const startIdx = batchNumber * batchItemCount;
             const endIdx = startIdx + batchItemCount;
             const batchWords = words.slice(startIdx, endIdx);
-            logger.error(
+            logger.info(
               'hasNextBatch',
               hasNextBatch,
               startIdx,
@@ -95,7 +95,7 @@ export const MapTabContent = () => {
             }
             batchNumber++;
           }
-          logger.error('total created words', createdWords);
+          logger.info('total created words', createdWords);
         };
         const handleMapParsingCompleted = async (argMap: MapDetail) => {
           if (!singletons) return;

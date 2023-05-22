@@ -18,7 +18,6 @@ import { useDocumentTools } from '@/hooks/useDocumentTools';
 import { getAppDataSource } from './data-source';
 import getSingletons from './singletons';
 import { LoggerService } from './services/logger.service';
-import { Roarr } from 'roarr';
 
 export interface ContextType {
   states: {

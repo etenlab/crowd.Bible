@@ -110,12 +110,12 @@ export function ResetPasswordPage() {
       })
       .then((res) => {
         setTokenValid(true);
-        logger.error(res);
+        logger.info(res);
       })
       .catch((error: any) => {
         setTokenValid(false);
       });
-  }, [apolloClient, token]);
+  }, [apolloClient, token, logger]);
 
   if (!tokenValid) {
     return (

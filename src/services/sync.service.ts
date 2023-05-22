@@ -111,7 +111,7 @@ export class SyncService {
   private incrementSyncCounter() {
     this.currentSyncLayer++;
 
-    this.logger.error(`currentSyncLayer = ${this.currentSyncLayer}`);
+    this.logger.info(`currentSyncLayer = ${this.currentSyncLayer}`);
 
     localStorage.setItem(CURRENT_SYNC_LAYER_KEY, String(this.currentSyncLayer));
   }
@@ -119,7 +119,7 @@ export class SyncService {
   private setLastSyncLayer(value: number) {
     this.lastLayerSync = value;
 
-    this.logger.error(`lastSyncLayer = ${this.lastLayerSync}`);
+    this.logger.info(`lastSyncLayer = ${this.lastLayerSync}`);
 
     localStorage.setItem(LAST_SYNC_LAYER_KEY, String(this.lastLayerSync));
   }
@@ -135,7 +135,7 @@ export class SyncService {
   async syncOut() {
     const toSyncLayer = this.currentSyncLayer;
     const fromSyncLayer = this.lastLayerSync + 1;
-    this.logger.error(`Sync: from ${fromSyncLayer} to ${toSyncLayer}`);
+    this.logger.info(`Sync: from ${fromSyncLayer} to ${toSyncLayer}`);
     this.incrementSyncCounter();
 
     const syncData: SyncEntry[] = [];
@@ -166,7 +166,7 @@ export class SyncService {
     }
 
     if (syncData.length === 0) {
-      this.logger.error('Nothing to sync out');
+      this.logger.info('Nothing to sync out');
       return null;
     }
 
@@ -187,7 +187,7 @@ export class SyncService {
 
     await this.syncSessionRepository.completeSyncSession(sessionId);
 
-    this.logger.error(
+    this.logger.info(
       `Sync completed successfully (${
         syncData.length
       } tables, ${syncData.reduce(
@@ -205,7 +205,7 @@ export class SyncService {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
 
-    this.logger.error('Starting sync out...');
+    this.logger.info('Starting sync out...');
 
     try {
       const response = await axios.post(
@@ -226,7 +226,7 @@ export class SyncService {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
 
-    this.logger.error('Starting sync in...');
+    this.logger.info('Starting sync in...');
 
     const lastSyncParam = this.getLastSyncFromServerTime();
 
@@ -236,9 +236,9 @@ export class SyncService {
 
       if (lastSyncParam) {
         params['last-sync'] = lastSyncParam;
-        this.logger.error(`Doing sync from ${lastSyncParam}`);
+        this.logger.info(`Doing sync from ${lastSyncParam}`);
       } else {
-        this.logger.error('Doing first sync');
+        this.logger.info('Doing first sync');
       }
 
       const response = await axios.get(`${this.serverUrl}/sync/from-server`, {
@@ -251,7 +251,7 @@ export class SyncService {
       const entries = data.entries;
 
       if (entries.length === 0) {
-        this.logger.error('No new sync entries from server');
+        this.logger.info('No new sync entries from server');
         return null;
       }
 
@@ -272,9 +272,9 @@ export class SyncService {
    */
   private async saveSyncEntries(entries: SyncEntry[]) {
     if (entries.length < 1) {
-      this.logger.error('Nothing to sync in');
+      this.logger.info('Nothing to sync in');
     } else {
-      this.logger.error('Saving sync entries...');
+      this.logger.info('Saving sync entries...');
     }
 
     for (const entry of entries) {
@@ -311,7 +311,7 @@ export class SyncService {
             .where(`${pkColumn} = :pkValue`, {
               pkValue,
             });
-          this.logger.error(q.getSql(), q.getParameters());
+          this.logger.info(q.getSql(), q.getParameters());
           await q.execute();
         } else {
           const q = this.dbService.dataSource
@@ -320,12 +320,12 @@ export class SyncService {
             .insert()
             .into(entity)
             .values({ ...row, [pkProperty]: row[pkColumn] }); //typeorm wants propery name as key here
-          this.logger.error(q.getSql(), q.getParameters());
+          this.logger.info(q.getSql(), q.getParameters());
           await q.execute();
         }
       }
     }
 
-    this.logger.error('Sync entries saved');
+    this.logger.info('Sync entries saved');
   }
 }

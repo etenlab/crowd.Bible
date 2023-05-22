@@ -49,10 +49,10 @@ export function WelcomePage() {
               spaceBetween={50}
               slidesPerView={1}
               onSlideChange={() => {
-                logger.error('slide change');
+                logger.info('slide change');
               }}
               onSwiper={(swiper) => {
-                logger.error(swiper);
+                logger.info(swiper);
               }}
             >
               <SwiperSlide>
