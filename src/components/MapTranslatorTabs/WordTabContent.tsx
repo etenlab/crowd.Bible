@@ -1,13 +1,15 @@
 import { IonIcon } from '@ionic/react';
 import React, { useCallback, useState } from 'react';
-import { Box, Divider, Stack } from '@mui/material';
+
 import {
   Input,
   Typography,
   LangSelector,
   LanguageInfo,
   Button,
+  MuiMaterial,
 } from '@eten-lab/ui-kit';
+
 import { WordDto } from '@/src/dtos/word.dto';
 import {
   NodeTypeConst,
@@ -23,9 +25,11 @@ import {
   compareLangInfo,
   langInfo2String,
   wordProps2LangInfo,
-} from '../../utils/langUtils';
-import { WordMapper } from '../../mappers/word.mapper';
-import { useAppContext } from '../../hooks/useAppContext';
+} from '@/utils/langUtils';
+import { WordMapper } from '@/mappers/word.mapper';
+import { useAppContext } from '@/hooks/useAppContext';
+
+const { Box, Divider, Stack } = MuiMaterial;
 
 type Item = {
   translations?: Array<WordDto & { isNew: boolean }>;

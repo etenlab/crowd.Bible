@@ -31,8 +31,31 @@ export function useDocument() {
     }
   }, [singletons, alertFeedback, setLoadingState, logger]);
 
+  const listDocumentByLanguageInfo = useCallback(
+    async (langInfo: LanguageInfo) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at listDocument');
+        return [];
+      }
+
+      try {
+        setLoadingState(true);
+        const result =
+          await singletons.documentService.listDocumentByLanguageInfo(langInfo);
+        setLoadingState(false);
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return [];
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
   const getDocument = useCallback(
-    async (name: string) => {
+    async (name: string, langInfo: LanguageInfo) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at getDocument');
         return [];
@@ -45,7 +68,10 @@ export function useDocument() {
 
       try {
         setLoadingState(true);
-        const result = await singletons.documentService.getDocument(name);
+        const result = await singletons.documentService.getDocument(
+          name,
+          langInfo,
+        );
         setLoadingState(false);
         return result;
       } catch (err) {
@@ -58,8 +84,32 @@ export function useDocument() {
     [singletons, alertFeedback, setLoadingState, logger],
   );
 
+  const getDocumentById = useCallback(
+    async (documentId: Nanoid) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at getDocument');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.documentService.getDocumentById(
+          documentId,
+        );
+        setLoadingState(false);
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
   const createOrFindDocument = useCallback(
-    async (name: string) => {
+    async (name: string, langInfo: LanguageInfo) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at createDocument');
         return null;
@@ -74,6 +124,7 @@ export function useDocument() {
         setLoadingState(true);
         const document = await singletons.documentService.getDocument(
           name.trim(),
+          langInfo,
         );
 
         if (document) {
@@ -83,6 +134,7 @@ export function useDocument() {
         }
         const result = await singletons.documentService.createOrFindDocument(
           name,
+          langInfo,
         );
 
         setLoadingState(false);
@@ -168,24 +220,15 @@ export function useDocument() {
 
       try {
         setLoadingState(true);
-        const document = await singletons.documentService.createOrFindApp(
+        const app = await singletons.documentService.createOrFindApp(
           name.trim(),
           languageInfo,
-        );
-
-        if (document) {
-          setLoadingState(false);
-          alertFeedback('warning', 'Already exists a document with same name!');
-          return null;
-        }
-        const result = await singletons.documentService.createOrFindDocument(
-          name,
         );
 
         setLoadingState(false);
         alertFeedback('success', 'Created a new document!');
 
-        return result;
+        return app;
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
@@ -197,9 +240,11 @@ export function useDocument() {
   );
 
   return {
-    createOrFindDocument,
+    listDocumentByLanguageInfo,
     listDocument,
+    createOrFindDocument,
     getDocument,
+    getDocumentById,
     createOrFindApp,
     listApp,
     getApp,

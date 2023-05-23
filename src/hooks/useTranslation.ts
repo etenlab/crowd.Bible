@@ -4,6 +4,8 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { UserDto } from '@/dtos/user.dto';
 
+import { compareLangInfo } from '@/utils/langUtils';
+
 export function useTranslation() {
   const {
     states: {
@@ -164,8 +166,55 @@ export function useTranslation() {
     [singletons, alertFeedback, targetLanguage, setLoadingState, logger],
   );
 
-  const getRecommendedTranslationId = useCallback(
-    async (originalId: Nanoid, languageInfo?: LanguageInfo) => {
+  const getRecommendedTranslationCandidateId = useCallback(
+    async (
+      originalId: Nanoid,
+      originalLanguageInfo: LanguageInfo,
+      languageInfo?: LanguageInfo,
+    ) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at createTranslation');
+        return null;
+      }
+
+      if (!targetLanguage && !languageInfo) {
+        alertFeedback('error', 'Not exists target language!');
+        return null;
+      }
+
+      if (
+        compareLangInfo(originalLanguageInfo, languageInfo || targetLanguage!)
+      ) {
+        return originalId;
+      }
+
+      try {
+        setLoadingState(true);
+
+        const recommendedId =
+          await singletons.translationService.getRecommendedTranslationCandidateId(
+            originalId,
+            languageInfo || targetLanguage!,
+          );
+
+        setLoadingState(false);
+        return recommendedId;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, targetLanguage, setLoadingState],
+  );
+
+  const getRecommendedWordSequenceTranslation = useCallback(
+    async (
+      originalId: Nanoid,
+      originalLanguageInfo: LanguageInfo,
+      languageInfo?: LanguageInfo,
+    ) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at createTranslation');
         return null;
@@ -177,18 +226,18 @@ export function useTranslation() {
       }
 
       try {
+        if (
+          compareLangInfo(originalLanguageInfo, languageInfo || targetLanguage!)
+        ) {
+          return singletons.wordSequenceService.getWordSequenceById(originalId);
+        }
         setLoadingState(true);
 
         const recommendedId =
-          await singletons.translationService.getRecommendedTranslationId(
+          await singletons.translationService.getRecommendedWordSequenceTranslation(
             originalId,
-            targetLanguage || languageInfo!,
+            languageInfo || targetLanguage!,
           );
-
-        if (!recommendedId) {
-          setLoadingState(false);
-          return null;
-        }
 
         setLoadingState(false);
         return recommendedId;
@@ -260,7 +309,8 @@ export function useTranslation() {
     createOrFindWordSequenceTranslation,
     createOrFindDefinitionTranslation,
     createOrFindWordTranslation,
-    getRecommendedTranslationId,
+    getRecommendedTranslationCandidateId,
+    getRecommendedWordSequenceTranslation,
     listTranslationsByWordSequenceId,
   };
 }

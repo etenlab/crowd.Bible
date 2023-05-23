@@ -14,7 +14,7 @@ import { Node, Relationship } from '@/src/models';
 import { WordSequenceDto, SubWordSequenceDto } from '@/dtos/word-sequence.dto';
 
 import { WordSequenceMapper } from '@/mappers/word-sequence.mapper';
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 
 export class WordSequenceService {
   constructor(
@@ -100,9 +100,16 @@ export class WordSequenceService {
     creatorId: Nanoid,
   ): Promise<Node> {
     const user = await this.graphFirstLayerService.readNode(creatorId);
+    const parentNode = await this.graphFirstLayerService.readNode(
+      parentWordSequenceId,
+    );
 
     if (!user) {
       throw new Error('Not exists given creator');
+    }
+
+    if (!parentNode) {
+      throw new Error('Not exists given WordSequence');
     }
 
     const parentWordSequence = await this.getWordSequenceById(
@@ -118,12 +125,15 @@ export class WordSequenceService {
       .slice(position, position + len)
       .join(' ');
 
-    const subWordSequence = await this.createWordSequence({
-      text: subText,
-      creatorId: creatorId,
-      languageInfo: parentWordSequence.languageInfo,
-      withWordsRelationship: false,
-    });
+    const subWordSequence =
+      subText === parentWordSequence.text
+        ? parentNode
+        : await this.createWordSequence({
+            text: subText,
+            creatorId: creatorId,
+            languageInfo: parentWordSequence.languageInfo,
+            withWordsRelationship: false,
+          });
 
     await this.graphSecondLayerService.createRelationshipFromObject(
       RelationshipTypeConst.WORD_SEQUENCE_TO_SUB_WORD_SEQUENCE,
@@ -152,6 +162,8 @@ export class WordSequenceService {
         'toNodeRelationships.toNode.propertyKeys.propertyValue',
       ],
     );
+
+    console.log('word_sequence ===>', word_sequence);
 
     if (word_sequence === null) {
       return null;
@@ -212,7 +224,7 @@ export class WordSequenceService {
 
   async getWordSequenceByDocumentId(
     documentId: Nanoid,
-  ): Promise<Nanoid | null> {
+  ): Promise<WordSequenceDto | null> {
     const document = await this.graphFirstLayerService.readNode(documentId);
 
     if (!document) {
@@ -242,7 +254,7 @@ export class WordSequenceService {
       return null;
     }
 
-    return wordSequence.id;
+    return this.getWordSequenceById(wordSequence.id);
   }
 
   async listSubWordSequenceByWordSequenceId(
@@ -254,8 +266,10 @@ export class WordSequenceService {
       [
         'toNodeRelationships',
         'toNodeRelationships.propertyKeys',
-        'toNodeRelationships.propertyKeys.propertyValues',
+        'toNodeRelationships.propertyKeys.propertyValue',
         'toNodeRelationships.toNode',
+        'toNodeRelationships.toNode.propertyKeys',
+        'toNodeRelationships.toNode.propertyKeys.propertyValue',
         'toNodeRelationships.toNode.toNodeRelationships',
         'toNodeRelationships.toNode.toNodeRelationships.toNode',
       ],

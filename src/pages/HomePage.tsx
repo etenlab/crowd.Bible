@@ -13,7 +13,7 @@ const linkGroups = [
     group: 'Document Tools',
     linkItems: [
       {
-        to: '/documents-list',
+        to: RouteConst.DOCUMENTS_LIST,
         label: 'Documents viewer',
         onlineOnly: true,
         implemented: true,
@@ -31,7 +31,11 @@ const linkGroups = [
         implemented: true,
       },
       { to: '/feedback', label: 'Feedback', implemented: true },
-      { to: '/translation', label: 'Translation editor', implemented: true },
+      {
+        to: RouteConst.TRANSLATION_DOCUMENTS_LIST,
+        label: 'Translation editor',
+        implemented: true,
+      },
       { to: '/commentary', label: 'Commentary viewer', implemented: true },
       { to: '/versification', label: 'Versification editor', onlineOnly: true },
       { to: '/alignment', label: 'Alignment editor' },

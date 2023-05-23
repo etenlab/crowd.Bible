@@ -24,6 +24,8 @@ import {
   WordSequenceTranslationDto,
 } from '@/dtos/word-sequence.dto';
 
+import { RouteConst } from '@/constants/route.constant';
+
 const { Stack, Divider, IconButton } = MuiMaterial;
 
 function Voting({
@@ -55,16 +57,15 @@ function Voting({
 function Translation({
   translation,
   isCheckbox,
-}: // onChangeVote,
-{
+}: {
   translation: WordSequenceTranslationDto;
   isCheckbox: boolean;
-  // onChangeVote: (translationId: Nanoid, candidateId: Nanoid) => void;
 }) {
-  const { translationId, upVotes, downVotes, candidateId } = translation;
+  const { translationId, candidateId } = translation;
 
   const { getColor } = useColorModeContext();
   const { getWordSequenceById } = useWordSequence();
+  const { getVotesStats } = useVote();
   const {
     states: {
       global: { singletons },
@@ -74,6 +75,8 @@ function Translation({
   const [translatedWordSequence, setTranslatedWordSequence] =
     useState<WordSequenceDto | null>(null);
 
+  const [voteStats, setVoteStats] = useState<VotesStatsRow | null>(null);
+
   const reloadTranslation = useCallback(async () => {
     if (!singletons) {
       return;
@@ -81,7 +84,16 @@ function Translation({
 
     const wordSequence = await getWordSequenceById(translationId);
     setTranslatedWordSequence(wordSequence);
-  }, [singletons, translationId, getWordSequenceById]);
+    const _voteStats = await getVotesStats(candidateId);
+    console.log('_voteStats ===>', _voteStats);
+    setVoteStats(_voteStats);
+  }, [
+    singletons,
+    candidateId,
+    getVotesStats,
+    translationId,
+    getWordSequenceById,
+  ]);
 
   useEffect(() => {
     reloadTranslation();
@@ -117,15 +129,9 @@ function Translation({
             justifyContent="space-between"
             alignItems="center"
           >
-            <Voting
-              vote={{
-                candidateId,
-                upVotes,
-                downVotes,
-              }}
-              onChangeVote={handleChangeVote}
-            />
-
+            {voteStats ? (
+              <Voting vote={voteStats} onChangeVote={handleChangeVote} />
+            ) : null}
             <IconButton onClick={handleClickDiscussionButton}>
               <BiMessageRounded
                 style={{
@@ -167,6 +173,8 @@ export function TranslationList({
     WordSequenceTranslationDto[]
   >([]);
 
+  console.log(translations);
+
   useEffect(() => {
     if (!documentId || !singletons) {
       return;
@@ -204,7 +212,9 @@ export function TranslationList({
 
   const addMyTranslationComponent =
     currentTab === 'mine' ? (
-      <Link to={`/translation-edit/${documentId}/${wordSequenceId}`}>
+      <Link
+        to={`${RouteConst.TRANSLATION_EDIT}/${documentId}/${wordSequenceId}`}
+      >
         <Button
           variant="contained"
           startIcon={<FiPlus />}
@@ -215,29 +225,6 @@ export function TranslationList({
         </Button>
       </Link>
     ) : null;
-
-  // const handleChangeVote = async (
-  //   translationId: Nanoid,
-  //   candidateId: Nanoid,
-  // ) => {
-  //   const vote = await getVotesStats(candidateId);
-
-  //   if (!vote) {
-  //     return;
-  //   }
-
-  //   setTranslations((translations) =>
-  //     translations.map((translation) => {
-  //       if (translation.id === translationId) {
-  //         return {
-  //           ...translation,
-  //           vote,
-  //         };
-  //       }
-  //       return translation;
-  //     }),
-  //   );
-  // };
 
   return (
     <>
@@ -257,7 +244,6 @@ export function TranslationList({
             key={item.translationId}
             translation={item}
             isCheckbox={isCheckbox}
-            // onChangeVote={handleChangeVote}
           />
         ))}
       </Stack>

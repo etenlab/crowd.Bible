@@ -3,62 +3,79 @@ import { useHistory } from 'react-router-dom';
 
 import { IonContent } from '@ionic/react';
 
-import { CrowdBibleUI, PlusButton, BiFile } from '@eten-lab/ui-kit';
+import {
+  MuiMaterial,
+  CrowdBibleUI,
+  PlusButton,
+  BiFile,
+  LangSelector,
+  LanguageInfo,
+} from '@eten-lab/ui-kit';
 
 import { DocumentDto } from '@/dtos/document.dto';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useDocument } from '@/hooks/useDocument';
 
-import { Link } from '@/components/Link';
-import { LanguageSelectionBox } from '@/components/LanguageSelectionBox';
+import { compareLangInfo } from '@/utils/langUtils';
+import { RouteConst } from '@/constants/route.constant';
 
-const { ButtonList } = CrowdBibleUI;
-// const { ButtonList, HeadBox } = CrowdBibleUI;
+import { LanguageStatus } from '@/components/LanguageStatusBar';
+
+const { ButtonList, HeadBox } = CrowdBibleUI;
+const { Box } = MuiMaterial;
 
 type ButtonListItemType = CrowdBibleUI.ButtonListItemType;
 
 export function DocumentsListPage() {
   const history = useHistory();
+  const {
+    states: {
+      global: { singletons },
+      documentTools: { sourceLanguage },
+    },
+    actions: { setSourceLanguage, setLoadingState },
+  } = useAppContext();
 
-  const { listDocument } = useDocument();
+  const { listDocument, listDocumentByLanguageInfo } = useDocument();
 
   const [documents, setDocuments] = useState<DocumentDto[]>([]);
   const [searchStr, setSearchStr] = useState<string>('');
-
-  const {
-    states: {
-      global: { user, singletons },
-      // documentTools: { sourceLanguage, targetLanguage },
-    },
-    // actions: { setSourceLanguage, setTargetLanguage },
-  } = useAppContext();
+  const [filterOpen, setFilterOpen] = useState<boolean>(false);
 
   // Fetch Document Lists from db
   useEffect(() => {
     if (singletons) {
-      listDocument().then(setDocuments);
+      if (sourceLanguage) {
+        listDocumentByLanguageInfo(sourceLanguage).then(setDocuments);
+      } else {
+        listDocument().then(setDocuments);
+      }
     }
-  }, [listDocument, singletons]);
-
-  // const handleSetSourceLanguage = (value: LanguageDto | null) => {
-  //   setSourceLanguage(value);
-  // };
-
-  // const handleSetTargetLanguage = (value: LanguageDto | null) => {
-  //   setTargetLanguage(value);
-  // };
+  }, [listDocument, singletons, listDocumentByLanguageInfo, sourceLanguage]);
 
   const handleChangeSearchStr = (str: string) => {
     setSearchStr(str);
   };
 
+  const handleClickLanguageFilter = () => {
+    setFilterOpen((open) => !open);
+  };
+
+  const handleSetSourceLanguage = (
+    _langTag: string,
+    selected: LanguageInfo,
+  ) => {
+    if (compareLangInfo(selected, sourceLanguage)) return;
+    setSourceLanguage(selected);
+  };
+
   const handleClickDocument = (documentId: string) => {
-    if (user?.roles.includes('translator')) {
-      history.push(`/translation/${documentId}`);
-    } else if (user?.roles.includes('reader')) {
-      history.push(`/feedback/${documentId}`);
-    }
+    history.push(`${RouteConst.DOCUMENTS_LIST}/${documentId}`);
+  };
+
+  const handleClickAddDocumentBtn = () => {
+    history.push(`${RouteConst.ADD_DOCUMENT}`);
   };
 
   const items: ButtonListItemType[] = useMemo(() => {
@@ -78,19 +95,26 @@ export function DocumentsListPage() {
     }));
   }, [documents]);
 
+  const langSelectorCom = filterOpen ? (
+    <LangSelector
+      selected={sourceLanguage || undefined}
+      onChange={handleSetSourceLanguage}
+      setLoadingState={setLoadingState}
+    />
+  ) : null;
+
   return (
     <IonContent>
-      {/* <HeadBox
+      <HeadBox
         title="Documents"
-        languageSelector={{
-          languageList,
-          source: sourceLanguage,
-          target: targetLanguage,
-          onChangeSource: handleSetSourceLanguage,
-          onChangeTarget: handleSetTargetLanguage,
+        filter={{
+          onClick: handleClickLanguageFilter,
         }}
-      /> */}
-      <LanguageSelectionBox />
+      />
+      <Box sx={{ padding: '20px' }}>
+        <LanguageStatus lang={sourceLanguage} />
+        {langSelectorCom}
+      </Box>
       <ButtonList
         label="List of Docs"
         search={{
@@ -102,9 +126,7 @@ export function DocumentsListPage() {
         items={items}
         onClick={handleClickDocument}
         toolBtnGroup={
-          <Link to="/add-document">
-            <PlusButton variant="primary" onClick={() => {}} />
-          </Link>
+          <PlusButton variant="primary" onClick={handleClickAddDocumentBtn} />
         }
       />
     </IonContent>

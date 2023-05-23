@@ -1,7 +1,7 @@
 import { IonChip, IonContent, useIonLoading, useIonRouter } from '@ionic/react';
-import { Box } from '@mui/material';
+
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { CrowdBibleUI, Typography } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
 import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
 import { useSingletons } from '@/src/hooks/useSingletons';
@@ -10,6 +10,8 @@ import { WordMapper } from '@/src/mappers/word.mapper';
 import { useMapTranslationTools } from '../../hooks/useMapTranslationTools';
 import axios from 'axios';
 const { TitleWithIcon } = CrowdBibleUI;
+
+const { Box } = MuiMaterial;
 
 const PADDING = 20;
 export const MapDetailPage = () => {

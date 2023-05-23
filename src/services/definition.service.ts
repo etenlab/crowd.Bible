@@ -15,7 +15,7 @@ import { VotingService } from './voting.service';
 
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
 import { makeFindPropsByLang } from '../utils/langUtils';
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 import { LanguageMapper } from '@/mappers/language.mapper';
 
 export class DefinitionService {

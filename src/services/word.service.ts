@@ -15,7 +15,7 @@ import { Node, Relationship } from '@/src/models';
 import { WordDto } from '@/dtos/word.dto';
 import { WordMapper } from '@/mappers/word.mapper';
 
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 
 import { NodeRepository } from '@/repositories/node/node.repository';
 import { makeFindPropsByLang } from '@/utils/langUtils';
