@@ -1,6 +1,6 @@
 import { actions } from './documentTools.actions';
 import { type ActionType } from '.';
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 
 export interface StateType {
   sourceLanguage: LanguageInfo | null;

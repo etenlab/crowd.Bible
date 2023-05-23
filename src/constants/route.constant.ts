@@ -2,6 +2,14 @@ export enum RouteConst {
   HOME = '/home',
   APPLICATIONS = '/applications',
 
+  DOCUMENTS_LIST = '/documents-list',
+  ADD_DOCUMENT = '/add-document',
+
+  TRANSLATION_DOCUMENTS_LIST = '/translation-documents-list',
+  TRANSLATION = '/translation',
+  TRANSLATION_EDIT = '/translation-edit',
+  TRANSLATION_CANDIDATES = '/translation-candidates',
+
   SITE_TEXT_LIST = '/site-text-list',
   SITE_TEXT_EDITOR = '/site-text-editor',
   SITE_TEXT_DETAIL = '/site-text-detail',

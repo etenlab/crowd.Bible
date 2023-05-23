@@ -5,7 +5,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { WordSequenceDto } from '@/dtos/word-sequence.dto';
 import { UserDto } from '@/dtos/user.dto';
 
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 
 export function useWordSequence() {
   const {
@@ -230,7 +230,7 @@ export function useWordSequence() {
   );
 
   const getWordSequenceByDocumentId = useCallback(
-    async (documentId: Nanoid): Promise<Nanoid | null> => {
+    async (documentId: Nanoid): Promise<WordSequenceDto | null> => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at getWordSequenceFromText');
         return null;

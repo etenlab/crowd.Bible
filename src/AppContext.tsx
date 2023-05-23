@@ -10,7 +10,7 @@ import {
   type PrefersColorSchemeType,
 } from '@/reducers/global.reducer';
 import { type StateType as DocumentToolsStateType } from '@/reducers/documentTools.reducer';
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 
 import { useGlobal } from '@/hooks/useGlobal';
 import { useDocumentTools } from '@/hooks/useDocumentTools';

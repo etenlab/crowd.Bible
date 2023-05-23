@@ -1,0 +1,70 @@
+name: Playwright Tests
+on:
+  # pull_request:
+  #   branches: [feat/playwrite-workflow]
+  #   types: [closed]
+  push:
+    branches:
+      - feat/playwrite-workflow
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    # if: github.event.pull_request.merged == true
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_GITHUB_S3_PUSHER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_GITHUB_S3_PUSHER_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - uses: dkershner6/aws-ssm-getparameters-action@v1
+        with:
+          parameterPairs: '/dev/deploy/crowdbible/env = ENV'
+
+      - name: store env
+        run: |
+          cat << EOF > .env
+          ${{ env.ENV }}
+          CI=true
+          NODE_OPTIONS=--max-old-space-size=4096
+          EOF
+
+      - name: Load env
+        uses: xom9ikk/dotenv@v2
+
+      - name: npm ci --force
+        run: npm ci --force
+      
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      # - name: Start React app
+      #   run: |
+      #     npm start &
+
+      - name: Run Playwright tests
+        run: |
+          npx playwright test
+
+      - name: Merge pull request
+        if: success()
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'Merge pull request'
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

@@ -19,7 +19,7 @@ import { WordService } from './word.service';
 
 import { Candidate } from '@/src/models/';
 
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 import { LanguageMapper } from '@/mappers/language.mapper';
 
 export class SiteTextService {

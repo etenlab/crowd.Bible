@@ -14,12 +14,8 @@ import { Link } from '@/components/Link';
 
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useTranslation } from '@/hooks/useTranslation';
-// import { useVote } from '@/hooks/useVote';
 
 import { WordSequenceDto } from '@/dtos/word-sequence.dto';
-
-// import { ElectionTypeConst } from '@/constants/voting.constant';
-// import { TableNameConst } from '@/constants/table-name.constant';
 
 const { Box } = MuiMaterial;
 
@@ -45,13 +41,11 @@ export function TranslationEditor({
 
   const { createSubWordSequence } = useWordSequence();
   const { createOrFindWordSequenceTranslation } = useTranslation();
-  // const { createOrFindElection, addCandidate, getElectionByRef } = useVote();
 
   const [text, setText] = useState<string>('');
 
   const handleSaveTranslation = async () => {
     let subWordSequenceId: Nanoid;
-    // let electionId: Nanoid;
 
     if (typeof subWordSequence !== 'string') {
       const wordSequenceId = await createSubWordSequence(
@@ -63,34 +57,9 @@ export function TranslationEditor({
         return;
       }
 
-      // const tmpElection = await createOrFindElection(
-      //   ElectionTypeConst.TRANSLATION,
-      //   wordSequenceId,
-      //   TableNameConst.NODES,
-      //   TableNameConst.NODES,
-      // );
-
-      // if (!tmpElection) {
-      //   return;
-      // }
-
-      // electionId = tmpElection.id;
-
       subWordSequenceId = wordSequenceId;
     } else {
       subWordSequenceId = subWordSequence;
-
-      // const tmpElection = await getElectionByRef(
-      //   ElectionTypeConst.TRANSLATION,
-      //   subWordSequenceId,
-      //   TableNameConst.NODES,
-      // );
-
-      // if (!tmpElection) {
-      //   return;
-      // }
-
-      // electionId = tmpElection.id;
     }
 
     const translationId = await createOrFindWordSequenceTranslation(
