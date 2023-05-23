@@ -41,13 +41,12 @@ export function TranslationEditPage() {
       }
 
       if (!wordSequenceId) {
-        const wsId = await getWordSequenceByDocumentId(documentId);
+        const wordSequence = await getWordSequenceByDocumentId(documentId);
 
-        if (!wsId) {
+        if (!wordSequence) {
           return;
         }
 
-        const wordSequence = await getWordSequenceById(wsId);
         setOriginalWordSequence(wordSequence);
       } else {
         getWordSequenceById(wordSequenceId).then(setOriginalWordSequence);

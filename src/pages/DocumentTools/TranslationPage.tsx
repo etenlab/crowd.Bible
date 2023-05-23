@@ -3,11 +3,11 @@ import { useParams } from 'react-router-dom';
 import { IonContent } from '@ionic/react';
 
 import {
-  CrowdBibleUI,
+  FiPlus,
   Button,
   Typography,
   MuiMaterial,
-  FiPlus,
+  CrowdBibleUI,
   useColorModeContext,
 } from '@eten-lab/ui-kit';
 
@@ -16,42 +16,16 @@ import { Link } from '@/components/Link';
 
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTranslation } from '@/hooks/useTranslation';
 
 import { WordSequenceDto, SubWordSequenceDto } from '@/dtos/word-sequence.dto';
 
+import { RouteConst } from '@/constants/route.constant';
+
+import { compareLangInfo } from '@/utils/langUtils';
+
 const { DotsText } = CrowdBibleUI;
 const { Stack, Backdrop } = MuiMaterial;
-
-export const mockRanges = [
-  {
-    id: 0,
-    start: 1,
-    end: 10,
-  },
-  {
-    id: 1,
-    start: 15,
-    end: 35,
-  },
-  {
-    id: 2,
-    start: 40,
-    end: 60,
-  },
-  {
-    id: 3,
-    start: 65,
-    end: 75,
-  },
-  {
-    id: 4,
-    start: 80,
-    end: 90,
-  },
-];
-
-export const mockDocument =
-  '1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 3. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 4. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 5. From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. 6. Ut enim ad minim veniam, quis nostrud exercitation. 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 3. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 4. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 5. From its medieval origins to the digital era, learn everything there is to know about the ubiquitous lorem ipsum passage. 6. Ut enim ad minim veniam, quis nostrud exercitation.';
 
 export function TranslationPage() {
   const { documentId } = useParams<{ documentId: Nanoid }>();
@@ -61,9 +35,13 @@ export function TranslationPage() {
     getWordSequenceById,
     listSubWordSequenceByWordSequenceId,
   } = useWordSequence();
+
+  const { getRecommendedWordSequenceTranslation } = useTranslation();
+
   const {
     states: {
       global: { singletons },
+      documentTools: { sourceLanguage },
     },
   } = useAppContext();
 
@@ -77,16 +55,32 @@ export function TranslationPage() {
 
   useEffect(() => {
     (async () => {
-      if (singletons && documentId) {
-        const wordSequenceId = await getWordSequenceByDocumentId(documentId);
+      if (singletons && documentId && sourceLanguage) {
+        const original = await getWordSequenceByDocumentId(documentId);
 
-        if (!wordSequenceId) {
+        if (!original) {
           return;
         }
 
-        const wordSequence = await getWordSequenceById(wordSequenceId);
+        const wordSequence = compareLangInfo(
+          original.languageInfo,
+          sourceLanguage,
+        )
+          ? original
+          : await getRecommendedWordSequenceTranslation(
+              original.id,
+              original.languageInfo,
+              sourceLanguage,
+            );
+
+        console.log('wordSequence ===>', wordSequence);
+
+        if (!wordSequence) {
+          return;
+        }
+
         const subWordSequences = await listSubWordSequenceByWordSequenceId(
-          wordSequenceId,
+          wordSequence.id,
         );
 
         setOriginalWordSequence(wordSequence);
@@ -96,9 +90,11 @@ export function TranslationPage() {
   }, [
     documentId,
     singletons,
+    sourceLanguage,
     getWordSequenceById,
     getWordSequenceByDocumentId,
     listSubWordSequenceByWordSequenceId,
+    getRecommendedWordSequenceTranslation,
   ]);
 
   const handleDotClick = (id: unknown) => {
@@ -133,8 +129,8 @@ export function TranslationPage() {
 
   const backdropOpened = selectedSubWordSequenceId ? true : false;
   const goToEditorLink = selectedSubWordSequenceId
-    ? `/translation-edit/${documentId}/${selectedSubWordSequenceId}`
-    : `/translation-edit/${documentId}`;
+    ? `${RouteConst.TRANSLATION_EDIT}/${documentId}/${selectedSubWordSequenceId}`
+    : `${RouteConst.TRANSLATION_EDIT}/${documentId}`;
 
   return (
     <IonContent>
@@ -162,14 +158,20 @@ export function TranslationPage() {
             startIcon={<FiPlus />}
             fullWidth
             sx={{ margin: '10px 0' }}
-            disabled={true}
           >
             Add My Translation
           </Button>
         </Link>
 
-        <Link to="/translation-candidates">
-          <Button variant="text" fullWidth sx={{ margin: '10px 0' }} endIcon>
+        {/* <Link to="/translation-candidates"> */}
+        <Link to="">
+          <Button
+            variant="text"
+            fullWidth
+            sx={{ margin: '10px 0' }}
+            endIcon
+            disabled={true}
+          >
             Go To Translation List
           </Button>
         </Link>
