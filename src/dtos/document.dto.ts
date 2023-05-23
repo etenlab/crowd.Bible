@@ -3,6 +3,7 @@ import { LanguageInfo } from '@eten-lab/ui-kit';
 export interface DocumentDto {
   id: Nanoid;
   name: string;
+  languageInfo: LanguageInfo;
 }
 
 /**

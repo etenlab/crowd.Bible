@@ -14,8 +14,11 @@ export class DocumentService {
     private readonly graphSecondLayerService: GraphSecondLayerService,
   ) {}
 
-  async createOrFindDocument(name: string): Promise<DocumentDto> {
-    const document = await this.getDocument(name);
+  async createOrFindDocument(
+    name: string,
+    langInfo: LanguageInfo,
+  ): Promise<DocumentDto> {
+    const document = await this.getDocument(name, langInfo);
 
     if (document) {
       return document;
@@ -25,32 +28,67 @@ export class DocumentService {
       NodeTypeConst.DOCUMENT,
       {
         name,
+        [PropertyKeyConst.LANGUAGE_TAG]: langInfo.lang.tag,
+        [PropertyKeyConst.DIALECT_TAG]: langInfo.dialect?.tag,
+        [PropertyKeyConst.REGION_TAG]: langInfo.region?.tag,
       },
     );
 
     return {
       id: newDocument.id,
       name,
+      languageInfo: langInfo,
     };
   }
 
-  async getDocument(name: string): Promise<DocumentDto | null> {
-    const document = await this.graphFirstLayerService.getNodeByProp(
+  async getDocument(
+    name: string,
+    langInfo: LanguageInfo,
+  ): Promise<DocumentDto | null> {
+    const documentIds = await this.graphFirstLayerService.getNodeIdsByProps(
       NodeTypeConst.DOCUMENT,
-      {
-        key: PropertyKeyConst.NAME,
-        value: name,
-      },
+      [
+        {
+          key: PropertyKeyConst.NAME,
+          value: name,
+        },
+        {
+          key: PropertyKeyConst.LANGUAGE_TAG,
+          value: langInfo.lang.tag,
+        },
+        {
+          key: PropertyKeyConst.DIALECT_TAG,
+          value: langInfo.dialect?.tag,
+        },
+        {
+          key: PropertyKeyConst.REGION_TAG,
+          value: langInfo.region?.tag,
+        },
+      ],
     );
 
-    if (document == null) {
+    if (documentIds.length === 0) {
       return null;
     }
 
     return {
-      id: document.id,
+      id: documentIds[0],
       name,
+      languageInfo: langInfo,
     };
+  }
+
+  async getDocumentById(id: Nanoid): Promise<DocumentDto | null> {
+    const documentNode = await this.graphFirstLayerService.readNode(id, [
+      'propertyKeys',
+      'propertyKeys.propertyValue',
+    ]);
+
+    if (documentNode === null) {
+      return null;
+    }
+
+    return DocumentMapper.entityToDto(documentNode);
   }
 
   async listDocument(): Promise<DocumentDto[]> {
@@ -59,6 +97,40 @@ export class DocumentService {
     );
 
     return documents.map(DocumentMapper.entityToDto);
+  }
+
+  async listDocumentByLanguageInfo(
+    langInfo: LanguageInfo,
+  ): Promise<DocumentDto[]> {
+    const documentIds = await this.graphFirstLayerService.getNodeIdsByProps(
+      NodeTypeConst.DOCUMENT,
+      [
+        {
+          key: PropertyKeyConst.LANGUAGE_TAG,
+          value: langInfo.lang.tag,
+        },
+        {
+          key: PropertyKeyConst.DIALECT_TAG,
+          value: langInfo.dialect?.tag,
+        },
+        {
+          key: PropertyKeyConst.REGION_TAG,
+          value: langInfo.region?.tag,
+        },
+      ],
+    );
+
+    const documentList = [];
+
+    for (const id of documentIds) {
+      const document = await this.getDocumentById(id);
+      if (!document) {
+        continue;
+      }
+      documentList.push(document);
+    }
+
+    return documentList;
   }
 
   /**
