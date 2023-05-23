@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
 import { useVote } from './useVote';
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 import { NodeTypeConst } from '../constants/graph.constant';
 
 export function useDictionaryTools(

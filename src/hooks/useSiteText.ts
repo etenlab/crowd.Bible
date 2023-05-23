@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 import { VotableContent } from '../dtos/votable-item.dto';
 
 import { SiteTextDto } from '@/dtos/site-text.dto';

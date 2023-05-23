@@ -13,7 +13,10 @@ import {
 import { TableNameConst } from '@eten-lab/models';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 
-import { WordSequenceTranslationDto } from '@/dtos/word-sequence.dto';
+import {
+  WordSequenceDto,
+  WordSequenceTranslationDto,
+} from '@/dtos/word-sequence.dto';
 
 import { LanguageMapper } from '@/mappers/language.mapper';
 
@@ -98,6 +101,7 @@ export class TranslationService {
 
     const translated = await this.wordSequenceService.createWordSequence({
       ...translation,
+      withWordsRelationship: false,
     });
 
     const { electionId, candidateId, translatedId, translationRelationshipId } =
@@ -242,7 +246,7 @@ export class TranslationService {
   //   };
   // }
 
-  async getRecommendedTranslationId(
+  async getRecommendedTranslationCandidateId(
     originalId: Nanoid,
     languageInfo: LanguageInfo,
   ): Promise<Nanoid | null> {
@@ -253,7 +257,7 @@ export class TranslationService {
     );
 
     if (!election) {
-      throw new Error('Not exists election entity with given props');
+      return null;
     }
 
     const allCandidates = await this.votingService.getCandidateListByElectionId(
@@ -319,6 +323,34 @@ export class TranslationService {
     return highestVoted.id;
   }
 
+  async getRecommendedWordSequenceTranslation(
+    originalId: Nanoid,
+    languageInfo: LanguageInfo,
+  ): Promise<WordSequenceDto | null> {
+    const recommendedRef = await this.getRecommendedTranslationCandidateId(
+      originalId,
+      languageInfo,
+    );
+
+    if (!recommendedRef) {
+      return null;
+    }
+
+    const rel = await this.graphFirstLayerService.readRelationship(
+      recommendedRef,
+      ['toNode', 'toNode.propertyKeys', 'toNode.propertyKeys.propertyValue'],
+      {
+        id: recommendedRef,
+      },
+    );
+
+    if (!rel || !rel.toNode) {
+      return null;
+    }
+
+    return this.wordSequenceService.getWordSequenceById(rel.toNode.id);
+  }
+
   async listTranslationsByWordSequenceId(
     wordSequenceId: Nanoid,
     languageInfo: LanguageInfo,
@@ -346,6 +378,16 @@ export class TranslationService {
     }
 
     const translations: WordSequenceTranslationDto[] = [];
+
+    const election = await this.votingService.getElectionByRef(
+      ElectionTypeConst.TRANSLATION,
+      wordSequenceId,
+      TableNameConst.NODES,
+    );
+
+    if (!election) {
+      return [];
+    }
 
     for (const toNodeRelationship of wordSequence.toNodeRelationships) {
       if (!toNodeRelationship.toNode.id) {
@@ -377,20 +419,21 @@ export class TranslationService {
         continue;
       }
 
-      const translationId = toNodeRelationship.toNode.id;
-      const election = await this.votingService.getElectionByRef(
-        ElectionTypeConst.TRANSLATION,
+      const translationId = translatedWordSequence.id;
+
+      const transRel = await this.graphFirstLayerService.findRelationship(
         wordSequenceId,
-        TableNameConst.NODES,
+        translationId,
+        RelationshipTypeConst.WORD_SEQUENCE_TO_TRANSLATION,
       );
 
-      if (!election) {
+      if (!transRel) {
         continue;
       }
 
-      const candidate = await this.votingService.getCandidateByRef(
+      const candidate = await this.votingService.addCandidate(
         election.id,
-        translationId,
+        transRel.id,
       );
 
       if (!candidate) {
