@@ -5,7 +5,7 @@ import { IonContent } from '@ionic/react';
 import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 
-import { mockDocument } from './TranslationPage';
+import { mockDocument } from './ReaderQAPage';
 
 import { useAppContext } from '@/hooks/useAppContext';
 

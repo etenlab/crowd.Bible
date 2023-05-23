@@ -11,7 +11,7 @@ import {
 
 import { MapDto } from '@/dtos/map.dto';
 import { MapMapper } from '@/mappers/map.mapper';
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 
 import { makeFindPropsByLang } from '@/utils/langUtils';
 export class MapService {

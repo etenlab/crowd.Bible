@@ -7,7 +7,7 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { compareLangInfo } from '../../utils/langUtils';
+import { compareLangInfo } from '@/utils/langUtils';
 
 const { Stack } = MuiMaterial;
 

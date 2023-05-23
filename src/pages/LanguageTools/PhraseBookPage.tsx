@@ -13,7 +13,7 @@ import { VotableItem } from '../../dtos/votable-item.dto';
 import { useAppContext } from '../../hooks/useAppContext';
 import { useDictionaryTools } from '../../hooks/useDictionaryTools';
 import { NodeTypeConst } from '../../constants/graph.constant';
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 const { Box, Divider } = MuiMaterial;
 
 const {

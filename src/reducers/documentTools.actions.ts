@@ -1,4 +1,4 @@
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 
 export const actions = {
   SET_SOURCE_LANGUAGE: 'SET_SOURCE_LANGUAGE',
