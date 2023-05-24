@@ -5,6 +5,7 @@ import { reducer, loadPersistedStore } from '@/reducers/index';
 import {
   type IUser,
   type RoleType,
+  type IMode,
   type StateType as GlobalStateType,
   type FeedbackType,
   type PrefersColorSchemeType,
@@ -27,6 +28,7 @@ export interface ContextType {
   actions: {
     setUser: (user: IUser) => void;
     setRole: (roles: RoleType) => void;
+    setMode: (mode: IMode) => void;
     setPrefersColorScheme: (themeMode: PrefersColorSchemeType) => void;
     setConnectivity: (connectivity: boolean) => void;
     logout: () => void;
@@ -56,6 +58,7 @@ export function AppContextProvider({ children }: AppProviderProps) {
     closeFeedback,
     setRole,
     setUser,
+    setMode,
     setConnectivity,
     setPrefersColorScheme,
     logout,
@@ -95,6 +98,7 @@ export function AppContextProvider({ children }: AppProviderProps) {
       alertFeedback,
       setRole,
       setUser,
+      setMode,
       setConnectivity,
       setPrefersColorScheme,
       setLoadingState,

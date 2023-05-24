@@ -2,6 +2,7 @@ import {
   type FeedbackType,
   type RoleType,
   type IUser,
+  type IMode,
   type PrefersColorSchemeType,
 } from './global.reducer';
 import { type ISingletons } from '@/src/singletons';
@@ -11,6 +12,7 @@ export const actions = {
   CLOSE_FEEDBACK: 'CLOSE_FEEDBACK',
   SET_ROLE: 'SET_ROLE',
   SET_USER: 'SET_USER',
+  SET_MODE: 'SET_MODE',
   SET_PREFERS_COLOR_SCHEME: 'SET_PREFERS_COLOR_SCHEME',
   SET_CONNECTIVITY: 'SET_CONNECTIVITY',
   LOGOUT: 'LOGOUT',
@@ -30,6 +32,13 @@ export function setRole(role: RoleType) {
   return {
     type: actions.SET_ROLE,
     payload: role,
+  };
+}
+
+export function setMode(mode: IMode) {
+  return {
+    type: actions.SET_MODE,
+    payload: mode,
   };
 }
 

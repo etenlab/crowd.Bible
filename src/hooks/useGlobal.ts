@@ -3,6 +3,7 @@ import { useRef, type Dispatch, useCallback } from 'react';
 import {
   setRole as setRoleAction,
   setUser as setUserAction,
+  setMode as setModeAction,
   alertFeedback as alertFeedbackAction,
   closeFeedback as closeFeedbackAction,
   setPrefersColorScheme as setPrefersColorSchemeAction,
@@ -18,6 +19,7 @@ import {
   type FeedbackType,
   type RoleType,
   type IUser,
+  type IMode,
   type PrefersColorSchemeType,
 } from '@/reducers/global.reducer';
 import { type ISingletons } from '@/src/singletons';
@@ -37,6 +39,10 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
 
   const setRole = useCallback((role: RoleType) => {
     dispatchRef.current.dispatch(setRoleAction(role));
+  }, []);
+
+  const setMode = useCallback((mode: IMode) => {
+    dispatchRef.current.dispatch(setModeAction(mode));
   }, []);
 
   const setPrefersColorScheme = useCallback(
@@ -80,6 +86,7 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
   return {
     setRole,
     setUser,
+    setMode,
     logout,
     setConnectivity,
     setPrefersColorScheme,

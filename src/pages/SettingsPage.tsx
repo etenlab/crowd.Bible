@@ -10,10 +10,10 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { type RoleType } from '@/reducers/global.reducer';
+import { IMode, type RoleType } from '@/reducers/global.reducer';
 
 const { VerticalRadioList } = CrowdBibleUI;
-const { Stack } = MuiMaterial;
+const { Stack, FormGroup, FormControlLabel, Switch } = MuiMaterial;
 
 export const roles = [
   { value: 'translator', label: 'Translator Role' },
@@ -29,12 +29,16 @@ export function SettingsPage() {
   const history = useHistory();
   const {
     states: {
-      global: { user, connectivity },
+      global: { user, mode, connectivity },
     },
-    actions: { setRole, setConnectivity },
+    actions: { setRole, setMode, setConnectivity },
   } = useAppContext();
 
   const [selectedRole, setSelectedRole] = useState<RoleType>(['translator']);
+  const [selectedMode, setSelectedMode] = useState<IMode>({
+    admin: true,
+    beta: true,
+  });
 
   useEffect(() => {
     if (user != null) {
@@ -42,12 +46,16 @@ export function SettingsPage() {
     }
   }, [user]);
 
-  const handleChangeRole = (
-    _event: React.SyntheticEvent<Element, Event>,
-    role: RoleType,
-  ) => {
-    setSelectedRole(role);
-  };
+  useEffect(() => {
+    setSelectedMode(mode);
+  }, [mode]);
+
+  // const handleChangeRole = (
+  //   _event: React.SyntheticEvent<Element, Event>,
+  //   role: RoleType,
+  // ) => {
+  //   setSelectedRole(role);
+  // };
 
   const handleChangeConnectivity = (
     _event: React.SyntheticEvent<Element, Event>,
@@ -60,8 +68,16 @@ export function SettingsPage() {
     }
   };
 
+  const handleChangeMode = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedMode({
+      ...selectedMode,
+      [event.target.name]: event.target.checked,
+    });
+  };
+
   const handleClickSave = () => {
-    setRole(selectedRole);
+    // setRole(selectedRole);
+    setMode(selectedMode);
     history.push('/home');
   };
 
@@ -71,13 +87,13 @@ export function SettingsPage() {
         <Typography variant="h2" color="text.dark">
           Settings
         </Typography>
-        <VerticalRadioList
+        {/* <VerticalRadioList
           label="Choose Role"
           withUnderline={true}
           items={roles}
           value={selectedRole}
           onChange={handleChangeRole}
-        />
+        /> */}
         <VerticalRadioList
           label="Network"
           withUnderline={true}
@@ -85,6 +101,25 @@ export function SettingsPage() {
           value={connectivity ? 'online' : 'offline'}
           onChange={handleChangeConnectivity}
         />
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={selectedMode.admin}
+                onChange={handleChangeMode}
+              />
+            }
+            label="admin"
+            name="admin"
+          />
+          <FormControlLabel
+            control={
+              <Switch checked={selectedMode.beta} onChange={handleChangeMode} />
+            }
+            label="Beta"
+            name="beta"
+          />
+        </FormGroup>
         <Button
           variant="contained"
           fullWidth

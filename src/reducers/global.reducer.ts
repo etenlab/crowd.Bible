@@ -27,8 +27,14 @@ export interface IUser {
   prefersColorScheme?: 'light' | 'dark';
 }
 
+export interface IMode {
+  admin: boolean;
+  beta: boolean;
+}
+
 export interface StateType {
   user: IUser | null;
+  mode: IMode;
   snack: SnackType;
   loading: boolean;
   connectivity: boolean;
@@ -51,6 +57,10 @@ export const initialState: StateType = {
     userEmail: 'hiroshi@test.com',
     roles: ['translator'],
     prefersColorScheme: 'light',
+  },
+  mode: {
+    admin: true,
+    beta: true,
   },
   snack: initialSnact,
   connectivity: true,
@@ -110,6 +120,12 @@ export function reducer(
       } else {
         return prevState;
       }
+    }
+    case actions.SET_MODE: {
+      return {
+        ...prevState,
+        mode: action.payload as IMode,
+      };
     }
     case actions.SET_PREFERS_COLOR_SCHEME: {
       if (prevState.user === null) {
