@@ -39,8 +39,10 @@ import { DocumentService } from '@/services/document.service';
 import { WordService } from '@/services/word.service';
 import { WordSequenceService } from '@/services/word-sequence.service';
 import { MapService } from '@/services/map.service';
+import { LoggerService } from './services/logger.service';
 
 export interface ISingletons {
+  loggerService: LoggerService;
   dbService: DbService;
   syncService: SyncService;
   seedService: SeedService;
@@ -80,12 +82,17 @@ export interface ISingletons {
 
 const _cache = new Map<DataSource, Promise<ISingletons>>();
 const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
+  const loggerService = new LoggerService();
   const ds = await dataSource.initialize();
   const dbService = new DbService(ds);
 
   const syncSessionRepository = new SyncSessionRepository(dbService);
 
-  const syncService = new SyncService(dbService, syncSessionRepository);
+  const syncService = new SyncService(
+    dbService,
+    syncSessionRepository,
+    loggerService,
+  );
 
   const nodeRepo = new NodeRepository(dbService, syncService);
   const nodeTypeRepo = new NodeTypeRepository(dbService, syncService);
@@ -128,6 +135,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipTypeRepo,
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
+    loggerService,
   );
 
   const graphFirstLayerService = new GraphFirstLayerService(
@@ -184,6 +192,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     nodeRepo,
     nodePropertyValueRepo,
     votingService,
+    loggerService,
   );
 
   const definitionService = new DefinitionService(
@@ -213,6 +222,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   const materializerService = new MaterializerService(tableService, dbService);
 
   return {
+    loggerService,
     dbService,
     syncService,
     seedService,

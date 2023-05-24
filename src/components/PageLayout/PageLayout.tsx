@@ -64,7 +64,12 @@ export function PageLayout({ children }: PageLayoutProps) {
         <AppHeader kind="menu" onToggle={handleToggleMenu} />
 
         <IonContent>
-          <LinkGroup group={menuLinks.group} linkItems={menuLinks.linkItems} />
+          <IonMenuToggle>
+            <LinkGroup
+              group={menuLinks.group}
+              linkItems={menuLinks.linkItems}
+            />
+          </IonMenuToggle>
         </IonContent>
 
         <IonFooter>

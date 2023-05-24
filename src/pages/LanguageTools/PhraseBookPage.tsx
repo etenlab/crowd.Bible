@@ -101,6 +101,7 @@ export function PhraseBookPage() {
       global: { singletons },
     },
     actions: { setLoadingState, alertFeedback },
+    logger,
   } = useAppContext();
 
   const [selectedPhrase, setSelectedPhrase] = useState<VotableItem | null>(
@@ -150,12 +151,18 @@ export function PhraseBookPage() {
       };
       loadPhrases();
     } catch (error) {
-      console.log(error);
+      logger.error(error);
       alertFeedback('error', 'Internal Error!');
     } finally {
       setLoadingState(false);
     }
-  }, [alertFeedback, definitionService, selectedLanguageInfo, setLoadingState]);
+  }, [
+    alertFeedback,
+    definitionService,
+    selectedLanguageInfo,
+    setLoadingState,
+    logger,
+  ]);
 
   const addPhrase = useCallback(
     (newPhrase: string) => {
