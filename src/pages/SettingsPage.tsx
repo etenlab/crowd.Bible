@@ -13,7 +13,8 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { IMode, type RoleType } from '@/reducers/global.reducer';
 
 const { VerticalRadioList } = CrowdBibleUI;
-const { Stack, FormGroup, FormControlLabel, Switch } = MuiMaterial;
+const { Divider, FormControlLabel, FormGroup, FormLabel, Stack, Switch } =
+  MuiMaterial;
 
 export const roles = [
   { value: 'translator', label: 'Translator Role' },
@@ -102,6 +103,7 @@ export function SettingsPage() {
           onChange={handleChangeConnectivity}
         />
         <FormGroup>
+          <FormLabel color="gray">Mode</FormLabel>
           <FormControlLabel
             control={
               <Switch
@@ -111,13 +113,16 @@ export function SettingsPage() {
             }
             label="admin"
             name="admin"
+            sx={{ padding: '12px 0' }}
           />
+          <Divider />
           <FormControlLabel
             control={
               <Switch checked={selectedMode.beta} onChange={handleChangeMode} />
             }
             label="Beta"
             name="beta"
+            sx={{ padding: '12px 0' }}
           />
         </FormGroup>
         <Button
