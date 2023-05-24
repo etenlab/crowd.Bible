@@ -7,8 +7,10 @@ import { Button, Typography } from '@eten-lab/ui-kit';
 
 import 'swiper/swiper-bundle.css';
 import '../styles.css';
+import { useAppContext } from '../hooks/useAppContext';
 
 export function WelcomePage() {
+  const { logger } = useAppContext();
   const history = useHistory();
 
   const handleGoToLoginPage = () => {
@@ -47,10 +49,10 @@ export function WelcomePage() {
               spaceBetween={50}
               slidesPerView={1}
               onSlideChange={() => {
-                console.log('slide change');
+                logger.info('slide change');
               }}
               onSwiper={(swiper) => {
-                console.log(swiper);
+                logger.info(swiper);
               }}
             >
               <SwiperSlide>

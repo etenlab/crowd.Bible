@@ -1,13 +1,18 @@
 import React, { Fragment } from 'react';
 import { useHistory } from 'react-router-dom';
-import { List, ListItem, ListItemText, Divider } from '@mui/material';
-import { Discussion } from '../../models';
+
+import { Discussion } from '@/models/index';
 import { IonChip } from '@ionic/react';
-import AppRoutes from '../../constants/AppRoutes';
+
+import { MuiMaterial } from '@eten-lab/ui-kit';
+
+import AppRoutes from '@/constants/AppRoutes';
 
 // import { discussionClient } from "./graphql/discussionGraphql";
 // import { GET_DISCUSSIONS_SUMMARY_BY_USER_ID } from "./graphql/discussionQuery";
 // import { withUserId } from "./withUserId";
+
+const { List, ListItem, ListItemText, Divider } = MuiMaterial;
 
 interface PropsDiscussionList {
   discussions: Discussion[];

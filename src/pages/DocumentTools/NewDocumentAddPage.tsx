@@ -8,13 +8,15 @@ import { useDocument } from '@/hooks/useDocument';
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useAppContext } from '@/hooks/useAppContext';
 
+import { RouteConst } from '@/constants/route.constant';
+
 const { Stack } = MuiMaterial;
 
 const mockImportUid = '42';
 
 export function NewDocumentAddPage() {
   const history = useHistory();
-  const { createDocument } = useDocument();
+  const { createOrFindDocument } = useDocument();
   const { createWordSequence } = useWordSequence();
   const {
     states: {
@@ -29,7 +31,7 @@ export function NewDocumentAddPage() {
   useEffect(() => {
     if (!sourceLanguage) {
       alertFeedback('warning', 'Please set source language!');
-      history.push('/documents-list');
+      history.push(RouteConst.DOCUMENTS_LIST);
     }
   }, [sourceLanguage, alertFeedback, history]);
 
@@ -48,27 +50,24 @@ export function NewDocumentAddPage() {
       return;
     }
 
-    const document = await createDocument(name);
+    const document = await createOrFindDocument(name, sourceLanguage);
 
     if (document === null) {
       return;
     }
 
-    const wordSequence = await createWordSequence(
-      origin,
-      document.id,
-      mockImportUid,
-      sourceLanguage.id,
-      true,
-    );
+    const wordSequence = await createWordSequence({
+      text: origin,
+      languageInfo: sourceLanguage,
+      documentId: document.id,
+      importUid: mockImportUid,
+    });
 
     if (wordSequence === null) {
       return;
     }
 
-    if (document) {
-      history.push('/documents-list');
-    }
+    history.push(RouteConst.DOCUMENTS_LIST);
   };
 
   return (

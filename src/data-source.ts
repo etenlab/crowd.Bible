@@ -20,8 +20,6 @@ import {
   Election,
   Candidate,
   Vote,
-  SiteText,
-  SiteTextTranslation,
 } from '@/models/index';
 import initSqlJs, { SqlJsStatic } from 'sql.js';
 import localforage from 'localforage';
@@ -64,7 +62,8 @@ const options: SqljsConnectionOptions = {
   type: 'sqljs',
   autoSave: true,
   useLocalForage: true,
-  logging: ['error', 'query', 'schema'],
+  // logging: ['error', 'query', 'schema'],
+  logging: ['error'],
   synchronize: true,
   migrationsRun: true,
   entities: [
@@ -86,8 +85,6 @@ const options: SqljsConnectionOptions = {
     Election,
     Candidate,
     Vote,
-    SiteText,
-    SiteTextTranslation,
     SyncSession,
   ],
   migrations: ['migrations/*.ts'],

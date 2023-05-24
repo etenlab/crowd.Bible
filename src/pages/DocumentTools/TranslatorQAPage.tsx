@@ -10,7 +10,7 @@ import {
   useColorModeContext,
 } from '@eten-lab/ui-kit';
 
-import { mockDocument } from './TranslationPage';
+import { mockDocument } from './ReaderQAPage';
 
 const { LabelWithIcon, KindSelectionBox } = CrowdBibleUI;
 const { Stack, Backdrop } = MuiMaterial;

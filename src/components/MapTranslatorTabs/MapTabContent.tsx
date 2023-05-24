@@ -1,18 +1,24 @@
 import { IonItem, IonLabel, IonList, useIonAlert } from '@ionic/react';
-import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { MouseEvent, useCallback, useEffect, useState } from 'react';
 import { type INode, parseSync } from 'svgson';
-import { Autocomplete, Input, MuiMaterial, Button } from '@eten-lab/ui-kit';
+import {
+  MuiMaterial,
+  Button,
+  LanguageInfo,
+  LangSelector,
+} from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
-import { LanguageDto } from '@/src/dtos/language.dto';
 import {
   StyledFilterButton,
   StyledSectionTypography,
 } from './StyledComponents';
 import { useAppContext } from '../../hooks/useAppContext';
 import { useMapTranslationTools } from '../../hooks/useMapTranslationTools';
+import { langInfo2String } from '../../utils/langUtils';
 const { Box, styled, CircularProgress } = MuiMaterial;
 
-//#region types
+const PADDING = 20;
+
 enum eProcessStatus {
   NONE = 'NONE',
   PARSING_STARTED = 'PARSING_STARTED',
@@ -32,15 +38,10 @@ type MapDetail = {
   tempId?: string;
   status: eProcessStatus;
   words?: string[];
-  // map?: string;
   mapFileId?: string;
   name?: string;
-  langId?: string;
+  langInfo: LanguageInfo;
 };
-//#endregion
-
-//#region data
-//#endregion
 
 export const MapTabContent = () => {
   const {
@@ -48,36 +49,25 @@ export const MapTabContent = () => {
       global: { singletons },
     },
     actions: { alertFeedback },
+    logger,
   } = useAppContext();
 
-  const langIdRef = useRef('');
-  const [langs, setLangs] = useState<LanguageDto[]>([]);
   const [mapList, setMapList] = useState<MapDetail[]>([]);
-  const [selectedLang, setSelectedLang] = useState<string>('');
+  const [langInfo, setLangInfo] = useState<LanguageInfo | undefined>();
   const [presentAlert] = useIonAlert();
   const [uploadMapBtnStatus, setUploadMapBtnStatus] =
     useState<eUploadMapBtnStatus>(eUploadMapBtnStatus.NONE);
   const { sendMapFile } = useMapTranslationTools();
 
   useEffect(() => {
-    const loadLanguages = async () => {
-      if (!singletons) return;
-      const res = await singletons.graphThirdLayerService.getLanguages();
-      setLangs(res);
-      // if (res.length > 0) setSelectedLang(res.at(0)!.name);
-    };
-    loadLanguages();
-  }, [singletons]);
-
-  useEffect(() => {
     for (const mapState of mapList) {
       if (mapState.status === eProcessStatus.PARSING_COMPLETED) {
         const processMapWords = async (
           words: string[],
-          langId: string,
-          mapId?: string,
+          langInfo: LanguageInfo,
+          mapId: string,
         ) => {
-          if (!singletons || !words.length || !langId) return;
+          if (!singletons || !words.length || !langInfo) return;
           let hasNextBatch = true;
           let batchNumber = 0;
           const batchItemCount = 100;
@@ -86,7 +76,7 @@ export const MapTabContent = () => {
             const startIdx = batchNumber * batchItemCount;
             const endIdx = startIdx + batchItemCount;
             const batchWords = words.slice(startIdx, endIdx);
-            console.log(
+            logger.info(
               'hasNextBatch',
               hasNextBatch,
               startIdx,
@@ -94,9 +84,9 @@ export const MapTabContent = () => {
               batchWords,
             );
             createdWords.push(
-              ...(await singletons.graphThirdLayerService.createWords(
+              ...(await singletons.wordService.createWordsWithLangForMap(
                 batchWords.map((w) => w.trim()).filter((w) => w !== ''),
-                langId,
+                langInfo,
                 mapId,
               )),
             );
@@ -105,27 +95,22 @@ export const MapTabContent = () => {
             }
             batchNumber++;
           }
-          console.log('total created words', createdWords);
+          logger.info('total created words', createdWords);
         };
         const handleMapParsingCompleted = async (argMap: MapDetail) => {
           if (!singletons) return;
           const newState: Partial<MapDetail> = {
             status: eProcessStatus.COMPLETED,
           };
-          ///
           try {
-            const mapId = await singletons.graphThirdLayerService.saveMap(
-              argMap.langId!,
-              {
-                name: argMap.name!,
-                mapFileId: argMap.mapFileId!,
-                // map: argMap.map!,
-                ext: 'svg',
-              },
-            );
+            const mapId = await singletons.mapService.saveMap(argMap.langInfo, {
+              name: argMap.name!,
+              mapFileId: argMap.mapFileId!,
+              ext: 'svg',
+            });
             if (mapId) {
               newState.id = mapId;
-              processMapWords(argMap.words!, argMap.langId!, mapId);
+              processMapWords(argMap.words!, argMap.langInfo, mapId);
             } else newState.status = eProcessStatus.FAILED;
           } catch (error) {
             newState.status = eProcessStatus.FAILED;
@@ -135,7 +120,7 @@ export const MapTabContent = () => {
         handleMapParsingCompleted(mapState);
       }
     }
-  }, [mapList, singletons]);
+  }, [logger, mapList, singletons]);
 
   const showAlert = useCallback(
     (msg: string) => {
@@ -164,6 +149,7 @@ export const MapTabContent = () => {
     (e) => {
       const file = e.target.files?.[0];
       if (file == null) return;
+      if (!langInfo) return;
       const fileName = file.name?.split('.')[0];
       const id = nanoid();
       let alreadyExists = false;
@@ -181,7 +167,7 @@ export const MapTabContent = () => {
             tempId: id,
             name: fileName,
             status: eProcessStatus.PARSING_STARTED,
-            langId: langIdRef.current,
+            langInfo,
           },
         ];
       });
@@ -226,25 +212,29 @@ export const MapTabContent = () => {
       fileReader.readAsText(file);
       e.target.value = '';
     },
-    [alertFeedback, sendMapFile, showAlert],
+    [alertFeedback, langInfo, sendMapFile, showAlert],
   );
 
-  const setMapsByLang = async (langId: string) => {
-    if (!singletons) return;
-    const res = await singletons.graphThirdLayerService.getMaps(langId);
-    setMapList(
-      res.map(
-        (m) =>
-          ({
-            id: m.id,
-            name: m.name,
-            map: m.map,
-            status: eProcessStatus.NONE,
-            words: [],
-          } as MapDetail),
-      ),
-    );
-  };
+  const setMapsByLang = useCallback(
+    async (langInfo: LanguageInfo) => {
+      if (!singletons) return;
+      const res = await singletons.mapService.getMaps(langInfo);
+      setMapList(
+        res.map(
+          (m) =>
+            ({
+              id: m.id,
+              name: m.name,
+              map: m.map,
+              status: eProcessStatus.NONE,
+              words: [],
+              langInfo: m.langInfo,
+            } as MapDetail),
+        ),
+      );
+    },
+    [singletons],
+  );
 
   const handleUploadBtnClick = (
     e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
@@ -252,7 +242,7 @@ export const MapTabContent = () => {
     if (uploadMapBtnStatus === eUploadMapBtnStatus.NONE) {
       setUploadMapBtnStatus(eUploadMapBtnStatus.LANG_SELECTION);
     } else if (uploadMapBtnStatus === eUploadMapBtnStatus.LANG_SELECTION) {
-      if (selectedLang) {
+      if (langInfo) {
         setUploadMapBtnStatus(eUploadMapBtnStatus.UPLOAD_FILE);
       } else {
         e.stopPropagation();
@@ -262,22 +252,20 @@ export const MapTabContent = () => {
     }
   };
 
-  const handleApplyLanguageFilter = (value: string) => {
-    setSelectedLang(value);
-    const curLangDetail = langs.find((l) => l.name === value);
-    if (curLangDetail) {
-      langIdRef.current = curLangDetail.id;
-      setMapsByLang(curLangDetail.id);
-    }
-  };
+  const handleLangChange = useCallback(
+    (_langTag: string, langInfo: LanguageInfo) => {
+      setLangInfo(langInfo);
+      setMapsByLang(langInfo);
+    },
+    [setMapsByLang],
+  );
 
   const handleClearLanguageFilter = () => {
-    setSelectedLang('');
+    setLangInfo(undefined);
     setMapList([]);
     setUploadMapBtnStatus(eUploadMapBtnStatus.LANG_SELECTION);
   };
 
-  const langLabels = langs.map((l) => l.name);
   return (
     <Box
       display={'flex'}
@@ -285,36 +273,14 @@ export const MapTabContent = () => {
       justifyContent={'start'}
       alignItems={'start'}
       width={'100%'}
+      paddingTop={`${PADDING}px`}
     >
       {uploadMapBtnStatus > eUploadMapBtnStatus.NONE ? (
         <>
           <StyledSectionTypography>
             Select the source language
           </StyledSectionTypography>
-          <Box
-            display={'flex'}
-            width={'100%'}
-            gap={'20px'}
-            flexDirection={'row'}
-            alignItems={'center'}
-            justifyContent={'space-between'}
-          >
-            <Autocomplete
-              options={langLabels}
-              value={selectedLang}
-              onChange={(_, value) => {
-                handleApplyLanguageFilter(value || '');
-              }}
-              label=""
-              sx={{
-                flex: 1,
-                borderColor: 'text.gray',
-                color: 'text.dark',
-                fontWeight: 700,
-              }}
-            />
-            <Input label="" placeholder="Language ID" sx={{ flex: 1 }} />
-          </Box>
+          <LangSelector onChange={handleLangChange} selected={langInfo} />
         </>
       ) : (
         <></>
@@ -325,19 +291,8 @@ export const MapTabContent = () => {
         onClick={handleUploadBtnClick}
         variant={'contained'}
         component="label"
-        sx={{
-          backgroundColor: 'text.blue-primary',
-          color: 'text.white',
-          fontSize: '14px',
-          fontWeight: 800,
-          padding: '14px 73px',
-          marginTop: '20px',
-          ':hover': {
-            backgroundColor: 'text.blue-primary',
-          },
-        }}
       >
-        Upload {selectedLang || '.svg'} File
+        Upload {langInfo2String(langInfo) || '.svg'} File
         {uploadMapBtnStatus === eUploadMapBtnStatus.SAVING_FILE ? (
           <>
             <CircularProgress
@@ -363,7 +318,7 @@ export const MapTabContent = () => {
       </Button>
 
       {/* Uploaded Maps */}
-      {selectedLang && mapList.length ? (
+      {langInfo && mapList.length ? (
         <>
           <StyledBox>
             <StyledSectionTypography>Uploaded Maps</StyledSectionTypography>
@@ -400,7 +355,7 @@ export const MapTabContent = () => {
                         padding: '12px 0px',
                       }}
                     >
-                      {selectedLang}
+                      {langInfo2String(map.langInfo)}
                     </IonLabel>
                     {[
                       eProcessStatus.PARSING_STARTED,
@@ -449,8 +404,6 @@ function iterateOverINode(
   }
 }
 
-//#region styled component
-
 const StyledBox = styled(Box)(() => ({
   width: '100%',
   display: 'flex',
@@ -458,4 +411,3 @@ const StyledBox = styled(Box)(() => ({
   justifyContent: 'space-between',
   padding: '15px 0px',
 }));
-//#endregion

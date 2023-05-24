@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import {
   Tabs,
@@ -15,10 +15,16 @@ import {
 import { Link } from '@/components/Link';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { useWordSequence } from '@/src/hooks/useWordSequence';
-import { useVote } from '@/src/hooks/useVote';
+import { useWordSequence } from '@/hooks/useWordSequence';
+import { useVote } from '@/hooks/useVote';
+import { useTranslation } from '@/hooks/useTranslation';
 
-import { WordSequenceWithVote } from '@/dtos/word-sequence.dto';
+import {
+  WordSequenceDto,
+  WordSequenceTranslationDto,
+} from '@/dtos/word-sequence.dto';
+
+import { RouteConst } from '@/constants/route.constant';
 
 const { Stack, Divider, IconButton } = MuiMaterial;
 
@@ -51,18 +57,54 @@ function Voting({
 function Translation({
   translation,
   isCheckbox,
-  onChangeVote,
 }: {
-  translation: WordSequenceWithVote;
+  translation: WordSequenceTranslationDto;
   isCheckbox: boolean;
-  onChangeVote: (translationId: Nanoid, candidateId: Nanoid) => void;
 }) {
-  const { id, wordSequence, vote } = translation;
+  const { translationId, candidateId } = translation;
 
   const { getColor } = useColorModeContext();
+  const { getWordSequenceById } = useWordSequence();
+  const { getVotesStats } = useVote();
+  const {
+    states: {
+      global: { singletons },
+    },
+  } = useAppContext();
+
+  const [translatedWordSequence, setTranslatedWordSequence] =
+    useState<WordSequenceDto | null>(null);
+
+  const [voteStats, setVoteStats] = useState<VotesStatsRow | null>(null);
+
+  const reloadTranslation = useCallback(async () => {
+    if (!singletons) {
+      return;
+    }
+
+    const wordSequence = await getWordSequenceById(translationId);
+    setTranslatedWordSequence(wordSequence);
+    const _voteStats = await getVotesStats(candidateId);
+    console.log('_voteStats ===>', _voteStats);
+    setVoteStats(_voteStats);
+  }, [
+    singletons,
+    candidateId,
+    getVotesStats,
+    translationId,
+    getWordSequenceById,
+  ]);
+
+  useEffect(() => {
+    reloadTranslation();
+  }, [reloadTranslation]);
 
   const handleClickDiscussionButton = () => {
     // history.push(`/discussion/table-name/${text}/row/${id}`);
+  };
+
+  const handleChangeVote = () => {
+    reloadTranslation();
   };
 
   const checkbox = isCheckbox ? <Checkbox sx={{ marginLeft: '-9px' }} /> : null;
@@ -80,18 +122,16 @@ function Translation({
             variant="body3"
             sx={{ padding: '9px 0', color: getColor('dark') }}
           >
-            {wordSequence}
+            {translatedWordSequence?.text || 'No Translation Exists'}
           </Typography>
           <Stack
             direction="row"
             justifyContent="space-between"
             alignItems="center"
           >
-            <Voting
-              vote={vote}
-              onChangeVote={() => onChangeVote(id, vote.candidateId)}
-            />
-
+            {voteStats ? (
+              <Voting vote={voteStats} onChangeVote={handleChangeVote} />
+            ) : null}
             <IconButton onClick={handleClickDiscussionButton}>
               <BiMessageRounded
                 style={{
@@ -122,20 +162,18 @@ export function TranslationList({
   wordSequenceId,
   isCheckbox = true,
 }: TranslationListProps) {
-  const {
-    listTranslationsByDocumentId,
-    listTranslationsByWordSequenceId,
-    listMyTranslationsByDocumentId,
-    listMyTranslationsByWordSequenceId,
-  } = useWordSequence();
-  const { getVotesStats } = useVote();
+  const { listTranslationsByWordSequenceId } = useTranslation();
   const {
     states: {
       global: { singletons },
     },
   } = useAppContext();
   const [currentTab, setCurrentTab] = useState<'all' | 'mine'>('all');
-  const [translations, setTranslations] = useState<WordSequenceWithVote[]>([]);
+  const [translations, setTranslations] = useState<
+    WordSequenceTranslationDto[]
+  >([]);
+
+  console.log(translations);
 
   useEffect(() => {
     if (!documentId || !singletons) {
@@ -143,16 +181,16 @@ export function TranslationList({
     }
 
     if (!wordSequenceId) {
-      if (currentTab === 'all') {
-        listTranslationsByDocumentId(documentId).then(setTranslations);
-      } else if (currentTab === 'mine') {
-        listMyTranslationsByDocumentId(documentId).then(setTranslations);
-      }
+      // if (currentTab === 'all') {
+      //   listTranslationsByDocumentId(documentId).then(setTranslations);
+      // } else if (currentTab === 'mine') {
+      //   listMyTranslationsByDocumentId(documentId).then(setTranslations);
+      // }
     } else {
       if (currentTab === 'all') {
         listTranslationsByWordSequenceId(wordSequenceId).then(setTranslations);
       } else if (currentTab === 'mine') {
-        listMyTranslationsByWordSequenceId(wordSequenceId).then(
+        listTranslationsByWordSequenceId(wordSequenceId, true).then(
           setTranslations,
         );
       }
@@ -162,10 +200,7 @@ export function TranslationList({
     documentId,
     wordSequenceId,
     currentTab,
-    listTranslationsByDocumentId,
     listTranslationsByWordSequenceId,
-    listMyTranslationsByWordSequenceId,
-    listMyTranslationsByDocumentId,
   ]);
 
   const handleTabChange = (
@@ -177,7 +212,9 @@ export function TranslationList({
 
   const addMyTranslationComponent =
     currentTab === 'mine' ? (
-      <Link to={`/translation-edit/${documentId}/${wordSequenceId}`}>
+      <Link
+        to={`${RouteConst.TRANSLATION_EDIT}/${documentId}/${wordSequenceId}`}
+      >
         <Button
           variant="contained"
           startIcon={<FiPlus />}
@@ -188,29 +225,6 @@ export function TranslationList({
         </Button>
       </Link>
     ) : null;
-
-  const handleChangeVote = async (
-    translationId: Nanoid,
-    candidateId: Nanoid,
-  ) => {
-    const vote = await getVotesStats(candidateId);
-
-    if (!vote) {
-      return;
-    }
-
-    setTranslations((translations) =>
-      translations.map((translation) => {
-        if (translation.id === translationId) {
-          return {
-            ...translation,
-            vote,
-          };
-        }
-        return translation;
-      }),
-    );
-  };
 
   return (
     <>
@@ -227,10 +241,9 @@ export function TranslationList({
       <Stack sx={{ flexGrow: 1, overflowY: 'auto' }}>
         {translations.map((item) => (
           <Translation
-            key={item.id}
+            key={item.translationId}
             translation={item}
             isCheckbox={isCheckbox}
-            onChangeVote={handleChangeVote}
           />
         ))}
       </Stack>

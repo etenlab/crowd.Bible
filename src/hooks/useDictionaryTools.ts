@@ -2,8 +2,8 @@ import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
 import { useVote } from './useVote';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 import { NodeTypeConst } from '../constants/graph.constant';
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 
 export function useDictionaryTools(
   itemsType: typeof NodeTypeConst.WORD | typeof NodeTypeConst.PHRASE,
@@ -15,6 +15,7 @@ export function useDictionaryTools(
       global: { singletons },
     },
     actions: { alertFeedback, setLoadingState },
+    logger,
   } = useAppContext();
   const { getVotesStats, toggleVote } = useVote();
 
@@ -47,20 +48,17 @@ export function useDictionaryTools(
 
         switch (type) {
           case NodeTypeConst.WORD:
-            itemId =
-              await singletons.graphThirdLayerService.createWordOrPhraseWithLang(
-                itemText,
-                languageInfo,
-              );
+            itemId = await singletons.wordService.createWordOrPhraseWithLang(
+              itemText,
+              languageInfo,
+            );
             break;
           case NodeTypeConst.PHRASE:
-            itemId =
-              await singletons.graphThirdLayerService.createWordOrPhraseWithLang(
-                itemText,
-                languageInfo,
-                undefined,
-                NodeTypeConst.PHRASE,
-              );
+            itemId = await singletons.wordService.createWordOrPhraseWithLang(
+              itemText,
+              languageInfo,
+              NodeTypeConst.PHRASE,
+            );
             break;
           default:
             alertFeedback('error', `can't add ${type} as votable item`);
@@ -84,7 +82,7 @@ export function useDictionaryTools(
           },
         ]);
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         alertFeedback('error', 'Internal Error!');
       } finally {
         setIsDialogOpened(false);
@@ -95,11 +93,12 @@ export function useDictionaryTools(
       definitionService,
       setLoadingState,
       singletons?.definitionService,
-      singletons?.graphThirdLayerService,
+      singletons?.wordService,
       setItems,
       alertFeedback,
       itemsType,
       setIsDialogOpened,
+      logger,
     ],
   );
 
@@ -126,13 +125,20 @@ export function useDictionaryTools(
 
         setItems([...items]);
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         alertFeedback('error', 'Internal Error!');
       } finally {
         setLoadingState(false);
       }
     },
-    [setLoadingState, toggleVote, getVotesStats, setItems, alertFeedback],
+    [
+      setLoadingState,
+      toggleVote,
+      getVotesStats,
+      setItems,
+      alertFeedback,
+      logger,
+    ],
   );
 
   const addDefinition = useCallback(
@@ -187,7 +193,7 @@ export function useDictionaryTools(
         setSelectedItem(items[itemIdx]);
         setItems([...items]);
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         alertFeedback('error', 'Internal Error!');
       } finally {
         setIsDialogOpened(false);
@@ -201,6 +207,7 @@ export function useDictionaryTools(
       alertFeedback,
       setIsDialogOpened,
       setLoadingState,
+      logger,
     ],
   );
 
@@ -238,11 +245,11 @@ export function useDictionaryTools(
         items[itemIdx].contents[definitionIndex].content = newContentValue;
         setItems([...items]);
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         alertFeedback('error', 'Internal Error!');
       }
     },
-    [alertFeedback, definitionService, setItems],
+    [alertFeedback, definitionService, setItems, logger],
   );
 
   const changeDefinitionVotes = useCallback(
@@ -283,7 +290,7 @@ export function useDictionaryTools(
         };
         setItems([...items]);
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         alertFeedback('error', 'Internal Error!');
       } finally {
         setLoadingState(false);
@@ -296,6 +303,7 @@ export function useDictionaryTools(
       itemsType,
       alertFeedback,
       setLoadingState,
+      logger,
     ],
   );
 

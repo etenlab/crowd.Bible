@@ -17,6 +17,4 @@ export {
   Election,
   Candidate,
   Vote,
-  SiteText,
-  SiteTextTranslation,
 } from '@eten-lab/models';

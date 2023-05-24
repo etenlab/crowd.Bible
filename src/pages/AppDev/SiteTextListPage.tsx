@@ -15,9 +15,14 @@ import { RouteConst } from '@/constants/route.constant';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useSiteText } from '@/hooks/useSiteText';
-import { useLanguage, MockApp } from '@/hooks/useLanguage';
+import { useDocument } from '@/hooks/useDocument';
 
-import { SiteTextWithTranslationCntDto } from '@/dtos/site-text.dto';
+import { AppDto } from '@/dtos/document.dto';
+// import { useLanguage, MockApp } from '@/hooks/useLanguage';
+
+import { TranslatedSiteTextDto } from '@/dtos/site-text.dto';
+
+import { langInfo2String, compareLangInfo } from '@/utils/langUtils';
 
 const { HeadBox, ButtonList } = CrowdBibleUI;
 const { Stack, Chip } = MuiMaterial;
@@ -34,22 +39,37 @@ export function SiteTextListPage() {
       documentTools: { sourceLanguage, targetLanguage },
     },
   } = useAppContext();
-  const { getSiteTextListByAppId } = useSiteText();
-  const { getMockAppById } = useLanguage();
+  const { getTranslatedSiteTextListByAppId } = useSiteText();
+  // const { getMockAppById } = useLanguage();
+  const { getApp } = useDocument();
 
   const [searchStr, setSearchStr] = useState<string>('');
-  const [siteTextList, setSiteTextList] = useState<
-    SiteTextWithTranslationCntDto[]
-  >([]);
-  const [app, setApp] = useState<MockApp | null>(null);
+  const [siteTextList, setSiteTextList] = useState<TranslatedSiteTextDto[]>([]);
+  const [app, setApp] = useState<AppDto | null>(null);
+
+  // Fetch Mock App Info from db
+  useEffect(() => {
+    if (singletons) {
+      getApp(appId).then(setApp);
+    }
+  }, [getApp, appId, singletons]);
 
   // Fetch site Lists from db
   useEffect(() => {
-    if (singletons) {
-      getSiteTextListByAppId(appId).then((list) => setSiteTextList(list));
-      getMockAppById(appId).then(setApp);
+    if (singletons && app && sourceLanguage) {
+      getTranslatedSiteTextListByAppId(
+        app.id,
+        app.languageInfo,
+        sourceLanguage,
+      ).then((list) => setSiteTextList(list));
     }
-  }, [getSiteTextListByAppId, getMockAppById, singletons, appId]);
+  }, [
+    app,
+    getApp,
+    singletons,
+    sourceLanguage,
+    getTranslatedSiteTextListByAppId,
+  ]);
 
   const handleChangeSearchStr = (str: string) => {
     setSearchStr(str);
@@ -69,19 +89,19 @@ export function SiteTextListPage() {
 
   const items: ButtonListItemType[] = useMemo(() => {
     return siteTextList.map((data) => {
-      const recommandedBadgeCom =
-        data.translated?.type === 'recommended' ? (
-          <Chip
-            component="span"
-            label="Recommended"
-            variant="outlined"
-            color="warning"
-            size="small"
-            sx={{ marginLeft: 2 }}
-          />
-        ) : null;
+      // const recommandedBadgeCom =
+      //   data.translated?.type === 'recommended' ? (
+      //     <Chip
+      //       component="span"
+      //       label="Recommended"
+      //       variant="outlined"
+      //       color="warning"
+      //       size="small"
+      //       sx={{ marginLeft: 2 }}
+      //     />
+      //   ) : null;
 
-      const notranslatedBadgeCom = !data.translated ? (
+      const notranslatedBadgeCom = !data.translatedSiteText ? (
         <Chip
           component="span"
           label="Not translated"
@@ -94,14 +114,13 @@ export function SiteTextListPage() {
 
       const labelCom = (
         <>
-          {data.translated ? data.translated.siteText : data.siteText}
-          {recommandedBadgeCom}
+          {data.translatedSiteText ? data.translatedSiteText : data.siteText}
           {notranslatedBadgeCom}
         </>
       );
 
       return {
-        value: data.id,
+        value: data.siteTextId,
         label: labelCom,
         endIcon: (
           <Typography variant="body1" color="text.dark">
@@ -113,7 +132,7 @@ export function SiteTextListPage() {
   }, [siteTextList]);
 
   const isDisabledPlusBtn =
-    app && sourceLanguage && app.languageId === sourceLanguage.id
+    app && sourceLanguage && compareLangInfo(app.languageInfo, sourceLanguage)
       ? false
       : true;
 
@@ -121,7 +140,7 @@ export function SiteTextListPage() {
     <IonContent>
       <HeadBox
         back={{ action: handleClickBackBtn }}
-        title="App Name 1"
+        title={app?.name || ''}
         search={{
           value: searchStr,
           onChange: handleChangeSearchStr,
@@ -137,13 +156,13 @@ export function SiteTextListPage() {
         sx={{ padding: '16px 20px' }}
       >
         <Typography variant="body2" color="text.dark">
-          {sourceLanguage ? sourceLanguage.name : 'Unknown'}
+          {langInfo2String(sourceLanguage || undefined)}
         </Typography>
 
         <BiRightArrowAlt style={{ color: getColor('gray') }} />
 
         <Typography variant="body2" color="text.dark">
-          {targetLanguage ? targetLanguage.name : 'Unknown'}
+          {langInfo2String(targetLanguage || undefined)}
         </Typography>
       </Stack>
 

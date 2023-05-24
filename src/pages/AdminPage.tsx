@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import {
   IonButton,
@@ -11,15 +11,19 @@ import {
   IonToast,
 } from '@ionic/react';
 
-import { useSingletons } from '@/hooks/useSingletons';
-
 import txtfile from '@/utils/iso_639_3_min.tab';
 import { LoadingStatus } from '../enums';
-import useSeedService from '../hooks/useSeedService';
+// import useSeedService from '../hooks/useSeedService';
 import { NodeTypeConst } from '../constants/graph.constant';
+import { useAppContext } from '../hooks/useAppContext';
 
 export function AdminPage() {
-  const singletons = useSingletons();
+  const {
+    states: {
+      global: { singletons },
+    },
+    logger,
+  } = useAppContext();
 
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>(
     LoadingStatus.INITIAL,
@@ -31,7 +35,7 @@ export function AdminPage() {
     useState<LoadingStatus>(LoadingStatus.INITIAL);
 
   const [loadResult, setLoadResult] = useState('');
-  const seedService = useSeedService();
+  // const seedService = useSeedService();
 
   const [loadingMessage, setLoadingMessage] = useState('Loading table...');
 
@@ -93,7 +97,7 @@ export function AdminPage() {
           },
         );
         if (existing_row) {
-          console.log('table-row: ', existing_row, ' already exists');
+          logger.error('table-row: ', existing_row, ' already exists');
           continue;
         }
         const row_id = await singletons.tableService.createRow(table);
@@ -114,7 +118,7 @@ export function AdminPage() {
 
       setLoadResult('Load finished.');
     } catch (err) {
-      console.log(err);
+      logger.error(err);
       setLoadResult('Error occurred while loading.');
     } finally {
       setLoadingStatus(LoadingStatus.FINISHED);
@@ -126,7 +130,7 @@ export function AdminPage() {
     setSyncOutLoadingStatus(LoadingStatus.LOADING);
     try {
       const syncOutRes = await singletons.syncService.syncOut();
-      console.log('syncOutRes', syncOutRes);
+      logger.error('syncOutRes', syncOutRes);
       setLoadResult('Syncing Out was successful!');
     } catch (error) {
       console.error('Error occurred while syncing out::', error);
@@ -141,23 +145,15 @@ export function AdminPage() {
     setSyncInLoadingStatus(LoadingStatus.LOADING);
     try {
       const syncInRes = await singletons.syncService.syncIn();
-      console.log('syncInRes', syncInRes);
+      logger.fatal('syncInRes', syncInRes);
       setLoadResult('Syncing In was successful!');
     } catch (error) {
-      console.error('Error occurred while syncing in::', error);
+      logger.fatal('Error occurred while syncing in::', error);
       setLoadResult('Error occurred while syncing in.');
     } finally {
       setSyncInLoadingStatus(LoadingStatus.FINISHED);
     }
   };
-
-  const seedLandgData = useCallback(async () => {
-    if (seedService) {
-      setLoadingStatus(LoadingStatus.LOADING);
-      await seedService.seedLanguages();
-      setLoadingStatus(LoadingStatus.FINISHED);
-    }
-  }, [seedService]);
 
   const materialize = async () => {
     singletons?.materializerService.materialize('iso_639_3_min.tab');
@@ -177,11 +173,6 @@ export function AdminPage() {
         <IonCardHeader>
           <IonCardTitle>Seed some random data</IonCardTitle>
         </IonCardHeader>
-        <IonCardContent>
-          {seedService && (
-            <IonButton onClick={seedLandgData}>Seed Languages</IonButton>
-          )}
-        </IonCardContent>
       </IonCard>
       <IonCard>
         <IonCardHeader>

@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`langUtils tests langInfo2tag convetrs LanguageInfo object to tag 1`] = `"en-UA-basiceng"`;
+
+exports[`langUtils tests subTags2LangInfo convetrs subTags to LangInfo 1`] = `
+Object {
+  "dialect": Object {
+    "descriptions": Array [
+      "Basic English",
+    ],
+    "tag": "basiceng",
+  },
+  "lang": Object {
+    "descriptions": Array [
+      "English",
+    ],
+    "tag": "en",
+  },
+  "region": Object {
+    "descriptions": Array [
+      "Ukraine",
+    ],
+    "tag": "UA",
+  },
+}
+`;
+
+exports[`langUtils tests tag2langInfo convetrs language tag to LanguageInfo object 1`] = `
+Object {
+  "dialect": Object {
+    "descriptions": Array [
+      "Basic English",
+    ],
+    "tag": "basiceng",
+  },
+  "lang": Object {
+    "descriptions": Array [
+      "English",
+    ],
+    "tag": "en",
+  },
+  "region": Object {
+    "descriptions": Array [
+      "Ukraine",
+    ],
+    "tag": "UA",
+  },
+}
+`;

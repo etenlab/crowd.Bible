@@ -13,7 +13,7 @@ import { VotableItem } from '../../dtos/votable-item.dto';
 import { useAppContext } from '../../hooks/useAppContext';
 import { useDictionaryTools } from '../../hooks/useDictionaryTools';
 import { NodeTypeConst } from '../../constants/graph.constant';
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 const { Box, Divider } = MuiMaterial;
 
 const {
@@ -101,6 +101,7 @@ export function PhraseBookPage() {
       global: { singletons },
     },
     actions: { setLoadingState, alertFeedback },
+    logger,
   } = useAppContext();
 
   const [selectedPhrase, setSelectedPhrase] = useState<VotableItem | null>(
@@ -150,12 +151,18 @@ export function PhraseBookPage() {
       };
       loadPhrases();
     } catch (error) {
-      console.log(error);
+      logger.error(error);
       alertFeedback('error', 'Internal Error!');
     } finally {
       setLoadingState(false);
     }
-  }, [alertFeedback, definitionService, selectedLanguageInfo, setLoadingState]);
+  }, [
+    alertFeedback,
+    definitionService,
+    selectedLanguageInfo,
+    setLoadingState,
+    logger,
+  ]);
 
   const addPhrase = useCallback(
     (newPhrase: string) => {

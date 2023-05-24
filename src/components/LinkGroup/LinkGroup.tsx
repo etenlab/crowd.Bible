@@ -57,13 +57,11 @@ export function LinkGroup({ group, linkItems }: LinkGroupType) {
   };
 
   return (
-    <IonMenuToggle>
-      <ButtonList
-        label={group}
-        withUnderline
-        items={items}
-        onClick={handleClickItem}
-      />
-    </IonMenuToggle>
+    <ButtonList
+      label={group}
+      withUnderline
+      items={items}
+      onClick={handleClickItem}
+    />
   );
 }

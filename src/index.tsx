@@ -25,7 +25,6 @@ const kcClient = new KeycloakClient({
   clientSecret: process.env.REACT_APP_KEYCLOAK_CLIENT_SECRET!,
 });
 
-// console.log(kcClient);
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(

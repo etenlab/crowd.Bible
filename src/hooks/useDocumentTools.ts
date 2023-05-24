@@ -5,7 +5,7 @@ import {
   setTargetLanguage as setTargetLanguageAction,
 } from '@/reducers/documentTools.actions';
 
-import { type LanguageDto } from '@/dtos/language.dto';
+import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
 import { type ActionType } from '@/reducers/index';
 
 interface UseDocumentTools {
@@ -17,11 +17,11 @@ export function useDocumentTools({ dispatch }: UseDocumentTools) {
     dispatch,
   });
 
-  const setSourceLanguage = useCallback((lang: LanguageDto | null) => {
+  const setSourceLanguage = useCallback((lang: LanguageInfo | null) => {
     dispatchRef.current.dispatch(setSourceLanguageAction(lang));
   }, []);
 
-  const setTargetLanguage = useCallback((lang: LanguageDto | null) => {
+  const setTargetLanguage = useCallback((lang: LanguageInfo | null) => {
     dispatchRef.current.dispatch(setTargetLanguageAction(lang));
   }, []);
 

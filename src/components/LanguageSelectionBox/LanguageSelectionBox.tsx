@@ -1,48 +1,39 @@
-import { useState, useEffect } from 'react';
 import {
+  LangSelector,
+  LanguageInfo,
   MuiMaterial,
-  Autocomplete,
   Typography,
   useColorModeContext,
 } from '@eten-lab/ui-kit';
-import { LanguageDto } from '@/dtos/language.dto';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { useLanguage } from '@/hooks/useLanguage';
+import { compareLangInfo } from '@/utils/langUtils';
 
 const { Stack } = MuiMaterial;
 
-export function LangugeSelectionBox() {
+export function LanguageSelectionBox() {
   const {
     states: {
-      global: { singletons },
       documentTools: { sourceLanguage, targetLanguage },
     },
-    actions: { setSourceLanguage, setTargetLanguage },
+    actions: { setSourceLanguage, setTargetLanguage, setLoadingState },
   } = useAppContext();
   const { getColor } = useColorModeContext();
-  const { getLanguages } = useLanguage();
-
-  const [languageList, setLanguageList] = useState<LanguageDto[]>([]);
-
-  useEffect(() => {
-    if (singletons) {
-      getLanguages().then(setLanguageList);
-    }
-  }, [singletons, getLanguages]);
 
   const handleSetSourceLanguage = (
-    _event: React.SyntheticEvent<Element, Event>,
-    value: LanguageDto | null,
+    _langTag: string,
+    selected: LanguageInfo,
   ) => {
-    setSourceLanguage(value);
+    if (compareLangInfo(selected, sourceLanguage)) return;
+    setSourceLanguage(selected);
   };
 
   const handleSetTargetLanguage = (
-    _event: React.SyntheticEvent<Element, Event>,
-    value: LanguageDto | null,
+    _langTag: string,
+    selected: LanguageInfo,
   ) => {
-    setTargetLanguage(value);
+    if (compareLangInfo(selected, targetLanguage)) return;
+    setTargetLanguage(selected);
   };
 
   return (
@@ -52,21 +43,15 @@ export function LangugeSelectionBox() {
       <Typography variant="h2" color="text.dark">
         Documents
       </Typography>
-      <Autocomplete
-        label="Choose Source Language"
-        options={languageList}
-        value={sourceLanguage}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
-        getOptionLabel={(option) => option.name}
+      <LangSelector
+        selected={sourceLanguage || undefined}
         onChange={handleSetSourceLanguage}
+        setLoadingState={setLoadingState}
       />
-      <Autocomplete
-        label="Choose Target Language"
-        options={languageList}
-        value={targetLanguage}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
-        getOptionLabel={(option) => option.name}
+      <LangSelector
+        selected={targetLanguage || undefined}
         onChange={handleSetTargetLanguage}
+        setLoadingState={setLoadingState}
       />
     </Stack>
   );

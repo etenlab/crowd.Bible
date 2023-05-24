@@ -1,10 +1,10 @@
 import { actions } from './documentTools.actions';
 import { type ActionType } from '.';
-import { type LanguageDto } from '@/dtos/language.dto';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 
 export interface StateType {
-  sourceLanguage: LanguageDto | null;
-  targetLanguage: LanguageDto | null;
+  sourceLanguage: LanguageInfo | null;
+  targetLanguage: LanguageInfo | null;
 }
 
 export const initialState: StateType = {
@@ -23,13 +23,13 @@ export function reducer(
     case actions.SET_SOURCE_LANGUAGE: {
       return {
         ...prevState,
-        sourceLanguage: action.payload as LanguageDto | null,
+        sourceLanguage: action.payload as LanguageInfo | null,
       };
     }
     case actions.SET_TARGET_LANGUAGE: {
       return {
         ...prevState,
-        targetLanguage: action.payload as LanguageDto | null,
+        targetLanguage: action.payload as LanguageInfo | null,
       };
     }
     default: {

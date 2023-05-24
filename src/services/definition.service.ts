@@ -1,4 +1,5 @@
 import {
+  MainKeyName,
   NodeTypeConst,
   PropertyKeyConst,
   RelationshipTypeConst,
@@ -6,19 +7,21 @@ import {
 import { ElectionTypeConst } from '@/constants/voting.constant';
 import { TableNameConst } from '@/constants/table-name.constant';
 
+import { DefinitionDto } from '@/dtos/definition.dto';
+
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
-import { GraphThirdLayerService } from './graph-third-layer.service';
 import { VotingService } from './voting.service';
+
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
-import { makeFindPropsByLang } from '../utils/LangUtils';
-import { LanguageInfo } from '@eten-lab/ui-kit/dist/LangSelector/LangSelector';
+import { makeFindPropsByLang } from '../utils/langUtils';
+import { LanguageInfo } from '@eten-lab/ui-kit';
+import { LanguageMapper } from '@/mappers/language.mapper';
 
 export class DefinitionService {
   constructor(
     private readonly graphFirstLayerService: GraphFirstLayerService,
     private readonly graphSecondLayerService: GraphSecondLayerService,
-    private readonly graphThirdLayerService: GraphThirdLayerService,
     private readonly votingService: VotingService,
   ) {}
 
@@ -105,7 +108,7 @@ export class DefinitionService {
       await this.graphFirstLayerService.getNodeByProp(
         NodeTypeConst.DEFINITION,
         {
-          key: PropertyKeyConst.TEXT,
+          key: PropertyKeyConst.DEFINITION,
           value: definitionText,
         },
         { from_node_id: forNodeId },
@@ -119,7 +122,7 @@ export class DefinitionService {
             {},
             forNodeId,
             NodeTypeConst.DEFINITION,
-            { [PropertyKeyConst.TEXT]: definitionText },
+            { [PropertyKeyConst.DEFINITION]: definitionText },
           )
         ).node;
 
@@ -146,7 +149,7 @@ export class DefinitionService {
   async createDefinitionsElection(
     itemId: string,
   ): Promise<{ electionId: Nanoid }> {
-    const definitionEelection = await this.votingService.createElection(
+    const definitionEelection = await this.votingService.createOrFindElection(
       ElectionTypeConst.DEFINITION,
       itemId,
       TableNameConst.NODES,
@@ -175,7 +178,7 @@ export class DefinitionService {
   ): Promise<Array<VotableContent>> {
     const findProps = makeFindPropsByLang(langInfo);
     customPropValues && findProps.push(...customPropValues);
-    const votableNodesIds = await this.graphFirstLayerService.getNodesByProps(
+    const votableNodesIds = await this.graphFirstLayerService.getNodeIdsByProps(
       votableNodesType as string,
       findProps,
     );
@@ -270,7 +273,7 @@ export class DefinitionService {
       forNodeId,
       electionId,
       NodeTypeConst.DEFINITION,
-      PropertyKeyConst.TEXT,
+      PropertyKeyConst.DEFINITION,
     );
   }
 
@@ -282,18 +285,19 @@ export class DefinitionService {
    * From the other hand, VotableItem have own content(not contents!) witch represent item's own value(i.e. word by itself)
    * this item's own content also can be voted, but it isn't connected to anything, we dont care if they have any relation to any ElectionId.
    * Note: Here we vote on word by itself (not relation)
-   * @param langNodeId
+   * @param languageInfo
+   * @param type: NodeTypeConst.WORD | NodeTypeConst.PHRASE, you can add other NodeTypeConst's if you specify for them MainKeyName
    * @returns
    */
   async getVotableItems(
     languageInfo: LanguageInfo,
-    type: NodeTypeConst,
+    type: NodeTypeConst.WORD | NodeTypeConst.PHRASE,
     customPropValues?: [{ key: string; value: string }],
   ): Promise<Array<VotableItem>> {
     const itemContents = await this.getSelfVotableContentByLang(
       type,
       languageInfo,
-      PropertyKeyConst.NAME,
+      MainKeyName[type],
       customPropValues,
     );
 
@@ -303,7 +307,7 @@ export class DefinitionService {
       }
       // election for word to elect definitions.
       // if electionId exists, it won't be created, Just found and returned.
-      const election = await this.votingService.createElection(
+      const election = await this.votingService.createOrFindElection(
         ElectionTypeConst.DEFINITION,
         wc.id,
         TableNameConst.NODES,
@@ -321,45 +325,59 @@ export class DefinitionService {
   }
 
   /**
-   * Finds a word for given language Id and text, then gets all definitions as a VotableItem form.
-   * @param word
-   * @param langId
-   * @returns
-   */
-  // async getDefinitionVotableContentByWordId(
-  //   wordNodeId: Nanoid,
-  // ): Promise<VotableContent[]> {
-  //   if (!wordNodeId) {
-  //     return [];
-  //   }
-
-  //   const wordVotables = await this.getVotableItems(
-  //     langDto.id,
-  //     langDto.electionWordsId,
-  //   );
-
-  //   const wordVotable = wordVotables.find((wt) => wt.title.id === wordNodeId);
-
-  //   if (!wordVotable) {
-  //     return [];
-  //   }
-
-  //   return wordVotable.contents;
-  // }
-
-  /**
+   * @deprecated
+   * This is invalid function, graph-schema data is immutable, never update.
+   *
    * Updates definition (as text property of given node Id).
    *
    * @param definitionNodeId - node Id to be updated
    * @param newDefinitionValue - new defintion value
    */
-
   async updateDefinitionValue(
     definitionNodeId: Nanoid,
     newDefinitionValue: string,
   ): Promise<void> {
     this.graphSecondLayerService.updateNodeObject(definitionNodeId, {
-      [PropertyKeyConst.TEXT]: newDefinitionValue,
+      [PropertyKeyConst.DEFINITION]: newDefinitionValue,
     });
+  }
+
+  /**
+   * Get Definition Dto from word-to-definition relationship.
+   *
+   * @param rel - rel Id
+   */
+  async getDefinitionWithWord(rel: Nanoid): Promise<DefinitionDto | null> {
+    const relEntity = await this.graphFirstLayerService.readRelationship(rel, [
+      'fromNode',
+      'fromNode.propertyKeys',
+      'fromNode.propertyKeys.propertyValue',
+    ]);
+
+    if (!relEntity) {
+      return null;
+    }
+
+    const wordText: string =
+      (await this.graphFirstLayerService.getNodePropertyValue(
+        relEntity.from_node_id,
+        PropertyKeyConst.WORD,
+      )) as string;
+    const definitionText: string =
+      (await this.graphFirstLayerService.getNodePropertyValue(
+        relEntity.to_node_id,
+        PropertyKeyConst.DEFINITION,
+      )) as string;
+
+    const languageInfo = LanguageMapper.entityToDto(relEntity.fromNode);
+
+    return {
+      wordId: relEntity.from_node_id,
+      wordText: wordText,
+      definitionId: relEntity.to_node_id,
+      definitionText: definitionText,
+      languageInfo: languageInfo!,
+      relationshipId: relEntity.id,
+    };
   }
 }

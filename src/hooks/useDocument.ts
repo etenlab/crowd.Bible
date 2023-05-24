@@ -1,12 +1,15 @@
 import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 
+import { LanguageInfo } from '@eten-lab/ui-kit';
+
 export function useDocument() {
   const {
     states: {
       global: { singletons },
     },
     actions: { alertFeedback, setLoadingState },
+    logger,
   } = useAppContext();
 
   const listDocument = useCallback(async () => {
@@ -17,19 +20,42 @@ export function useDocument() {
 
     try {
       setLoadingState(true);
-      const result = await singletons.graphThirdLayerService.listDocument();
+      const result = await singletons.documentService.listDocument();
       setLoadingState(false);
       return result;
     } catch (err) {
-      console.log(err);
+      logger.error(err);
       setLoadingState(false);
       alertFeedback('error', 'Internal Error!');
       return [];
     }
-  }, [singletons, alertFeedback, setLoadingState]);
+  }, [singletons, alertFeedback, setLoadingState, logger]);
+
+  const listDocumentByLanguageInfo = useCallback(
+    async (langInfo: LanguageInfo) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at listDocument');
+        return [];
+      }
+
+      try {
+        setLoadingState(true);
+        const result =
+          await singletons.documentService.listDocumentByLanguageInfo(langInfo);
+        setLoadingState(false);
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return [];
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
 
   const getDocument = useCallback(
-    async (name: string) => {
+    async (name: string, langInfo: LanguageInfo) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at getDocument');
         return [];
@@ -42,8 +68,33 @@ export function useDocument() {
 
       try {
         setLoadingState(true);
-        const result = await singletons.graphThirdLayerService.getDocument(
+        const result = await singletons.documentService.getDocument(
           name,
+          langInfo,
+        );
+        setLoadingState(false);
+        return result;
+      } catch (err) {
+        logger.error(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return [];
+      }
+    },
+    [singletons, alertFeedback, setLoadingState, logger],
+  );
+
+  const getDocumentById = useCallback(
+    async (documentId: Nanoid) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at getDocument');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.documentService.getDocumentById(
+          documentId,
         );
         setLoadingState(false);
         return result;
@@ -51,14 +102,14 @@ export function useDocument() {
         console.log(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
-        return [];
+        return null;
       }
     },
     [singletons, alertFeedback, setLoadingState],
   );
 
-  const createDocument = useCallback(
-    async (name: string) => {
+  const createOrFindDocument = useCallback(
+    async (name: string, langInfo: LanguageInfo) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at createDocument');
         return null;
@@ -71,8 +122,9 @@ export function useDocument() {
 
       try {
         setLoadingState(true);
-        const document = await singletons.graphThirdLayerService.getDocument(
+        const document = await singletons.documentService.getDocument(
           name.trim(),
+          langInfo,
         );
 
         if (document) {
@@ -80,8 +132,9 @@ export function useDocument() {
           alertFeedback('warning', 'Already exists a document with same name!');
           return null;
         }
-        const result = await singletons.graphThirdLayerService.createDocument(
+        const result = await singletons.documentService.createOrFindDocument(
           name,
+          langInfo,
         );
 
         setLoadingState(false);
@@ -89,18 +142,111 @@ export function useDocument() {
 
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
+  );
+
+  /**
+   * @deprecated
+   */
+  const listApp = useCallback(async () => {
+    if (!singletons) {
+      alertFeedback('error', 'Internal Error! at listApp');
+      return [];
+    }
+
+    try {
+      setLoadingState(true);
+      const result = await singletons.documentService.listApp();
+      setLoadingState(false);
+      return result;
+    } catch (err) {
+      logger.error(err);
+      setLoadingState(false);
+      alertFeedback('error', 'Internal Error!');
+      return [];
+    }
+  }, [singletons, alertFeedback, setLoadingState, logger]);
+
+  /**
+   * @deprecated
+   */
+  const getApp = useCallback(
+    async (name: string) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at getApp');
+        return null;
+      }
+
+      if (name.trim() === '') {
+        alertFeedback('warning', 'Document name cannot be empty string!');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.documentService.getApp(name);
+        setLoadingState(false);
+        return result;
+      } catch (err) {
+        logger.error(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState, logger],
+  );
+
+  /**
+   * @deprecated
+   */
+  const createOrFindApp = useCallback(
+    async (name: string, languageInfo: LanguageInfo) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at createApp');
+        return null;
+      }
+
+      if (name.trim() === '') {
+        alertFeedback('warning', 'App name cannot be empty string!');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const app = await singletons.documentService.createOrFindApp(
+          name.trim(),
+          languageInfo,
+        );
+
+        setLoadingState(false);
+        alertFeedback('success', 'Created a new document!');
+
+        return app;
+      } catch (err) {
+        logger.error(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   return {
-    createDocument,
+    listDocumentByLanguageInfo,
     listDocument,
+    createOrFindDocument,
     getDocument,
+    getDocumentById,
+    createOrFindApp,
+    listApp,
+    getApp,
   };
 }

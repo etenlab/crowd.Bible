@@ -30,6 +30,7 @@ const validationSchema = Yup.object().shape({
 });
 
 export function RegisterPage() {
+  const { logger } = useAppContext();
   const [show, setShow] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -53,7 +54,7 @@ export function RegisterPage() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log(values.email);
+      logger.info(values.email);
       setErrorMessage('');
       setSuccessMessage('');
 
@@ -71,7 +72,7 @@ export function RegisterPage() {
                 username: values.email,
                 password: values.password,
               })
-              .then((res) => {
+              .then((res: any) => {
                 localStorage.setItem('userToken', res.access_token);
                 const token: any = decodeToken(res.access_token);
                 setUser({

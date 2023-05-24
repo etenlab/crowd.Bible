@@ -1,163 +1,164 @@
-import { IonIcon, useIonAlert } from '@ionic/react';
-import React, { useEffect, useState } from 'react';
-import { Box, Divider } from '@mui/material';
-import { Input, Autocomplete, Button, Typography } from '@eten-lab/ui-kit';
-import { useSingletons } from '@/src/hooks/useSingletons';
-import { LanguageDto } from '@/src/dtos/language.dto';
+import { IonIcon } from '@ionic/react';
+import React, { useCallback, useState } from 'react';
+
+import {
+  Input,
+  Typography,
+  LangSelector,
+  LanguageInfo,
+  Button,
+  MuiMaterial,
+} from '@eten-lab/ui-kit';
+
 import { WordDto } from '@/src/dtos/word.dto';
-import { RelationshipTypeConst } from '@/src/constants/graph.constant';
+import {
+  NodeTypeConst,
+  PropertyKeyConst,
+  RelationshipTypeConst,
+} from '@/src/constants/graph.constant';
 import {
   StyledFilterButton,
   StyledSectionTypography,
 } from './StyledComponents';
 import { arrowForwardOutline } from 'ionicons/icons';
+import {
+  compareLangInfo,
+  langInfo2String,
+  wordProps2LangInfo,
+} from '@/utils/langUtils';
+import { WordMapper } from '@/mappers/word.mapper';
+import { useAppContext } from '@/hooks/useAppContext';
 
-//#region types
+const { Box, Divider, Stack } = MuiMaterial;
+
 type Item = {
-  langId?: string;
-  translation?: string;
-  translatedWordId?: string;
-  translationLangId?: string;
+  translations?: Array<WordDto & { isNew: boolean }>;
 } & WordDto;
-type LangInfo = {
-  selectedLang?: string | null;
-  selectedLangId?: string;
-  langIdInput?: string;
-};
-//#endregion
 
 const PADDING = 15;
 
 export const WordTabContent = () => {
-  const singletons = useSingletons();
-  const [presentAlert] = useIonAlert();
-  const [langs, setLangs] = useState<LanguageDto[]>([]);
+  const {
+    states: {
+      global: { singletons },
+    },
+  } = useAppContext();
   const [words, setWords] = useState<Item[]>([]);
-  const [sourceLang, setSourceLang] = useState<LangInfo>({});
-  const [targetLang, setTargetLang] = useState<LangInfo>({});
+  const [sourceLangInfo, setSourceLangInfo] = useState<LanguageInfo>();
+  const [targetLangInfo, setTargetLangInfo] = useState<LanguageInfo>();
   const [step, setStep] = useState(0);
 
-  useEffect(() => {
-    const loadLanguages = async () => {
-      if (!singletons) return;
-      const langDtos = await singletons.graphThirdLayerService.getLanguages();
-      setLangs(langDtos);
-    };
-    loadLanguages();
-  }, [singletons]);
+  const getWordsWithLangs = useCallback(
+    async (
+      sourceLangInfo: LanguageInfo,
+      targetLangInfo: LanguageInfo,
+    ): Promise<Item[]> => {
+      if (!singletons) return [];
+      const wordNodes =
+        await singletons.wordService.getWordsWithLangAndRelationships(
+          sourceLangInfo,
+          [RelationshipTypeConst.WORD_MAP],
+        );
+      if (!wordNodes) return [];
+      const wordItemList: Array<Item> = [];
 
-  // const loadMapStrings = async () => {
-  //   if (!nodeService) return;
-  //   const wordNodes = await nodeService.getWords();
-  //   const words: Item[] = wordNodes.map((w) => WordMapper.entityToDto(w));
-  //   setWords(words);
-  // };
+      for (const wordNode of wordNodes) {
+        const currWordItem: Item = WordMapper.entityToDto(wordNode);
+        currWordItem.translations = [];
 
-  const setSelectedLang = (
-    value: string,
-    setter: React.Dispatch<React.SetStateAction<LangInfo>>,
-  ) => {
-    const id = langs.find((l) => l.name === value)?.id;
-    setter((prevState) => {
-      return { ...prevState, selectedLangId: id, selectedLang: value };
-    });
-  };
+        for (const relationship of wordNode.toNodeRelationships || []) {
+          if (
+            relationship.relationship_type ===
+            RelationshipTypeConst.WORD_TO_TRANSLATION
+          ) {
+            const translationNode = (
+              await singletons.graphFirstLayerService.getNodesWithRelationshipsByIds(
+                [relationship.to_node_id],
+              )
+            )[0];
+            const translatedWord = WordMapper.entityToDto(translationNode);
+            const translatedWordLangInfo = wordProps2LangInfo(translatedWord);
 
-  const onShowStringListClick = () => {
-    if (sourceLang.selectedLang && targetLang.selectedLang) {
-      getWordsBasedOnLang(sourceLang.selectedLangId!);
-      setStep(1);
-    }
-  };
-
-  const getWordsBasedOnLang = async (langId: string) => {
-    if (!singletons) return;
-    const res = await singletons.graphThirdLayerService.getUnTranslatedWords(
-      langId,
-    );
-    console.log('rawNode', res);
-    const wordList: Item[] = [];
-    for (const node of res) {
-      const wordInfo: Item = Object.create(null);
-      wordInfo.id = node.id;
-      for (const pk of node.propertyKeys) {
-        wordInfo[pk.property_key] = undefined;
-        if (pk.propertyValue && pk.propertyValue.property_value) {
-          wordInfo[pk.property_key] = JSON.parse(
-            pk.propertyValue.property_value,
-          ).value;
-        }
-      }
-      for (const relNode of node.toNodeRelationships?.at(0)?.fromNode
-        ?.toNodeRelationships || []) {
-        if (relNode.relationship_type === RelationshipTypeConst.WORD_TO_LANG) {
-          wordInfo.langId = relNode.to_node_id;
-        }
-        if (
-          relNode.relationship_type ===
-          RelationshipTypeConst.WORD_TO_TRANSLATION
-        ) {
-          const translationNode = relNode.toNode.toNodeRelationships?.find(
-            (nr) => nr.relationship_type === RelationshipTypeConst.WORD_TO_LANG,
-          );
-          if (translationNode) {
-            if (translationNode.to_node_id === targetLang.selectedLangId) {
-              wordInfo.translationLangId = translationNode.to_node_id;
-              const jsonStrValue = relNode.toNode.propertyKeys.find(
-                (pk) => pk.property_key === 'name',
-              )?.propertyValue?.property_value;
-              if (jsonStrValue) {
-                wordInfo.translation = JSON.parse(jsonStrValue).value;
-              }
-              wordInfo.translatedWordId = relNode.toNode.id;
+            if (compareLangInfo(translatedWordLangInfo, targetLangInfo)) {
+              currWordItem.translations.push({
+                ...translatedWord,
+                isNew: false,
+              });
             }
           }
         }
+        wordItemList.push(currWordItem);
       }
-      wordList.push(wordInfo);
+      return wordItemList;
+    },
+    [singletons],
+  );
+
+  const onShowStringListClick = useCallback(async () => {
+    if (sourceLangInfo && targetLangInfo) {
+      setWords(await getWordsWithLangs(sourceLangInfo, targetLangInfo));
+      setStep(1);
     }
-    console.log('formatted wordList', wordList);
-    setWords(wordList);
-  };
+  }, [getWordsWithLangs, sourceLangInfo, targetLangInfo]);
 
-  const onTranslationCapture = (
-    idx: number,
-    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>,
-  ) => {
-    const value = e.target.value?.trim();
-    if (!value) return;
-    const stateCopy = [...words];
-    stateCopy[idx] = {
-      ...stateCopy[idx],
-      translation: value,
-      translationLangId: targetLang.selectedLangId,
-    };
-    storeTranslation(stateCopy[idx]);
-  };
+  const handleTranslationChange = useCallback(
+    (
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+      wordIdx: number,
+      translationIdx: number,
+    ) => {
+      const w = [...words];
+      w[wordIdx].translations![translationIdx][PropertyKeyConst.WORD] =
+        e.target.value;
+      setWords(w);
+    },
+    [words],
+  );
 
-  const storeTranslation = async (word: Item) => {
-    if (!singletons) return;
-    const translatedWordId = await singletons.graphThirdLayerService.createWord(
-      word.translation!,
-      word.translationLangId!,
-    );
-    singletons.graphThirdLayerService
-      .createWordTranslationRelationship(word.id, translatedWordId)
-      .then((res) => {
-        console.log('word translation created', res);
-      });
-  };
+  const addEmptyTranslation = useCallback(
+    (wordIdx: number) => {
+      const w = [...words];
+      const emptyTranslation = {
+        id: '',
+        word: '',
+        language: '',
+        isNew: true,
+      };
+      if (w[wordIdx].translations) {
+        w[wordIdx].translations?.push(emptyTranslation);
+      } else {
+        w[wordIdx].translations = [emptyTranslation];
+      }
+      setWords([...words]);
+    },
+    [words],
+  );
 
-  const showAlert = (msg: string) => {
-    presentAlert({
-      header: 'Alert',
-      subHeader: 'Important Message!',
-      message: msg,
-      buttons: ['Ok'],
-    });
-  };
+  const storeTranslations = useCallback(async () => {
+    for (const word of words) {
+      if (!singletons) return;
+      if (!word.translations)
+        throw new Error(
+          `No translation value is specified for word ${JSON.stringify(word)}`,
+        );
 
-  const langLabels = langs.map((l) => l.name);
+      for (const translation of word.translations || []) {
+        if (!translation.isNew) continue;
+        const translationWordId =
+          await singletons.wordService.createWordOrPhraseWithLang(
+            translation.word,
+            targetLangInfo!,
+            NodeTypeConst.WORD,
+          );
+        await singletons.wordService.createWordTranslationRelationship(
+          word.id,
+          translationWordId,
+        );
+      }
+    }
+    setWords(await getWordsWithLangs(sourceLangInfo!, targetLangInfo!));
+  }, [getWordsWithLangs, singletons, sourceLangInfo, targetLangInfo, words]);
+
   return (
     <Box
       display={'flex'}
@@ -172,77 +173,28 @@ export const WordTabContent = () => {
             <StyledSectionTypography>
               Select the source language
             </StyledSectionTypography>
-            <Box
-              display={'flex'}
-              width={'100%'}
-              gap={'20px'}
-              flexDirection={'row'}
-              alignItems={'center'}
-              justifyContent={'space-between'}
-            >
-              <Autocomplete
-                options={langLabels}
-                value={sourceLang.selectedLang}
-                onChange={(_, value) => {
-                  setSelectedLang(value!, setSourceLang);
-                }}
-                label=""
-                sx={{
-                  flex: 1,
-                  borderColor: 'text.gray',
-                  color: 'text.dark',
-                  fontWeight: 700,
-                }}
-              />
-              <Input label="" placeholder="Language ID" sx={{ flex: 1 }} />
-            </Box>
+            <LangSelector
+              onChange={(_langTag: string, langInfo: LanguageInfo) =>
+                setSourceLangInfo(langInfo)
+              }
+            />
           </Box>
 
           <Box width={'100%'}>
             <StyledSectionTypography>
               Select the target language
             </StyledSectionTypography>
-            <Box
-              display={'flex'}
-              width={'100%'}
-              gap={'20px'}
-              flexDirection={'row'}
-              alignItems={'center'}
-              justifyContent={'space-between'}
-            >
-              <Autocomplete
-                options={langLabels}
-                value={targetLang.selectedLang}
-                onChange={(_, value) => {
-                  setSelectedLang(value!, setTargetLang);
-                }}
-                label=""
-                sx={{
-                  flex: 1,
-                  borderColor: 'text.gray',
-                  color: 'text.dark',
-                  fontWeight: 700,
-                }}
-              />
-              <Input label="" placeholder="Language ID" sx={{ flex: 1 }} />
-            </Box>
+            <LangSelector
+              onChange={(_langTag: string, langInfo: LanguageInfo) =>
+                setTargetLangInfo(langInfo)
+              }
+            />
           </Box>
 
           <Button
             fullWidth
             onClick={onShowStringListClick}
             variant={'contained'}
-            sx={{
-              backgroundColor: 'text.blue-primary',
-              color: 'text.white',
-              fontSize: '14px',
-              fontWeight: 800,
-              padding: '14px 73px',
-              marginTop: '20px',
-              ':hover': {
-                backgroundColor: 'text.blue-primary',
-              },
-            }}
           >
             Show String List
           </Button>
@@ -272,7 +224,7 @@ export const WordTabContent = () => {
                 lineHeight={'28px'}
                 paddingRight={'5px'}
               >
-                {sourceLang.selectedLang}
+                {langInfo2String(sourceLangInfo)}
               </Typography>
               <IonIcon icon={arrowForwardOutline}></IonIcon>
               <Typography
@@ -282,20 +234,20 @@ export const WordTabContent = () => {
                 lineHeight={'28px'}
                 paddingLeft={'5px'}
               >
-                {targetLang.selectedLang}
+                {langInfo2String(targetLangInfo)}
               </Typography>
             </Box>
             <StyledFilterButton
               onClick={() => {
-                setSourceLang({ selectedLang: '', langIdInput: '' });
-                setTargetLang({ selectedLang: '', langIdInput: '' });
+                setSourceLangInfo(undefined);
+                setTargetLangInfo(undefined);
                 setStep(0);
               }}
             />
           </Box>
-          {words.map((word, idx) => {
-            return (
-              <>
+          <Stack divider={<Divider />} width={'100%'}>
+            {words.map((word, idx) => {
+              return (
                 <Box
                   key={idx}
                   width={'100%'}
@@ -305,46 +257,52 @@ export const WordTabContent = () => {
                   justifyContent={'space-between'}
                   gap={`${PADDING}px`}
                 >
-                  <Box flex={1} alignSelf={'center'}>
+                  <Box flex={1} alignSelf={'flex-start'}>
                     <Typography variant="subtitle1" fontWeight={400}>
-                      {word.name}
+                      {word.word}
                     </Typography>
                   </Box>
-                  <Box flex={1}>
-                    <Input
-                      fullWidth
-                      label={
-                        word.langId === targetLang.selectedLangId
-                          ? 'Already in target language'
-                          : ''
-                      }
-                      value={word.translation || ''}
-                      onChange={(e) => {
-                        const clonedList = [...words];
-                        clonedList[idx].translation = e.target.value;
-                        setWords(clonedList);
-                      }}
-                      disabled={word.langId === targetLang.selectedLangId}
-                      onClick={(e) => {
-                        if (!targetLang.selectedLangId) {
-                          showAlert('Please choose target language!');
-                          e.stopPropagation();
-                          e.preventDefault();
-                        }
-                      }}
-                      onBlur={(e) => {
-                        onTranslationCapture(idx, e);
-                      }}
-                    />
-                    <Button variant={'text'} sx={{ color: 'text.gray' }}>
-                      + Add More
+                  <Box flex={1} alignSelf={'flex-start'}>
+                    {word.translations && word.translations.length > 0 ? (
+                      <Stack gap={`${PADDING}px`}>
+                        {word.translations.map((translation, tIdx) => {
+                          return (
+                            <Input
+                              fullWidth
+                              key={tIdx}
+                              label={
+                                translation.isNew
+                                  ? ''
+                                  : 'Already in target language'
+                              }
+                              value={translation[PropertyKeyConst.WORD]}
+                              onChange={(e) =>
+                                handleTranslationChange(e, idx, tIdx)
+                              }
+                              disabled={!translation.isNew}
+                            />
+                          );
+                        })}
+                      </Stack>
+                    ) : (
+                      <></>
+                    )}
+
+                    <Button
+                      variant={'text'}
+                      sx={{ color: 'text.gray' }}
+                      onClick={() => addEmptyTranslation(idx)}
+                    >
+                      + Add Translation
                     </Button>
                   </Box>
                 </Box>
-                <Divider style={{ width: '100%' }} />
-              </>
-            );
-          })}
+              );
+            })}
+          </Stack>
+          <Button variant={'contained'} fullWidth onClick={storeTranslations}>
+            Save
+          </Button>
         </>
       ) : (
         <></>

@@ -9,9 +9,10 @@ export function useVote() {
       global: { singletons, user },
     },
     actions: { alertFeedback, setLoadingState },
+    logger,
   } = useAppContext();
 
-  const createElection = useCallback(
+  const createOrFindElection = useCallback(
     async (
       electionType: ElectionTypeConst,
       electionRef: Nanoid,
@@ -19,13 +20,13 @@ export function useVote() {
       candidateRefTableName: string,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createElection');
+        alertFeedback('error', 'Internal Error! at createOrFindElection');
         return null;
       }
 
       try {
         setLoadingState(true);
-        const electionId = await singletons.votingService.createElection(
+        const electionId = await singletons.votingService.createOrFindElection(
           electionType,
           electionRef,
           refTableName,
@@ -37,13 +38,13 @@ export function useVote() {
 
         return electionId;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getElectionById = useCallback(
@@ -61,13 +62,13 @@ export function useVote() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getElectionByRef = useCallback(
@@ -92,13 +93,13 @@ export function useVote() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getElectionFull = useCallback(
@@ -116,13 +117,13 @@ export function useVote() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const addCandidate = useCallback(
@@ -144,13 +145,13 @@ export function useVote() {
 
         return ballotEntryId;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getCandidateById = useCallback(
@@ -168,13 +169,13 @@ export function useVote() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getCandidateByRef = useCallback(
@@ -193,13 +194,13 @@ export function useVote() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getVotesStats = useCallback(
@@ -217,13 +218,13 @@ export function useVote() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const addVote = useCallback(
@@ -240,7 +241,7 @@ export function useVote() {
 
       try {
         setLoadingState(true);
-        const userDto = await singletons.graphThirdLayerService.createUser(
+        const userDto = await singletons.userService.createOrFindUser(
           user.userEmail,
         );
 
@@ -251,13 +252,13 @@ export function useVote() {
 
         return true;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, user, setLoadingState],
+    [singletons, alertFeedback, user, setLoadingState, logger],
   );
 
   const toggleVote = useCallback(
@@ -274,7 +275,7 @@ export function useVote() {
 
       try {
         setLoadingState(true);
-        const userDto = await singletons.graphThirdLayerService.createUser(
+        const userDto = await singletons.userService.createOrFindUser(
           user.userEmail,
         );
 
@@ -296,17 +297,17 @@ export function useVote() {
 
         return true;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, user, addVote, setLoadingState],
+    [singletons, alertFeedback, user, addVote, setLoadingState, logger],
   );
 
   return {
-    createElection,
+    createOrFindElection,
     getElectionById,
     getElectionByRef,
     getElectionFull,
