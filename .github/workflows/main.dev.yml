@@ -38,6 +38,9 @@ jobs:
       - name: Load env
         uses: xom9ikk/dotenv@v2
 
+      # - name: npm i --force
+      #   run: npm i --force
+
       - name: npm ci --force
         run: npm ci --force
 
