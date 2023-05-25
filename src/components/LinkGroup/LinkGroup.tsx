@@ -37,10 +37,10 @@ export function LinkGroup({ group, linkItems }: LinkGroupType) {
   const items = useMemo(() => {
     return linkItems
       .filter(({ adminOnly, betaOnly }) => {
-        if (mode.admin === false && adminOnly === true) {
+        if (mode?.admin === false && adminOnly === true) {
           return false;
         }
-        if (mode.beta === false && betaOnly === true) {
+        if (mode?.beta === false && betaOnly === true) {
           return false;
         }
         return true;
