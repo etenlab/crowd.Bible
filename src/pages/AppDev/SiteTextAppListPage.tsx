@@ -1,24 +1,28 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
+
 import { IonContent } from '@ionic/react';
 
-import { CrowdBibleUI, PlusButton } from '@eten-lab/ui-kit';
+import {
+  Button,
+  MuiMaterial,
+  CrowdBibleUI,
+  LangSelector,
+  LanguageInfo,
+} from '@eten-lab/ui-kit';
 
-import { RouteConst } from '@/constants/route.constant';
-
-// import { LanguageDto } from '@/dtos/language.dto';
 import { AppDto } from '@/dtos/document.dto';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useDocument } from '@/hooks/useDocument';
-// import { useLanguage, MockApp } from '@/hooks/useLanguage';
 
-// import { LanguageInfo } from '@eten-lab/ui-kit';
+import { compareLangInfo } from '@/utils/langUtils';
+import { RouteConst } from '@/constants/route.constant';
 
-import { LanguageSelectionBox } from '@/components/LanguageSelectionBox';
+import { LanguageStatusBar } from '@/components/LanguageStatusBar';
 
-const { ButtonList } = CrowdBibleUI;
-// const { HeadBox, ButtonList } = CrowdBibleUI;
+const { ButtonList, HeadBox } = CrowdBibleUI;
+const { Stack } = MuiMaterial;
 
 type ButtonListItemType = CrowdBibleUI.ButtonListItemType;
 
@@ -27,80 +31,119 @@ export function SiteTextAppListPage() {
   const {
     states: {
       global: { singletons },
-      // documentTools: { sourceLanguage, targetLanguage },
+      documentTools: { sourceLanguage, targetLanguage },
     },
-    // actions: { setSourceLanguage, setTargetLanguage },
+    actions: { setSourceLanguage, setTargetLanguage, setLoadingState },
   } = useAppContext();
 
-  const { listApp } = useDocument();
+  const { listApp, listAppByLanguageInfo } = useDocument();
 
-  const [appList, setAppList] = useState<AppDto[]>([]);
-  // const [languageList, setLanguageList] = useState<LanguageDto[]>([]);
+  const [apps, setApps] = useState<AppDto[]>([]);
+  const [searchStr, setSearchStr] = useState<string>('');
+  const [filterOpen, setFilterOpen] = useState<boolean>(false);
 
-  // Fetch language Lists from db
-  // useEffect(() => {
-  //   if (singletons) {
-  //     getLanguages().then(setLanguageList);
-  //   }
-  // }, [singletons, getLanguages]);
-
-  // Fetch Mock App Lists from db
+  // Fetch Document Lists from db
   useEffect(() => {
     if (singletons) {
-      listApp().then(setAppList);
+      // if (sourceLanguage) {
+      // listAppByLanguageInfo(sourceLanguage).then(setApps);
+      // } else {
+      listApp().then(setApps);
+      // }
     }
-  }, [listApp, singletons]);
+  }, [listApp, singletons, listAppByLanguageInfo, sourceLanguage]);
 
-  // const handleSetSourceLanguage = (value: LanguageInfo | null) => {
-  //   setSourceLanguage(value);
-  // };
-
-  // const handleSetTargetLanguage = (value: LanguageInfo | null) => {
-  //   setTargetLanguage(value);
-  // };
-
-  // const handleClickBackBtn = () => {
-  //   history.goBack();
-  // };
-
-  const handleClickPlusBtn = () => {
-    alert('This button is in WIP');
+  const handleChangeSearchStr = (str: string) => {
+    setSearchStr(str);
   };
 
-  const handleClickItem = (value: string) => {
-    history.push(`${RouteConst.SITE_TEXT_LIST}/${value}`);
+  const handleClickLanguageFilter = () => {
+    setFilterOpen((open) => !open);
+  };
+
+  const handleSetSourceLanguage = (
+    _langTag: string,
+    selected: LanguageInfo,
+  ) => {
+    if (compareLangInfo(selected, sourceLanguage)) return;
+    setSourceLanguage(selected);
+  };
+
+  const handleSetTargetLanguage = (
+    _langTag: string,
+    selected: LanguageInfo,
+  ) => {
+    if (compareLangInfo(selected, targetLanguage)) return;
+    setTargetLanguage(selected);
+  };
+
+  const handleClickApp = (appId: string) => {
+    history.push(`${RouteConst.SITE_TEXT_LIST}/${appId}`);
+  };
+
+  const handleClickBack = () => {
+    history.push(`${RouteConst.APPLICATION_LIST}`);
+  };
+
+  const handleClickSearchButton = () => {
+    setFilterOpen(false);
   };
 
   const items: ButtonListItemType[] = useMemo(() => {
-    return appList.map((app) => ({
-      value: app.id,
-      label: app.name,
+    return apps.map(({ id, name }) => ({
+      value: id,
+      label: name,
     }));
-  }, [appList]);
+  }, [apps]);
+
+  const langSelectorCom = filterOpen ? (
+    <Stack gap="30px" sx={{ padding: '20px' }}>
+      <LangSelector
+        selected={sourceLanguage || undefined}
+        onChange={handleSetSourceLanguage}
+        setLoadingState={setLoadingState}
+      />
+      <LangSelector
+        selected={targetLanguage || undefined}
+        onChange={handleSetTargetLanguage}
+        setLoadingState={setLoadingState}
+      />
+      <Button variant="contained" onClick={handleClickSearchButton}>
+        Search
+      </Button>
+    </Stack>
+  ) : null;
+
+  const buttonListCom = !filterOpen ? (
+    <Stack gap="16px">
+      <LanguageStatusBar />
+      <ButtonList
+        label="List of Docs"
+        search={{
+          value: searchStr,
+          onChange: handleChangeSearchStr,
+          placeHolder: 'Input Search Word...',
+        }}
+        withUnderline={true}
+        items={items}
+        onClick={handleClickApp}
+      />
+    </Stack>
+  ) : null;
 
   return (
     <IonContent>
-      {/* <HeadBox
-        back={{ action: handleClickBackBtn }}
+      <HeadBox
         title="Applications"
-        languageSelector={{
-          languageList: languageList,
-          source: sourceLanguage,
-          target: targetLanguage,
-          onChangeSource: handleSetSourceLanguage,
-          onChangeTarget: handleSetTargetLanguage,
+        filter={{
+          onClick: handleClickLanguageFilter,
         }}
-      /> */}
-      <LanguageSelectionBox />
-      <ButtonList
-        label="Select a chapter"
-        withUnderline
-        items={items}
-        toolBtnGroup={
-          <PlusButton variant="primary" onClick={handleClickPlusBtn} />
-        }
-        onClick={handleClickItem}
+        back={{
+          action: handleClickBack,
+        }}
       />
+      {langSelectorCom}
+      {buttonListCom}
     </IonContent>
   );
 }
