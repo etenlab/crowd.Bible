@@ -1,23 +1,28 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { IonContent } from '@ionic/react';
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
-import { useSingletons } from '@/src/hooks/useSingletons';
 import { Like } from 'typeorm';
 import { useGlobal } from '@/src/hooks/useGlobal';
 import { initialState, reducer } from '@/src/reducers';
 import { useHistory } from 'react-router';
+import { useAppContext } from '../../../hooks/useAppContext';
 
 const { SearchNode, TitleWithIcon } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
 export function SearchNodePage() {
+  const {
+    states: {
+      global: { singletons },
+    },
+    logger,
+  } = useAppContext();
   const [, dispatch] = useReducer(reducer, initialState);
   const { setLoadingState } = useGlobal({ dispatch });
   const [search, setSearch] = useState('');
   const history = useHistory();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [nodes, setNodes] = useState<any>([]);
-  const singletons = useSingletons();
 
   useEffect(() => {
     if (!search) {
@@ -74,9 +79,9 @@ export function SearchNodePage() {
       .then((filtered_nodes) => {
         setNodes(filtered_nodes);
       })
-      .catch((err) => console.log(err))
+      .catch((err) => logger.error(err))
       .finally(() => setLoadingState(false));
-  }, [search, setLoadingState, singletons]);
+  }, [search, setLoadingState, singletons, logger]);
 
   const nodeClickHandler = (id: string) => {
     history.push(`/graph-viewer/${id}`);

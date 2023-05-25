@@ -38,6 +38,7 @@ export function LoginPage() {
 
   const {
     actions: { setUser },
+    logger,
   } = useAppContext();
   const formik = useFormik<{
     email: string;
@@ -49,8 +50,8 @@ export function LoginPage() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log(values.email);
-      console.log(values.password);
+      logger.info(values.email);
+      logger.info(values.password);
 
       await kcClient
         .login({

@@ -6,6 +6,7 @@ import { type RelationshipPropertyKeyRepository } from '@/repositories/relations
 import { type RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
 import { type RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
 import { type RelationshipRepository } from '@/repositories/relationship/relationship.repository';
+import { LoggerService } from './logger.service';
 
 const DATA_SEEDED = 'DATA_SEEDED';
 export class SeedService {
@@ -25,6 +26,7 @@ export class SeedService {
     private readonly relationshipTypeRepository: RelationshipTypeRepository,
     private readonly relationshipPropertyKeyRepository: RelationshipPropertyKeyRepository,
     private readonly relationshipPropertyValueRepository: RelationshipPropertyValueRepository,
+    private readonly logger: LoggerService,
   ) {
     this.init();
   }
@@ -32,13 +34,13 @@ export class SeedService {
   async init() {
     try {
       if (this.dataSeeded) return;
-      console.log('*** data seeding started ***');
+      this.logger.info('*** data seeding started ***');
       // No lang nodes are needed anymore
       // await Promise.allSettled([this.seedLanguages()]);
-      console.log('*** data seeding completed ***');
+      this.logger.info('*** data seeding completed ***');
       this.dataSeeded = true;
     } catch (error) {
-      console.log('seeding failed::', error);
+      this.logger.error('seeding failed::', error);
     }
   }
 

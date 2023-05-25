@@ -49,6 +49,7 @@ export const MapTabContent = () => {
       global: { singletons },
     },
     actions: { alertFeedback },
+    logger,
   } = useAppContext();
 
   const [mapList, setMapList] = useState<MapDetail[]>([]);
@@ -75,7 +76,7 @@ export const MapTabContent = () => {
             const startIdx = batchNumber * batchItemCount;
             const endIdx = startIdx + batchItemCount;
             const batchWords = words.slice(startIdx, endIdx);
-            console.log(
+            logger.info(
               'hasNextBatch',
               hasNextBatch,
               startIdx,
@@ -94,7 +95,7 @@ export const MapTabContent = () => {
             }
             batchNumber++;
           }
-          console.log('total created words', createdWords);
+          logger.info('total created words', createdWords);
         };
         const handleMapParsingCompleted = async (argMap: MapDetail) => {
           if (!singletons) return;
@@ -119,7 +120,7 @@ export const MapTabContent = () => {
         handleMapParsingCompleted(mapState);
       }
     }
-  }, [mapList, singletons]);
+  }, [logger, mapList, singletons]);
 
   const showAlert = useCallback(
     (msg: string) => {

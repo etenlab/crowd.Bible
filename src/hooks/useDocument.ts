@@ -9,6 +9,7 @@ export function useDocument() {
       global: { singletons },
     },
     actions: { alertFeedback, setLoadingState },
+    logger,
   } = useAppContext();
 
   const listDocument = useCallback(async () => {
@@ -23,12 +24,12 @@ export function useDocument() {
       setLoadingState(false);
       return result;
     } catch (err) {
-      console.log(err);
+      logger.error(err);
       setLoadingState(false);
       alertFeedback('error', 'Internal Error!');
       return [];
     }
-  }, [singletons, alertFeedback, setLoadingState]);
+  }, [singletons, alertFeedback, setLoadingState, logger]);
 
   const listDocumentByLanguageInfo = useCallback(
     async (langInfo: LanguageInfo) => {
@@ -74,13 +75,13 @@ export function useDocument() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getDocumentById = useCallback(
@@ -141,13 +142,13 @@ export function useDocument() {
 
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   /**
@@ -165,12 +166,12 @@ export function useDocument() {
       setLoadingState(false);
       return result;
     } catch (err) {
-      console.log(err);
+      logger.error(err);
       setLoadingState(false);
       alertFeedback('error', 'Internal Error!');
       return [];
     }
-  }, [singletons, alertFeedback, setLoadingState]);
+  }, [singletons, alertFeedback, setLoadingState, logger]);
 
   /**
    * @deprecated
@@ -193,13 +194,13 @@ export function useDocument() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   /**
@@ -291,13 +292,13 @@ export function useDocument() {
 
         return app;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   return {

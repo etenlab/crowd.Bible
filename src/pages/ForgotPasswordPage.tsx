@@ -35,6 +35,7 @@ export function ForgotPasswordPage() {
   const history = useHistory();
   const {
     actions: { setLoadingState },
+    logger,
   } = useAppContext();
 
   const formik = useFormik<{
@@ -58,7 +59,7 @@ export function ForgotPasswordPage() {
         .then((res) => {
           setSuccessMessage('Reset password link sent to your email');
           setLoadingState(false);
-          console.log(res);
+          logger.error(res);
         })
         .catch((error: any) => {
           setErrorMessage(error.message);
