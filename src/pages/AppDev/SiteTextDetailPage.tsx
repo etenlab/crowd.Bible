@@ -1,294 +1,284 @@
-// import { useState, useEffect, useMemo } from 'react';
-// import { useHistory, useParams } from 'react-router-dom';
-// import { IonContent } from '@ionic/react';
+import { useState, useEffect, useMemo } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { IonContent } from '@ionic/react';
 
-// import { CrowdBibleUI, MuiMaterial, Button } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, MuiMaterial, Button } from '@eten-lab/ui-kit';
 
-// import { RouteConst } from '@/constants/route.constant';
+import { RouteConst } from '@/constants/route.constant';
 
-// import { DescriptionList, DescriptionItem } from '@/components/DescriptionList';
+import { DescriptionList, DescriptionItem } from '@/components/DescriptionList';
 
-// import { useAppContext } from '@/hooks/useAppContext';
-// import { useSiteText } from '@/hooks/useSiteText';
-// import { useVote } from '@/hooks/useVote';
+import { useAppContext } from '@/hooks/useAppContext';
+import { useSiteText } from '@/hooks/useSiteText';
+import { useVote } from '@/hooks/useVote';
+import { useDocument } from '@/hooks/useDocument';
 
-// import { SiteTextWithTranslationVotablesDto } from '@/dtos/site-text.dto';
-// import { alertFeedback } from '@/src/reducers/global.actions';
+import { SiteTextTranslationDto, SiteTextDto } from '@/dtos/site-text.dto';
+import { AppDto } from '@/dtos/document.dto';
+import { compareLangInfo } from '@/src/utils/langUtils';
 
-// import { compareLangInfo } from '@/utils/langUtils';
+const { HeadBox } = CrowdBibleUI;
 
-// const { HeadBox } = CrowdBibleUI;
+const { Typography, Stack } = MuiMaterial;
 
-// const { Typography, Stack, Chip } = MuiMaterial;
+export function SiteTextDetailPage() {
+  const history = useHistory();
+  const { appId, siteTextId, originalDefinitionRel, translatedDefinitionRel } =
+    useParams<{
+      appId: Nanoid;
+      siteTextId: Nanoid;
+      originalDefinitionRel?: Nanoid;
+      translatedDefinitionRel?: Nanoid;
+    }>();
+  const {
+    states: {
+      global: { singletons },
+      documentTools: { sourceLanguage, targetLanguage },
+    },
+    actions: { alertFeedback },
+  } = useAppContext();
+  const {
+    getRecommendedSiteText,
+    getSiteTextDtoWithRel,
+    getTranslationListBySiteTextRel,
+    getSiteTextTranslationDtoWithRel,
+    getOriginalAndTranslatedRelFromSiteTextTranslationDto,
+  } = useSiteText();
+  const { toggleVote, getVotesStats } = useVote();
+  const { getAppById } = useDocument();
 
-export function SiteTextDetailPage({
-  isChangeTranslationPage,
-}: {
-  isChangeTranslationPage?: boolean;
-}) {
-  // const history = useHistory();
-  // const { siteTextId } = useParams<{ siteTextId: Nanoid }>();
-  // const {
-  //   states: {
-  //     global: { singletons },
-  //     documentTools: { sourceLanguage },
-  //   },
-  // } = useAppContext();
-  // const {
-  //   // getSiteTextWithTranslationCandidates,
-  //   // selectSiteTextTranslationCandidate,
-  //   // getSelectedSiteTextTranslation,
-  //   // getSiteTextTranslationVotableById,
-  // } = useSiteText();
-  // const { toggleVote } = useVote();
+  const [app, setApp] = useState<AppDto | null>(null);
+  const [originalSiteText, setOriginalSiteText] = useState<SiteTextDto | null>(
+    null,
+  );
+  const [siteText, setSiteText] = useState<SiteTextTranslationDto | null>(null);
+  const [siteTextTranslationList, setSiteTextTranslationList] = useState<
+    SiteTextTranslationDto[]
+  >([]);
 
-  // const [siteText, setSiteText] =
-  //   useState<SiteTextWithTranslationVotablesDto | null>(null);
-  // const [selectedTranslation, setSelectedTranslation] = useState<string | null>(
-  //   null,
-  // );
+  // fetch recommended siteText
+  useEffect(() => {
+    (async () => {
+      if (singletons && sourceLanguage) {
+        getAppById(appId).then(setApp);
 
-  // const isOrigin =
-  //   siteText &&
-  //   sourceLanguage &&
-  //   compareLangInfo(siteText.languageInfo, sourceLanguage);
+        let _siteText: SiteTextTranslationDto | null = null;
+        let _originalSiteText: SiteTextDto | null = null;
 
-  // // fetch site text data with translation candidates
-  // useEffect(() => {
-  //   if (singletons) {
-  //     if (isChangeTranslationPage && sourceLanguage) {
-  //       getSiteTextWithTranslationCandidates(
-  //         siteTextId,
-  //         sourceLanguage.id,
-  //         sourceLanguage.id,
-  //       ).then(setSiteText);
-  //       getSelectedSiteTextTranslation(siteTextId, sourceLanguage.id).then(
-  //         (selected) => {
-  //           if (selected) {
-  //             setSelectedTranslation(selected.id);
-  //           }
-  //         },
-  //       );
-  //     } else {
-  //       getSiteTextWithTranslationCandidates(siteTextId).then(setSiteText);
-  //       getSelectedSiteTextTranslation(siteTextId).then((selected) => {
-  //         if (selected) {
-  //           setSelectedTranslation(selected.id);
-  //         }
-  //       });
-  //     }
-  //   }
-  // }, [
-  //   getSiteTextWithTranslationCandidates,
-  //   getSelectedSiteTextTranslation,
-  //   singletons,
-  //   siteTextId,
-  //   sourceLanguage,
-  //   isChangeTranslationPage,
-  // ]);
+        if (originalDefinitionRel) {
+          if (translatedDefinitionRel) {
+            _siteText = await getSiteTextTranslationDtoWithRel(
+              appId,
+              originalDefinitionRel,
+              translatedDefinitionRel,
+            );
+          } else {
+            _originalSiteText = await getSiteTextDtoWithRel(
+              originalDefinitionRel,
+            );
+          }
+        } else {
+          _siteText = await getRecommendedSiteText(
+            appId,
+            siteTextId,
+            sourceLanguage,
+          );
+        }
 
-  // const handleClickBackBtn = () => {
-  //   history.goBack();
-  // };
+        if (_siteText) {
+          setSiteText(_siteText);
+        } else if (_originalSiteText) {
+          setOriginalSiteText(_originalSiteText);
+        } else if (!_siteText && !_originalSiteText) {
+          alertFeedback('error', 'Not exists site text for current language!');
+          // history.push(`${RouteConst.SITE_TEXT_LIST}/${appId}`);
+        }
+      }
+    })();
+  }, [
+    singletons,
+    appId,
+    getAppById,
+    siteTextId,
+    sourceLanguage,
+    getSiteTextDtoWithRel,
+    getRecommendedSiteText,
+    getSiteTextTranslationDtoWithRel,
+    originalDefinitionRel,
+    translatedDefinitionRel,
+    alertFeedback,
+    history,
+  ]);
 
-  // const handleClickEditBtn = () => {
-  //   if (isOrigin) {
-  //     history.push(
-  //       `${RouteConst.SITE_TEXT_EDITOR}/${siteText?.appId}/${siteTextId}`,
-  //     );
-  //   } else {
-  //     history.push(`${RouteConst.SITE_TEXT_CHANGE_TRANSLATION}/${siteTextId}`);
-  //   }
-  // };
+  // fetch siteText translation list
+  useEffect(() => {
+    if (singletons && targetLanguage) {
+      if (originalSiteText) {
+        getTranslationListBySiteTextRel(
+          appId,
+          originalSiteText,
+          targetLanguage,
+        ).then(setSiteTextTranslationList);
+      } else if (siteText) {
+        getTranslationListBySiteTextRel(
+          appId,
+          siteText.original,
+          targetLanguage,
+        ).then(setSiteTextTranslationList);
+      }
+    }
+  }, [
+    singletons,
+    appId,
+    originalSiteText,
+    siteText,
+    targetLanguage,
+    getTranslationListBySiteTextRel,
+  ]);
 
-  // const handleClickPlusTranslationBtn = () => {
-  //   history.push(`${RouteConst.SITE_TEXT_TRANSLATION_EDITOR}/${siteTextId}`);
-  // };
+  const handleClickBackBtn = () => {
+    history.push(`${RouteConst.SITE_TEXT_LIST}/${appId}`);
+  };
 
-  // const handleChangeVote = async (
-  //   candidateId: Nanoid,
-  //   voteValue: boolean,
-  //   descriptionId: Nanoid,
-  // ) => {
-  //   await toggleVote(candidateId, voteValue);
+  const handleClickSwitchBtn = async () => {
+    const {
+      originalDefinitionRel: _originalDefinitionRel,
+      translatedDefinitionRel: _translatedDefinitionRel,
+    } = await getOriginalAndTranslatedRelFromSiteTextTranslationDto({
+      original: originalSiteText,
+      translated: siteText,
+    });
 
-  //   if (!descriptionId) {
-  //     return;
-  //   }
+    if (
+      sourceLanguage &&
+      compareLangInfo(app?.languageInfo || null, sourceLanguage) &&
+      _originalDefinitionRel
+    ) {
+      history.push(
+        `${RouteConst.SITE_TEXT_DEFINITION}/${appId}/${siteTextId}/${_originalDefinitionRel}`,
+      );
+    } else if (_originalDefinitionRel && _translatedDefinitionRel) {
+      history.push(
+        `${RouteConst.SITE_TEXT_TRANSLATION_SWITCH}/${appId}/${siteTextId}/${_originalDefinitionRel}/${_translatedDefinitionRel}`,
+      );
+    }
+  };
 
-  //   const result = await getSiteTextTranslationVotableById(descriptionId);
+  const handleClickPlusTranslationBtn = async () => {
+    const {
+      originalDefinitionRel: _originalDefinitionRel,
+      translatedDefinitionRel: _translatedDefinitionRel,
+    } = await getOriginalAndTranslatedRelFromSiteTextTranslationDto({
+      original: originalSiteText,
+      translated: siteText,
+    });
 
-  //   if (!result) {
-  //     alertFeedback('error', 'Not able to find translation by given ID');
-  //     return;
-  //   }
+    if (_originalDefinitionRel && _translatedDefinitionRel) {
+      history.push(
+        `${RouteConst.ADD_NEW_SITE_TEXT_TRANSLATION}/${appId}/${siteTextId}/${_originalDefinitionRel}/${_translatedDefinitionRel}`,
+      );
+    } else if (_originalDefinitionRel && !_translatedDefinitionRel) {
+      history.push(
+        `${RouteConst.ADD_NEW_SITE_TEXT_TRANSLATION}/${appId}/${siteTextId}/${_originalDefinitionRel}`,
+      );
+    }
+  };
 
-  //   setSiteText((siteText) => {
-  //     if (!siteText) {
-  //       return null;
-  //     }
+  const handleChangeVote = async (
+    candidateId: Nanoid,
+    voteValue: boolean,
+    descriptionId: Nanoid,
+  ) => {
+    await toggleVote(candidateId, voteValue);
 
-  //     return {
-  //       ...siteText,
-  //       translations: siteText!.translations.map((translation) => {
-  //         if (translation.id === descriptionId) {
-  //           return result;
-  //         } else {
-  //           return translation;
-  //         }
-  //       }),
-  //     };
-  //   });
-  // };
+    if (!descriptionId) {
+      return;
+    }
 
-  // const handleClickDiscussionBtn = async (descriptionId: Nanoid) => {};
+    const voteStats = await getVotesStats(candidateId);
 
-  // const handleSelectRadio = async (descriptionId: Nanoid) => {
-  //   const result = await selectSiteTextTranslationCandidate(
-  //     descriptionId,
-  //     siteTextId,
-  //   );
+    setSiteTextTranslationList((_siteTextTranslationList) => {
+      return _siteTextTranslationList.map((siteTextTranslation) => {
+        if (siteTextTranslation.candidateId === candidateId) {
+          return {
+            ...siteTextTranslation,
+            ...voteStats,
+          };
+        } else {
+          return siteTextTranslation;
+        }
+      });
+    });
+  };
 
-  //   if (result) {
-  //     setSelectedTranslation(descriptionId);
-  //   }
-  // };
+  const handleClickDiscussionBtn = async (_descriptionId: Nanoid) => {};
 
-  // const items: DescriptionItem[] = useMemo(() => {
-  //   return siteText
-  //     ? siteText.translations.map((translation) => ({
-  //         id: translation.id,
-  //         title: translation.translatedSiteText,
-  //         description: translation.translatedDefinition,
-  //         vote: {
-  //           upVotes: translation.upVotes,
-  //           downVotes: translation.downVotes,
-  //           candidateId: translation.candidateId,
-  //         },
-  //       }))
-  //     : [];
-  // }, [siteText]);
+  const items: DescriptionItem[] = useMemo(() => {
+    return siteTextTranslationList
+      ? siteTextTranslationList.map((translation) => ({
+          id: translation.candidateId || '',
+          title: translation.translatedSiteText,
+          description: translation.translatedDefinition,
+          vote: {
+            upVotes: translation.upVotes,
+            downVotes: translation.downVotes,
+            candidateId: translation.candidateId || '',
+          },
+        }))
+      : [];
+  }, [siteTextTranslationList]);
 
-  // const recommendedBudgeCom = (
-  //   <Chip
-  //     component="span"
-  //     label="Recommended"
-  //     variant="outlined"
-  //     color="warning"
-  //     size="small"
-  //     sx={{ marginLeft: 2 }}
-  //   />
-  // );
+  const siteTextString =
+    siteText?.translatedSiteText || originalSiteText?.siteText || '';
+  const definitionString =
+    siteText?.translatedDefinition || originalSiteText?.definition || '';
 
-  // const notTranslatedBudgeCom = (
-  //   <Chip
-  //     component="span"
-  //     label="Not translated"
-  //     variant="outlined"
-  //     color="error"
-  //     size="small"
-  //     sx={{ marginLeft: 2 }}
-  //   />
-  // );
+  return (
+    <IonContent>
+      <HeadBox back={{ action: handleClickBackBtn }} title={siteTextString} />
+      <Stack gap="20px" sx={{ padding: '20px' }}>
+        <Typography variant="body1" color="text.dark">
+          {definitionString}
+        </Typography>
 
-  // const budgeCom = siteText?.translated
-  //   ? siteText.translated.type === 'recommended'
-  //     ? recommendedBudgeCom
-  //     : null
-  //   : notTranslatedBudgeCom;
+        <Stack
+          gap="20px"
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Button
+            variant="outlined"
+            fullWidth
+            onClick={handleClickSwitchBtn}
+            sx={{ minWidth: '90px' }}
+          >
+            {sourceLanguage &&
+            compareLangInfo(app?.languageInfo || null, sourceLanguage)
+              ? 'Definition'
+              : 'Switch'}
+          </Button>
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={handleClickPlusTranslationBtn}
+            sx={{ minWidth: '160px' }}
+          >
+            + New Translation
+          </Button>
+        </Stack>
+      </Stack>
 
-  // const isDisabledNewTranslationBtn = siteText?.translated
-  //   ? siteText.translated.type === 'recommended'
-  //     ? true
-  //     : false
-  //   : true;
-
-  // const isDisabledEditBtn = siteText?.translated ? false : true;
-
-  // const toolbtnComs = !isChangeTranslationPage ? (
-  //   <Stack
-  //     gap="20px"
-  //     direction="row"
-  //     justifyContent="space-between"
-  //     alignItems="center"
-  //   >
-  //     <Button
-  //       variant="outlined"
-  //       fullWidth
-  //       onClick={handleClickEditBtn}
-  //       sx={{ minWidth: '90px' }}
-  //       disabled={isDisabledEditBtn}
-  //     >
-  //       Switch
-  //     </Button>
-  //     <Button
-  //       variant="contained"
-  //       fullWidth
-  //       onClick={handleClickPlusTranslationBtn}
-  //       sx={{ minWidth: '160px' }}
-  //       disabled={isDisabledNewTranslationBtn}
-  //     >
-  //       + New Translation
-  //     </Button>
-  //   </Stack>
-  // ) : null;
-
-  // const headCom = isChangeTranslationPage ? (
-  //   <HeadBox
-  //     back={{ action: handleClickBackBtn }}
-  //     title="Switch Site Text Translation"
-  //   />
-  // ) : (
-  //   <HeadBox
-  //     back={{ action: handleClickBackBtn }}
-  //     title={
-  //       <>
-  //         {siteText?.translated
-  //           ? siteText.translated.siteText
-  //           : siteText?.siteText}
-  //         {budgeCom}
-  //       </>
-  //     }
-  //   />
-  // );
-
-  // const siteTextCom = isChangeTranslationPage ? (
-  //   <Typography variant="body1" color="text.dark" sx={{ fontWeight: '600' }}>
-  //     {siteText?.translated ? siteText.translated.siteText : siteText?.siteText}
-  //     {budgeCom}
-  //   </Typography>
-  // ) : null;
-
-  // return (
-  //   <IonContent>
-  //     {headCom}
-  //     <Stack gap="20px" sx={{ padding: '20px' }}>
-  //       {siteTextCom}
-  //       <Typography variant="body1" color="text.dark">
-  //         {siteText?.translated
-  //           ? siteText.translated.definition
-  //           : siteText?.definition}
-  //         {budgeCom}
-  //       </Typography>
-  //       {toolbtnComs}
-  //     </Stack>
-
-  //     <DescriptionList
-  //       title="Translation Candidates"
-  //       items={items}
-  //       radioBtn={{
-  //         checkedId: selectedTranslation,
-  //         onSelectRadio: handleSelectRadio,
-  //       }}
-  //       discussionBtn={{
-  //         onClickDiscussionBtn: handleClickDiscussionBtn,
-  //       }}
-  //       voteBtn={{
-  //         onChangeVote: handleChangeVote,
-  //       }}
-  //     />
-  //   </IonContent>
-  // );
-
-  return <div>This page is blocked</div>;
+      <DescriptionList
+        title="Translation Candidates"
+        items={items}
+        discussionBtn={{
+          onClickDiscussionBtn: handleClickDiscussionBtn,
+        }}
+        voteBtn={{
+          onChangeVote: handleChangeVote,
+        }}
+      />
+    </IonContent>
+  );
 }

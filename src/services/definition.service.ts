@@ -12,6 +12,7 @@ import { DefinitionDto } from '@/dtos/definition.dto';
 import { GraphFirstLayerService } from './graph-first-layer.service';
 import { GraphSecondLayerService } from './graph-second-layer.service';
 import { VotingService } from './voting.service';
+import { WordService } from './word.service';
 
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
 import { makeFindPropsByLang } from '../utils/langUtils';
@@ -23,6 +24,7 @@ export class DefinitionService {
     private readonly graphFirstLayerService: GraphFirstLayerService,
     private readonly graphSecondLayerService: GraphSecondLayerService,
     private readonly votingService: VotingService,
+    private readonly wordService: WordService,
   ) {}
 
   /**
@@ -218,7 +220,6 @@ export class DefinitionService {
    * @param fromVotableNodes - set direction of relations. 'true' - default - relationship  is from votable items to election target.
    * @returns
    */
-
   async getVotableContent(
     electionTargetId: Nanoid,
     electionId: Nanoid,
@@ -347,7 +348,7 @@ export class DefinitionService {
    *
    * @param rel - rel Id
    */
-  async getDefinitionWithWord(rel: Nanoid): Promise<DefinitionDto | null> {
+  async getDefinitionWithRel(rel: Nanoid): Promise<DefinitionDto | null> {
     const relEntity = await this.graphFirstLayerService.readRelationship(rel, [
       'fromNode',
       'fromNode.propertyKeys',
@@ -357,6 +358,17 @@ export class DefinitionService {
     if (!relEntity) {
       return null;
     }
+
+    const { electionId } = await this.createDefinitionsElection(
+      relEntity.from_node_id,
+    );
+
+    const candidate = await this.votingService.addCandidate(
+      electionId,
+      relEntity.id,
+    );
+    const { upVotes, downVotes, candidateId } =
+      await this.votingService.getVotesStats(candidate.id);
 
     const wordText: string =
       (await this.graphFirstLayerService.getNodePropertyValue(
@@ -378,6 +390,34 @@ export class DefinitionService {
       definitionText: definitionText,
       languageInfo: languageInfo!,
       relationshipId: relEntity.id,
+      upVotes,
+      downVotes,
+      candidateId,
     };
+  }
+
+  /**
+   * Finds definitions for given word, and languageInfo.
+   *
+   * @param word
+   * @param languageInfo
+   * @returns
+   */
+  async getDefinitionsAsVotableContentByWord(
+    word: string,
+    languageInfo: LanguageInfo,
+  ): Promise<VotableContent[]> {
+    const wordNodeId = await this.wordService.getWordOrPhraseWithLang(
+      word,
+      languageInfo,
+    );
+
+    if (!wordNodeId) {
+      return [];
+    }
+
+    const { electionId } = await this.createDefinitionsElection(wordNodeId);
+
+    return this.getDefinitionsAsVotableContent(wordNodeId, electionId);
   }
 }

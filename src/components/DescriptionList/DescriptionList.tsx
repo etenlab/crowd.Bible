@@ -138,6 +138,7 @@ type DescriptionProps = {
       descriptionId: Nanoid,
     ): void;
   };
+  onClick?: () => void;
 };
 
 function Description({
@@ -145,6 +146,7 @@ function Description({
   radioBtn,
   discussionBtn,
   voteBtn,
+  onClick,
 }: DescriptionProps) {
   const { getColor } = useColorModeContext();
 
@@ -208,7 +210,12 @@ function Description({
         {titleCom}
         <Typography
           variant="body3"
-          sx={{ padding: '9px 0', color: getColor('dark') }}
+          sx={{
+            padding: '9px 0',
+            color: getColor('dark'),
+            cursor: onClick ? 'pointer' : 'inherit',
+          }}
+          onClick={onClick}
         >
           {description}
         </Typography>
@@ -261,6 +268,7 @@ type DescriptionListProps = {
       descriptionId: Nanoid,
     ): void;
   };
+  onClickRow?: (descriptionId: Nanoid) => void;
 };
 
 export function DescriptionList({
@@ -269,6 +277,7 @@ export function DescriptionList({
   radioBtn,
   discussionBtn,
   voteBtn,
+  onClickRow,
 }: DescriptionListProps) {
   return (
     <Stack sx={{ padding: '20px' }}>
@@ -283,6 +292,9 @@ export function DescriptionList({
           radioBtn={radioBtn}
           discussionBtn={discussionBtn}
           voteBtn={voteBtn}
+          onClick={() => {
+            onClickRow && onClickRow(item.id);
+          }}
         />
       ))}
     </Stack>

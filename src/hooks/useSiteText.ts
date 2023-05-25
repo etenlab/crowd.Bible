@@ -1,10 +1,14 @@
 import { useCallback } from 'react';
+
 import { useAppContext } from '@/hooks/useAppContext';
+import { useVote } from '@/hooks/useVote';
 
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { VotableContent } from '../dtos/votable-item.dto';
 
-import { SiteTextDto } from '@/dtos/site-text.dto';
+import { SiteTextDto, SiteTextTranslationDto } from '@/dtos/site-text.dto';
+
+import { compareLangInfo } from '@/utils/langUtils';
 
 export function useSiteText() {
   const {
@@ -15,6 +19,8 @@ export function useSiteText() {
     actions: { alertFeedback, setLoadingState },
     logger,
   } = useAppContext();
+
+  const { getCandidateById } = useVote();
 
   const createOrFindSiteText = useCallback(
     async (
@@ -55,6 +61,7 @@ export function useSiteText() {
 
   const createOrFindTranslation = useCallback(
     async (
+      appId: Nanoid,
       definitionRelationshipId: Nanoid,
       languageInfo: LanguageInfo,
       translatedSiteText: string,
@@ -65,10 +72,27 @@ export function useSiteText() {
         return null;
       }
 
+      if (translatedSiteText.trim().length === 0) {
+        alertFeedback(
+          'error',
+          'translated site text should be non empty string!',
+        );
+        return null;
+      }
+
+      if (translatedDefinitionText.trim().length === 0) {
+        alertFeedback(
+          'error',
+          'translated site text definition should be non empty string!',
+        );
+        return null;
+      }
+
       try {
         setLoadingState(true);
 
         const result = await singletons.siteTextService.createOrFindTranslation(
+          appId,
           definitionRelationshipId,
           languageInfo,
           translatedSiteText,
@@ -124,7 +148,7 @@ export function useSiteText() {
     ) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at getElectionFull');
-        return null;
+        return [];
       }
 
       try {
@@ -144,7 +168,7 @@ export function useSiteText() {
         logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
-        return null;
+        return [];
       }
     },
     [singletons, alertFeedback, setLoadingState, logger],
@@ -189,16 +213,6 @@ export function useSiteText() {
         return [];
       }
 
-      // if (!sourceLanguage) {
-      //   alertFeedback('error', 'Not exists target language!');
-      //   return null;
-      // }
-
-      // if (!targetLanguage) {
-      //   alertFeedback('error', 'Not exists target language!');
-      //   return null;
-      // }
-
       try {
         setLoadingState(true);
         const result =
@@ -221,6 +235,178 @@ export function useSiteText() {
     [singletons, alertFeedback, setLoadingState, logger],
   );
 
+  const getSiteTextDto = useCallback(
+    async (siteTextId: Nanoid, definitionId: Nanoid) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at addBallotEntry');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.siteTextService.getSiteTextDto(
+          siteTextId,
+          definitionId,
+        );
+
+        setLoadingState(false);
+
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
+  const getSiteTextDtoWithRel = useCallback(
+    async (definitionRel: Nanoid) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at addBallotEntry');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.siteTextService.getSiteTextDtoWithRel(
+          definitionRel,
+        );
+
+        setLoadingState(false);
+
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
+  const getSiteTextTranslationDtoWithRel = useCallback(
+    async (
+      appId: Nanoid,
+      originalDefinitionRel: Nanoid,
+      translatedDefinitionRel: Nanoid,
+    ) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at addBallotEntry');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result =
+          await singletons.siteTextService.getSiteTextTranslationDtoWithRel(
+            appId,
+            originalDefinitionRel,
+            translatedDefinitionRel,
+          );
+
+        setLoadingState(false);
+
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
+  const getOriginalAndTranslatedRelFromSiteTextTranslationDto = useCallback(
+    async ({
+      original,
+      translated,
+    }: {
+      original: SiteTextDto | null;
+      translated: SiteTextTranslationDto | null;
+    }) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at addBallotEntry');
+        return {
+          originalDefinitionRel: null,
+          translatedDefinitionRel: null,
+        };
+      }
+
+      if (!translated && !original) {
+        return {
+          originalDefinitionRel: null,
+          translatedDefinitionRel: null,
+        };
+      } else if (original && !translated) {
+        return {
+          originalDefinitionRel: original.relationshipId,
+          translatedDefinitionRel: null,
+        };
+      } else if (
+        translated &&
+        compareLangInfo(
+          translated.languageInfo,
+          translated.original.languageInfo,
+        )
+      ) {
+        return {
+          originalDefinitionRel: translated.original.relationshipId,
+          translatedDefinitionRel: null,
+        };
+      }
+
+      try {
+        setLoadingState(true);
+
+        if (!translated!.candidateId) {
+          alertFeedback(
+            'error',
+            'Cannot find such candidate at useSiteText hooks!',
+          );
+          setLoadingState(false);
+          return {
+            originalDefinitionRel: translated!.original.relationshipId,
+            translatedDefinitionRel: null,
+          };
+        }
+
+        const candidate = await getCandidateById(translated!.candidateId);
+
+        if (!candidate) {
+          alertFeedback(
+            'error',
+            'Cannot find such candidate at useSiteText hooks!',
+          );
+          setLoadingState(false);
+          return {
+            originalDefinitionRel: translated!.original.relationshipId,
+            translatedDefinitionRel: null,
+          };
+        }
+        setLoadingState(false);
+
+        return {
+          originalDefinitionRel: translated!.original.relationshipId,
+          translatedDefinitionRel: candidate.candidate_ref,
+        };
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return {
+          originalDefinitionRel: null,
+          translatedDefinitionRel: null,
+        };
+      }
+    },
+    [singletons, alertFeedback, setLoadingState, getCandidateById],
+  );
+
   return {
     createOrFindSiteText,
     createOrFindTranslation,
@@ -228,5 +414,9 @@ export function useSiteText() {
     getTranslationListBySiteTextRel,
     getRecommendedSiteText,
     getTranslatedSiteTextListByAppId,
+    getSiteTextDto,
+    getSiteTextDtoWithRel,
+    getSiteTextTranslationDtoWithRel,
+    getOriginalAndTranslatedRelFromSiteTextTranslationDto,
   };
 }

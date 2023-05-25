@@ -13,5 +13,6 @@ export interface DocumentDto {
 export interface AppDto {
   id: Nanoid;
   name: string;
+  organizationName: string;
   languageInfo: LanguageInfo;
 }
