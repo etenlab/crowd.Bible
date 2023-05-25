@@ -205,8 +205,69 @@ export function useDocument() {
   /**
    * @deprecated
    */
+  const getAppById = useCallback(
+    async (appId: string) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at getApp');
+        return null;
+      }
+
+      if (appId.trim() === '') {
+        alertFeedback('warning', 'AppId cannot be empty string!');
+        return null;
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.documentService.getAppById(appId);
+        setLoadingState(false);
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return null;
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
+  /**
+   * @deprecated
+   */
+  const listAppByLanguageInfo = useCallback(
+    async (langInfo: LanguageInfo) => {
+      if (!singletons) {
+        alertFeedback('error', 'Internal Error! at listDocument');
+        return [];
+      }
+
+      try {
+        setLoadingState(true);
+        const result = await singletons.documentService.listAppByLanguageInfo(
+          langInfo,
+        );
+        setLoadingState(false);
+        return result;
+      } catch (err) {
+        console.log(err);
+        setLoadingState(false);
+        alertFeedback('error', 'Internal Error!');
+        return [];
+      }
+    },
+    [singletons, alertFeedback, setLoadingState],
+  );
+
+  /**
+   * @deprecated
+   */
   const createOrFindApp = useCallback(
-    async (name: string, languageInfo: LanguageInfo) => {
+    async (
+      name: string,
+      organizationName: string,
+      languageInfo: LanguageInfo,
+    ) => {
       if (!singletons) {
         alertFeedback('error', 'Internal Error! at createApp');
         return null;
@@ -221,6 +282,7 @@ export function useDocument() {
         setLoadingState(true);
         const app = await singletons.documentService.createOrFindApp(
           name.trim(),
+          organizationName,
           languageInfo,
         );
 
@@ -245,7 +307,9 @@ export function useDocument() {
     getDocument,
     getDocumentById,
     createOrFindApp,
+    listAppByLanguageInfo,
     listApp,
     getApp,
+    getAppById,
   };
 }
