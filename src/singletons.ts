@@ -190,6 +190,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     graphFirstLayerService,
     graphSecondLayerService,
     votingService,
+    wordService,
   );
 
   const translationService = new TranslationService(
@@ -206,6 +207,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     definitionService,
     translationService,
     wordService,
+    documentService,
   );
 
   const lexiconService = new LexiconService(graphSecondLayerService, nodeRepo);
