@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { type SyncService } from '@/services/sync.service';
+import { type SyncService } from '@eten-lab/core/src/services';
 import { useSingletons } from './useSingletons';
 
 export default function useSyncService() {

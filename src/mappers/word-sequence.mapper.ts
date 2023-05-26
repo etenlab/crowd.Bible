@@ -3,7 +3,7 @@ import { Node, Relationship } from '@/models/index';
 import {
   PropertyKeyConst,
   RelationshipTypeConst,
-} from '@/constants/graph.constant';
+} from '@eten-lab/core/src/constants';
 import { subTags2LangInfo } from '@/utils/langUtils';
 
 export class WordSequenceMapper {

@@ -1,12 +1,14 @@
-import { type NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
-import { type NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
-import { type NodeTypeRepository } from '@/repositories/node/node-type.repository';
-import { type NodeRepository } from '@/repositories/node/node.repository';
-import { type RelationshipPropertyKeyRepository } from '@/repositories/relationship/relationship-property-key.repository';
-import { type RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
-import { type RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
-import { type RelationshipRepository } from '@/repositories/relationship/relationship.repository';
-import { LoggerService } from './logger.service';
+import {
+  NodeRepository,
+  NodeTypeRepository,
+  NodePropertyKeyRepository,
+  NodePropertyValueRepository,
+  RelationshipRepository,
+  RelationshipTypeRepository,
+  RelationshipPropertyKeyRepository,
+  RelationshipPropertyValueRepository,
+} from '@eten-lab/core/src/repositories';
+import { LoggerService } from '@eten-lab/core/src/services';
 
 const DATA_SEEDED = 'DATA_SEEDED';
 export class SeedService {

@@ -1,8 +1,12 @@
-import { GraphSecondLayerService } from './graph-second-layer.service';
+import {
+  GraphSecondLayerService,
+  CRUDService,
+  BaseType,
+  baseSchema,
+} from '@eten-lab/core/src/services';
 import { InferType, object, Schema, string } from 'yup';
-import { NodeRepository } from '@/repositories/node/node.repository';
-import { baseSchema, BaseType, CRUDService } from './crud-service';
-import { NodeTypeConst } from '@/constants/graph.constant';
+import { NodeRepository } from '@eten-lab/core/src/repositories';
+import { NodeTypeConst } from '@eten-lab/core/src/constants';
 
 const lexiconSchema = baseSchema.concat(
   object({
