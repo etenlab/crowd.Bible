@@ -139,6 +139,7 @@ export class DocumentService {
    */
   async createOrFindApp(
     name: string,
+    organizationName: string,
     languageInfo: LanguageInfo,
   ): Promise<AppDto> {
     const app = await this.getApp(name);
@@ -151,6 +152,7 @@ export class DocumentService {
       NodeTypeConst.MOCK_APP,
       {
         name,
+        organizationName,
         [PropertyKeyConst.LANGUAGE_TAG]: languageInfo.lang.tag,
         [PropertyKeyConst.DIALECT_TAG]: languageInfo.dialect?.tag,
         [PropertyKeyConst.REGION_TAG]: languageInfo.region?.tag,
@@ -160,6 +162,7 @@ export class DocumentService {
     return {
       id: newApp.id,
       name,
+      organizationName,
       languageInfo,
     };
   }
@@ -181,7 +184,65 @@ export class DocumentService {
       return null;
     }
 
-    return DocumentMapper.appEntityToDto(appNode!);
+    const appEntity = await this.graphFirstLayerService.readNode(appNode.id, [
+      'propertyKeys',
+      'propertyKeys.propertyValue',
+    ]);
+
+    return DocumentMapper.appEntityToDto(appEntity!);
+  }
+
+  /**
+   * @deprecated
+   * just testing purpurse
+   */
+  async getAppById(id: Nanoid): Promise<AppDto | null> {
+    const appNode = await this.graphFirstLayerService.readNode(id, [
+      'propertyKeys',
+      'propertyKeys.propertyValue',
+    ]);
+
+    if (appNode === null) {
+      return null;
+    }
+
+    return DocumentMapper.appEntityToDto(appNode);
+  }
+
+  /**
+   * @deprecated
+   * just testing purpurse
+   */
+  async listAppByLanguageInfo(langInfo: LanguageInfo): Promise<AppDto[]> {
+    const appIds = await this.graphFirstLayerService.getNodeIdsByProps(
+      NodeTypeConst.MOCK_APP,
+      [
+        {
+          key: PropertyKeyConst.LANGUAGE_TAG,
+          value: langInfo.lang.tag,
+        },
+        {
+          key: PropertyKeyConst.DIALECT_TAG,
+          value: langInfo.dialect?.tag,
+        },
+        {
+          key: PropertyKeyConst.REGION_TAG,
+          value: langInfo.region?.tag,
+        },
+      ],
+    );
+
+    const appList = [];
+
+    for (const id of appIds) {
+      const app = await this.getAppById(id);
+      if (!app) {
+        continue;
+      }
+      appList.push(app);
+    }
+
+    return appList;
   }
 
   /**

@@ -5,18 +5,22 @@ export enum RouteConst {
   DOCUMENTS_LIST = '/documents-list',
   ADD_DOCUMENT = '/add-document',
 
+  ADD_APPLICATION = '/add-applicaiton',
+  APPLICATION_LIST = '/application-list',
+
   TRANSLATION_DOCUMENTS_LIST = '/translation-documents-list',
   TRANSLATION = '/translation',
   TRANSLATION_EDIT = '/translation-edit',
   TRANSLATION_CANDIDATES = '/translation-candidates',
 
   SITE_TEXT_LIST = '/site-text-list',
-  SITE_TEXT_EDITOR = '/site-text-editor',
+  ADD_NEW_SITE_TEXT = '/add-new-site-text',
   SITE_TEXT_DETAIL = '/site-text-detail',
-  SITE_TEXT_TRANSLATION_EDITOR = '/site-text-translation-editor',
+  ADD_NEW_SITE_TEXT_TRANSLATION = '/add-new-site-text-translation',
   STIE_TEXT_TRANSLATION = '/site-text-translation',
   SITE_TEXT_TRANSLATION_APP_LIST = '/site-text-translation-app-list',
-  SITE_TEXT_CHANGE_TRANSLATION = '/site-text-change-translation',
+  SITE_TEXT_DEFINITION = '/site-text-definition',
+  SITE_TEXT_TRANSLATION_SWITCH = '/site-text-translation-switch',
 
   LANGUAGE_PROFICIENCY = '/language-proficiency',
   SETTINGS = '/settings',

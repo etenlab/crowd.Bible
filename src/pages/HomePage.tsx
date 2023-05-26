@@ -84,6 +84,11 @@ const linkGroups = [
         label: 'Site text translation editor',
         implemented: true,
       },
+      {
+        to: RouteConst.APPLICATION_LIST,
+        label: 'Application List',
+        implemented: true,
+      },
     ],
   },
 ];

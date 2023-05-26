@@ -85,7 +85,6 @@ function Translation({
     const wordSequence = await getWordSequenceById(translationId);
     setTranslatedWordSequence(wordSequence);
     const _voteStats = await getVotesStats(candidateId);
-    console.log('_voteStats ===>', _voteStats);
     setVoteStats(_voteStats);
   }, [
     singletons,
@@ -172,8 +171,6 @@ export function TranslationList({
   const [translations, setTranslations] = useState<
     WordSequenceTranslationDto[]
   >([]);
-
-  console.log(translations);
 
   useEffect(() => {
     if (!documentId || !singletons) {

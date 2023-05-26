@@ -163,8 +163,6 @@ export class WordSequenceService {
       ],
     );
 
-    console.log('word_sequence ===>', word_sequence);
-
     if (word_sequence === null) {
       return null;
     }

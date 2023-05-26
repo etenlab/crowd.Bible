@@ -16,11 +16,14 @@ import { VotingService } from './voting.service';
 import { DefinitionService } from './definition.service';
 import { TranslationService } from './translation.service';
 import { WordService } from './word.service';
+import { DocumentService } from './document.service';
 
 import { Candidate } from '@/src/models/';
 
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { LanguageMapper } from '@/mappers/language.mapper';
+
+import { compareLangInfo } from '@/utils/langUtils';
 
 export class SiteTextService {
   constructor(
@@ -30,6 +33,7 @@ export class SiteTextService {
     private readonly definitionService: DefinitionService,
     private readonly translationService: TranslationService,
     private readonly wordService: WordService,
+    private readonly documentService: DocumentService,
   ) {}
 
   private async filterDefinitionCandidatesByLanguage(
@@ -104,39 +108,6 @@ export class SiteTextService {
       definitionId,
       relationshipId: relationship!.id,
     };
-  }
-
-  private async getSiteTextDto(
-    siteTextId: Nanoid,
-    definitionId: Nanoid,
-  ): Promise<SiteTextDto> {
-    const relationship = await this.graphFirstLayerService.findRelationship(
-      siteTextId,
-      definitionId,
-      RelationshipTypeConst.WORD_TO_DEFINITION,
-    );
-
-    if (!relationship) {
-      throw new Error(
-        'Not exists such relationship with siteTextId, and recommended definition Id',
-      );
-    }
-
-    const definitionDto = await this.definitionService.getDefinitionWithWord(
-      relationship.id,
-    );
-
-    if (!definitionDto) {
-      throw new Error('Cannot get a DefinitionDto with given relationship');
-    }
-
-    return {
-      siteTextId,
-      relationshipId: relationship.id,
-      languageInfo: definitionDto.languageInfo,
-      siteText: definitionDto.wordText,
-      definition: definitionDto.definitionText,
-    } as SiteTextDto;
   }
 
   private async getRecommendedDefinition(
@@ -218,6 +189,10 @@ export class SiteTextService {
       relationshipId,
       TableNameConst.RELATIONSHIPS,
       TableNameConst.RELATIONSHIPS,
+      {
+        appId,
+        siteTextTranslation: true,
+      },
     );
 
     return {
@@ -228,6 +203,7 @@ export class SiteTextService {
   }
 
   async createOrFindTranslation(
+    appId: Nanoid,
     definitionRelationshipId: Nanoid,
     languageInfo: LanguageInfo,
     translatedSiteText: string,
@@ -268,6 +244,10 @@ export class SiteTextService {
       definitionRelationshipId,
       TableNameConst.RELATIONSHIPS,
       TableNameConst.RELATIONSHIPS,
+      {
+        appId,
+        siteTextTranslation: true,
+      },
     );
 
     if (election === null) {
@@ -280,6 +260,63 @@ export class SiteTextService {
       wordId,
       definitionId,
       relationshipId,
+    };
+  }
+
+  async getSiteTextDto(
+    siteTextId: Nanoid,
+    definitionId: Nanoid,
+  ): Promise<SiteTextDto> {
+    const relationship = await this.graphFirstLayerService.findRelationship(
+      siteTextId,
+      definitionId,
+      RelationshipTypeConst.WORD_TO_DEFINITION,
+    );
+
+    if (!relationship) {
+      throw new Error(
+        'Not exists such relationship with siteTextId, and recommended definition Id',
+      );
+    }
+
+    const definitionDto = await this.definitionService.getDefinitionWithRel(
+      relationship.id,
+    );
+
+    if (!definitionDto) {
+      throw new Error('Cannot get a DefinitionDto with given relationship');
+    }
+
+    return {
+      siteTextId,
+      relationshipId: relationship.id,
+      languageInfo: definitionDto.languageInfo,
+      siteText: definitionDto.wordText,
+      definition: definitionDto.definitionText,
+      upVotes: definitionDto.upVotes,
+      downVotes: definitionDto.downVotes,
+      candidateId: definitionDto.candidateId,
+    };
+  }
+
+  async getSiteTextDtoWithRel(definitionRel: Nanoid): Promise<SiteTextDto> {
+    const definitionDto = await this.definitionService.getDefinitionWithRel(
+      definitionRel,
+    );
+
+    if (!definitionDto) {
+      throw new Error('Cannot get a DefinitionDto with given relationship');
+    }
+
+    return {
+      siteTextId: definitionDto.wordId,
+      relationshipId: definitionDto.relationshipId,
+      languageInfo: definitionDto.languageInfo,
+      siteText: definitionDto.wordText,
+      definition: definitionDto.definitionText,
+      upVotes: definitionDto.upVotes,
+      downVotes: definitionDto.downVotes,
+      candidateId: definitionDto.candidateId,
     };
   }
 
@@ -307,6 +344,54 @@ export class SiteTextService {
     );
   }
 
+  async getSiteTextTranslationDtoWithRel(
+    appId: Nanoid,
+    originalDefinitionRel: Nanoid,
+    translatedDefinitionRel: Nanoid,
+  ): Promise<SiteTextTranslationDto | null> {
+    const original = await this.getSiteTextDtoWithRel(originalDefinitionRel);
+    const definitionDto = await this.definitionService.getDefinitionWithRel(
+      translatedDefinitionRel,
+    );
+
+    if (!definitionDto) {
+      throw new Error('Not exists definition entity with given relationship!');
+    }
+
+    const election = await this.votingService.getElectionByRef(
+      ElectionTypeConst.SITE_TEXT_TRANSLATION,
+      original.relationshipId,
+      TableNameConst.RELATIONSHIPS,
+      {
+        appId,
+        siteTextTranslation: true,
+      },
+    );
+
+    if (!election) {
+      throw new Error('Not exists election entity with given props!');
+    }
+
+    const candidate = await this.votingService.getCandidateByRef(
+      election.id,
+      translatedDefinitionRel,
+    );
+
+    if (!candidate) {
+      throw new Error('Not exists candidate entity with given ref!');
+    }
+
+    const votingStatus = await this.votingService.getVotesStats(candidate.id);
+
+    return {
+      original,
+      languageInfo: definitionDto.languageInfo,
+      translatedSiteText: definitionDto.wordText,
+      translatedDefinition: definitionDto.definitionText,
+      ...votingStatus,
+    };
+  }
+
   async getTranslationListBySiteTextRel(
     appId: Nanoid,
     original: SiteTextDto,
@@ -322,8 +407,9 @@ export class SiteTextService {
       },
     );
 
+    // This means still there isn't any translations.
     if (!election) {
-      throw new Error('Not exists election entity with given props');
+      return [];
     }
 
     const candidates: Candidate[] =
@@ -335,7 +421,7 @@ export class SiteTextService {
     const translatedSiteTexts: SiteTextTranslationDto[] = [];
 
     for (const candidate of filteredCandidates) {
-      const definitionDto = await this.definitionService.getDefinitionWithWord(
+      const definitionDto = await this.definitionService.getDefinitionWithRel(
         candidate.candidate_ref,
       );
 
@@ -373,11 +459,7 @@ export class SiteTextService {
     const original = await this.getSiteTextDto(siteTextId, recommended.id!);
 
     // check if the node entity has the same languageInfo
-    if (
-      original.languageInfo.lang.tag === languageInfo.lang.tag ||
-      original.languageInfo.dialect?.tag === languageInfo.dialect?.tag ||
-      original.languageInfo.region?.tag === languageInfo.region?.tag
-    ) {
+    if (compareLangInfo(original.languageInfo, languageInfo)) {
       return {
         original,
         languageInfo: languageInfo,
@@ -385,7 +467,7 @@ export class SiteTextService {
         translatedDefinition: original.definition,
         upVotes: 0,
         downVotes: 0,
-        candidateId: original.siteTextId,
+        candidateId: original.candidateId,
       };
     }
 

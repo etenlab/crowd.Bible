@@ -38,6 +38,8 @@ export class DocumentMapper {
 
     dto.id = entity.id;
     dto.name = obj.name as string;
+    dto.organizationName = obj.organizationName as string;
+
     dto.languageInfo = subTags2LangInfo({
       lang: obj.language as string,
       region: obj.region as string | undefined,

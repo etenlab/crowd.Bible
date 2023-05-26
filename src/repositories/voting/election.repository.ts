@@ -38,11 +38,18 @@ export class ElectionRepository {
     }
 
     // Checks an Election that already exists, and returns the Election if yes.
-    const election = await this.repository.findOneBy({
+    // const election = await this.repository.findOneBy({
+    //   election_type,
+    //   election_ref,
+    //   ref_table_name,
+    // });
+
+    const election = await this.getElectionByRef(
       election_type,
       election_ref,
       ref_table_name,
-    });
+      options,
+    );
 
     if (election) {
       return election;

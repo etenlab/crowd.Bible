@@ -73,8 +73,6 @@ export function TranslationPage() {
               sourceLanguage,
             );
 
-        console.log('wordSequence ===>', wordSequence);
-
         if (!wordSequence) {
           return;
         }
