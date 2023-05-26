@@ -12,8 +12,10 @@ export function LogoutButton() {
   const history = useHistory();
   const userToken = localStorage.getItem('userToken');
   let tokenObj = null;
-  if (userToken) {
-    tokenObj = decodeToken(userToken!);
+  console.log('userToken asdf');
+  if (userToken && userToken !== undefined) {
+    console.log(userToken);
+    tokenObj = decodeToken(userToken);
     logger.info({ at: 'LogoutButton' }, 'userToken', userToken);
   }
 

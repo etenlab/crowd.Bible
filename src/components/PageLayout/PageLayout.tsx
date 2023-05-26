@@ -36,6 +36,8 @@ const menuLinks = {
       label: 'Admin',
       onlineOnly: true,
     },
+    { to: RouteConst.LOGIN, label: 'Login', implemented: true },
+    { to: RouteConst.REGISTER, label: 'Register', implemented: true },
   ],
 };
 
