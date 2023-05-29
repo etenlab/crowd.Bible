@@ -84,7 +84,7 @@
     "build": "react-app-rewired build",
     "format": "prettier --write \"src/**/*.{ts,tsx,md,mdx,js,jsx}\"",
     "precommit": "lint-staged",
-    "test": "react-app-rewired test --transformIgnorePatterns 'none'",
+    "test": "react-app-rewired test --transformIgnorePatterns 'none' --watchAll=false",
     "eject": "react-app-rewired eject",
     "ionic:serve": "react-app-rewired start",
     "prepare": "husky install",

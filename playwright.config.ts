@@ -71,9 +71,15 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'npm run start',
-    url: 'http://127.0.0.1:3000',
+    command: process.env.CI ? 'npm run start' : '',
+    url: process.env.CI ? 'http://127.0.0.1:3000' : 'https://dev.crowd.bible',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    env: {
+      REACT_APP_CPG_SERVER_URL: 'https://localhost:8201',
+      REACT_APP_KEYCLOAK_URL: 'https://localhost:8080',
+      REACT_APP_KEYCLOAK_REALM: 'showcase',
+      REACT_APP_KEYCLOAK_CLIENT_ID: 'showcase-auth',
+    },
   },
 });
