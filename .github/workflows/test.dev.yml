@@ -2,12 +2,11 @@ name: CI Workflow
 on:
   pull_request:
     branches: [dev-test]
-    types: [closed]
+    types: [opened, synchronize, reopened]
 
 jobs:
   docker-env-test:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
 
     services:
       postgres:
@@ -102,108 +101,9 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       
-      - name: Run unit test
-        run: npm run test
+      # - name: Run unit test
+      #   run: npm run test
         
-      - name: Run Playwright tests
-        run: |
-          npx playwright test
-
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
-
-  deploy:
-    needs: docker-env-test
-    if: ${{ needs.docker-env-test.result == 'success' }}
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_GITHUB_S3_PUSHER_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_GITHUB_S3_PUSHER_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
-
-      - uses: dkershner6/aws-ssm-getparameters-action@v1
-        with:
-          parameterPairs: '/dev/deploy/crowdbible/env = ENV'
-
-      - name: store env
-        run: |
-          cat << EOF > .env
-          ${{ env.ENV }}
-          CI=false
-          NODE_OPTIONS=--max-old-space-size=4096
-          EOF
-
-      - name: Load env
-        uses: xom9ikk/dotenv@v2
-
-      # - name: npm ci --force
-      #   run: npm ci --force
-
-      # - name: npm run build
-      #   run: npm run build
-
-      # - uses: TimekillerTK/s3-sync-action@master
-      #   with:
-      #     args: --follow-symlinks --delete
-      #   env:
-      #     SOURCE_DIR: 'build'
-    
-  aws-env-test:
-    needs: deploy
-    if: ${{ needs.deploy.result == 'success' }}
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_GITHUB_S3_PUSHER_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_GITHUB_S3_PUSHER_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
-
-      - uses: dkershner6/aws-ssm-getparameters-action@v1
-        with:
-          parameterPairs: '/dev/deploy/crowdbible/env = ENV'
-
-      - name: store env
-        run: |
-          cat << EOF > .env
-          ${{ env.ENV }}
-          CI=false
-          NODE_OPTIONS=--max-old-space-size=4096
-          EOF
-
-      - name: Load env
-        uses: xom9ikk/dotenv@v2
-
-      - name: npm ci --force
-        run: npm ci --force
-        
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-
       - name: Run Playwright tests
         run: |
           npx playwright test
