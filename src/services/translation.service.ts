@@ -2,16 +2,13 @@ import {
   GraphFirstLayerService,
   GraphSecondLayerService,
   VotingService,
-} from '@eten-lab/core/src/services';
+} from '@eten-lab/core';
 
 import { WordService } from './word.service';
 import { WordSequenceService } from './word-sequence.service';
 
-import { ElectionTypeConst } from '@eten-lab/core/src/constants';
-import {
-  RelationshipTypeConst,
-  NodeTypeConst,
-} from '@eten-lab/core/src/constants';
+import { ElectionTypeConst } from '@eten-lab/core';
+import { RelationshipTypeConst, NodeTypeConst } from '@eten-lab/core';
 import { TableNameConst } from '@eten-lab/models';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 

@@ -3,10 +3,10 @@ import {
   CRUDService,
   BaseType,
   baseSchema,
-} from '@eten-lab/core/src/services';
+} from '@eten-lab/core';
 import { InferType, object, Schema, string } from 'yup';
-import { NodeRepository } from '@eten-lab/core/src/repositories';
-import { NodeTypeConst } from '@eten-lab/core/src/constants';
+import { NodeRepository } from '@eten-lab/core';
+import { NodeTypeConst } from '@eten-lab/core';
 
 const lexiconSchema = baseSchema.concat(
   object({

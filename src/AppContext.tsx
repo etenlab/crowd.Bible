@@ -18,7 +18,7 @@ import { useDocumentTools } from '@/hooks/useDocumentTools';
 
 import { getAppDataSource } from './data-source';
 import getSingletons from './singletons';
-import { LoggerService } from '@eten-lab/core/src/services';
+import { LoggerService } from '@eten-lab/core';
 
 export interface ContextType {
   states: {

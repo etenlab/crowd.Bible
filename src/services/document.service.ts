@@ -1,9 +1,9 @@
 import {
   GraphFirstLayerService,
   GraphSecondLayerService,
-} from '@eten-lab/core/src/services';
+} from '@eten-lab/core';
 
-import { PropertyKeyConst, NodeTypeConst } from '@eten-lab/core/src/constants';
+import { PropertyKeyConst, NodeTypeConst } from '@eten-lab/core';
 
 import { DocumentDto, AppDto } from '@/dtos/document.dto';
 

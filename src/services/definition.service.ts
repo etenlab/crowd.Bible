@@ -4,7 +4,7 @@ import {
   PropertyKeyConst,
   RelationshipTypeConst,
 } from '../constants/graph.constant';
-import { ElectionTypeConst } from '@eten-lab/core/src/constants';
+import { ElectionTypeConst } from '@eten-lab/core';
 import { TableNameConst } from '@/constants/table-name.constant';
 
 import { DefinitionDto } from '@/dtos/definition.dto';
@@ -13,7 +13,7 @@ import {
   GraphFirstLayerService,
   GraphSecondLayerService,
   VotingService,
-} from '@eten-lab/core/src/services';
+} from '@eten-lab/core';
 import { WordService } from './word.service';
 
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';

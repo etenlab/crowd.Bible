@@ -1,7 +1,7 @@
 import {
   GraphFirstLayerService,
   GraphSecondLayerService,
-} from '@eten-lab/core/src/services';
+} from '@eten-lab/core';
 
 import { WordService } from './word.service';
 
@@ -9,7 +9,7 @@ import {
   NodeTypeConst,
   PropertyKeyConst,
   RelationshipTypeConst,
-} from '@eten-lab/core/src/constants';
+} from '@eten-lab/core';
 
 import { MapDto } from '@/dtos/map.dto';
 import { MapMapper } from '@/mappers/map.mapper';

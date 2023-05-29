@@ -1,4 +1,4 @@
-import { ElectionTypeConst } from '@eten-lab/core/src/constants';
+import { ElectionTypeConst } from '@eten-lab/core';
 import { TableNameConst } from '@/constants/table-name.constant';
 
 import {
@@ -9,12 +9,9 @@ import {
 import { WordDto } from '@/dtos/word.dto';
 import { VotableContent } from '@/dtos/votable-item.dto';
 
-import { RelationshipTypeConst } from '@eten-lab/core/src/constants';
+import { RelationshipTypeConst } from '@eten-lab/core';
 
-import {
-  GraphFirstLayerService,
-  VotingService,
-} from '@eten-lab/core/src/services';
+import { GraphFirstLayerService, VotingService } from '@eten-lab/core';
 import { DefinitionService } from './definition.service';
 import { TranslationService } from './translation.service';
 import { WordService } from './word.service';

@@ -7,8 +7,8 @@ import {
   RelationshipTypeRepository,
   RelationshipPropertyKeyRepository,
   RelationshipPropertyValueRepository,
-} from '@eten-lab/core/src/repositories';
-import { LoggerService } from '@eten-lab/core/src/services';
+} from '@eten-lab/core';
+import { LoggerService } from '@eten-lab/core';
 
 const DATA_SEEDED = 'DATA_SEEDED';
 export class SeedService {

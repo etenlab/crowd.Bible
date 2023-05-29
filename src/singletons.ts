@@ -15,7 +15,7 @@ import {
   CandidateRepository,
   VoteRepository,
   UserRepository,
-} from '@eten-lab/core/src/repositories';
+} from '@eten-lab/core';
 
 import {
   DbService,
@@ -26,7 +26,7 @@ import {
   TableService,
   MaterializerService,
   LoggerService,
-} from '@eten-lab/core/src/services';
+} from '@eten-lab/core';
 
 import { DiscussionRepository } from '@/repositories/discussion/discussion.repository';
 

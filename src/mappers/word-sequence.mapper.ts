@@ -1,9 +1,6 @@
 import { SubWordSequenceDto, WordSequenceDto } from '@/dtos/word-sequence.dto';
 import { Node, Relationship } from '@/models/index';
-import {
-  PropertyKeyConst,
-  RelationshipTypeConst,
-} from '@eten-lab/core/src/constants';
+import { PropertyKeyConst, RelationshipTypeConst } from '@eten-lab/core';
 import { subTags2LangInfo } from '@/utils/langUtils';
 
 export class WordSequenceMapper {

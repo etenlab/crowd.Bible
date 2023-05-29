@@ -1,17 +1,17 @@
 import { FindOptionsWhere } from 'typeorm';
-import { NodeRepository } from '@eten-lab/core/src/repositories';
+import { NodeRepository } from '@eten-lab/core';
 
 import {
   GraphFirstLayerService,
   GraphSecondLayerService,
-} from '@eten-lab/core/src/services';
+} from '@eten-lab/core';
 
 import {
   PropertyKeyConst,
   NodeTypeConst,
   RelationshipTypeConst,
   MainKeyName,
-} from '@eten-lab/core/src/constants';
+} from '@eten-lab/core';
 
 import { Node, Relationship } from '@/src/models';
 
