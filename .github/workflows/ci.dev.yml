@@ -3,9 +3,6 @@ on:
   pull_request:
     branches: [dev]
     types: [closed]
-  push:
-    branches:
-      - dev
 
 jobs:
   docker-env-test:
@@ -114,8 +111,8 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: playwright-report-for-docker-env
+          path: playwright-report-for-docker-env/
           retention-days: 30
 
   deploy:
@@ -213,8 +210,8 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: playwright-report-for-aws-env
+          path: playwright-report-for-aws-env/
           retention-days: 30
 
 
