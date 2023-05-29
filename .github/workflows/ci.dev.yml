@@ -1,13 +1,15 @@
 name: CI Workflow
 on:
   pull_request:
-    branches: [dev-test]
+    branches: [dev]
     types: [closed]
+  push:
+    branches:
+      - dev
 
 jobs:
   docker-env-test:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
 
     services:
       postgres:
@@ -151,17 +153,17 @@ jobs:
       - name: Load env
         uses: xom9ikk/dotenv@v2
 
-      # - name: npm ci --force
-      #   run: npm ci --force
+      - name: npm ci --force
+        run: npm ci --force
 
-      # - name: npm run build
-      #   run: npm run build
+      - name: npm run build
+        run: npm run build
 
-      # - uses: TimekillerTK/s3-sync-action@master
-      #   with:
-      #     args: --follow-symlinks --delete
-      #   env:
-      #     SOURCE_DIR: 'build'
+      - uses: TimekillerTK/s3-sync-action@master
+        with:
+          args: --follow-symlinks --delete
+        env:
+          SOURCE_DIR: 'build'
     
   aws-env-test:
     needs: deploy
