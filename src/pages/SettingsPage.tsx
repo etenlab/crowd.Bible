@@ -10,7 +10,7 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { IMode, type RoleType } from '@/reducers/global.reducer';
+import { IMode } from '@/reducers/global.reducer';
 
 const { VerticalRadioList } = CrowdBibleUI;
 const { Divider, FormControlLabel, FormGroup, FormLabel, Stack, Switch } =
@@ -30,33 +30,19 @@ export function SettingsPage() {
   const history = useHistory();
   const {
     states: {
-      global: { user, mode, connectivity },
+      global: { mode, connectivity },
     },
-    actions: { setRole, setMode, setConnectivity },
+    actions: { setMode, setConnectivity },
   } = useAppContext();
 
-  const [selectedRole, setSelectedRole] = useState<RoleType>(['translator']);
   const [selectedMode, setSelectedMode] = useState<IMode>({
     admin: true,
     beta: true,
   });
 
   useEffect(() => {
-    if (user != null) {
-      setSelectedRole(user.roles);
-    }
-  }, [user]);
-
-  useEffect(() => {
     setSelectedMode(mode);
   }, [mode]);
-
-  // const handleChangeRole = (
-  //   _event: React.SyntheticEvent<Element, Event>,
-  //   role: RoleType,
-  // ) => {
-  //   setSelectedRole(role);
-  // };
 
   const handleChangeConnectivity = (
     _event: React.SyntheticEvent<Element, Event>,
@@ -77,7 +63,6 @@ export function SettingsPage() {
   };
 
   const handleClickSave = () => {
-    // setRole(selectedRole);
     setMode(selectedMode);
     history.push('/home');
   };
@@ -88,13 +73,6 @@ export function SettingsPage() {
         <Typography variant="h2" color="text.dark">
           Settings
         </Typography>
-        {/* <VerticalRadioList
-          label="Choose Role"
-          withUnderline={true}
-          items={roles}
-          value={selectedRole}
-          onChange={handleChangeRole}
-        /> */}
         <VerticalRadioList
           label="Network"
           withUnderline={true}
