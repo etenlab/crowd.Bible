@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent, IonRouterLink, IonToolbar } from '@ionic/react';
+import { IonContent, IonToolbar } from '@ionic/react';
 import { useKeycloakClient } from '@eten-lab/sso';
 import { useAppContext } from '@/hooks/useAppContext';
+
 import {
   Button,
   MuiMaterial,
@@ -11,6 +11,9 @@ import {
   Input,
   PasswordInput,
 } from '@eten-lab/ui-kit';
+
+import { Link } from '@/components/Link';
+
 import { useFormik } from 'formik';
 import { decodeToken } from '@/utils/AuthUtils';
 import * as Yup from 'yup';
@@ -64,6 +67,7 @@ export function RegisterPage() {
           username: values.email,
           password: values.password,
         })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .then(async (response: any) => {
           if (response.name !== 'AxiosError') {
             setSuccessMessage('User registration successfull');
@@ -72,8 +76,10 @@ export function RegisterPage() {
                 username: values.email,
                 password: values.password,
               })
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               .then((res: any) => {
                 localStorage.setItem('userToken', res.access_token);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const token: any = decodeToken(res.access_token);
                 setUser({
                   userId: token.sub,
@@ -82,6 +88,7 @@ export function RegisterPage() {
                 });
                 history.push('/home');
               })
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               .catch((err: any) => {
                 setErrorMessage(err.response.data.error_description);
               });
@@ -89,6 +96,7 @@ export function RegisterPage() {
             setErrorMessage(response.response.data.errorMessage);
           }
         })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .catch((error: any) => {
           setErrorMessage(error.message);
         });
@@ -114,7 +122,7 @@ export function RegisterPage() {
   return (
     <IonContent>
       <IonToolbar class="ionic-toolbar">
-        <IonRouterLink href="/">
+        <Link to="/">
           <Typography
             variant="h2"
             color="text.dark"
@@ -122,7 +130,7 @@ export function RegisterPage() {
           >
             crowd.Bible
           </Typography>
-        </IonRouterLink>
+        </Link>
       </IonToolbar>
       <Box
         component="form"
