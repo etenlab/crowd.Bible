@@ -1,12 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import {
-  IonContent,
-  IonNavLink,
-  IonRouterLink,
-  IonToolbar,
-} from '@ionic/react';
+import { Link, useHistory } from 'react-router-dom';
+import { IonContent, IonToolbar } from '@ionic/react';
 import { useKeycloakClient } from '@eten-lab/sso';
 
 import {
@@ -23,7 +17,6 @@ import * as Yup from 'yup';
 import { decodeToken } from '@/utils/AuthUtils';
 
 const { Box } = MuiMaterial;
-// const querystring = await import('qs');
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -67,6 +60,7 @@ export function LoginPage() {
           if (res.name !== 'AxiosError') {
             setUserToken(res.access_token);
             localStorage.setItem('userToken', res.access_token);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const token: any = decodeToken(res.access_token);
             setUser({
               userId: token.sub,
@@ -78,6 +72,7 @@ export function LoginPage() {
             setErrorMessage(res.response.data.error_description);
           }
         })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .catch((err: any) => {
           setErrorMessage(err.error_description);
         });
@@ -110,7 +105,7 @@ export function LoginPage() {
   return (
     <IonContent>
       <IonToolbar class="ionic-toolbar">
-        <IonRouterLink href="/">
+        <Link to="/">
           <Typography
             variant="h2"
             color="text.dark"
@@ -118,7 +113,7 @@ export function LoginPage() {
           >
             crowd.Bible
           </Typography>
-        </IonRouterLink>
+        </Link>
       </IonToolbar>
       <Box
         component="form"
@@ -140,7 +135,7 @@ export function LoginPage() {
         </Typography>
         {errorMessage && (
           <Typography sx={{ marginBottom: '18px', color: '#ff0000' }}>
-            {errorMessage}{' '}
+            {errorMessage}
           </Typography>
         )}
         <Input
@@ -187,7 +182,7 @@ export function LoginPage() {
           color="gray"
           onClick={handleForgotPassword}
         >
-          {'Forgot Password?'}
+          Forgot Password?
         </Button>
 
         <Button
@@ -197,7 +192,7 @@ export function LoginPage() {
           color="gray"
           onClick={handleGoRegister}
         >
-          {"Don't you have an account?"}
+          Don&apos;t you have an account?
         </Button>
       </Box>
     </IonContent>
