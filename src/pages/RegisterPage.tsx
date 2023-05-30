@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { IonContent, IonToolbar } from '@ionic/react';
 import { useKeycloakClient } from '@eten-lab/sso';
 import { useAppContext } from '@/hooks/useAppContext';
+
 import {
   Button,
   MuiMaterial,
@@ -10,6 +11,9 @@ import {
   Input,
   PasswordInput,
 } from '@eten-lab/ui-kit';
+
+import { Link } from '@/components/Link';
+
 import { useFormik } from 'formik';
 import { decodeToken } from '@/utils/AuthUtils';
 import * as Yup from 'yup';
