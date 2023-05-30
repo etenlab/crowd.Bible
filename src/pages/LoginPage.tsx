@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
+import {
+  IonContent,
+  IonNavLink,
+  IonRouterLink,
+  IonToolbar,
+} from '@ionic/react';
 import { useKeycloakClient } from '@eten-lab/sso';
 
 import {
@@ -104,6 +109,17 @@ export function LoginPage() {
 
   return (
     <IonContent>
+      <IonToolbar class="ionic-toolbar">
+        <IonRouterLink href="/">
+          <Typography
+            variant="h2"
+            color="text.dark"
+            sx={{ textTransform: 'none', px: '20px' }}
+          >
+            crowd.Bible
+          </Typography>
+        </IonRouterLink>
+      </IonToolbar>
       <Box
         component="form"
         sx={{
