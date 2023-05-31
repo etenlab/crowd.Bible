@@ -1,45 +1,46 @@
 import { DataSource } from 'typeorm';
 
-import { NodePropertyKeyRepository } from '@/repositories/node/node-property-key.repository';
-import { NodePropertyValueRepository } from '@/repositories/node/node-property-value.repository';
-import { NodeTypeRepository } from '@/repositories/node/node-type.repository';
-import { NodeRepository } from '@/repositories/node/node.repository';
-import { RelationshipPropertyKeyRepository } from '@/repositories/relationship/relationship-property-key.repository';
-import { RelationshipPropertyValueRepository } from '@/repositories/relationship/relationship-property-value.repository';
-import { RelationshipTypeRepository } from '@/repositories/relationship/relationship-type.repository';
-import { RelationshipRepository } from '@/repositories/relationship/relationship.repository';
+import {
+  NodeRepository,
+  NodeTypeRepository,
+  NodePropertyKeyRepository,
+  NodePropertyValueRepository,
+  RelationshipRepository,
+  RelationshipTypeRepository,
+  RelationshipPropertyKeyRepository,
+  RelationshipPropertyValueRepository,
+  SyncSessionRepository,
+  ElectionRepository,
+  ElectionTypeRepository,
+  CandidateRepository,
+  VoteRepository,
+  UserRepository,
+} from '@eten-lab/core';
 
-import { SyncSessionRepository } from '@/repositories/sync-session.repository';
+import {
+  DbService,
+  SyncService,
+  GraphFirstLayerService,
+  GraphSecondLayerService,
+  VotingService,
+  TableService,
+  MaterializerService,
+  LoggerService,
+} from '@eten-lab/core';
+
 import { DiscussionRepository } from '@/repositories/discussion/discussion.repository';
 
-import { ElectionTypeRepository } from '@/repositories/voting/election-type.repository';
-import { ElectionRepository } from '@/repositories/voting/election.repository';
-import { CandidateRepository } from '@/repositories/voting/candidate.repository';
-import { VoteRepository } from '@/repositories/voting/vote.repository';
-
-import { UserRepository } from '@/repositories/user.repository';
-
-import { DbService } from '@/services/db.service';
 import { SeedService } from '@/services/seed.service';
-import { SyncService } from '@/services/sync.service';
-
-import { GraphFirstLayerService } from '@/services/graph-first-layer.service';
-import { GraphSecondLayerService } from '@/services/graph-second-layer.service';
-
-import { VotingService } from '@/services/voting.service';
 
 import { DefinitionService } from '@/services/definition.service';
 import { SiteTextService } from '@/services/site-text.service';
-import { TableService } from '@/services/table.service';
 import { LexiconService } from '@/services/lexicon.service';
 import { TranslationService } from '@/services/translation.service';
-import { MaterializerService } from '@/services/materializer.service';
 import { UserService } from '@/services/user.service';
 import { DocumentService } from '@/services/document.service';
 import { WordService } from '@/services/word.service';
 import { WordSequenceService } from '@/services/word-sequence.service';
 import { MapService } from '@/services/map.service';
-import { LoggerService } from './services/logger.service';
 
 export interface ISingletons {
   loggerService: LoggerService;
