@@ -59,8 +59,8 @@ export const initialState: StateType = {
     prefersColorScheme: 'light',
   },
   mode: {
-    admin: true,
-    beta: true,
+    admin: false,
+    beta: false,
   },
   snack: initialSnact,
   connectivity: true,
