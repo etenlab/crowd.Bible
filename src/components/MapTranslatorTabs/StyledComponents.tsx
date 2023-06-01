@@ -1,5 +1,5 @@
-import { Button, MuiMaterial } from '@eten-lab/ui-kit';
-import { FilterIcon } from '../Icons';
+import { Button, DiFilter, MuiMaterial } from '@eten-lab/ui-kit';
+
 const { Typography, styled } = MuiMaterial;
 
 export const StyledSectionTypography = styled(Typography)(({ theme }) => ({
@@ -17,7 +17,7 @@ export const StyledSectionTypography = styled(Typography)(({ theme }) => ({
 type StyledButtonProps = HTMLButtonElement & any;
 export const StyledFilterButton = styled((props: StyledButtonProps) => (
   <Button {...props}>
-    <FilterIcon />
+    <DiFilter />
   </Button>
 ))(({ theme }) => ({
   backgroundColor: theme.palette.text['light-blue'],

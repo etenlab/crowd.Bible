@@ -45,13 +45,13 @@ export function useDocument() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getDocument = useCallback(
@@ -99,13 +99,13 @@ export function useDocument() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const createOrFindDocument = useCallback(
@@ -224,13 +224,13 @@ export function useDocument() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   /**
@@ -251,13 +251,13 @@ export function useDocument() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   /**

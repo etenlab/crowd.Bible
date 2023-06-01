@@ -2,10 +2,10 @@ import { Route, Switch } from 'react-router-dom';
 
 import { BilingualDictionaryPage } from '@/pages/LanguageTools/BilingualDictionaryPage';
 import { LanguageProficiencyPage } from '@/pages/LanguageTools/LanguageProficiencyPage';
-import { PhraseBookPage } from '@/src/pages/LanguageTools/PhraseBookPage';
+import { PhraseBookPage } from '@/pages/LanguageTools/PhraseBookPage';
 import { LexiconPage } from '@/pages/LanguageTools/LexiconPage';
 import { GrammarPage } from '@/pages/LanguageTools/GrammarPage';
-import { DictionaryPage } from '@/src/pages/LanguageTools/DictionaryPage';
+import { DictionaryPage } from '@/pages/LanguageTools/DictionaryPage';
 
 export function LanguageToolsRoutes() {
   return (

@@ -253,13 +253,13 @@ export function useSiteText() {
 
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getSiteTextDtoWithRel = useCallback(
@@ -279,13 +279,13 @@ export function useSiteText() {
 
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getSiteTextTranslationDtoWithRel = useCallback(
@@ -312,13 +312,13 @@ export function useSiteText() {
 
         return result;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   const getOriginalAndTranslatedRelFromSiteTextTranslationDto = useCallback(
@@ -395,7 +395,7 @@ export function useSiteText() {
           translatedDefinitionRel: candidate.candidate_ref,
         };
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return {
@@ -404,7 +404,7 @@ export function useSiteText() {
         };
       }
     },
-    [singletons, alertFeedback, setLoadingState, getCandidateById],
+    [singletons, alertFeedback, setLoadingState, getCandidateById, logger],
   );
 
   return {
