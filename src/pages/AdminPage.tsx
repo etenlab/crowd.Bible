@@ -12,11 +12,9 @@ import {
 } from '@ionic/react';
 
 import txtfile from '@/utils/iso_639_3_min.tab';
-import { LoadingStatus } from '../enums';
-// import useSeedService from '../hooks/useSeedService';
 import { NodeTypeConst } from '../constants/graph.constant';
 import { useAppContext } from '../hooks/useAppContext';
-import { FeedbackTypes } from '../constants/common.constant';
+import { FeedbackTypes, LoadingStatuses } from '../constants/common.constant';
 
 export function AdminPage() {
   const {
@@ -26,14 +24,13 @@ export function AdminPage() {
     logger,
   } = useAppContext();
 
-  const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>(
-    LoadingStatus.INITIAL,
+  const [loadingStatus, setLoadingStatus] = useState<LoadingStatuses>(
+    LoadingStatuses.INITIAL,
   );
-  const [syncInLoadingStatus, setSyncInLoadingStatus] = useState<LoadingStatus>(
-    LoadingStatus.INITIAL,
-  );
+  const [syncInLoadingStatus, setSyncInLoadingStatus] =
+    useState<LoadingStatuses>(LoadingStatuses.INITIAL);
   const [syncOutLoadingStatus, setSyncOutLoadingStatus] =
-    useState<LoadingStatus>(LoadingStatus.INITIAL);
+    useState<LoadingStatuses>(LoadingStatuses.INITIAL);
 
   const [loadResult, setLoadResult] = useState('');
   // const seedService = useSeedService();
@@ -41,7 +38,7 @@ export function AdminPage() {
   const [loadingMessage, setLoadingMessage] = useState('Loading table...');
 
   const addNewData = async () => {
-    setLoadingStatus(LoadingStatus.LOADING);
+    setLoadingStatus(LoadingStatuses.LOADING);
     try {
       const res = await fetch(txtfile);
       const data = await res.text();
@@ -122,13 +119,13 @@ export function AdminPage() {
       logger.error(err);
       setLoadResult('Error occurred while loading.');
     } finally {
-      setLoadingStatus(LoadingStatus.FINISHED);
+      setLoadingStatus(LoadingStatuses.FINISHED);
     }
   };
 
   const doSyncOut = async () => {
     if (!singletons?.syncService) return;
-    setSyncOutLoadingStatus(LoadingStatus.LOADING);
+    setSyncOutLoadingStatus(LoadingStatuses.LOADING);
     try {
       const syncOutRes = await singletons.syncService.syncOut();
       logger.error('syncOutRes', syncOutRes);
@@ -137,13 +134,13 @@ export function AdminPage() {
       console.error('Error occurred while syncing out::', error);
       setLoadResult('Error occurred while syncing out.');
     } finally {
-      setSyncOutLoadingStatus(LoadingStatus.FINISHED);
+      setSyncOutLoadingStatus(LoadingStatuses.FINISHED);
     }
   };
 
   const doSyncIn = async () => {
     if (!singletons?.syncService) return;
-    setSyncInLoadingStatus(LoadingStatus.LOADING);
+    setSyncInLoadingStatus(LoadingStatuses.LOADING);
     try {
       const syncInRes = await singletons.syncService.syncIn();
       logger.fatal('syncInRes', syncInRes);
@@ -152,7 +149,7 @@ export function AdminPage() {
       logger.fatal('Error occurred while syncing in::', error);
       setLoadResult('Error occurred while syncing in.');
     } finally {
-      setSyncInLoadingStatus(LoadingStatus.FINISHED);
+      setSyncInLoadingStatus(LoadingStatuses.FINISHED);
     }
   };
 
@@ -183,18 +180,18 @@ export function AdminPage() {
           <IonButton
             className="text-transform-none"
             onClick={doSyncIn}
-            disabled={syncInLoadingStatus === LoadingStatus.LOADING}
+            disabled={syncInLoadingStatus === LoadingStatuses.LOADING}
           >
-            {syncInLoadingStatus === LoadingStatus.LOADING
+            {syncInLoadingStatus === LoadingStatuses.LOADING
               ? 'Syncing In...'
               : 'Sync In'}
           </IonButton>
           <IonButton
             className="text-transform-none"
             onClick={doSyncOut}
-            disabled={syncOutLoadingStatus === LoadingStatus.LOADING}
+            disabled={syncOutLoadingStatus === LoadingStatuses.LOADING}
           >
-            {syncOutLoadingStatus === LoadingStatus.LOADING
+            {syncOutLoadingStatus === LoadingStatuses.LOADING
               ? 'Syncing Out...'
               : 'Sync Out'}
           </IonButton>
@@ -209,8 +206,8 @@ export function AdminPage() {
         </IonCardContent>
       </IonCard>
       <IonLoading
-        isOpen={loadingStatus === LoadingStatus.LOADING}
-        onDidDismiss={() => setLoadingStatus(LoadingStatus.FINISHED)}
+        isOpen={loadingStatus === LoadingStatuses.LOADING}
+        onDidDismiss={() => setLoadingStatus(LoadingStatuses.FINISHED)}
         message={loadingMessage}
         spinner={'lines'}
       />

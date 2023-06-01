@@ -10,6 +10,7 @@ import { TableFromResponce } from './tools';
 import { IonContent, IonToolbar } from '@ionic/react';
 import Editor from 'react-simple-code-editor';
 import { useAppContext } from '../../../hooks/useAppContext';
+import { SQLRUNNER_LOCAL_FORAGE_KEY } from '../../../constants/common.constant';
 const { Box, Tabs, Tab, IconButton } = MuiMaterial;
 
 type TSqls = {
@@ -112,7 +113,7 @@ export function SqlRunner({
   const resetToDefault = useCallback(async () => {
     const localForage = dbService?.localForage as LocalForage;
     if (!localForage) return;
-    await localForage.setItem('sqlRunner', startingDefaultSqls);
+    await localForage.setItem(SQLRUNNER_LOCAL_FORAGE_KEY, startingDefaultSqls);
     setSqls(JSON.parse(JSON.stringify(startingDefaultSqls)) as TSqls);
   }, [dbService?.localForage]);
 
@@ -123,7 +124,7 @@ export function SqlRunner({
       if (!localForage) return;
       const saveSqls = { ...sqls };
       saveSqls.data = sqls.data.map((d) => ({ name: d.name, body: d.body }));
-      localForage.setItem('sqlRunner', saveSqls);
+      localForage.setItem(SQLRUNNER_LOCAL_FORAGE_KEY, saveSqls);
       setSqls({ ...sqls });
     },
     [selectedTab, dbService?.localForage, sqls],
@@ -133,7 +134,9 @@ export function SqlRunner({
     const localForage = dbService?.localForage as LocalForage;
     if (!localForage || isSqlsLoaded) return;
     const loadSqls = async () => {
-      const loadedSqls = (await localForage.getItem('sqlRunner')) as TSqls;
+      const loadedSqls = (await localForage.getItem(
+        SQLRUNNER_LOCAL_FORAGE_KEY,
+      )) as TSqls;
       if (!loadedSqls) return;
       // loadedSqls.data.forEach((s) => delete s.result);
       setSqls(loadedSqls);
