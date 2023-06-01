@@ -25,11 +25,6 @@ const menuLinks = {
   group: 'Menu',
   linkItems: [
     { to: RouteConst.HOME, label: 'Home', implemented: true },
-    {
-      to: RouteConst.LANGUAGE_PROFICIENCY,
-      label: 'Language proficiency setting',
-      implemented: true,
-    },
     { to: RouteConst.SETTINGS, label: 'Settings', implemented: true },
     {
       to: RouteConst.ADMIN,
