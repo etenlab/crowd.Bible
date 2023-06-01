@@ -8,6 +8,8 @@ import {
   initialState as DocumentToolsInitialState,
   reducer as documentToolsReducer,
 } from './documentTools.reducer';
+import { LoggerService } from '@eten-lab/core';
+const logger = new LoggerService();
 
 export interface ActionType<T> {
   type: string;
@@ -40,7 +42,7 @@ export function persistStore(state: StateType) {
       }),
     );
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 }
 
@@ -61,7 +63,7 @@ export function loadPersistedStore(): StateType {
       },
     };
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 
   return initialState;
