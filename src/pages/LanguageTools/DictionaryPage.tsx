@@ -14,6 +14,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { VotableItem } from '@/dtos/votable-item.dto';
 import { useDictionaryTools } from '@/hooks/useDictionaryTools';
 import { NodeTypeConst } from '@eten-lab/core';
+import { FeedbackTypes } from '../../constants/common.constant';
 
 const { Box, Divider } = MuiMaterial;
 
@@ -151,7 +152,7 @@ export function DictionaryPage() {
       loadWords();
     } catch (error) {
       logger.error(error);
-      alertFeedback('error', 'Internal Error!');
+      alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
     } finally {
       setLoadingState(false);
     }
@@ -194,7 +195,10 @@ export function DictionaryPage() {
 
   const handleAddWordButtonClick = useCallback(() => {
     if (!selectedLanguageInfo) {
-      alertFeedback('error', 'Please select a language before adding a word');
+      alertFeedback(
+        FeedbackTypes.ERROR,
+        'Please select a language before adding a word',
+      );
       return;
     }
     setIsDialogOpened(true);

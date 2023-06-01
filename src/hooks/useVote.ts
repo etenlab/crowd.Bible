@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 
 import { ElectionTypeConst } from '@/constants/voting.constant';
+import { FeedbackTypes } from '../constants/common.constant';
 
 export function useVote() {
   const {
@@ -20,7 +21,10 @@ export function useVote() {
       candidateRefTableName: string,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createOrFindElection');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at createOrFindElection',
+        );
         return null;
       }
 
@@ -34,13 +38,13 @@ export function useVote() {
         );
 
         setLoadingState(false);
-        alertFeedback('success', 'Created a new Election!');
+        alertFeedback(FeedbackTypes.SUCCESS, 'Created a new Election!');
 
         return electionId;
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -50,7 +54,7 @@ export function useVote() {
   const getElectionById = useCallback(
     async (electionId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at listElections');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at listElections');
         return null;
       }
 
@@ -64,7 +68,7 @@ export function useVote() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -79,7 +83,7 @@ export function useVote() {
       refTableName: string,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at listElections');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at listElections');
         return null;
       }
 
@@ -95,7 +99,7 @@ export function useVote() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -105,7 +109,10 @@ export function useVote() {
   const getElectionFull = useCallback(
     async (electionId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getElectionFull');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at getElectionFull',
+        );
         return [];
       }
 
@@ -119,7 +126,7 @@ export function useVote() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
@@ -129,7 +136,7 @@ export function useVote() {
   const addCandidate = useCallback(
     async (electionId: Nanoid, candidateRef: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at addBallotEntry');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at addBallotEntry');
         return null;
       }
 
@@ -141,13 +148,13 @@ export function useVote() {
         );
 
         setLoadingState(false);
-        alertFeedback('success', 'Created a new Election!');
+        alertFeedback(FeedbackTypes.SUCCESS, 'Created a new Election!');
 
         return ballotEntryId;
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -157,7 +164,7 @@ export function useVote() {
   const getCandidateById = useCallback(
     async (electionId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at listElections');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at listElections');
         return null;
       }
 
@@ -171,7 +178,7 @@ export function useVote() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -181,7 +188,10 @@ export function useVote() {
   const getCandidateByRef = useCallback(
     async (electionId: Nanoid, candidateRef: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getBallotEntryId');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at getBallotEntryId',
+        );
         return null;
       }
 
@@ -196,7 +206,7 @@ export function useVote() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -206,7 +216,7 @@ export function useVote() {
   const getVotesStats = useCallback(
     async (candidateId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getVotesStats');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at getVotesStats');
         return null;
       }
 
@@ -220,7 +230,7 @@ export function useVote() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -230,12 +240,12 @@ export function useVote() {
   const addVote = useCallback(
     async (candidateId: Nanoid, vote: boolean | null) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at addVote');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at addVote');
         return null;
       }
 
       if (!user) {
-        alertFeedback('error', 'Not exists log in user!');
+        alertFeedback(FeedbackTypes.ERROR, 'Not exists log in user!');
         return null;
       }
 
@@ -248,13 +258,13 @@ export function useVote() {
         await singletons.votingService.addVote(candidateId, userDto.id, vote);
 
         setLoadingState(false);
-        alertFeedback('success', 'Created a new Vote!');
+        alertFeedback(FeedbackTypes.SUCCESS, 'Created a new Vote!');
 
         return true;
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -264,12 +274,12 @@ export function useVote() {
   const toggleVote = useCallback(
     async (candidateId: Nanoid, vote: boolean | null) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at toggleVote');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at toggleVote');
         return null;
       }
 
       if (!user) {
-        alertFeedback('error', 'Not exists log in user!');
+        alertFeedback(FeedbackTypes.ERROR, 'Not exists log in user!');
         return null;
       }
 
@@ -299,7 +309,7 @@ export function useVote() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },

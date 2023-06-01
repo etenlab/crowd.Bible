@@ -8,6 +8,7 @@ import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 import { mockDocument } from './ReaderQAPage';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { FeedbackTypes } from '../../constants/common.constant';
 
 const { LabelWithIcon, RangeSelectableTextArea, QuestionCreatorBox } =
   CrowdBibleUI;
@@ -44,7 +45,7 @@ export function TextPartTranslatorQAPage() {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSave = (question: Question) => {
-    alertFeedback('success', 'Your question has been created!');
+    alertFeedback(FeedbackTypes.SUCCESS, 'Your question has been created!');
     history.push('/translator-qa');
   };
 

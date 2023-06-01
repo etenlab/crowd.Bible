@@ -17,6 +17,7 @@ import { VotableContent } from '@/dtos/votable-item.dto';
 import { SiteTextDto } from '@/src/dtos/site-text.dto';
 
 import { compareLangInfo } from '@/utils/langUtils';
+import { FeedbackTypes } from '../../constants/common.constant';
 
 const { HeadBox } = CrowdBibleUI;
 const { Stack, Typography } = MuiMaterial;
@@ -48,20 +49,23 @@ export function SiteTextDefinitionPage() {
         const _app = await getAppById(appId);
 
         if (!_app) {
-          alertFeedback('error', 'Cannot find app by given Id.');
+          alertFeedback(FeedbackTypes.ERROR, 'Cannot find app by given Id.');
           history.goBack();
           return;
         }
 
         if (!sourceLanguage) {
-          alertFeedback('error', 'Please select source language info.');
+          alertFeedback(
+            FeedbackTypes.ERROR,
+            'Please select source language info.',
+          );
           history.goBack();
           return;
         }
 
         if (!compareLangInfo(_app.languageInfo, sourceLanguage)) {
           alertFeedback(
-            'error',
+            FeedbackTypes.ERROR,
             'This page only allow you to have same language info between source and app language',
           );
           history.goBack();
@@ -129,14 +133,14 @@ export function SiteTextDefinitionPage() {
       );
 
       if (!definition || !definition.candidateId) {
-        alertFeedback('warning', 'Cannot find such definition!');
+        alertFeedback(FeedbackTypes.WARNING, 'Cannot find such definition!');
         return;
       }
 
       const candidate = await getCandidateById(definition.candidateId);
 
       if (!candidate) {
-        alertFeedback('error', 'Cannot find such candidate!');
+        alertFeedback(FeedbackTypes.ERROR, 'Cannot find such candidate!');
         return;
       }
 

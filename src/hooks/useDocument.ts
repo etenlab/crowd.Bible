@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 
 import { LanguageInfo } from '@eten-lab/ui-kit';
+import { FeedbackTypes } from '../constants/common.constant';
 
 export function useDocument() {
   const {
@@ -14,7 +15,7 @@ export function useDocument() {
 
   const listDocument = useCallback(async () => {
     if (!singletons) {
-      alertFeedback('error', 'Internal Error! at listDocument');
+      alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at listDocument');
       return [];
     }
 
@@ -26,7 +27,7 @@ export function useDocument() {
     } catch (err) {
       logger.error(err);
       setLoadingState(false);
-      alertFeedback('error', 'Internal Error!');
+      alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       return [];
     }
   }, [singletons, alertFeedback, setLoadingState, logger]);
@@ -34,7 +35,7 @@ export function useDocument() {
   const listDocumentByLanguageInfo = useCallback(
     async (langInfo: LanguageInfo) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at listDocument');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at listDocument');
         return [];
       }
 
@@ -47,7 +48,7 @@ export function useDocument() {
       } catch (err) {
         console.log(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
@@ -57,12 +58,15 @@ export function useDocument() {
   const getDocument = useCallback(
     async (name: string, langInfo: LanguageInfo) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getDocument');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at getDocument');
         return [];
       }
 
       if (name.trim() === '') {
-        alertFeedback('warning', 'Document name cannot be empty string!');
+        alertFeedback(
+          FeedbackTypes.WARNING,
+          'Document name cannot be empty string!',
+        );
         return null;
       }
 
@@ -77,7 +81,7 @@ export function useDocument() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
@@ -87,7 +91,7 @@ export function useDocument() {
   const getDocumentById = useCallback(
     async (documentId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getDocument');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at getDocument');
         return null;
       }
 
@@ -101,7 +105,7 @@ export function useDocument() {
       } catch (err) {
         console.log(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -111,12 +115,15 @@ export function useDocument() {
   const createOrFindDocument = useCallback(
     async (name: string, langInfo: LanguageInfo) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createDocument');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at createDocument');
         return null;
       }
 
       if (name.trim() === '') {
-        alertFeedback('warning', 'Document name cannot be empty string!');
+        alertFeedback(
+          FeedbackTypes.WARNING,
+          'Document name cannot be empty string!',
+        );
         return null;
       }
 
@@ -129,7 +136,10 @@ export function useDocument() {
 
         if (document) {
           setLoadingState(false);
-          alertFeedback('warning', 'Already exists a document with same name!');
+          alertFeedback(
+            FeedbackTypes.WARNING,
+            'Already exists a document with same name!',
+          );
           return null;
         }
         const result = await singletons.documentService.createOrFindDocument(
@@ -138,13 +148,13 @@ export function useDocument() {
         );
 
         setLoadingState(false);
-        alertFeedback('success', 'Created a new document!');
+        alertFeedback(FeedbackTypes.SUCCESS, 'Created a new document!');
 
         return result;
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -156,7 +166,7 @@ export function useDocument() {
    */
   const listApp = useCallback(async () => {
     if (!singletons) {
-      alertFeedback('error', 'Internal Error! at listApp');
+      alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at listApp');
       return [];
     }
 
@@ -168,7 +178,7 @@ export function useDocument() {
     } catch (err) {
       logger.error(err);
       setLoadingState(false);
-      alertFeedback('error', 'Internal Error!');
+      alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       return [];
     }
   }, [singletons, alertFeedback, setLoadingState, logger]);
@@ -179,12 +189,15 @@ export function useDocument() {
   const getApp = useCallback(
     async (name: string) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getApp');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at getApp');
         return null;
       }
 
       if (name.trim() === '') {
-        alertFeedback('warning', 'Document name cannot be empty string!');
+        alertFeedback(
+          FeedbackTypes.WARNING,
+          'Document name cannot be empty string!',
+        );
         return null;
       }
 
@@ -196,7 +209,7 @@ export function useDocument() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -209,12 +222,12 @@ export function useDocument() {
   const getAppById = useCallback(
     async (appId: string) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getApp');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at getApp');
         return null;
       }
 
       if (appId.trim() === '') {
-        alertFeedback('warning', 'AppId cannot be empty string!');
+        alertFeedback(FeedbackTypes.WARNING, 'AppId cannot be empty string!');
         return null;
       }
 
@@ -226,7 +239,7 @@ export function useDocument() {
       } catch (err) {
         console.log(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -239,7 +252,7 @@ export function useDocument() {
   const listAppByLanguageInfo = useCallback(
     async (langInfo: LanguageInfo) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at listDocument');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at listDocument');
         return [];
       }
 
@@ -253,7 +266,7 @@ export function useDocument() {
       } catch (err) {
         console.log(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
@@ -270,12 +283,15 @@ export function useDocument() {
       languageInfo: LanguageInfo,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createApp');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at createApp');
         return null;
       }
 
       if (name.trim() === '') {
-        alertFeedback('warning', 'App name cannot be empty string!');
+        alertFeedback(
+          FeedbackTypes.WARNING,
+          'App name cannot be empty string!',
+        );
         return null;
       }
 
@@ -288,13 +304,13 @@ export function useDocument() {
         );
 
         setLoadingState(false);
-        alertFeedback('success', 'Created a new document!');
+        alertFeedback(FeedbackTypes.SUCCESS, 'Created a new document!');
 
         return app;
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },

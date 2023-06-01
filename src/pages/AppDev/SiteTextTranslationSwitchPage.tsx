@@ -16,6 +16,7 @@ import { RouteConst } from '@/constants/route.constant';
 import { SiteTextTranslationDto } from '@/src/dtos/site-text.dto';
 
 import { compareLangInfo } from '@/utils/langUtils';
+import { FeedbackTypes } from '../../constants/common.constant';
 
 const { HeadBox } = CrowdBibleUI;
 const { Stack, Typography } = MuiMaterial;
@@ -55,20 +56,23 @@ export function SiteTextTranslationSwitchPage() {
         const _app = await getAppById(appId);
 
         if (!_app) {
-          alertFeedback('error', 'Cannot find app by given Id.');
+          alertFeedback(FeedbackTypes.ERROR, 'Cannot find app by given Id.');
           history.goBack();
           return;
         }
 
         if (!sourceLanguage) {
-          alertFeedback('error', 'Please select source language info.');
+          alertFeedback(
+            FeedbackTypes.ERROR,
+            'Please select source language info.',
+          );
           history.goBack();
           return;
         }
 
         if (compareLangInfo(_app.languageInfo, sourceLanguage)) {
           alertFeedback(
-            'error',
+            FeedbackTypes.ERROR,
             'This page only allow you to have different language info between source and app language',
           );
           history.goBack();
@@ -159,7 +163,7 @@ export function SiteTextTranslationSwitchPage() {
       );
 
       if (!translation || !translation.candidateId) {
-        alertFeedback('error', 'Cannot find such translation!');
+        alertFeedback(FeedbackTypes.ERROR, 'Cannot find such translation!');
         return;
       }
 

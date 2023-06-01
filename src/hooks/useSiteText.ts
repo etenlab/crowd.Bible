@@ -9,6 +9,7 @@ import { VotableContent } from '../dtos/votable-item.dto';
 import { SiteTextDto, SiteTextTranslationDto } from '@/dtos/site-text.dto';
 
 import { compareLangInfo } from '@/utils/langUtils';
+import { FeedbackTypes } from '../constants/common.constant';
 
 export function useSiteText() {
   const {
@@ -30,7 +31,10 @@ export function useSiteText() {
       definitionText: string,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createOrFindSiteText');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at createOrFindSiteText',
+        );
         return null;
       }
 
@@ -46,13 +50,13 @@ export function useSiteText() {
           );
 
         setLoadingState(false);
-        alertFeedback('success', 'Created a new Site Text!');
+        alertFeedback(FeedbackTypes.SUCCESS, 'Created a new Site Text!');
 
         return siteTextEntity.definitionId;
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -68,13 +72,13 @@ export function useSiteText() {
       translatedDefinitionText: string,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at listElections');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at listElections');
         return null;
       }
 
       if (translatedSiteText.trim().length === 0) {
         alertFeedback(
-          'error',
+          FeedbackTypes.ERROR,
           'translated site text should be non empty string!',
         );
         return null;
@@ -82,7 +86,7 @@ export function useSiteText() {
 
       if (translatedDefinitionText.trim().length === 0) {
         alertFeedback(
-          'error',
+          FeedbackTypes.ERROR,
           'translated site text definition should be non empty string!',
         );
         return null;
@@ -105,7 +109,7 @@ export function useSiteText() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -115,7 +119,7 @@ export function useSiteText() {
   const getDefinitionList = useCallback(
     async (appId: Nanoid, siteTextId: Nanoid): Promise<VotableContent[]> => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at listElections');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at listElections');
         return [];
       }
 
@@ -133,7 +137,7 @@ export function useSiteText() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
@@ -147,7 +151,10 @@ export function useSiteText() {
       languageInfo: LanguageInfo,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getElectionFull');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at getElectionFull',
+        );
         return [];
       }
 
@@ -167,7 +174,7 @@ export function useSiteText() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
@@ -177,7 +184,7 @@ export function useSiteText() {
   const getRecommendedSiteText = useCallback(
     async (appId: Nanoid, siteTextId: Nanoid, languageInfo: LanguageInfo) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at addBallotEntry');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at addBallotEntry');
         return null;
       }
 
@@ -195,7 +202,7 @@ export function useSiteText() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -209,7 +216,7 @@ export function useSiteText() {
       targetLanguageInfo: LanguageInfo,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at addBallotEntry');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at addBallotEntry');
         return [];
       }
 
@@ -228,7 +235,7 @@ export function useSiteText() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
@@ -238,7 +245,7 @@ export function useSiteText() {
   const getSiteTextDto = useCallback(
     async (siteTextId: Nanoid, definitionId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at addBallotEntry');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at addBallotEntry');
         return null;
       }
 
@@ -255,7 +262,7 @@ export function useSiteText() {
       } catch (err) {
         console.log(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -265,7 +272,7 @@ export function useSiteText() {
   const getSiteTextDtoWithRel = useCallback(
     async (definitionRel: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at addBallotEntry');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at addBallotEntry');
         return null;
       }
 
@@ -281,7 +288,7 @@ export function useSiteText() {
       } catch (err) {
         console.log(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -295,7 +302,7 @@ export function useSiteText() {
       translatedDefinitionRel: Nanoid,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at addBallotEntry');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at addBallotEntry');
         return null;
       }
 
@@ -314,7 +321,7 @@ export function useSiteText() {
       } catch (err) {
         console.log(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -330,7 +337,7 @@ export function useSiteText() {
       translated: SiteTextTranslationDto | null;
     }) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at addBallotEntry');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at addBallotEntry');
         return {
           originalDefinitionRel: null,
           translatedDefinitionRel: null,
@@ -365,7 +372,7 @@ export function useSiteText() {
 
         if (!translated!.candidateId) {
           alertFeedback(
-            'error',
+            FeedbackTypes.ERROR,
             'Cannot find such candidate at useSiteText hooks!',
           );
           setLoadingState(false);
@@ -379,7 +386,7 @@ export function useSiteText() {
 
         if (!candidate) {
           alertFeedback(
-            'error',
+            FeedbackTypes.ERROR,
             'Cannot find such candidate at useSiteText hooks!',
           );
           setLoadingState(false);
@@ -397,7 +404,7 @@ export function useSiteText() {
       } catch (err) {
         console.log(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return {
           originalDefinitionRel: null,
           translatedDefinitionRel: null,

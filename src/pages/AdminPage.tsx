@@ -16,6 +16,7 @@ import { LoadingStatus } from '../enums';
 // import useSeedService from '../hooks/useSeedService';
 import { NodeTypeConst } from '../constants/graph.constant';
 import { useAppContext } from '../hooks/useAppContext';
+import { FeedbackTypes } from '../constants/common.constant';
 
 export function AdminPage() {
   const {
@@ -221,7 +222,7 @@ export function AdminPage() {
         color={
           loadResult.search(RegExp(/(error)/, 'gmi')) > -1
             ? 'danger'
-            : 'success'
+            : FeedbackTypes.SUCCESS
         }
         message={loadResult}
         duration={5000}

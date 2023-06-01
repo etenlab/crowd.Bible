@@ -8,6 +8,7 @@ import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 import { mockChapters } from './ChapterFeedbackPage';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { FeedbackTypes } from '../../constants/common.constant';
 
 const { TitleWithIcon, VerticalRadioList, QuestionCreatorBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -37,7 +38,7 @@ export function ChapterTranslatorQAPage() {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSave = (question: Question) => {
-    alertFeedback('success', 'Your question has been created!');
+    alertFeedback(FeedbackTypes.SUCCESS, 'Your question has been created!');
     history.push('/translator-qa');
   };
 

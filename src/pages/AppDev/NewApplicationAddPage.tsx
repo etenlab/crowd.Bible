@@ -17,6 +17,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 
 import { RouteConst } from '@/constants/route.constant';
 import { compareLangInfo } from '@/utils/langUtils';
+import { FeedbackTypes } from '../../constants/common.constant';
 
 const { Stack } = MuiMaterial;
 const { HeadBox } = CrowdBibleUI;
@@ -50,7 +51,7 @@ export function NewApplicationAddPage() {
     const oldApp = await getApp(appName);
 
     if (oldApp) {
-      alertFeedback('error', 'Already exists with the same name!');
+      alertFeedback(FeedbackTypes.ERROR, 'Already exists with the same name!');
       return;
     }
 

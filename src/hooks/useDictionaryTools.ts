@@ -4,6 +4,7 @@ import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
 import { useVote } from './useVote';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { NodeTypeConst } from '../constants/graph.constant';
+import { FeedbackTypes } from '../constants/common.constant';
 
 export function useDictionaryTools(
   itemsType: typeof NodeTypeConst.WORD | typeof NodeTypeConst.PHRASE,
@@ -37,7 +38,7 @@ export function useDictionaryTools(
         const existingItem = items.find((it) => it.title.content === itemText);
         if (existingItem) {
           alertFeedback(
-            'info',
+            FeedbackTypes.INFO,
             `Such a ${itemsType} already exists. Use existing ${itemsType} to add a new definition, if you want to.`,
           );
           setIsDialogOpened(false);
@@ -61,7 +62,10 @@ export function useDictionaryTools(
             );
             break;
           default:
-            alertFeedback('error', `can't add ${type} as votable item`);
+            alertFeedback(
+              FeedbackTypes.ERROR,
+              `can't add ${type} as votable item`,
+            );
             throw new Error(`can't add ${type} as votable item`);
         }
         const { electionId } =
@@ -83,7 +87,7 @@ export function useDictionaryTools(
         ]);
       } catch (error) {
         logger.error(error);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       } finally {
         setIsDialogOpened(false);
         setLoadingState(false);
@@ -126,7 +130,7 @@ export function useDictionaryTools(
         setItems([...items]);
       } catch (error) {
         logger.error(error);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       } finally {
         setLoadingState(false);
       }
@@ -170,7 +174,7 @@ export function useDictionaryTools(
         );
         if (existingDefinition) {
           alertFeedback(
-            'info',
+            FeedbackTypes.INFO,
             `Such a definition already exists. You can vote for the existing definition or enter another one.`,
           );
           setIsDialogOpened(false);
@@ -194,7 +198,7 @@ export function useDictionaryTools(
         setItems([...items]);
       } catch (error) {
         logger.error(error);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       } finally {
         setIsDialogOpened(false);
         setLoadingState(false);
@@ -246,7 +250,7 @@ export function useDictionaryTools(
         setItems([...items]);
       } catch (error) {
         logger.error(error);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       }
     },
     [alertFeedback, definitionService, setItems, logger],
@@ -291,7 +295,7 @@ export function useDictionaryTools(
         setItems([...items]);
       } catch (error) {
         logger.error(error);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       } finally {
         setLoadingState(false);
       }

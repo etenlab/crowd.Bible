@@ -7,6 +7,7 @@ import { Toolbar, useColorModeContext } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { RouteConst } from '@/constants/route.constant';
+import { ColorThemes } from '../../constants/common.constant';
 
 const headerlessPages = [
   RouteConst.WELCOME,
@@ -33,11 +34,13 @@ export function AppHeader({
     actions: { setPrefersColorScheme },
   } = useAppContext();
 
-  const [themeMode, setThemeMode] = useState<'dark' | 'light'>(() => {
+  const [themeMode, setThemeMode] = useState<
+    ColorThemes.DARK | ColorThemes.LIGHT
+  >(() => {
     if (user && user.prefersColorScheme) {
       return user.prefersColorScheme;
     } else {
-      return 'light';
+      return ColorThemes.LIGHT;
     }
   });
   const prefersDarkRef = useRef<MediaQueryList | null>(null);
@@ -46,14 +49,14 @@ export function AppHeader({
   const toggleDarkTheme = useCallback(
     (shouldToggle: boolean) => {
       if (shouldToggle) {
-        setThemeMode('dark');
-        setColorMode('dark');
+        setThemeMode(ColorThemes.DARK);
+        setColorMode(ColorThemes.DARK);
       } else {
-        setThemeMode('light');
-        setColorMode('light');
+        setThemeMode(ColorThemes.LIGHT);
+        setColorMode(ColorThemes.LIGHT);
       }
 
-      bodyRef.current?.classList.toggle('dark', shouldToggle);
+      bodyRef.current?.classList.toggle(ColorThemes.DARK, shouldToggle);
     },
     [setColorMode],
   );
@@ -62,7 +65,7 @@ export function AppHeader({
     bodyRef.current = window.document.body;
 
     if (user && user.prefersColorScheme) {
-      toggleDarkTheme(user.prefersColorScheme === 'dark');
+      toggleDarkTheme(user.prefersColorScheme === ColorThemes.DARK);
       return;
     }
 
@@ -74,12 +77,12 @@ export function AppHeader({
   }, [user, toggleDarkTheme]);
 
   const handleToogleTheme = () => {
-    if (themeMode === 'light') {
+    if (themeMode === ColorThemes.LIGHT) {
       toggleDarkTheme(true);
-      setPrefersColorScheme('dark');
+      setPrefersColorScheme(ColorThemes.DARK);
     } else {
       toggleDarkTheme(false);
-      setPrefersColorScheme('light');
+      setPrefersColorScheme(ColorThemes.LIGHT);
     }
   };
 

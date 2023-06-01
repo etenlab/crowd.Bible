@@ -5,6 +5,7 @@ import { IonContent } from '@ionic/react';
 import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { FeedbackTypes } from '../../constants/common.constant';
 
 const { DotsText, LabelWithIcon, QuestionBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -120,7 +121,7 @@ export function ReaderQAPage() {
     chooseOne?: string;
     multiselect?: CheckItemType[];
   }) => {
-    alertFeedback('success', 'Your answer has been sent!');
+    alertFeedback(FeedbackTypes.SUCCESS, 'Your answer has been sent!');
     handleCancelQuestion();
   };
 

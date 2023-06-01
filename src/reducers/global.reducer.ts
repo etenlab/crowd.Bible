@@ -1,8 +1,13 @@
 import { actions } from './global.actions';
 import { type ActionType } from '.';
 import { type ISingletons } from '@/src/singletons';
+import { ColorThemes, FeedbackTypes } from '../constants/common.constant';
 
-export type FeedbackType = 'success' | 'error' | 'info' | 'warning';
+export type FeedbackType =
+  | FeedbackTypes.SUCCESS
+  | FeedbackTypes.ERROR
+  | FeedbackTypes.INFO
+  | FeedbackTypes.WARNING;
 
 export interface SnackType {
   open: boolean;
@@ -18,13 +23,13 @@ const initialTranslatedMap: TranslatedMap = {
 };
 
 export type RoleType = [unknown];
-export type PrefersColorSchemeType = 'light' | 'dark';
+export type PrefersColorSchemeType = ColorThemes.LIGHT | ColorThemes.DARK;
 
 export interface IUser {
   userId: string;
   userEmail: string;
   roles: RoleType;
-  prefersColorScheme?: 'light' | 'dark';
+  prefersColorScheme?: ColorThemes.LIGHT | ColorThemes.DARK;
 }
 
 export interface IMode {
@@ -48,7 +53,7 @@ export interface StateType {
 const initialSnact: SnackType = {
   open: false,
   message: '',
-  severity: 'success',
+  severity: FeedbackTypes.SUCCESS,
 };
 
 export const initialState: StateType = {
@@ -56,7 +61,7 @@ export const initialState: StateType = {
     userId: '',
     userEmail: 'hiroshi@test.com',
     roles: ['translator'],
-    prefersColorScheme: 'light',
+    prefersColorScheme: ColorThemes.LIGHT,
   },
   mode: {
     admin: true,

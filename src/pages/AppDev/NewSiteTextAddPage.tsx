@@ -18,6 +18,7 @@ import { useDocument } from '@/hooks/useDocument';
 import { SelectableDefinitionCandidateList } from '@/components/SelectableDefinitionCandidateList';
 
 import { AppDto } from '@/dtos/document.dto';
+import { FeedbackTypes } from '../../constants/common.constant';
 
 const { HeadBox } = CrowdBibleUI;
 const { Stack, Divider } = MuiMaterial;
@@ -98,7 +99,7 @@ export function NewSiteTextAddPage() {
         history.goBack();
       }
     } else {
-      alertFeedback('error', 'Not exists appId');
+      alertFeedback(FeedbackTypes.ERROR, 'Not exists appId');
     }
   };
 
