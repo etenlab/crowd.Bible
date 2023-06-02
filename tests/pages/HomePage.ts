@@ -1,10 +1,10 @@
-import BasePage from './Base';
+import BasePage from './BasePage';
 
 const headerText = '//h2[contains(text(), "Home Screen")]';
 const expandIcon =
   '//button[@class = "MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1s9j4fq-MuiButtonBase-root-MuiIconButton-root"]';
 
-class Home extends BasePage {
+class HomePage extends BasePage {
   async isheaderTextPresent() {
     await this.page.locator(headerText).waitFor();
     const headerTextPresnt = await this.page.locator(headerText).isVisible();
@@ -16,4 +16,4 @@ class Home extends BasePage {
   }
 }
 
-export default Home;
+export default HomePage;

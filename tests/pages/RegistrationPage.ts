@@ -1,4 +1,4 @@
-import BasePage from './Base';
+import BasePage from './BasePage';
 
 const headerText = '//h1[contains(text(), "Register")]';
 const emailTextBox = '#email';
@@ -14,7 +14,7 @@ const repeatPasswordErrorMessage = '//p[@id = "passwordConfirm-helper-text"]';
 const existingUserValidation =
   '//div[@class = "MuiAlert-message css-1pxa9xg-MuiAlert-message"]';
 
-class Registration extends BasePage {
+class RegistrationPage extends BasePage {
   async fillRegistrationForm(registrationData: any) {
     await this.page.locator(emailTextBox).fill(registrationData.email);
     await this.page.locator(userNameTextBox).fill(registrationData.userName);
@@ -80,4 +80,4 @@ class Registration extends BasePage {
   }
 }
 
-export default Registration;
+export default RegistrationPage;

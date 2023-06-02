@@ -1,8 +1,8 @@
-import Register from '../data-objects/Register';
+import RegisterDto from '../data-objects/RegisterDto';
 
 class RegisterData {
   validRegisterData() {
-    const registerData = Register;
+    const registerData = RegisterDto;
     const x = Math.random() * 100;
     registerData.email = 'AutomationUser' + x + '@mailinator.com';
     registerData.userName = 'Automation User';
@@ -12,7 +12,7 @@ class RegisterData {
   }
 
   registerDataWithoutEmail() {
-    const registerData = Register;
+    const registerData = RegisterDto;
     registerData.email = '';
     registerData.userName = 'Automation User';
     registerData.password = 'automation@123';
@@ -21,7 +21,7 @@ class RegisterData {
   }
 
   registerDataWithoutUserName() {
-    const registerData = Register;
+    const registerData = RegisterDto;
     registerData.email = 'AutomationUser@mailinator.com';
     registerData.userName = '';
     registerData.password = 'automation@123';
@@ -30,7 +30,7 @@ class RegisterData {
   }
 
   registerDataWithoutPassword() {
-    const registerData = Register;
+    const registerData = RegisterDto;
     registerData.email = 'AutomationUser@mailinator.com';
     registerData.userName = 'Automation User';
     registerData.password = '';
@@ -39,7 +39,7 @@ class RegisterData {
   }
 
   registrationDataWithoutRepeatPassword() {
-    const registerData = Register;
+    const registerData = RegisterDto;
     registerData.email = 'AutomationUser@mailinator.com';
     registerData.userName = 'Automation User';
     registerData.password = 'automation@123';
@@ -48,7 +48,7 @@ class RegisterData {
   }
 
   registerDataWithInvalidEmailFormat() {
-    const registerData = Register;
+    const registerData = RegisterDto;
     registerData.email = 'AutomationUser';
     registerData.userName = 'Automation User';
     registerData.password = 'automation@123';
@@ -57,7 +57,7 @@ class RegisterData {
   }
 
   registerDataWithDiffPassAndRepeatPass() {
-    const registerData = Register;
+    const registerData = RegisterDto;
     registerData.email = 'AutomationUser@mailinator.com';
     registerData.userName = 'Automation User';
     registerData.password = 'tester';
@@ -66,7 +66,7 @@ class RegisterData {
   }
 
   registerDataWithExistingUser() {
-    const registerData = Register;
+    const registerData = RegisterDto;
     registerData.email = 'AutomationUser@mailinator.com';
     registerData.userName = 'Automation User';
     registerData.password = 'automation1234';

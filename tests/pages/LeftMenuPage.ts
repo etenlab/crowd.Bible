@@ -1,9 +1,9 @@
-import BasePage from './Base';
+import BasePage from './BasePage';
 
 const headerText = '//span[contains(text(), "Menu")]';
 const logoutOption = '//p[contains(text(), "Logout")]';
 
-class LeftMenu extends BasePage {
+class LeftMenuPage extends BasePage {
   async isheaderTextPresent() {
     await this.page.locator(headerText).waitFor();
     const headerTextPresnt = await this.page.locator(headerText).isVisible();
@@ -15,4 +15,4 @@ class LeftMenu extends BasePage {
   }
 }
 
-export default LeftMenu;
+export default LeftMenuPage;

@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 import RegisterData from '../data-factory/RegisterData';
-import RegisterPO from '../pages/Registration';
-import LoginPO from '../pages/Login';
-import HomePO from '../pages/Home';
-import LeftMenuPO from '../pages/LeftMenu';
-import LoginDTO from '../data-objects/Login';
+import RegisterPO from '../pages/RegistrationPage';
+import LoginPO from '../pages/LoginPage';
+import HomePO from '../pages/HomePage';
+import LeftMenuPO from '../pages/LeftMenuPage';
+import LoginDTO from '../data-objects/LoginDto';
 
 test('1: Verify that user is register/logout and login again successfully', async ({
   page,

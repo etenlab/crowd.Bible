@@ -1,5 +1,5 @@
-import BasePage from './Base';
-import LoginDTO from '../data-objects/Login';
+import BasePage from './BasePage';
+import LoginDTO from '../data-objects/LoginDto';
 
 const headerText = '//h1[contains(text(), "Login")]';
 const emailTextBox = '#email';
@@ -8,7 +8,7 @@ const loginNowButton = '//button[contains(text(), "Login Now")]';
 const dontHaveAccountButton =
   '//button[contains(text(), "you have an account?")]';
 
-class Login extends BasePage {
+class LoginPage extends BasePage {
   async isheaderTextPresent() {
     await this.page.locator(headerText).waitFor();
     const headerTextPresnt = await this.page.locator(headerText).isVisible();
@@ -37,4 +37,4 @@ class Login extends BasePage {
   }
 }
 
-export default Login;
+export default LoginPage;
