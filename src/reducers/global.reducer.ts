@@ -52,14 +52,9 @@ const initialSnact: SnackType = {
 };
 
 export const initialState: StateType = {
-  user: {
-    userId: '',
-    userEmail: 'hiroshi@test.com',
-    roles: ['translator'],
-    prefersColorScheme: 'light',
-  },
+  user: null,
   mode: {
-    admin: true,
+    admin: false,
     beta: true,
   },
   snack: initialSnact,

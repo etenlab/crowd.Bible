@@ -18,6 +18,7 @@ export type LinkItemProps = {
   adminOnly?: boolean;
   betaOnly?: boolean;
   implemented?: boolean;
+  noAuthOnly?: boolean;
 };
 
 type LinkGroupType = {
@@ -28,20 +29,30 @@ type LinkGroupType = {
 export function LinkGroup({ group, linkItems }: LinkGroupType) {
   const {
     states: {
-      global: { mode, connectivity },
+      global: { mode, connectivity, user },
     },
   } = useAppContext();
   const { getColor } = useColorModeContext();
   const history = useHistory();
 
+  console.log('user ===>', user);
+
   const items = useMemo(() => {
     return linkItems
-      .filter(({ adminOnly, betaOnly }) => {
+      .filter(({ adminOnly, betaOnly, noAuthOnly }) => {
         if (mode?.admin === false && adminOnly === true) {
           return false;
         }
         if (mode?.beta === false && betaOnly === true) {
           return false;
+        }
+        if (noAuthOnly === true) {
+          if (!user) {
+            return true;
+          }
+          if (user.userEmail.trim().length > 0) {
+            return false;
+          }
         }
         return true;
       })
@@ -61,7 +72,7 @@ export function LinkGroup({ group, linkItems }: LinkGroupType) {
           ) : null,
         disabled: connectivity === false && onlineOnly === true ? true : false,
       }));
-  }, [linkItems, mode, getColor, connectivity]);
+  }, [linkItems, mode, getColor, connectivity, user]);
 
   const handleClickItem = (value: string) => {
     history.push(value);
