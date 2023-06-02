@@ -13,7 +13,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 import { VotableItem } from '@/dtos/votable-item.dto';
 import { useDictionaryTools } from '@/hooks/useDictionaryTools';
-import { NodeTypeConst } from '@/constants/graph.constant';
+import { NodeTypeConst } from '@eten-lab/core';
 
 const { Box, Divider } = MuiMaterial;
 

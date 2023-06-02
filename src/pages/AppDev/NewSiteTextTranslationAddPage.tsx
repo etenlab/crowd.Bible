@@ -38,6 +38,7 @@ export function NewSiteTextTranslationAddPage() {
       documentTools: { sourceLanguage, targetLanguage },
     },
     actions: { alertFeedback },
+    logger,
   } = useAppContext();
   const {
     createOrFindTranslation,
@@ -141,7 +142,7 @@ export function NewSiteTextTranslationAddPage() {
       alertFeedback('error', 'Not exists or targetLanguage!');
     }
 
-    console.log('new translated ==>', originalDefinitionRel, siteText);
+    logger.info('new translated ==>', originalDefinitionRel, siteText);
 
     if (translatedDefinitionRel) {
       history.push(

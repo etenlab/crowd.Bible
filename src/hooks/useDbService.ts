@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { DbService } from '@/services/db.service';
+import { DbService } from '@eten-lab/core';
 import { useSingletons } from './useSingletons';
 
 export default function useDbService() {

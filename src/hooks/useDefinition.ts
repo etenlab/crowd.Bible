@@ -9,6 +9,7 @@ export function useDefinition() {
       global: { singletons },
     },
     actions: { alertFeedback, setLoadingState },
+    logger,
   } = useAppContext();
 
   const getDefinitionsAsVotableContentByWord = useCallback(
@@ -32,13 +33,13 @@ export function useDefinition() {
         setLoadingState(false);
         return result;
       } catch (err) {
-        console.log(err);
+        logger.info(err);
         setLoadingState(false);
         alertFeedback('error', 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState],
+    [singletons, alertFeedback, setLoadingState, logger],
   );
 
   return {

@@ -1,5 +1,7 @@
-import { GraphFirstLayerService } from './graph-first-layer.service';
-import { GraphSecondLayerService } from './graph-second-layer.service';
+import {
+  GraphFirstLayerService,
+  GraphSecondLayerService,
+} from '@eten-lab/core';
 
 import { WordService } from './word.service';
 
@@ -7,7 +9,7 @@ import {
   PropertyKeyConst,
   NodeTypeConst,
   RelationshipTypeConst,
-} from '@/constants/graph.constant';
+} from '@eten-lab/core';
 
 import { Node, Relationship } from '@/src/models';
 

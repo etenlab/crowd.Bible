@@ -10,7 +10,7 @@ import {
   FadeSpinner,
   IconBox,
 } from '@eten-lab/ui-kit';
-import { NodeTypeConst } from '@/constants/graph.constant';
+import { NodeTypeConst } from '@eten-lab/core';
 import { useAppContext } from '@/src/hooks/useAppContext';
 import { StyledSectionTypography } from '@/src/components/MapTranslatorTabs/StyledComponents';
 import JSZip from 'jszip';
@@ -25,6 +25,7 @@ export function FileImportPage() {
     states: {
       global: { singletons },
     },
+    logger,
   } = useAppContext();
   const downloadRef = useRef<HTMLAnchorElement>(null);
   const importRef = useRef<HTMLInputElement>(null);
@@ -94,7 +95,7 @@ export function FileImportPage() {
         setWordProgress('success');
       }
     } catch (err) {
-      console.log(err);
+      logger.error(err);
       setWordProgress('failed');
     }
   };

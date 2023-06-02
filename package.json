@@ -12,7 +12,8 @@
     "@capacitor/haptics": "4.1.0",
     "@capacitor/keyboard": "4.1.0",
     "@capacitor/status-bar": "4.1.1",
-    "@eten-lab/models": "^1.3.11",
+    "@eten-lab/core": "^0.2.17",
+    "@eten-lab/models": "^1.3.12",
     "@eten-lab/sso": "^0.1.9",
     "@eten-lab/ui-kit": "^0.5.38",
     "@ionic/react": "^6.0.0",
@@ -112,6 +113,8 @@
   },
   "devDependencies": {
     "@capacitor/cli": "4.6.1",
+    "@commitlint/cli": "^17.6.5",
+    "@commitlint/config-conventional": "^17.6.5",
     "@jest/globals": "^29.5.0",
     "@playwright/test": "^1.34.3",
     "@types/apollo-upload-client": "^17.0.2",
@@ -150,6 +153,9 @@
     "workbox-webpack-plugin": "^6.5.4"
   },
   "description": "Crowd Sourcing Translation",
+  "commitlint": {
+    "extends": ["@commitlint/config-conventional"]
+  },
   "lint-staged": {
     "**/*.{ts,tsx,md,mdx,js,jsx}": [
       "npm run format",
