@@ -55,7 +55,7 @@ export const initialState: StateType = {
   user: null,
   mode: {
     admin: false,
-    beta: true,
+    beta: false,
   },
   snack: initialSnact,
   connectivity: true,

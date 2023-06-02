@@ -8,7 +8,13 @@ import { RouteConst } from '@/src/constants/route.constant';
 import { useAppContext } from '../../hooks/useAppContext';
 
 export function LogoutButton() {
-  const { logger } = useAppContext();
+  const {
+    logger,
+    states: {
+      global: { user },
+    },
+    actions: { logout },
+  } = useAppContext();
   const history = useHistory();
   const userToken = localStorage.getItem('userToken');
   // let tokenObj = null;
@@ -19,10 +25,11 @@ export function LogoutButton() {
 
   const handleLogout = () => {
     localStorage.clear();
+    logout();
     history.push(RouteConst.LOGIN);
   };
 
-  if (!userToken) {
+  if (!user || user?.userEmail.trim().length === 0) {
     return null;
   }
 

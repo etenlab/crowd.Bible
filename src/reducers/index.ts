@@ -74,6 +74,7 @@ export function reducer(
   action: ActionType<unknown>,
 ): StateType {
   if (action.type === 'logout') {
+    persistStore(initialState);
     return initialState;
   }
 
