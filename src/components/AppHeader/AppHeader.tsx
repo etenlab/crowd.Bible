@@ -29,7 +29,7 @@ export function AppHeader({
 
   const {
     states: {
-      global: { user, isNewDiscussion, isNewNotification },
+      global: { user, isNewDiscussion, isNewNotification, mode },
     },
     actions: { setPrefersColorScheme },
   } = useAppContext();
@@ -94,6 +94,18 @@ export function AppHeader({
     (routeStr) => location.pathname === routeStr,
   );
 
+  const buttonsConfig = mode.beta
+    ? {
+        notification: true,
+        discussion: true,
+        menu: true,
+      }
+    : {
+        notification: false,
+        discussion: false,
+        menu: true,
+      };
+
   if (!isHeader) {
     return null;
   }
@@ -125,6 +137,7 @@ export function AppHeader({
       <IonToolbar class="ionic-toolbar">
         <Toolbar
           title="crowd.Bible"
+          buttons={buttonsConfig}
           themeMode={themeMode}
           onClickTitleBtn={handleGoToHomePage}
           onClickThemeModeBtn={handleToogleTheme}
