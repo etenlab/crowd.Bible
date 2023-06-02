@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAppContext } from './useAppContext';
 import { gql, useApolloClient } from '@apollo/client';
-import { FeedbackTypes } from '../constants/common.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 export const UPLOAD_FILE_MUTATION = gql`
   mutation UploadFile($file: Upload!, $file_type: String!, $file_size: Int!) {

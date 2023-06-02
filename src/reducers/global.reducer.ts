@@ -5,7 +5,7 @@ import {
   ColorThemes,
   FeedbackTypes,
   UserRoles,
-} from '../constants/common.constant';
+} from '@/constants/common.constant';
 
 export type FeedbackType =
   | FeedbackTypes.SUCCESS

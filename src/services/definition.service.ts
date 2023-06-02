@@ -3,7 +3,7 @@ import {
   NodeTypeConst,
   PropertyKeyConst,
   RelationshipTypeConst,
-} from '../constants/graph.constant';
+} from '@/constants/graph.constant';
 import { ElectionTypeConst } from '@eten-lab/core';
 import { TableNameConst } from '@/constants/table-name.constant';
 

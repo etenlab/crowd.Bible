@@ -9,8 +9,8 @@ import React, { ReactNode, useCallback, useState, useEffect } from 'react';
 import { TableFromResponce } from './tools';
 import { IonContent, IonToolbar } from '@ionic/react';
 import Editor from 'react-simple-code-editor';
-import { useAppContext } from '../../../hooks/useAppContext';
-import { SQLRUNNER_LOCAL_FORAGE_KEY } from '../../../constants/common.constant';
+import { useAppContext } from '@/src/hooks/useAppContext';
+import { SQLRUNNER_LOCAL_FORAGE_KEY } from '@/constants/common.constant';
 const { Box, Tabs, Tab, IconButton } = MuiMaterial;
 
 type TSqls = {

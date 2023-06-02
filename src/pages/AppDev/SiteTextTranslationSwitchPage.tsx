@@ -16,7 +16,7 @@ import { RouteConst } from '@/constants/route.constant';
 import { SiteTextTranslationDto } from '@/src/dtos/site-text.dto';
 
 import { compareLangInfo } from '@/utils/langUtils';
-import { FeedbackTypes } from '../../constants/common.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 const { HeadBox } = CrowdBibleUI;
 const { Stack, Typography } = MuiMaterial;

@@ -12,9 +12,9 @@ import {
 } from '@ionic/react';
 
 import txtfile from '@/utils/iso_639_3_min.tab';
-import { NodeTypeConst } from '../constants/graph.constant';
-import { useAppContext } from '../hooks/useAppContext';
-import { FeedbackTypes, LoadingStatuses } from '../constants/common.constant';
+import { NodeTypeConst } from '@/constants/graph.constant';
+import { useAppContext } from '@/src/hooks/useAppContext';
+import { FeedbackTypes, LoadingStatuses } from '@/constants/common.constant';
 
 export function AdminPage() {
   const {

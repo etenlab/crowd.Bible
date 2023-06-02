@@ -18,7 +18,7 @@ import {
   FeedbackTypes,
   UpOrDownVote,
   VoteTypes,
-} from '../../constants/common.constant';
+} from '@/constants/common.constant';
 
 const { Box, Divider } = MuiMaterial;
 
@@ -145,7 +145,7 @@ export function DictionaryPage() {
     if (!selectedLanguageInfo) return;
     try {
       setLoadingState(true);
-      logger.info({ context: { custom: 'context' } }, 'load words');
+      logger.info({ at: 'DictionaryPage' }, 'load words');
       const loadWords = async () => {
         const words: VotableItem[] = await definitionService.getVotableItems(
           selectedLanguageInfo,

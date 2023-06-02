@@ -8,8 +8,8 @@ import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 import { mockChapters } from './ChapterFeedbackPage';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { FeedbackTypes } from '../../constants/common.constant';
-import { RouteConst } from '../../constants/route.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
+import { RouteConst } from '@/constants/route.constant';
 
 const { TitleWithIcon, VerticalRadioList, QuestionCreatorBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;

@@ -5,8 +5,8 @@ import { IonItem } from '@ionic/react';
 import { Typography } from '@eten-lab/ui-kit';
 import { RouteConst } from '@/src/constants/route.constant';
 // import { decodeToken } from '@/src/utils/AuthUtils';
-import { useAppContext } from '../../hooks/useAppContext';
-import { USER_TOKEN_KEY } from '../../constants/common.constant';
+import { useAppContext } from '@/src/hooks/useAppContext';
+import { USER_TOKEN_KEY } from '@/constants/common.constant';
 
 export function LogoutButton() {
   const {

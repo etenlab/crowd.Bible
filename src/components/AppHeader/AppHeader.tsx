@@ -7,7 +7,7 @@ import { Toolbar, useColorModeContext } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { RouteConst } from '@/constants/route.constant';
-import { ColorThemes } from '../../constants/common.constant';
+import { ColorThemes } from '@/constants/common.constant';
 
 const headerlessPages = [
   RouteConst.WELCOME,

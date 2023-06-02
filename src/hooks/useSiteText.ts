@@ -9,7 +9,7 @@ import { VotableContent } from '../dtos/votable-item.dto';
 import { SiteTextDto, SiteTextTranslationDto } from '@/dtos/site-text.dto';
 
 import { compareLangInfo } from '@/utils/langUtils';
-import { FeedbackTypes } from '../constants/common.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 export function useSiteText() {
   const {

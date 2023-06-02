@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 
 import { LanguageInfo } from '@eten-lab/ui-kit';
-import { FeedbackTypes } from '../constants/common.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 export function useDefinition() {
   const {

@@ -7,8 +7,8 @@ import { Button, Typography } from '@eten-lab/ui-kit';
 
 import 'swiper/swiper-bundle.css';
 import '../styles.css';
-import { useAppContext } from '../hooks/useAppContext';
-import { RouteConst } from '../constants/route.constant';
+import { useAppContext } from '@/src/hooks/useAppContext';
+import { RouteConst } from '@/constants/route.constant';
 
 export function WelcomePage() {
   const { logger } = useAppContext();

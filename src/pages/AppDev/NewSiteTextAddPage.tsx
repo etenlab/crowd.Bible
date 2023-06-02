@@ -18,7 +18,7 @@ import { useDocument } from '@/hooks/useDocument';
 import { SelectableDefinitionCandidateList } from '@/components/SelectableDefinitionCandidateList';
 
 import { AppDto } from '@/dtos/document.dto';
-import { FeedbackTypes } from '../../constants/common.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 const { HeadBox } = CrowdBibleUI;
 const { Stack, Divider } = MuiMaterial;

@@ -6,7 +6,7 @@ import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 
 import { mockDocument } from './ReaderQAPage';
 import { FeedbackInput } from '@/components/FeedbackInput';
-import { RouteConst } from '../../constants/route.constant';
+import { RouteConst } from '@/constants/route.constant';
 
 const { LabelWithIcon, RangeSelectableTextArea } = CrowdBibleUI;
 const { Stack } = MuiMaterial;

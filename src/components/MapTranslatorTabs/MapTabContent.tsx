@@ -12,10 +12,10 @@ import {
   StyledFilterButton,
   StyledSectionTypography,
 } from './StyledComponents';
-import { useAppContext } from '../../hooks/useAppContext';
-import { useMapTranslationTools } from '../../hooks/useMapTranslationTools';
+import { useAppContext } from '@/src/hooks/useAppContext';
+import { useMapTranslationTools } from '@/src/hooks/useMapTranslationTools';
 import { langInfo2String } from '../../utils/langUtils';
-import { FeedbackTypes } from '../../constants/common.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 const { Box, styled, CircularProgress } = MuiMaterial;
 
 const PADDING = 20;

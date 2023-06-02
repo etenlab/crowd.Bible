@@ -18,8 +18,8 @@ import { useAppContext } from '@/hooks/useAppContext';
 import * as Yup from 'yup';
 
 import { decodeToken } from '@/utils/AuthUtils';
-import { RouteConst } from '../constants/route.constant';
-import { USER_TOKEN_KEY } from '../constants/common.constant';
+import { RouteConst } from '@/constants/route.constant';
+import { USER_TOKEN_KEY } from '@/constants/common.constant';
 
 const { Box } = MuiMaterial;
 

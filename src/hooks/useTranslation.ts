@@ -5,7 +5,7 @@ import { LanguageInfo } from '@eten-lab/ui-kit';
 import { UserDto } from '@/dtos/user.dto';
 
 import { compareLangInfo } from '@/utils/langUtils';
-import { FeedbackTypes } from '../constants/common.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 export function useTranslation() {
   const {

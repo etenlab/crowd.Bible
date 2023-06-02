@@ -6,7 +6,7 @@ import { IonChip } from '@ionic/react';
 
 import { MuiMaterial } from '@eten-lab/ui-kit';
 
-import { RouteConst } from '../../constants/route.constant';
+import { RouteConst } from '@/constants/route.constant';
 
 // import { discussionClient } from "./graphql/discussionGraphql";
 // import { GET_DISCUSSIONS_SUMMARY_BY_USER_ID } from "./graphql/discussionQuery";

@@ -11,7 +11,7 @@ import {
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { IMode } from '@/reducers/global.reducer';
-import { RouteConst } from '../constants/route.constant';
+import { RouteConst } from '@/constants/route.constant';
 
 const { VerticalRadioList } = CrowdBibleUI;
 const { Divider, FormControlLabel, FormGroup, FormLabel, Stack, Switch } =

@@ -3,12 +3,12 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
 import { useVote } from './useVote';
 import { LanguageInfo } from '@eten-lab/ui-kit';
-import { NodeTypeConst } from '../constants/graph.constant';
+import { NodeTypeConst } from '@/constants/graph.constant';
 import {
   FeedbackTypes,
   UpOrDownVote,
   VoteTypes,
-} from '../constants/common.constant';
+} from '@/constants/common.constant';
 
 export function useDictionaryTools(
   itemsType: typeof NodeTypeConst.WORD | typeof NodeTypeConst.PHRASE,

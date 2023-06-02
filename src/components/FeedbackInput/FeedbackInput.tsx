@@ -3,8 +3,8 @@ import { useHistory } from 'react-router-dom';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
-import { FeedbackTypes } from '../../constants/common.constant';
-import { RouteConst } from '../../constants/route.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
+import { RouteConst } from '@/constants/route.constant';
 
 const { AgreeConfirm, SimpleQuill } = CrowdBibleUI;
 const { Box } = MuiMaterial;

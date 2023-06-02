@@ -17,7 +17,7 @@ import { Link } from '@/components/Link';
 import { useFormik } from 'formik';
 import { decodeToken } from '@/utils/AuthUtils';
 import * as Yup from 'yup';
-import { RouteConst } from '../constants/route.constant';
+import { RouteConst } from '@/constants/route.constant';
 const { Box, Alert } = MuiMaterial;
 
 const validationSchema = Yup.object().shape({

@@ -17,7 +17,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 
 import { RouteConst } from '@/constants/route.constant';
 import { compareLangInfo } from '@/utils/langUtils';
-import { FeedbackTypes } from '../../constants/common.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 const { Stack } = MuiMaterial;
 const { HeadBox } = CrowdBibleUI;

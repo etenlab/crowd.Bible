@@ -13,7 +13,7 @@ import { DocumentDto } from '@/src/dtos/document.dto';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useDocument } from '@/hooks/useDocument';
-import { UserRoles } from '../../constants/common.constant';
+import { UserRoles } from '@/constants/common.constant';
 
 const {
   Stack,

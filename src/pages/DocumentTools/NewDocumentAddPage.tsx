@@ -9,7 +9,7 @@ import { useWordSequence } from '@/hooks/useWordSequence';
 import { useAppContext } from '@/hooks/useAppContext';
 
 import { RouteConst } from '@/constants/route.constant';
-import { FeedbackTypes } from '../../constants/common.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 const { Stack } = MuiMaterial;
 

@@ -6,7 +6,7 @@ import { WordSequenceDto } from '@/dtos/word-sequence.dto';
 import { UserDto } from '@/dtos/user.dto';
 
 import { LanguageInfo } from '@eten-lab/ui-kit';
-import { FeedbackTypes } from '../constants/common.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 export function useWordSequence() {
   const {

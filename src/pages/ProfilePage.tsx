@@ -13,8 +13,8 @@ import {
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useState } from 'react';
-import { useAppContext } from '../hooks/useAppContext';
-import { USER_TOKEN_KEY } from '../constants/common.constant';
+import { useAppContext } from '@/src/hooks/useAppContext';
+import { USER_TOKEN_KEY } from '@/constants/common.constant';
 
 const { Box } = MuiMaterial;
 

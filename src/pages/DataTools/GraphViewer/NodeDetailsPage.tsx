@@ -4,7 +4,7 @@ import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { useGlobal } from '@/src/hooks/useGlobal';
 import { initialState, reducer } from '@/src/reducers';
 import { useHistory, useParams } from 'react-router';
-import { useAppContext } from '../../../hooks/useAppContext';
+import { useAppContext } from '@/src/hooks/useAppContext';
 
 const { NodeDetails, TitleWithIcon } = CrowdBibleUI;
 const { Stack } = MuiMaterial;

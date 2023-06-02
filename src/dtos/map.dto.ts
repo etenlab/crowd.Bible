@@ -1,7 +1,7 @@
 import { LanguageInfo } from '@eten-lab/ui-kit';
 // import { LanguageDto } from './language.dto';
 import { WordDto } from './word.dto';
-import { PropertyKeyConst } from '../constants/graph.constant';
+import { PropertyKeyConst } from '@/constants/graph.constant';
 
 export interface MapDto {
   id: string;

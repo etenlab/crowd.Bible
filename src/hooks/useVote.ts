@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 
-import { FeedbackTypes } from '../constants/common.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 import { ElectionTypeConst } from '@eten-lab/core';
 
 export function useVote() {

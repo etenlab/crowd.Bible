@@ -11,7 +11,7 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { mockDocument } from './ReaderQAPage';
-import { RouteConst } from '../../constants/route.constant';
+import { RouteConst } from '@/constants/route.constant';
 
 const { LabelWithIcon, KindSelectionBox } = CrowdBibleUI;
 const { Stack, Backdrop } = MuiMaterial;

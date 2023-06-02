@@ -5,7 +5,7 @@ import { IonContent } from '@ionic/react';
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 
 import { FeedbackInput } from '@/components/FeedbackInput';
-import { RouteConst } from '../../constants/route.constant';
+import { RouteConst } from '@/constants/route.constant';
 
 const { TitleWithIcon, VerticalRadioList } = CrowdBibleUI;
 const { Stack } = MuiMaterial;

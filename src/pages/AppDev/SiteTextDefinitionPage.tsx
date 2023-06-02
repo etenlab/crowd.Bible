@@ -17,7 +17,7 @@ import { VotableContent } from '@/dtos/votable-item.dto';
 import { SiteTextDto } from '@/src/dtos/site-text.dto';
 
 import { compareLangInfo } from '@/utils/langUtils';
-import { FeedbackTypes } from '../../constants/common.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 const { HeadBox } = CrowdBibleUI;
 const { Stack, Typography } = MuiMaterial;
