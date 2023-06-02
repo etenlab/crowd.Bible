@@ -1,8 +1,17 @@
 import { actions } from './global.actions';
 import { type ActionType } from '.';
 import { type ISingletons } from '@/src/singletons';
+import {
+  ColorThemes,
+  FeedbackTypes,
+  UserRoles,
+} from '@/constants/common.constant';
 
-export type FeedbackType = 'success' | 'error' | 'info' | 'warning';
+export type FeedbackType =
+  | FeedbackTypes.SUCCESS
+  | FeedbackTypes.ERROR
+  | FeedbackTypes.INFO
+  | FeedbackTypes.WARNING;
 
 export interface SnackType {
   open: boolean;
@@ -17,14 +26,14 @@ const initialTranslatedMap: TranslatedMap = {
   translatedMapStr: undefined,
 };
 
-export type RoleType = [unknown];
-export type PrefersColorSchemeType = 'light' | 'dark';
+export type RoleType = UserRoles[];
+export type PrefersColorSchemeType = ColorThemes.LIGHT | ColorThemes.DARK;
 
 export interface IUser {
   userId: string;
   userEmail: string;
   roles: RoleType;
-  prefersColorScheme?: 'light' | 'dark';
+  prefersColorScheme?: ColorThemes.LIGHT | ColorThemes.DARK;
 }
 
 export interface IMode {
@@ -48,7 +57,7 @@ export interface StateType {
 const initialSnact: SnackType = {
   open: false,
   message: '',
-  severity: 'success',
+  severity: FeedbackTypes.SUCCESS,
 };
 
 export const initialState: StateType = {
@@ -104,7 +113,7 @@ export function reducer(
     case actions.SET_ROLE: {
       if (prevState.user != null) {
         const newRoles = prevState.user.roles;
-        newRoles.push(action.payload as string);
+        newRoles.push(action.payload as UserRoles);
         return {
           ...prevState,
           user: {

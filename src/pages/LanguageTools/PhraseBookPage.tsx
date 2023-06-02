@@ -9,11 +9,16 @@ import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
-import { VotableItem } from '../../dtos/votable-item.dto';
-import { useAppContext } from '../../hooks/useAppContext';
-import { useDictionaryTools } from '../../hooks/useDictionaryTools';
-import { NodeTypeConst } from '../../constants/graph.constant';
+import { VotableItem } from '@/dtos/votable-item.dto';
+import { useAppContext } from '@/src/hooks/useAppContext';
+import { useDictionaryTools } from '@/src/hooks/useDictionaryTools';
+import { NodeTypeConst } from '@/constants/graph.constant';
 import { LanguageInfo } from '@eten-lab/ui-kit';
+import {
+  FeedbackTypes,
+  UpOrDownVote,
+  VoteTypes,
+} from '@/constants/common.constant';
 const { Box, Divider } = MuiMaterial;
 
 const {
@@ -152,7 +157,7 @@ export function PhraseBookPage() {
       loadPhrases();
     } catch (error) {
       logger.error(error);
-      alertFeedback('error', 'Internal Error!');
+      alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
     } finally {
       setLoadingState(false);
     }
@@ -176,7 +181,6 @@ export function PhraseBookPage() {
     [addItem, phrases, selectedLanguageInfo],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changePhraseDefinition = useCallback(
     (definitionId: Nanoid | null, newValue: string) => {
       changeDefinitionValue(phrases, selectedPhrase, definitionId, newValue);
@@ -184,15 +188,15 @@ export function PhraseBookPage() {
     [changeDefinitionValue, selectedPhrase, phrases],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changePhraseDefinitionVotes = useCallback(
-    (ballotId: Nanoid | null, upOrDown: TUpOrDownVote) => {
+    (ballotId: Nanoid | null, vote: 'upVote' | 'downVote') => {
+      const upOrDown: UpOrDownVote =
+        vote === 'upVote' ? VoteTypes.UP : VoteTypes.DOWN;
       changeDefinitionVotes(phrases, selectedPhrase, ballotId, upOrDown);
     },
     [changeDefinitionVotes, phrases, selectedPhrase],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addDefinitionToPhrase = useCallback(
     (text: string) => {
       addDefinition(text, phrases, selectedPhrase, setSelectedPhrase);
@@ -202,7 +206,10 @@ export function PhraseBookPage() {
 
   const handleAddPhraseButtonClick = useCallback(() => {
     if (!selectedLanguageInfo) {
-      alertFeedback('error', 'Please select a language before adding a word');
+      alertFeedback(
+        FeedbackTypes.ERROR,
+        'Please select a language before adding a word',
+      );
       return;
     }
     setIsDialogOpened(true);
@@ -269,10 +276,10 @@ export function PhraseBookPage() {
               items={phrases}
               setSelectedItem={setSelectedPhrase}
               setLikeItem={(phraseId) =>
-                changeItemVotes(phraseId, 'upVote', phrases)
+                changeItemVotes(phraseId, VoteTypes.UP, phrases)
               }
               setDislikeItem={(phraseId) =>
-                changeItemVotes(phraseId, 'downVote', phrases)
+                changeItemVotes(phraseId, VoteTypes.DOWN, phrases)
               }
             ></ItemsClickableList>
           </Box>

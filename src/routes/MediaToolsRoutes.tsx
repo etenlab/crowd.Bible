@@ -1,7 +1,7 @@
 import { Route, Switch } from 'react-router-dom';
 
-import { MapDetailPage } from '../pages/MediaTools/MapDetailPage';
-import { MapTranslatorPage } from '../pages/MediaTools/MapTranslator';
+import { MapDetailPage } from '@/pages/MediaTools/MapDetailPage';
+import { MapTranslatorPage } from '@/pages/MediaTools/MapTranslator';
 
 export function MediaToolsRoutes() {
   return (

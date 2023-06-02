@@ -20,18 +20,23 @@ const linkGroups = [
         implemented: true,
       },
       {
-        to: '/translator-qa',
+        to: RouteConst.TRANSLATOR_QA,
         label: 'Question & Answer editor for translators',
         onlineOnly: true,
         implemented: true,
       },
       {
-        to: '/reader-qa',
+        to: RouteConst.READER_QA,
         label: 'Question & Answer editor for readers',
         onlineOnly: true,
         implemented: true,
       },
-      { to: '/feedback', label: 'Feedback', betaOnly: true, implemented: true },
+      {
+        to: RouteConst.FEEDBACK,
+        label: 'Feedback',
+        betaOnly: true,
+        implemented: true,
+      },
       {
         to: RouteConst.TRANSLATION_DOCUMENTS_LIST,
         label: 'Translation editor',
@@ -39,46 +44,56 @@ const linkGroups = [
         implemented: true,
       },
       {
-        to: '/commentary',
+        to: RouteConst.COMMENTARY,
         label: 'Commentary viewer',
         betaOnly: true,
         implemented: true,
       },
       {
-        to: '/versification',
+        to: RouteConst.VERSIFICATION,
         label: 'Versification editor',
         betaOnly: true,
         onlineOnly: true,
       },
-      { to: '/alignment', label: 'Alignment editor', betaOnly: true },
+      { to: RouteConst.ALIGNMENT, label: 'Alignment editor', betaOnly: true },
     ],
   },
   {
     group: 'Language Tools',
     linkItems: [
-      { to: '/dictionary', label: 'Dictionary editor' },
-      { to: '/bilingual-dictionary', label: 'Bilingual dictionary toer' },
-      { to: '/phrase-book', label: 'Phrase-book editor' },
-      { to: '/lexicon', label: 'Lexicon editor', betaOnly: true },
-      { to: '/grammar', label: 'Grammar editor', betaOnly: true },
+      { to: RouteConst.DICTIONARY, label: 'Dictionary editor' },
+      {
+        to: RouteConst.BILINGUAL_DICTIONARY,
+        label: 'Bilingual dictionary toer',
+      },
+      { to: RouteConst.PHRASE_BOOK, label: 'Phrase-book editor' },
+      { to: RouteConst.LEXICON, label: 'Lexicon editor', betaOnly: true },
+      { to: RouteConst.GRAMMAR, label: 'Grammar editor', betaOnly: true },
     ],
   },
   {
     group: 'Media Tools',
-    linkItems: [{ to: '/map-list', label: 'Map translation editor' }],
+    linkItems: [{ to: RouteConst.MAP_LIST, label: 'Map translation editor' }],
   },
   {
     group: 'Data Tools',
     linkItems: [
-      { to: '/graph-viewer', label: 'Data viewer' },
-      { to: '/sql-runner', label: 'SQL runner', adminOnly: true },
-      { to: '/file-import', label: 'File import tool', adminOnly: true },
+      { to: RouteConst.GRAPH_VIEWVER, label: 'Data viewer' },
+      { to: RouteConst.SQL_RUNNER, label: 'SQL runner', adminOnly: true },
+      {
+        to: RouteConst.FILE_IMPORT,
+        label: 'File import tool',
+        adminOnly: true,
+      },
     ],
   },
   {
     group: 'Application Development Tools',
     linkItems: [
-      { to: '/site-text-admin', label: 'Site text user interface editor' },
+      {
+        to: RouteConst.SITE_TEXT_ADMIN,
+        label: 'Site text user interface editor',
+      },
       {
         to: RouteConst.SITE_TEXT_TRANSLATION_APP_LIST,
         label: 'Site text translation editor',

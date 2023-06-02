@@ -5,9 +5,9 @@ import {
   Region,
   DESCRIPTIONS_JOINER,
 } from '@eten-lab/ui-kit';
-import { PropertyKeyConst } from '../constants/graph.constant';
+import { PropertyKeyConst } from '@/constants/graph.constant';
 import Tags from 'language-tags';
-import { WordDto } from '../dtos/word.dto';
+import { WordDto } from '@/src/dtos/word.dto';
 // export const DESCRIPTIONS_JOINER = '/';
 
 enum TagTypes {

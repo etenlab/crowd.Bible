@@ -7,9 +7,9 @@ import {
   IonMenuToggle,
 } from '@ionic/react';
 
-import { LinkGroup } from '../LinkGroup';
-import { AppHeader } from '../AppHeader';
-import { LogoutButton } from '../LogoutButton';
+import { LinkGroup } from '@/src/components/LinkGroup';
+import { AppHeader } from '@/src/components/AppHeader';
+import { LogoutButton } from '@/src/components/LogoutButton';
 
 import './PageLayout.css';
 

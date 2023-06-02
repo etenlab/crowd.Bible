@@ -6,6 +6,7 @@ import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 
 import { mockDocument } from './ReaderQAPage';
 import { FeedbackInput } from '@/components/FeedbackInput';
+import { RouteConst } from '@/constants/route.constant';
 
 const { LabelWithIcon, RangeSelectableTextArea } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -28,7 +29,7 @@ export function TextPartFeedbackPage() {
   };
 
   const handleClickCancel = () => {
-    history.push('/feedback');
+    history.push(RouteConst.FEEDBACK);
   };
 
   const feedbackInput =

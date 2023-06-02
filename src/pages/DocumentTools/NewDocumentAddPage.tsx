@@ -9,6 +9,7 @@ import { useWordSequence } from '@/hooks/useWordSequence';
 import { useAppContext } from '@/hooks/useAppContext';
 
 import { RouteConst } from '@/constants/route.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 const { Stack } = MuiMaterial;
 
@@ -30,7 +31,7 @@ export function NewDocumentAddPage() {
 
   useEffect(() => {
     if (!sourceLanguage) {
-      alertFeedback('warning', 'Please set source language!');
+      alertFeedback(FeedbackTypes.WARNING, 'Please set source language!');
       history.push(RouteConst.DOCUMENTS_LIST);
     }
   }, [sourceLanguage, alertFeedback, history]);
