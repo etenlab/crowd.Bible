@@ -219,13 +219,13 @@ export function useTranslation() {
         setLoadingState(false);
         return recommendedId;
       } catch (err) {
-        console.log(err);
+        logger.error(err);
         setLoadingState(false);
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, targetLanguage, setLoadingState],
+    [singletons, alertFeedback, targetLanguage, setLoadingState, logger],
   );
 
   const getRecommendedWordSequenceTranslation = useCallback(

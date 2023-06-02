@@ -25,6 +25,7 @@ export function FileImportPage() {
     states: {
       global: { singletons },
     },
+    logger,
   } = useAppContext();
   const downloadRef = useRef<HTMLAnchorElement>(null);
   const importRef = useRef<HTMLInputElement>(null);
@@ -94,7 +95,7 @@ export function FileImportPage() {
         setWordProgress('success');
       }
     } catch (err) {
-      console.log(err);
+      logger.error(err);
       setWordProgress('failed');
     }
   };
