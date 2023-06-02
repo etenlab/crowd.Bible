@@ -9,6 +9,7 @@ import { MapDto } from '@/src/dtos/map.dto';
 import { WordMapper } from '@/src/mappers/word.mapper';
 import { useMapTranslationTools } from '../../hooks/useMapTranslationTools';
 import axios from 'axios';
+import { RouteConst } from '../../constants/route.constant';
 const { TitleWithIcon } = CrowdBibleUI;
 
 const { Box } = MuiMaterial;
@@ -91,7 +92,7 @@ export const MapDetailPage = () => {
         <TitleWithIcon
           onClose={() => {}}
           onBack={() => {
-            router.push('/map-list');
+            router.push(RouteConst.MAP_LIST);
           }}
           withBackIcon={true}
           withCloseIcon={false}

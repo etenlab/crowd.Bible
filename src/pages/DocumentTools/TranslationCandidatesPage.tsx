@@ -2,6 +2,7 @@ import { useHistory } from 'react-router';
 import { IonContent } from '@ionic/react';
 
 import { Button, MuiMaterial, BiLeftArrowAlt } from '@eten-lab/ui-kit';
+import { RouteConst } from '../../constants/route.constant';
 
 // import { TranslationList } from '@/components/TranslationList';
 
@@ -44,7 +45,7 @@ export function TranslationCandidatesPage() {
   const history = useHistory();
 
   const GoToTranslationPage = () => {
-    history.push('/translation');
+    history.push(RouteConst.TRANSLATION);
   };
 
   return (

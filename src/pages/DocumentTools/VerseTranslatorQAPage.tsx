@@ -9,6 +9,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 
 import { mockVerses, ChapterList } from './VerseFeedbackPage';
 import { FeedbackTypes } from '../../constants/common.constant';
+import { RouteConst } from '../../constants/route.constant';
 
 const { TitleWithIcon, VerticalRadioList, QuestionCreatorBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -40,7 +41,7 @@ function VerseTranslatorQA({ onClickCancel, onClickBack }: VerseFeedbackProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSave = (question: Question) => {
     alertFeedback(FeedbackTypes.SUCCESS, 'Your question has been created!');
-    history.push('/translator-qa');
+    history.push(RouteConst.TRANSLATOR_QA);
   };
 
   const questionCreatorBox =
@@ -76,7 +77,7 @@ export function VerseTranslatorQAPage() {
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
 
   const handleClickCancel = () => {
-    history.push('/translator-qa');
+    history.push(RouteConst.TRANSLATOR_QA);
   };
 
   const handleClickBack = () => {

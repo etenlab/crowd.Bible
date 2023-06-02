@@ -25,7 +25,7 @@ export function useDocument() {
       setLoadingState(false);
       return result;
     } catch (err) {
-      logger.error(err);
+      logger.error((err as Error).toString());
       setLoadingState(false);
       alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       return [];

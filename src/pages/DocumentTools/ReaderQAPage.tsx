@@ -6,6 +6,7 @@ import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { FeedbackTypes } from '../../constants/common.constant';
+import { RouteConst } from '../../constants/route.constant';
 
 const { DotsText, LabelWithIcon, QuestionBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -126,7 +127,7 @@ export function ReaderQAPage() {
   };
 
   const handleGoToTranslationPage = () => {
-    history.push('/translation');
+    history.push(RouteConst.TRANSLATION);
   };
 
   const selectedQuestion =

@@ -11,6 +11,7 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { mockDocument } from './ReaderQAPage';
+import { RouteConst } from '../../constants/route.constant';
 
 const { LabelWithIcon, KindSelectionBox } = CrowdBibleUI;
 const { Stack, Backdrop } = MuiMaterial;
@@ -31,17 +32,17 @@ export function TranslatorQAPage() {
 
   const handleTextClick = () => {
     handleCancelKindSelectionBox();
-    history.push('/translator-qa/text-part');
+    history.push(RouteConst.TRANSLATOR_QA_TEXT_PART);
   };
 
   const handleChapterClick = () => {
     handleCancelKindSelectionBox();
-    history.push('/translator-qa/chapter');
+    history.push(RouteConst.TRANSLATOR_QA_CHAPTER);
   };
 
   const handleVerseClick = () => {
     handleCancelKindSelectionBox();
-    history.push('/translator-qa/verse');
+    history.push(RouteConst.TRANSLATOR_QA_VERSE);
   };
 
   return (

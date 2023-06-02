@@ -9,6 +9,7 @@ import { mockDocument } from './ReaderQAPage';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { FeedbackTypes } from '../../constants/common.constant';
+import { RouteConst } from '../../constants/route.constant';
 
 const { LabelWithIcon, RangeSelectableTextArea, QuestionCreatorBox } =
   CrowdBibleUI;
@@ -36,7 +37,7 @@ export function TextPartTranslatorQAPage() {
   };
 
   const handleClickCancel = () => {
-    history.push('/translator-qa');
+    history.push(RouteConst.TRANSLATOR_QA);
   };
 
   const handleCancel = () => {
@@ -46,7 +47,7 @@ export function TextPartTranslatorQAPage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSave = (question: Question) => {
     alertFeedback(FeedbackTypes.SUCCESS, 'Your question has been created!');
-    history.push('/translator-qa');
+    history.push(RouteConst.TRANSLATOR_QA);
   };
 
   const questionCreatorBox =
