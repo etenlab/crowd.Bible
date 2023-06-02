@@ -3,7 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 import { FileImportPage } from '@/pages/DataTools/FileImportPage';
 import { SearchNodePage } from '@/pages/DataTools/GraphViewer/SearchNodePage';
 import { NodeDetailsPage } from '@/pages/DataTools/GraphViewer/NodeDetailsPage';
-import { SqlRunner } from '../pages/DataTools/SqlRunner/SqlRunner';
+import { SqlRunner } from '@/pages/DataTools/SqlRunner/SqlRunner';
 
 export function DataToolsRoutes() {
   return (

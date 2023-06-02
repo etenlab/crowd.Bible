@@ -9,7 +9,7 @@ import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
-import { VotableItem } from '../../dtos/votable-item.dto';
+import { VotableItem } from '@/dtos/votable-item.dto';
 import { useAppContext } from '@/src/hooks/useAppContext';
 import { useDictionaryTools } from '@/src/hooks/useDictionaryTools';
 import { NodeTypeConst } from '@/constants/graph.constant';

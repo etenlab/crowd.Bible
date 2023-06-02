@@ -1,7 +1,7 @@
-import { getTestDataSource } from '../../data-source';
-import getSingletons from '../../singletons';
-import { BaseType, CRUDService } from '../crud-service';
-import { LexiconService } from '../lexicon.service';
+import { BaseType, CRUDService } from '@eten-lab/core';
+import { getTestDataSource } from '@/src/data-source';
+import getSingletons from '@/src/singletons';
+import { LexiconService } from '@/src/services/lexicon.service';
 
 describe('LexiconService', () => {
   const getService = () =>

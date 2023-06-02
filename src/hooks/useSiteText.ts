@@ -4,7 +4,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useVote } from '@/hooks/useVote';
 
 import { LanguageInfo } from '@eten-lab/ui-kit';
-import { VotableContent } from '../dtos/votable-item.dto';
+import { VotableContent } from '@/src/dtos/votable-item.dto';
 
 import { SiteTextDto, SiteTextTranslationDto } from '@/dtos/site-text.dto';
 

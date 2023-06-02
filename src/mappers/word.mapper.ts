@@ -1,5 +1,5 @@
-import { WordDto } from '../dtos/word.dto';
-import { Node } from '../models';
+import { WordDto } from '@/src/dtos/word.dto';
+import { Node } from '@/src/models';
 
 export class WordMapper {
   static entityToDto(node: Node) {
