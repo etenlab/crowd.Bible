@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { RouteConst } from '@/src/constants/route.constant';
 
 test('Launch the app', async ({ page }) => {
   //Navigate to the URL
