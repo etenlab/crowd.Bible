@@ -8,13 +8,14 @@ import { Button, Typography } from '@eten-lab/ui-kit';
 import 'swiper/swiper-bundle.css';
 import '../styles.css';
 import { useAppContext } from '../hooks/useAppContext';
+import { RouteConst } from '../constants/route.constant';
 
 export function WelcomePage() {
   const { logger } = useAppContext();
   const history = useHistory();
 
   const handleGoToLoginPage = () => {
-    history.push('/login');
+    history.push(RouteConst.LOGIN);
   };
 
   const startButton = (

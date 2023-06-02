@@ -14,6 +14,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { useAppContext } from '../hooks/useAppContext';
+import { USER_TOKEN_KEY } from '../constants/common.constant';
 
 const { Box } = MuiMaterial;
 
@@ -37,7 +38,7 @@ export function ProfilePage() {
   const [show, setShow] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const userToken = localStorage.getItem('userToken');
+  const userToken = localStorage.getItem(USER_TOKEN_KEY);
   const apolloClient = useApolloClient();
   const token: any = decodeToken(userToken!);
 

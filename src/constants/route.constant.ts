@@ -33,4 +33,5 @@ export enum RouteConst {
 
   NOTIFICATIONS = '/notifications',
   DISCUSSIONS = '/discussions',
+  DISCUSSIONS_LIST = '/discussions-list',
 }

@@ -8,6 +8,7 @@ import { Button, MuiMaterial, Typography, Input } from '@eten-lab/ui-kit';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { gql, useApolloClient } from '@apollo/client';
+import { RouteConst } from '../constants/route.constant';
 
 const { Box } = MuiMaterial;
 
@@ -69,7 +70,7 @@ export function ForgotPasswordPage() {
   });
 
   const handleGoRegister = () => {
-    history.push('/register');
+    history.push(RouteConst.REGISTER);
   };
 
   const handleLogin = () => {

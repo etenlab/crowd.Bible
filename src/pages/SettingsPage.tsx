@@ -11,6 +11,7 @@ import {
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { IMode } from '@/reducers/global.reducer';
+import { RouteConst } from '../constants/route.constant';
 
 const { VerticalRadioList } = CrowdBibleUI;
 const { Divider, FormControlLabel, FormGroup, FormLabel, Stack, Switch } =
@@ -64,7 +65,7 @@ export function SettingsPage() {
 
   const handleClickSave = () => {
     setMode(selectedMode);
-    history.push('/home');
+    history.push(RouteConst.HOME);
   };
 
   return (

@@ -1,5 +1,7 @@
 export const SQLRUNNER_LOCAL_FORAGE_KEY = 'sqlRunner';
 
+export const USER_TOKEN_KEY = 'userToken';
+
 export enum ColorThemes {
   LIGHT = 'light',
   DARK = 'dark',
@@ -16,4 +18,9 @@ export enum LoadingStatuses {
   INITIAL = 'initial',
   LOADING = 'loading',
   FINISHED = 'finished',
+}
+
+export enum UserRoles {
+  TRANSLATOR = 'translator',
+  READER = 'reader',
 }

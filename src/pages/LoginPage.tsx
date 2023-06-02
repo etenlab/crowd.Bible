@@ -18,6 +18,8 @@ import { useAppContext } from '@/hooks/useAppContext';
 import * as Yup from 'yup';
 
 import { decodeToken } from '@/utils/AuthUtils';
+import { RouteConst } from '../constants/route.constant';
+import { USER_TOKEN_KEY } from '../constants/common.constant';
 
 const { Box } = MuiMaterial;
 
@@ -62,15 +64,15 @@ export function LoginPage() {
         .then((res) => {
           if (res.name !== 'AxiosError') {
             setUserToken(res.access_token);
-            localStorage.setItem('userToken', res.access_token);
+            localStorage.setItem(USER_TOKEN_KEY, res.access_token);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const token: any = decodeToken(res.access_token);
             setUser({
               userId: token.sub,
               userEmail: token.email,
-              roles: [''],
+              roles: [],
             });
-            history.push('/home');
+            history.push(RouteConst.HOME);
           } else {
             setErrorMessage(res.response.data.error_description);
           }
@@ -87,7 +89,7 @@ export function LoginPage() {
   };
 
   const handleGoRegister = () => {
-    history.push('/register');
+    history.push(RouteConst.REGISTER);
   };
 
   const handleLogin = () => {
@@ -98,11 +100,11 @@ export function LoginPage() {
   };
 
   const handleForgotPassword = () => {
-    history.push('/forgot-password');
+    history.push(RouteConst.FORGET_PASSWORD);
   };
 
   useEffect(() => {
-    localStorage.setItem('userToken', userToken);
+    localStorage.setItem(USER_TOKEN_KEY, userToken);
   }, [userToken]);
 
   return (

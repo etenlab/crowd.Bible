@@ -17,6 +17,7 @@ import { Link } from '@/components/Link';
 import { useFormik } from 'formik';
 import { decodeToken } from '@/utils/AuthUtils';
 import * as Yup from 'yup';
+import { RouteConst } from '../constants/route.constant';
 const { Box, Alert } = MuiMaterial;
 
 const validationSchema = Yup.object().shape({
@@ -84,9 +85,9 @@ export function RegisterPage() {
                 setUser({
                   userId: token.sub,
                   userEmail: token.email,
-                  roles: [''],
+                  roles: [],
                 });
-                history.push('/home');
+                history.push(RouteConst.HOME);
               })
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               .catch((err: any) => {
@@ -108,7 +109,7 @@ export function RegisterPage() {
   };
 
   const handleGoLoginPage = () => {
-    history.push('/login');
+    history.push(RouteConst.HOME);
   };
 
   const handleRegister = () => {

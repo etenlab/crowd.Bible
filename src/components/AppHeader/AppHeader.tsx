@@ -111,10 +111,10 @@ export function AppHeader({
           themeMode={themeMode}
           onClickThemeModeBtn={handleToogleTheme}
           onClickDiscussionBtn={() => {
-            history.push('/discussions-list');
+            history.push(RouteConst.DISCUSSIONS_LIST);
           }}
           onClickNotificationBtn={() => {
-            history.push('/notifications');
+            history.push(RouteConst.NOTIFICATIONS);
           }}
           onClickMenuBtn={onToggle}
         />
@@ -131,10 +131,10 @@ export function AppHeader({
           isNewDiscussion={isNewDiscussion}
           isNewNotification={isNewNotification}
           onClickDiscussionBtn={() => {
-            history.push('/discussions-list');
+            history.push(RouteConst.DISCUSSIONS_LIST);
           }}
           onClickNotificationBtn={() => {
-            history.push('/notifications');
+            history.push(RouteConst.NOTIFICATIONS);
           }}
           onClickMenuBtn={onToggle}
         />

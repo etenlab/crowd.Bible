@@ -24,7 +24,7 @@ export function RoutesGuardian({ children }: GuardRoutesType) {
   // };
 
   // if (!isAutherized(user)) {
-  //   history.push('/login');
+  //   history.push(RouteConst.LOGIN);
   // }
 
   return <>{children}</>;
