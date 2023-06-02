@@ -30,9 +30,20 @@ const menuLinks = {
       to: RouteConst.ADMIN,
       label: 'Admin',
       onlineOnly: true,
+      adminOnly: true,
     },
-    { to: RouteConst.LOGIN, label: 'Login', implemented: true },
-    { to: RouteConst.REGISTER, label: 'Register', implemented: true },
+    {
+      to: RouteConst.LOGIN,
+      label: 'Login',
+      implemented: true,
+      noAuthOnly: true,
+    },
+    {
+      to: RouteConst.REGISTER,
+      label: 'Register',
+      implemented: true,
+      noAuthOnly: true,
+    },
   ],
 };
 
