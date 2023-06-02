@@ -28,6 +28,13 @@ import { RouteConst } from '@/constants/route.constant';
 
 const { Stack, Divider, IconButton } = MuiMaterial;
 
+enum TabStates {
+  ALL = 'all',
+  MINE = 'mine',
+}
+
+type TabState = TabStates.ALL | TabStates.MINE;
+
 function Voting({
   vote,
   onChangeVote,
@@ -167,7 +174,7 @@ export function TranslationList({
       global: { singletons },
     },
   } = useAppContext();
-  const [currentTab, setCurrentTab] = useState<'all' | 'mine'>('all');
+  const [currentTab, setCurrentTab] = useState<TabState>(TabStates.ALL);
   const [translations, setTranslations] = useState<
     WordSequenceTranslationDto[]
   >([]);
@@ -184,9 +191,9 @@ export function TranslationList({
       //   listMyTranslationsByDocumentId(documentId).then(setTranslations);
       // }
     } else {
-      if (currentTab === 'all') {
+      if (currentTab === TabStates.ALL) {
         listTranslationsByWordSequenceId(wordSequenceId).then(setTranslations);
-      } else if (currentTab === 'mine') {
+      } else if (currentTab === TabStates.MINE) {
         listTranslationsByWordSequenceId(wordSequenceId, true).then(
           setTranslations,
         );
@@ -202,7 +209,7 @@ export function TranslationList({
 
   const handleTabChange = (
     _event: React.SyntheticEvent,
-    newValue: 'all' | 'mine',
+    newValue: TabState,
   ) => {
     setCurrentTab(newValue);
   };
@@ -227,8 +234,8 @@ export function TranslationList({
     <>
       <Tabs
         tabs={[
-          { value: 'all', label: 'All Translations' },
-          { value: 'mine', label: 'My Translations' },
+          { value: TabStates.ALL, label: 'All Translations' },
+          { value: TabStates.MINE, label: 'My Translations' },
         ]}
         value={currentTab}
         onChange={handleTabChange}

@@ -14,7 +14,11 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { VotableItem } from '@/dtos/votable-item.dto';
 import { useDictionaryTools } from '@/hooks/useDictionaryTools';
 import { NodeTypeConst } from '@eten-lab/core';
-import { FeedbackTypes } from '../../constants/common.constant';
+import {
+  FeedbackTypes,
+  UpOrDownVote,
+  VoteTypes,
+} from '../../constants/common.constant';
 
 const { Box, Divider } = MuiMaterial;
 
@@ -185,9 +189,10 @@ export function DictionaryPage() {
     [changeDefinitionValue, selectedWord, words],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changeWordDefinitionVotes = useCallback(
-    (candidateId: Nanoid | null, upOrDown: TUpOrDownVote) => {
+    (candidateId: Nanoid | null, vote: 'upVote' | 'downVote') => {
+      const upOrDown: UpOrDownVote =
+        vote === 'upVote' ? VoteTypes.UP : VoteTypes.DOWN;
       changeDefinitionVotes(words, selectedWord, candidateId, upOrDown);
     },
     [changeDefinitionVotes, selectedWord, words],
@@ -265,9 +270,11 @@ export function DictionaryPage() {
             <ItemsClickableList
               items={words}
               setSelectedItem={setSelectedWord}
-              setLikeItem={(wordId) => changeItemVotes(wordId, 'upVote', words)}
+              setLikeItem={(wordId) =>
+                changeItemVotes(wordId, VoteTypes.UP, words)
+              }
               setDislikeItem={(wordId) =>
-                changeItemVotes(wordId, 'downVote', words)
+                changeItemVotes(wordId, VoteTypes.DOWN, words)
               }
             ></ItemsClickableList>
           </Box>

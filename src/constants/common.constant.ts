@@ -7,6 +7,12 @@ export enum ColorThemes {
   DARK = 'dark',
 }
 
+export enum VoteTypes {
+  UP = 'up',
+  DOWN = 'down',
+}
+export type UpOrDownVote = VoteTypes.UP | VoteTypes.DOWN;
+
 export enum FeedbackTypes {
   SUCCESS = 'success',
   ERROR = 'error',

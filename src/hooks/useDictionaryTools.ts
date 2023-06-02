@@ -4,7 +4,11 @@ import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
 import { useVote } from './useVote';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { NodeTypeConst } from '../constants/graph.constant';
-import { FeedbackTypes } from '../constants/common.constant';
+import {
+  FeedbackTypes,
+  UpOrDownVote,
+  VoteTypes,
+} from '../constants/common.constant';
 
 export function useDictionaryTools(
   itemsType: typeof NodeTypeConst.WORD | typeof NodeTypeConst.PHRASE,
@@ -109,7 +113,7 @@ export function useDictionaryTools(
   const changeItemVotes = useCallback(
     async (
       candidateId: Nanoid | null,
-      upOrDown: TUpOrDownVote,
+      upOrDown: UpOrDownVote,
       items: VotableItem[],
     ) => {
       try {
@@ -119,7 +123,7 @@ export function useDictionaryTools(
           );
         }
         setLoadingState(true);
-        await toggleVote(candidateId, upOrDown === 'upVote'); // if not upVote, it calculated as false and toggleVote treats false as downVote
+        await toggleVote(candidateId, upOrDown === VoteTypes.UP); // if not upVote, it calculated as false and toggleVote treats false as downVote
         const votes = await getVotesStats(candidateId);
         const wordIdx = items.findIndex(
           (w) => w.title.candidateId === candidateId,
@@ -261,7 +265,7 @@ export function useDictionaryTools(
       items: VotableItem[],
       selectedItem: VotableItem | null,
       candidateId: Nanoid | null,
-      upOrDown: TUpOrDownVote,
+      upOrDown: UpOrDownVote,
     ) => {
       try {
         if (!selectedItem?.title?.id) {
@@ -277,7 +281,7 @@ export function useDictionaryTools(
         const wordIdx = items.findIndex(
           (w) => w.title.id === selectedItem?.title.id,
         );
-        await toggleVote(candidateId, upOrDown === 'upVote'); // if not upVote, it calculated as false and toggleVote treats false as downVote
+        await toggleVote(candidateId, upOrDown === VoteTypes.UP); // if not upVote, it calculated as false and toggleVote treats false as downVote
         const votes = await getVotesStats(candidateId);
         const definitionIndex = items[wordIdx].contents.findIndex(
           (d) => d.candidateId === candidateId,
