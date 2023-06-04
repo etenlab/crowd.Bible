@@ -14,6 +14,11 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { VotableItem } from '@/dtos/votable-item.dto';
 import { useDictionaryTools } from '@/hooks/useDictionaryTools';
 import { NodeTypeConst } from '@eten-lab/core';
+import {
+  FeedbackTypes,
+  UpOrDownVote,
+  VoteTypes,
+} from '@/constants/common.constant';
 
 const { Box, Divider } = MuiMaterial;
 
@@ -140,7 +145,7 @@ export function DictionaryPage() {
     if (!selectedLanguageInfo) return;
     try {
       setLoadingState(true);
-      logger.info({ context: { custom: 'context' } }, 'load words');
+      logger.info({ at: 'DictionaryPage' }, 'load words');
       const loadWords = async () => {
         const words: VotableItem[] = await definitionService.getVotableItems(
           selectedLanguageInfo,
@@ -151,7 +156,7 @@ export function DictionaryPage() {
       loadWords();
     } catch (error) {
       logger.error(error);
-      alertFeedback('error', 'Internal Error!');
+      alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
     } finally {
       setLoadingState(false);
     }
@@ -184,9 +189,10 @@ export function DictionaryPage() {
     [changeDefinitionValue, selectedWord, words],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changeWordDefinitionVotes = useCallback(
-    (candidateId: Nanoid | null, upOrDown: TUpOrDownVote) => {
+    (candidateId: Nanoid | null, vote: 'upVote' | 'downVote') => {
+      const upOrDown: UpOrDownVote =
+        vote === 'upVote' ? VoteTypes.UP : VoteTypes.DOWN;
       changeDefinitionVotes(words, selectedWord, candidateId, upOrDown);
     },
     [changeDefinitionVotes, selectedWord, words],
@@ -194,7 +200,10 @@ export function DictionaryPage() {
 
   const handleAddWordButtonClick = useCallback(() => {
     if (!selectedLanguageInfo) {
-      alertFeedback('error', 'Please select a language before adding a word');
+      alertFeedback(
+        FeedbackTypes.ERROR,
+        'Please select a language before adding a word',
+      );
       return;
     }
     setIsDialogOpened(true);
@@ -261,9 +270,11 @@ export function DictionaryPage() {
             <ItemsClickableList
               items={words}
               setSelectedItem={setSelectedWord}
-              setLikeItem={(wordId) => changeItemVotes(wordId, 'upVote', words)}
+              setLikeItem={(wordId) =>
+                changeItemVotes(wordId, VoteTypes.UP, words)
+              }
               setDislikeItem={(wordId) =>
-                changeItemVotes(wordId, 'downVote', words)
+                changeItemVotes(wordId, VoteTypes.DOWN, words)
               }
             ></ItemsClickableList>
           </Box>

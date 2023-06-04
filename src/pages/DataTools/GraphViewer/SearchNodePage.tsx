@@ -5,7 +5,7 @@ import { Like } from 'typeorm';
 import { useGlobal } from '@/src/hooks/useGlobal';
 import { initialState, reducer } from '@/src/reducers';
 import { useHistory } from 'react-router';
-import { useAppContext } from '../../../hooks/useAppContext';
+import { useAppContext } from '@/src/hooks/useAppContext';
 
 const { SearchNode, TitleWithIcon } = CrowdBibleUI;
 const { Stack } = MuiMaterial;

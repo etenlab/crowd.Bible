@@ -11,6 +11,7 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { mockDocument } from './ReaderQAPage';
+import { RouteConst } from '@/constants/route.constant';
 
 const { LabelWithIcon, KindSelectionBox } = CrowdBibleUI;
 const { Stack, Backdrop } = MuiMaterial;
@@ -31,17 +32,17 @@ export function FeedbackPage() {
 
   const handleTextClick = () => {
     handleCancelKindSelectionBox();
-    history.push('/feedback/text-part');
+    history.push(RouteConst.FEEDBACK_TEXT_PART);
   };
 
   const handleChapterClick = () => {
     handleCancelKindSelectionBox();
-    history.push('/feedback/chapter');
+    history.push(RouteConst.FEEDBACK_CHAPTER);
   };
 
   const handleVerseClick = () => {
     handleCancelKindSelectionBox();
-    history.push('/feedback/verse');
+    history.push(RouteConst.FEEDBACK_VERSE);
   };
 
   return (

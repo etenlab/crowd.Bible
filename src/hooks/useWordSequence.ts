@@ -6,6 +6,7 @@ import { WordSequenceDto } from '@/dtos/word-sequence.dto';
 import { UserDto } from '@/dtos/user.dto';
 
 import { LanguageInfo } from '@eten-lab/ui-kit';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 export function useWordSequence() {
   const {
@@ -29,17 +30,20 @@ export function useWordSequence() {
       importUid?: Nanoid;
     }) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createWordSequence');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at createWordSequence',
+        );
         return null;
       }
 
       if (!user) {
-        alertFeedback('error', 'Not exists log in user!');
+        alertFeedback(FeedbackTypes.ERROR, 'Not exists log in user!');
         return null;
       }
 
       if (text.trim() === '') {
-        alertFeedback('error', 'Text name cannot be empty string!');
+        alertFeedback(FeedbackTypes.ERROR, 'Text name cannot be empty string!');
         return null;
       }
 
@@ -68,7 +72,7 @@ export function useWordSequence() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -81,12 +85,15 @@ export function useWordSequence() {
       range: { start: number; end: number },
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createSubWordSequence');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at createSubWordSequence',
+        );
         return null;
       }
 
       if (!user) {
-        alertFeedback('error', 'Not exists log in user!');
+        alertFeedback(FeedbackTypes.ERROR, 'Not exists log in user!');
         return null;
       }
 
@@ -113,7 +120,7 @@ export function useWordSequence() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -123,7 +130,7 @@ export function useWordSequence() {
   const getTextFromWordSequenceId = useCallback(
     async (wordSequenceId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getText');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at getText');
         return [];
       }
 
@@ -135,7 +142,7 @@ export function useWordSequence() {
         if (!wordSequenceNode) {
           setLoadingState(false);
           alertFeedback(
-            'error',
+            FeedbackTypes.ERROR,
             'Not exists a word-sequence with given word-sequence id!',
           );
           return null;
@@ -151,7 +158,7 @@ export function useWordSequence() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
@@ -161,7 +168,10 @@ export function useWordSequence() {
   const getWordSequenceById = useCallback(
     async (wordSequenceId: Nanoid): Promise<WordSequenceDto | null> => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getWordSequenceById');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at getWordSequenceById',
+        );
         return null;
       }
 
@@ -175,7 +185,7 @@ export function useWordSequence() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -185,7 +195,10 @@ export function useWordSequence() {
   const appendWordSequence = useCallback(
     async (fromId: Nanoid, toId: Nanoid): Promise<Nanoid | null> => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at appendWordSequence');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at appendWordSequence',
+        );
         return null;
       }
 
@@ -200,7 +213,7 @@ export function useWordSequence() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -210,7 +223,10 @@ export function useWordSequence() {
   const getWordSequenceFromText = useCallback(
     async (text: string): Promise<Nanoid[]> => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getWordSequenceFromText');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at getWordSequenceFromText',
+        );
         return [];
       }
 
@@ -223,7 +239,7 @@ export function useWordSequence() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
@@ -233,7 +249,10 @@ export function useWordSequence() {
   const getWordSequenceByDocumentId = useCallback(
     async (documentId: Nanoid): Promise<WordSequenceDto | null> => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at getWordSequenceFromText');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at getWordSequenceFromText',
+        );
         return null;
       }
 
@@ -248,7 +267,7 @@ export function useWordSequence() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -259,14 +278,14 @@ export function useWordSequence() {
     async (wordSequenceId: Nanoid, isUserId = false) => {
       if (!singletons) {
         alertFeedback(
-          'error',
+          FeedbackTypes.ERROR,
           'Internal Error! at listTranslationsByDocumentId',
         );
         return [];
       }
 
       if (!user && isUserId) {
-        alertFeedback('error', 'Not exists log in user!');
+        alertFeedback(FeedbackTypes.ERROR, 'Not exists log in user!');
         return [];
       }
 
@@ -296,7 +315,7 @@ export function useWordSequence() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },

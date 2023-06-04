@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 
 import { LanguageInfo } from '@eten-lab/ui-kit';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 export function useDefinition() {
   const {
@@ -15,7 +16,7 @@ export function useDefinition() {
   const getDefinitionsAsVotableContentByWord = useCallback(
     async (word: string, languageInfo: LanguageInfo) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at listDocument');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at listDocument');
         return [];
       }
 
@@ -35,7 +36,7 @@ export function useDefinition() {
       } catch (err) {
         logger.info(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },

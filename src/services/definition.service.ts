@@ -3,7 +3,7 @@ import {
   NodeTypeConst,
   PropertyKeyConst,
   RelationshipTypeConst,
-} from '../constants/graph.constant';
+} from '@/constants/graph.constant';
 import { ElectionTypeConst } from '@eten-lab/core';
 import { TableNameConst } from '@/constants/table-name.constant';
 
@@ -16,8 +16,8 @@ import {
 } from '@eten-lab/core';
 import { WordService } from './word.service';
 
-import { VotableContent, VotableItem } from '../dtos/votable-item.dto';
-import { makeFindPropsByLang } from '../utils/langUtils';
+import { VotableContent, VotableItem } from '@/src/dtos/votable-item.dto';
+import { makeFindPropsByLang } from '@/utils/langUtils';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { LanguageMapper } from '@/mappers/language.mapper';
 

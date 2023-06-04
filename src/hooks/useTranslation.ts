@@ -5,6 +5,7 @@ import { LanguageInfo } from '@eten-lab/ui-kit';
 import { UserDto } from '@/dtos/user.dto';
 
 import { compareLangInfo } from '@/utils/langUtils';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 export function useTranslation() {
   const {
@@ -26,22 +27,28 @@ export function useTranslation() {
       },
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createTranslation');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at createTranslation',
+        );
         return null;
       }
 
       if (!user) {
-        alertFeedback('error', 'Not exists log in user!');
+        alertFeedback(FeedbackTypes.ERROR, 'Not exists log in user!');
         return null;
       }
 
       if (!targetLanguage && !translation.languageInfo) {
-        alertFeedback('error', 'Not exists target language!');
+        alertFeedback(FeedbackTypes.ERROR, 'Not exists target language!');
         return null;
       }
 
       if (translation.text.trim() === '') {
-        alertFeedback('error', 'Translation cannot be empty string!');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Translation cannot be empty string!',
+        );
       }
 
       try {
@@ -75,7 +82,7 @@ export function useTranslation() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -85,7 +92,10 @@ export function useTranslation() {
   const createOrFindDefinitionTranslation = useCallback(
     async (originalDefinitionId: Nanoid, translatedDefinitionId: Nanoid) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createTranslation');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at createTranslation',
+        );
         return null;
       }
 
@@ -108,7 +118,7 @@ export function useTranslation() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -124,17 +134,23 @@ export function useTranslation() {
       },
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createTranslation');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at createTranslation',
+        );
         return null;
       }
 
       if (!targetLanguage && !translation.languageInfo) {
-        alertFeedback('error', 'Not exists target language!');
+        alertFeedback(FeedbackTypes.ERROR, 'Not exists target language!');
         return null;
       }
 
       if (translation.word.trim() === '') {
-        alertFeedback('error', 'Translation cannot be empty string!');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Translation cannot be empty string!',
+        );
       }
 
       try {
@@ -159,7 +175,7 @@ export function useTranslation() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -173,12 +189,15 @@ export function useTranslation() {
       languageInfo?: LanguageInfo,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createTranslation');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at createTranslation',
+        );
         return null;
       }
 
       if (!targetLanguage && !languageInfo) {
-        alertFeedback('error', 'Not exists target language!');
+        alertFeedback(FeedbackTypes.ERROR, 'Not exists target language!');
         return null;
       }
 
@@ -202,7 +221,7 @@ export function useTranslation() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -216,12 +235,15 @@ export function useTranslation() {
       languageInfo?: LanguageInfo,
     ) => {
       if (!singletons) {
-        alertFeedback('error', 'Internal Error! at createTranslation');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at createTranslation',
+        );
         return null;
       }
 
       if (!targetLanguage && !languageInfo) {
-        alertFeedback('error', 'Not exists target language!');
+        alertFeedback(FeedbackTypes.ERROR, 'Not exists target language!');
         return null;
       }
 
@@ -244,7 +266,7 @@ export function useTranslation() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
@@ -255,19 +277,19 @@ export function useTranslation() {
     async (wordSequenceId: Nanoid, isUserId = false) => {
       if (!singletons) {
         alertFeedback(
-          'error',
+          FeedbackTypes.ERROR,
           'Internal Error! at listTranslationsByDocumentId',
         );
         return [];
       }
 
       if (!targetLanguage) {
-        alertFeedback('error', 'Not exists target language!');
+        alertFeedback(FeedbackTypes.ERROR, 'Not exists target language!');
         return [];
       }
 
       if (!user && isUserId) {
-        alertFeedback('error', 'Not exists log in user!');
+        alertFeedback(FeedbackTypes.ERROR, 'Not exists log in user!');
         return [];
       }
 
@@ -298,7 +320,7 @@ export function useTranslation() {
       } catch (err) {
         logger.error(err);
         setLoadingState(false);
-        alertFeedback('error', 'Internal Error!');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },

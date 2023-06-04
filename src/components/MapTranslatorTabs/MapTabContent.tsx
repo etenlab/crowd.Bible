@@ -12,9 +12,10 @@ import {
   StyledFilterButton,
   StyledSectionTypography,
 } from './StyledComponents';
-import { useAppContext } from '../../hooks/useAppContext';
-import { useMapTranslationTools } from '../../hooks/useMapTranslationTools';
-import { langInfo2String } from '../../utils/langUtils';
+import { useAppContext } from '@/src/hooks/useAppContext';
+import { useMapTranslationTools } from '@/src/hooks/useMapTranslationTools';
+import { langInfo2String } from '@/utils/langUtils';
+import { FeedbackTypes } from '@/constants/common.constant';
 const { Box, styled, CircularProgress } = MuiMaterial;
 
 const PADDING = 20;
@@ -157,7 +158,7 @@ export const MapTabContent = () => {
       setMapList((prevList) => {
         const existingIdx = prevList.findIndex((map) => map.name === fileName);
         if (existingIdx >= 0) {
-          alertFeedback('error', 'File already exists');
+          alertFeedback(FeedbackTypes.ERROR, 'File already exists');
           alreadyExists = true;
           return [...prevList];
         }

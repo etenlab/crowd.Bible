@@ -23,7 +23,7 @@ import {
 } from '@/models/index';
 import initSqlJs, { SqlJsStatic } from 'sql.js';
 import localforage from 'localforage';
-import { SyncSession } from './models/Sync';
+import { SyncSession } from '@eten-lab/models';
 
 declare global {
   interface Window {

@@ -1,4 +1,4 @@
-import { PropertyKeyConst } from '../constants/graph.constant';
+import { PropertyKeyConst } from '@/constants/graph.constant';
 
 export interface WordDto {
   id: string;

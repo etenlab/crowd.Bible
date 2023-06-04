@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getAppDataSource } from '../data-source';
-import getSingletons, { ISingletons } from '../singletons';
+import { getAppDataSource } from '@/src/data-source';
+import getSingletons, { ISingletons } from '@/src/singletons';
 
 /**
  * This hook will be depreciated in the future
