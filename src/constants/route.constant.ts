@@ -33,4 +33,24 @@ export enum RouteConst {
 
   NOTIFICATIONS = '/notifications',
   DISCUSSIONS = '/discussions',
+
+  QA_MENU_PAGE = '/qa-menu-page',
+  TRANSLATOR_QA = '/translator-qa',
+  READER_QA = '/reader-qa',
+  FEEDBACK = '/feedback',
+
+  COMMENTARY = '/commentary',
+  VERSIFICATION = '/versification',
+  ALIGNMENT = '/alignment',
+  DICTIONARY = '/dictionary',
+  PHRASE_BOOK = '/phrase-book',
+  BILINGUAL_DICTIONARY = '/bilingual-dictionary',
+  LEXICON = '/lexicon',
+  GRAMMAR = '/grammar',
+  MAP_LIST = '/map-list',
+  GRAPH_VIEWER = '/graph-viewer',
+  SQL_RUNNER = '/sql-runner',
+  FILE_IMPORT = '/file-import',
+  SITE_TEXT_ADMIN = '/site-text-admin',
+  SITE_TEXT_MENU_PAGE = '/site-text-menu-page',
 }
