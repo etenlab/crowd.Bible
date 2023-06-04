@@ -7,7 +7,7 @@ export enum RouteConst {
   REGISTER = '/register',
   FORGET_PASSWORD = '/forgot-password',
 
-  GRAPH_VIEWVER = '/graph-viewer',
+  GRAPH_VIEWER = '/graph-viewer',
   SQL_RUNNER = '/sql-runner',
   FILE_IMPORT = '/file-import',
   COMMENTARY = '/commentary',
@@ -18,7 +18,7 @@ export enum RouteConst {
   PHRASE_BOOK = '/phrase-book',
   LEXICON = '/lexicon',
   GRAMMAR = '/grammar',
-  READER_QA = '/reader-qa',
+
   LANGUAGE_PROFICIENCY = '/language-proficiency',
   NOTIFICATIONS = '/notifications',
 
@@ -34,6 +34,7 @@ export enum RouteConst {
   TRANSLATION_EDIT = '/translation-edit',
   TRANSLATION_CANDIDATES = '/translation-candidates',
 
+  SITE_TEXT_MENU_PAGE = '/site-text-menu-page',
   SITE_TEXT_LIST = '/site-text-list',
   ADD_NEW_SITE_TEXT = '/add-new-site-text',
   SITE_TEXT_DETAIL = '/site-text-detail',
@@ -50,12 +51,12 @@ export enum RouteConst {
   FEEDBACK_VERSE = '/feedback/verse',
 
   DISCUSSIONS = '/discussions',
-  DISCUSSIONS_LIST = '/discussions-list',
 
+  QA_MENU_PAGE = '/qa-menu-page',
   TRANSLATOR_QA = '/translator-qa',
-  TRANSLATOR_QA_TEXT_PART = '/translator-qa/text-part',
-  TRANSLATOR_QA_CHAPTER = '/translator-qa/chapter',
-  TRANSLATOR_QA_VERSE = '/translator-qa/verse',
+  READER_QA = '/reader-qa',
+
+  DISCUSSIONS_LIST = '/discussions-list',
 
   MAP_LIST = '/map-list',
 }

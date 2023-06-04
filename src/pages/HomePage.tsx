@@ -1,88 +1,169 @@
 import { IonContent } from '@ionic/react';
 
-import { MuiMaterial } from '@eten-lab/ui-kit';
-
-import { LinkGroup } from '@/components/LinkGroup';
+import {
+  MuiMaterial,
+  DiFileText,
+  DiAskQuestion,
+  DiTranslate,
+  DiCross,
+  DiHome,
+  DiRead,
+  DiPhrase,
+  DiMap,
+  DiDataViewer,
+  DiDatabase,
+  DiImport,
+  DiSite,
+  DiText,
+  DiList,
+} from '@eten-lab/ui-kit';
 
 import { RouteConst } from '@/constants/route.constant';
 
-const { Typography } = MuiMaterial;
+import { CardGroup, CardItemProps } from '@/components/CardGroup';
 
-const linkGroups = [
+const { Typography, Stack } = MuiMaterial;
+
+const cardGroups = [
   {
     group: 'Document Tools',
     linkItems: [
       {
         to: RouteConst.DOCUMENTS_LIST,
-        label: 'Documents viewer',
+        title: 'Documents',
+        description: 'Upload a document to use in other crowd sourcing tools',
+        startIcon: <DiFileText color="blue" />,
         onlineOnly: true,
         betaOnly: true,
         implemented: true,
       },
       {
-        to: RouteConst.TRANSLATOR_QA,
-        label: 'Question & Answer editor for translators',
+        to: RouteConst.QA_MENU_PAGE,
+        title: 'Question & Answer',
+        description:
+          'Annotate a text with questions so other users can provide answers',
+        startIcon: <DiAskQuestion color="blue" />,
         onlineOnly: true,
         implemented: true,
       },
-      {
-        to: RouteConst.READER_QA,
-        label: 'Question & Answer editor for readers',
-        onlineOnly: true,
-        implemented: true,
-      },
-      {
-        to: RouteConst.FEEDBACK,
-        label: 'Feedback',
-        betaOnly: true,
-        implemented: true,
-      },
+      // { to: '/feedback', label: 'Feedback', betaOnly: true, implemented: true },
       {
         to: RouteConst.TRANSLATION_DOCUMENTS_LIST,
-        label: 'Translation editor',
+        title: 'Translation',
+        description:
+          'Translate a document by submitting and voting on translations',
+        startIcon: <DiTranslate color="blue" />,
+        label: '',
         betaOnly: true,
         implemented: true,
       },
       {
         to: RouteConst.COMMENTARY,
-        label: 'Commentary viewer',
+        title: 'Commentary',
+        description: 'Annotate a document and vote on what you support',
+        startIcon: <DiCross color="red" />,
         betaOnly: true,
         implemented: true,
       },
       {
         to: RouteConst.VERSIFICATION,
-        label: 'Versification editor',
+        title: 'Versification',
+        description: 'Chapter and verse annotations for a Biblical text',
+        startIcon: <DiHome color="blue" />,
         betaOnly: true,
         onlineOnly: true,
       },
-      { to: RouteConst.ALIGNMENT, label: 'Alignment editor', betaOnly: true },
+      {
+        to: RouteConst.ALIGNMENT,
+        title: 'Alignment',
+        description: 'Create or vote on hyperlinks between documents',
+        startIcon: <DiCross color="red" />,
+        betaOnly: true,
+      },
     ],
   },
   {
     group: 'Language Tools',
     linkItems: [
-      { to: RouteConst.DICTIONARY, label: 'Dictionary editor' },
+      {
+        to: RouteConst.DICTIONARY,
+        title: 'Dictionary',
+        description: 'Create and vote on words and their definitions',
+        startIcon: <DiRead color="blue" />,
+      },
+      {
+        to: RouteConst.PHRASE_BOOK,
+        title: 'Phrase-book',
+        description:
+          'Lorem ipsum is placeholder commonly used in the graphic, print',
+        startIcon: (
+          <Stack>
+            <DiRead color="blue" />
+            <DiPhrase color="blue" />
+          </Stack>
+        ),
+      },
       {
         to: RouteConst.BILINGUAL_DICTIONARY,
-        label: 'Bilingual dictionary toer',
+        title: 'Bilingual Dictionary',
+        description:
+          'Lorem ipsum is placeholder commonly used in the graphic, print',
+        startIcon: (
+          <Stack>
+            <DiRead color="blue" />
+            <DiTranslate color="blue" />
+          </Stack>
+        ),
       },
-      { to: RouteConst.PHRASE_BOOK, label: 'Phrase-book editor' },
-      { to: RouteConst.LEXICON, label: 'Lexicon editor', betaOnly: true },
-      { to: RouteConst.GRAMMAR, label: 'Grammar editor', betaOnly: true },
+      {
+        to: RouteConst.LEXICON,
+        title: 'Lexicon',
+        description: 'Create and vote on lexical entries and their attributes',
+        startIcon: <DiCross color="red" />,
+        betaOnly: true,
+      },
+      {
+        to: RouteConst.GRAMMAR,
+        title: 'Grammar',
+        description: 'Language definitions, rules, and statistics',
+        startIcon: <DiCross color="red" />,
+        betaOnly: true,
+      },
     ],
   },
   {
     group: 'Media Tools',
-    linkItems: [{ to: RouteConst.MAP_LIST, label: 'Map translation editor' }],
+    linkItems: [
+      {
+        to: RouteConst.MAP_LIST,
+        title: 'Map',
+        description: 'Upload, view, translate, link, and tag .svg map files.',
+        startIcon: <DiMap color="blue" />,
+      },
+    ],
   },
   {
     group: 'Data Tools',
     linkItems: [
-      { to: RouteConst.GRAPH_VIEWVER, label: 'Data viewer' },
-      { to: RouteConst.SQL_RUNNER, label: 'SQL runner', adminOnly: true },
+      {
+        to: RouteConst.GRAPH_VIEWER,
+        title: 'Data Viewer',
+        description:
+          'Navigate the graph layer where most data in crowd.Bible data is stored ',
+        startIcon: <DiDataViewer color="blue" />,
+      },
+      {
+        to: RouteConst.SQL_RUNNER,
+        title: 'SQL Runner',
+        description: 'Run custom queries on any local database table',
+        startIcon: <DiDatabase color="blue" />,
+        adminOnly: true,
+      },
       {
         to: RouteConst.FILE_IMPORT,
-        label: 'File import tool',
+        title: 'File Import',
+        description: 'Custom data importing into the crowd.Bible ecosystem',
+        startIcon: <DiImport color="blue" />,
         adminOnly: true,
       },
     ],
@@ -91,17 +172,28 @@ const linkGroups = [
     group: 'Application Development Tools',
     linkItems: [
       {
-        to: RouteConst.SITE_TEXT_ADMIN,
-        label: 'Site text user interface editor',
-      },
-      {
-        to: RouteConst.SITE_TEXT_TRANSLATION_APP_LIST,
-        label: 'Site text translation editor',
-        implemented: true,
+        to: RouteConst.SITE_TEXT_MENU_PAGE,
+        title: 'Site Text',
+        description:
+          'Create and translate the user interface for crowd.Bible or any other application',
+        startIcon: (
+          <Stack>
+            <DiSite color="blue" />
+            <DiText color="blue" />
+          </Stack>
+        ),
       },
       {
         to: RouteConst.APPLICATION_LIST,
-        label: 'Application List',
+        title: 'Application List',
+        description:
+          'Lorem ipsum is placeholder commonly used in the graphic, print',
+        startIcon: (
+          <Stack>
+            <DiSite color="blue" />
+            <DiList color="blue" />
+          </Stack>
+        ),
         implemented: true,
       },
     ],
@@ -114,8 +206,12 @@ export function HomePage() {
       <Typography variant="h2" color="text.dark" sx={{ padding: '20px' }}>
         Home Screen
       </Typography>
-      {linkGroups.map(({ group, linkItems }) => (
-        <LinkGroup key={group} group={group} linkItems={linkItems} />
+      {cardGroups.map(({ group, linkItems }) => (
+        <CardGroup
+          key={group}
+          group={group}
+          linkItems={linkItems as CardItemProps[]}
+        />
       ))}
     </IonContent>
   );

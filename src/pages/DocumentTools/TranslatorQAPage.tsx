@@ -32,17 +32,17 @@ export function TranslatorQAPage() {
 
   const handleTextClick = () => {
     handleCancelKindSelectionBox();
-    history.push(RouteConst.TRANSLATOR_QA_TEXT_PART);
+    history.push(`${RouteConst.TRANSLATOR_QA}/text-part`);
   };
 
   const handleChapterClick = () => {
     handleCancelKindSelectionBox();
-    history.push(RouteConst.TRANSLATOR_QA_CHAPTER);
+    history.push(`${RouteConst.TRANSLATOR_QA}/chapter`);
   };
 
   const handleVerseClick = () => {
     handleCancelKindSelectionBox();
-    history.push(RouteConst.TRANSLATOR_QA_VERSE);
+    history.push(`${RouteConst.TRANSLATOR_QA}/verse`);
   };
 
   return (
