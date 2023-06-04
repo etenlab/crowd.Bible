@@ -1,10 +1,10 @@
 import { Route, Switch } from 'react-router-dom';
 
-import { SiteTextAdminPage } from '@/pages/AppDev/SiteTextAdminPage';
-
 import { AppListPage } from '@/pages/AppDev/AppListPage';
 import { NewApplicationAddPage } from '@/pages/AppDev/NewApplicationAddPage';
 
+import { SiteTextMenuPage } from '@/pages/AppDev/SiteTextMenuPage';
+import { SiteTextAdminPage } from '@/pages/AppDev/SiteTextAdminPage';
 import { SiteTextAppListPage } from '@/pages/AppDev/SiteTextAppListPage';
 import { SiteTextListPage } from '@/pages/AppDev/SiteTextListPage';
 
@@ -21,15 +21,18 @@ import { RouteConst } from '@/constants/route.constant';
 export function AppDevRoutes() {
   return (
     <Switch>
-      <Route exact path="/site-text-admin">
-        <SiteTextAdminPage />
-      </Route>
-
       <Route exact path={RouteConst.APPLICATION_LIST}>
         <AppListPage />
       </Route>
       <Route exact path={RouteConst.ADD_APPLICATION}>
         <NewApplicationAddPage />
+      </Route>
+
+      <Route exact path={RouteConst.SITE_TEXT_MENU_PAGE}>
+        <SiteTextMenuPage />
+      </Route>
+      <Route exact path={RouteConst.SITE_TEXT_ADMIN}>
+        <SiteTextAdminPage />
       </Route>
 
       <Route exact path={RouteConst.SITE_TEXT_TRANSLATION_APP_LIST}>
