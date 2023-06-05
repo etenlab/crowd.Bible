@@ -122,14 +122,14 @@ export function PlaygroundPage() {
         >
           Add new item
         </Button>
-        <Box style={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex' }}>
           <DragDropContext onDragEnd={onDragEnd}>
             {state.map((el, ind) => (
               <StrictModeDroppable key={ind} droppableId={`${ind}`}>
                 {(provided, snapshot) => (
                   <Box
                     ref={provided.innerRef}
-                    style={getListStyle(snapshot.isDraggingOver)}
+                    sx={getListStyle(snapshot.isDraggingOver)}
                     {...provided.droppableProps}
                   >
                     {el.map((item, index) => (
@@ -143,13 +143,13 @@ export function PlaygroundPage() {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            style={getItemStyle(
+                            sx={getItemStyle(
                               snapshot.isDragging,
                               provided.draggableProps.style,
                             )}
                           >
                             <Box
-                              style={{
+                              sx={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'space-around',
