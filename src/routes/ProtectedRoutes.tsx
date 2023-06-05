@@ -16,6 +16,7 @@ import { MediaToolsRoutes } from './MediaToolsRoutes';
 import { DataToolsRoutes } from './DataToolsRoutes';
 import { AppDevRoutes } from './AppDevRoutes';
 import { DiscussionRoutes } from './DiscussionRoutes';
+import { RouteConst } from '../constants/route.constant';
 
 export function ProtectedRoutes() {
   return (
@@ -61,7 +62,7 @@ export function ProtectedRoutes() {
 
       <DiscussionRoutes />
 
-      <Route exact path="/playground">
+      <Route exact path={RouteConst.PLAYGROUND}>
         <PlaygroundPage />
       </Route>
 
