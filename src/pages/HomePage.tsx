@@ -16,6 +16,7 @@ import {
   DiSite,
   DiText,
   DiList,
+  DiPlay,
 } from '@eten-lab/ui-kit';
 
 import { RouteConst } from '@/constants/route.constant';
@@ -195,6 +196,22 @@ const cardGroups = [
           </Stack>
         ),
         implemented: true,
+      },
+    ],
+  },
+  {
+    group: 'Playground',
+    linkItems: [
+      {
+        to: RouteConst.PLAYGROUND,
+        title: 'Playground',
+        description: 'Drag & Drop playground',
+        startIcon: (
+          <Stack>
+            <DiPlay color="blue" />
+          </Stack>
+        ),
+        betaOnly: true,
       },
     ],
   },

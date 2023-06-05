@@ -59,4 +59,6 @@ export enum RouteConst {
   DISCUSSIONS_LIST = '/discussions-list',
 
   MAP_LIST = '/map-list',
+
+  PLAYGROUND = '/playground',
 }

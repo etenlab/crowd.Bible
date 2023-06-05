@@ -8,6 +8,7 @@ import { HomePage } from '@/pages/HomePage';
 import { DiscussionsListPage } from '@/pages/DiscussionsListPage';
 import { AdminPage } from '@/pages/AdminPage';
 import { ProfilePage } from '@/pages/ProfilePage';
+import { PlaygroundPage } from '@/pages/PlaygroundPage';
 
 import { DocumentToolsRoutes } from './DocumentToolsRoutes';
 import { LanguageToolsRoutes } from './LanguageToolsRoutes';
@@ -59,6 +60,10 @@ export function ProtectedRoutes() {
       <AppDevRoutes />
 
       <DiscussionRoutes />
+
+      <Route exact path="/playground">
+        <PlaygroundPage />
+      </Route>
 
       <Route exact path="/">
         <Redirect to="/home" />
