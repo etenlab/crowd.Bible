@@ -206,11 +206,7 @@ const cardGroups = [
         to: RouteConst.PLAYGROUND,
         title: 'Playground',
         description: 'Drag & Drop playground',
-        startIcon: (
-          <Stack>
-            <DiPlay color="blue" />
-          </Stack>
-        ),
+        startIcon: <DiPlay color="blue" />,
         betaOnly: true,
       },
     ],
