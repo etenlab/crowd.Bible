@@ -58,7 +58,7 @@ const grid = 8;
 const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
   // some basic styles to make the items look a bit nicer
   userSelect: 'none',
-  padding: grid * 2,
+  padding: `${grid * 2}px`,
   margin: `0 0 ${grid}px 0`,
 
   // change background colour if dragging
@@ -71,7 +71,7 @@ const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
 
 const getListStyle = (isDraggingOver: boolean) => ({
   background: isDraggingOver ? 'lightblue' : 'lightgrey',
-  padding: grid,
+  padding: `${grid}px`,
   width: 250,
 });
 
@@ -139,11 +139,11 @@ export function PlaygroundPage() {
                         index={index}
                       >
                         {(provided, snapshot) => (
-                          <Box
+                          <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            sx={getItemStyle(
+                            style={getItemStyle(
                               snapshot.isDragging,
                               provided.draggableProps.style,
                             )}
@@ -169,7 +169,7 @@ export function PlaygroundPage() {
                                 delete
                               </Button>
                             </Box>
-                          </Box>
+                          </div>
                         )}
                       </Draggable>
                     ))}
