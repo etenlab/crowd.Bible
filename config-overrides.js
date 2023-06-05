@@ -64,6 +64,27 @@ function mainOverride(config, env) {
     (plugin) => plugin instanceof WorkboxWebpackPlugin.GenerateSW,
   );
 
+  // Disable code splitting
+  config.optimization.splitChunks = {
+    cacheGroups: {
+      default: false,
+    },
+  };
+
+  // Add a plugin to generate a single output file
+  config.plugins.push(
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1,
+    }),
+  );
+  // Set modules as external
+  config.externals = {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    'react-dom/client': 'ReactDOM',
+    papi: 'papi',
+  };
+
   return config;
 }
 

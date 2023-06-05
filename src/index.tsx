@@ -27,15 +27,20 @@ const kcClient = new KeycloakClient({
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
-root.render(
+
+const fullApp = (
   <React.StrictMode>
     <KeycloakProvider client={kcClient}>
       <ApolloProvider client={client}>
         <App />
       </ApolloProvider>
     </KeycloakProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(globalThis as any).webViewComponent = fullApp;
+// root.render(fullApp);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
