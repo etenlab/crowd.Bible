@@ -13,11 +13,14 @@ import { FeedbackPage } from '@/pages/DocumentTools/FeedbackPage';
 import { TextPartFeedbackPage } from '@/pages/DocumentTools/TextPartFeedbackPage';
 import { ChapterFeedbackPage } from '@/pages/DocumentTools/ChapterFeedbackPage';
 import { VerseFeedbackPage } from '@/pages/DocumentTools/VerseFeedbackPage';
+
+import { QAMenuPage } from '@/pages/DocumentTools/QAMenuPage';
 import { ReaderQAPage } from '@/pages/DocumentTools/ReaderQAPage';
 import { TranslatorQAPage } from '@/pages/DocumentTools/TranslatorQAPage';
 import { TextPartTranslatorQAPage } from '@/pages/DocumentTools/TextPartTranslatorQAPage';
 import { ChapterTranslatorQAPage } from '@/pages/DocumentTools/ChapterTranslatorQAPage';
 import { VerseTranslatorQAPage } from '@/pages/DocumentTools/VerseTranslatorQAPage';
+
 import { CommentaryPage } from '@/pages/DocumentTools/CommentaryPage';
 import { VersificationPage } from '@/pages/DocumentTools/VersificationPage';
 import { AlignmentPage } from '@/pages/DocumentTools/AlignmentPage';
@@ -56,44 +59,47 @@ export function DocumentToolsRoutes() {
         <TranslationCandidatesPage />
       </Route> */}
 
-      <Route exact path="/feedback/:documentId">
+      <Route exact path={`${RouteConst.FEEDBACK}/:documentId`}>
         <FeedbackPage />
       </Route>
-      <Route exact path="/feedback/text-part">
+      <Route exact path={`${RouteConst.FEEDBACK}/text-part`}>
         <TextPartFeedbackPage />
       </Route>
-      <Route exact path="/feedback/chapter">
+      <Route exact path={`${RouteConst.FEEDBACK}/chapter`}>
         <ChapterFeedbackPage />
       </Route>
-      <Route exact path="/feedback/verse">
+      <Route exact path={`${RouteConst.FEEDBACK}/verse`}>
         <VerseFeedbackPage />
       </Route>
 
-      <Route exact path="/reader-qa">
+      <Route exact path={RouteConst.QA_MENU_PAGE}>
+        <QAMenuPage />
+      </Route>
+      <Route exact path={RouteConst.READER_QA}>
         <ReaderQAPage />
       </Route>
-      <Route exact path="/translator-qa">
+      <Route exact path={RouteConst.TRANSLATOR_QA}>
         <TranslatorQAPage />
       </Route>
-      <Route exact path="/translator-qa/text-part">
+      <Route exact path={`${RouteConst.TRANSLATOR_QA}/text-part`}>
         <TextPartTranslatorQAPage />
       </Route>
-      <Route exact path="/translator-qa/chapter">
+      <Route exact path={`${RouteConst.TRANSLATOR_QA}/chapter`}>
         <ChapterTranslatorQAPage />
       </Route>
-      <Route exact path="/translator-qa/verse">
+      <Route exact path={`${RouteConst.TRANSLATOR_QA}/verse`}>
         <VerseTranslatorQAPage />
       </Route>
 
-      <Route exact path="/commentary">
+      <Route exact path={RouteConst.COMMENTARY}>
         <CommentaryPage />
       </Route>
 
-      <Route exact path="/versification">
+      <Route exact path={RouteConst.VERSIFICATION}>
         <VersificationPage />
       </Route>
 
-      <Route exact path="/alignment">
+      <Route exact path={RouteConst.ALIGNMENT}>
         <AlignmentPage />
       </Route>
     </Switch>

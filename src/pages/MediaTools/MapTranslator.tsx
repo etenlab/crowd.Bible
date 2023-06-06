@@ -42,7 +42,6 @@ export const MapTranslatorPage = () => {
         >
           <StyledButtonTab
             variant={activeTab === 0 ? 'contained' : 'text'}
-            // href={'/map-list'}
             onClick={() => {
               setActiveTab(0);
             }}
@@ -54,7 +53,6 @@ export const MapTranslatorPage = () => {
             onClick={() => {
               setActiveTab(1);
             }}
-            // href={'/map-strings-list'}
           >
             Word List
           </StyledButtonTab>

@@ -13,6 +13,7 @@ import { DocumentDto } from '@/src/dtos/document.dto';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useDocument } from '@/hooks/useDocument';
+import { UserRoles } from '@/constants/common.constant';
 
 const {
   Stack,
@@ -48,9 +49,9 @@ export function DocumentList() {
   };
 
   const handleClickDocument = (documentId: Nanoid) => {
-    if (user?.roles.includes('translator')) {
+    if (user?.roles.includes(UserRoles.TRANSLATOR)) {
       history.push(`/translation/${documentId}`);
-    } else if (user?.roles.includes('reader')) {
+    } else if (user?.roles.includes(UserRoles.READER)) {
       history.push(`/feedback/${documentId}`);
     }
   };

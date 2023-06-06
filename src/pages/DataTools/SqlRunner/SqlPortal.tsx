@@ -9,7 +9,7 @@ import { createPortal } from 'react-dom';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
 import { SqlRunner } from './SqlRunner';
-import { useAppContext } from '../../../hooks/useAppContext';
+import { useAppContext } from '@/src/hooks/useAppContext';
 
 const { Box } = MuiMaterial;
 

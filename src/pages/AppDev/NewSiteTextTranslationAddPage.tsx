@@ -19,6 +19,7 @@ import { SiteTextTranslationDto, SiteTextDto } from '@/dtos/site-text.dto';
 import { SelectableDefinitionCandidateList } from '@/components/SelectableDefinitionCandidateList';
 
 import { RouteConst } from '@/constants/route.constant';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 const { HeadBox } = CrowdBibleUI;
 const { Stack, Typography, Divider } = MuiMaterial;
@@ -71,7 +72,7 @@ export function NewSiteTextTranslationAddPage() {
 
           if (!_siteText) {
             alertFeedback(
-              'error',
+              FeedbackTypes.ERROR,
               'Not exists site text for current translation relationship!',
             );
             history.push(
@@ -87,7 +88,7 @@ export function NewSiteTextTranslationAddPage() {
 
           if (!_originalSiteText) {
             alertFeedback(
-              'error',
+              FeedbackTypes.ERROR,
               'Not exists site text for current original relationship!',
             );
             history.push(
@@ -139,10 +140,10 @@ export function NewSiteTextTranslationAddPage() {
         description,
       );
     } else {
-      alertFeedback('error', 'Not exists or targetLanguage!');
+      alertFeedback(FeedbackTypes.ERROR, 'Not exists or targetLanguage!');
     }
 
-    logger.info('new translated ==>', originalDefinitionRel, siteText);
+    logger.info('new translated ==> ', originalDefinitionRel, siteText);
 
     if (translatedDefinitionRel) {
       history.push(

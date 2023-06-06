@@ -13,7 +13,8 @@ import {
 import { useFormik } from 'formik';
 
 import * as Yup from 'yup';
-import { useAppContext } from '../hooks/useAppContext';
+import { useAppContext } from '@/src/hooks/useAppContext';
+import { RouteConst } from '@/constants/route.constant';
 
 const { Box, Alert } = MuiMaterial;
 
@@ -89,7 +90,7 @@ export function ResetPasswordPage() {
   };
 
   const handleGoLoginPage = () => {
-    history.push('/login');
+    history.push(RouteConst.LOGIN);
   };
 
   const handleRegister = () => {

@@ -8,6 +8,7 @@ import { HomePage } from '@/pages/HomePage';
 import { DiscussionsListPage } from '@/pages/DiscussionsListPage';
 import { AdminPage } from '@/pages/AdminPage';
 import { ProfilePage } from '@/pages/ProfilePage';
+import { PlaygroundPage } from '@/pages/PlaygroundPage';
 
 import { DocumentToolsRoutes } from './DocumentToolsRoutes';
 import { LanguageToolsRoutes } from './LanguageToolsRoutes';
@@ -15,6 +16,7 @@ import { MediaToolsRoutes } from './MediaToolsRoutes';
 import { DataToolsRoutes } from './DataToolsRoutes';
 import { AppDevRoutes } from './AppDevRoutes';
 import { DiscussionRoutes } from './DiscussionRoutes';
+import { RouteConst } from '../constants/route.constant';
 
 export function ProtectedRoutes() {
   return (
@@ -59,6 +61,10 @@ export function ProtectedRoutes() {
       <AppDevRoutes />
 
       <DiscussionRoutes />
+
+      <Route exact path={RouteConst.PLAYGROUND}>
+        <PlaygroundPage />
+      </Route>
 
       <Route exact path="/">
         <Redirect to="/home" />
