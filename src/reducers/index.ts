@@ -8,7 +8,10 @@ import {
   initialState as DocumentToolsInitialState,
   reducer as documentToolsReducer,
 } from './documentTools.reducer';
+import { actions } from './global.actions';
+
 import { LoggerService } from '@eten-lab/core';
+
 const logger = new LoggerService();
 
 export interface ActionType<T> {
@@ -73,7 +76,7 @@ export function reducer(
   state: StateType = initialState,
   action: ActionType<unknown>,
 ): StateType {
-  if (action.type === 'logout') {
+  if (action.type === actions.LOGOUT) {
     persistStore(initialState);
     return initialState;
   }
@@ -82,6 +85,8 @@ export function reducer(
     global: globalReducer(state.global, action),
     documentTools: documentToolsReducer(state.documentTools, action),
   };
+
+  console.log(action, newState);
 
   persistStore(newState);
 
