@@ -16,10 +16,7 @@ import {
   PropertyKeyConst,
   RelationshipTypeConst,
 } from '@/src/constants/graph.constant';
-import {
-  StyledFilterButton,
-  StyledSectionTypography,
-} from './StyledComponents';
+import { StyledFilterButton } from './StyledComponents';
 import { arrowForwardOutline } from 'ionicons/icons';
 import {
   compareLangInfo,
@@ -170,10 +167,8 @@ export const WordTabContent = () => {
       {step === 0 ? (
         <>
           <Box width={'100%'}>
-            <StyledSectionTypography>
-              Select the source language
-            </StyledSectionTypography>
             <LangSelector
+              label="Select the source language"
               onChange={(_langTag: string, langInfo: LanguageInfo) =>
                 setSourceLangInfo(langInfo)
               }
@@ -181,10 +176,8 @@ export const WordTabContent = () => {
           </Box>
 
           <Box width={'100%'}>
-            <StyledSectionTypography>
-              Select the target language
-            </StyledSectionTypography>
             <LangSelector
+              label="Select the target language"
               onChange={(_langTag: string, langInfo: LanguageInfo) =>
                 setTargetLangInfo(langInfo)
               }

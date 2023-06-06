@@ -21,9 +21,8 @@ const cardGroup = {
   linkItems: [
     {
       to: RouteConst.SITE_TEXT_ADMIN,
-      title: 'Site Text User Interface',
-      description:
-        'Lorem ipsum is placeholder commonly used in the graphic, print',
+      title: 'User Interface',
+      description: 'User interface words for your application',
       startIcon: (
         <Stack>
           <DiSite color="blue" />
@@ -33,9 +32,9 @@ const cardGroup = {
     },
     {
       to: RouteConst.SITE_TEXT_TRANSLATION_APP_LIST,
-      title: 'Site Text Translation',
+      title: 'Translation',
       description:
-        'Lorem ipsum is placeholder commonly used in the graphic, print',
+        'Translate user interface words so applications can be available in many languages',
       startIcon: (
         <Stack>
           <DiSite color="blue" />

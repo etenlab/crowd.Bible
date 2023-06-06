@@ -11,8 +11,7 @@ import {
   IconBox,
 } from '@eten-lab/ui-kit';
 import { NodeTypeConst } from '@eten-lab/core';
-import { useAppContext } from '@/src/hooks/useAppContext';
-import { StyledSectionTypography } from '@/src/components/MapTranslatorTabs/StyledComponents';
+import { useAppContext } from '@/hooks/useAppContext';
 import JSZip from 'jszip';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Proskomma } = require('proskomma');
@@ -120,10 +119,11 @@ export function FileImportPage() {
             gap={'16px'}
             sx={{ paddingX: '20px', overflowY: 'auto', flexGrow: 1 }}
           >
-            <StyledSectionTypography>
-              Select the source language
-            </StyledSectionTypography>
-            <LangSelector onChange={handleLangChange} selected={langInfo} />
+            <LangSelector
+              label="Select the source language"
+              onChange={handleLangChange}
+              selected={langInfo}
+            />
             <Input
               placeholder="File URL..."
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

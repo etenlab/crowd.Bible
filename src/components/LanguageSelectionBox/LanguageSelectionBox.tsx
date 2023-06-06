@@ -44,11 +44,13 @@ export function LanguageSelectionBox() {
         Documents
       </Typography>
       <LangSelector
+        label="Select the source language"
         selected={sourceLanguage || undefined}
         onChange={handleSetSourceLanguage}
         setLoadingState={setLoadingState}
       />
       <LangSelector
+        label="Select the target language"
         selected={targetLanguage || undefined}
         onChange={handleSetTargetLanguage}
         setLoadingState={setLoadingState}
