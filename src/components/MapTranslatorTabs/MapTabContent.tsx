@@ -277,15 +277,12 @@ export const MapTabContent = () => {
       paddingTop={`${PADDING}px`}
     >
       {uploadMapBtnStatus > eUploadMapBtnStatus.NONE ? (
-        <>
-          <StyledSectionTypography>
-            Select the source language
-          </StyledSectionTypography>
-          <LangSelector onChange={handleLangChange} selected={langInfo} />
-        </>
-      ) : (
-        <></>
-      )}
+        <LangSelector
+          label="Select the source language"
+          onChange={handleLangChange}
+          selected={langInfo}
+        />
+      ) : null}
 
       <Button
         fullWidth

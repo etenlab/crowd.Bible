@@ -144,11 +144,13 @@ export function TranslationDocumentListPage() {
   const langSelectorCom = filterOpen ? (
     <Stack gap="30px" sx={{ padding: '20px' }}>
       <LangSelector
+        label="Select the source language"
         selected={sourceLanguage || undefined}
         onChange={handleSetSourceLanguage}
         setLoadingState={setLoadingState}
       />
       <LangSelector
+        label="Select the target language"
         selected={targetLanguage || undefined}
         onChange={handleSetTargetLanguage}
         setLoadingState={setLoadingState}

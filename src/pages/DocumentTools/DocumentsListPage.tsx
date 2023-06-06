@@ -97,6 +97,7 @@ export function DocumentsListPage() {
 
   const langSelectorCom = filterOpen ? (
     <LangSelector
+      label="Select the source language"
       selected={sourceLanguage || undefined}
       onChange={handleSetSourceLanguage}
       setLoadingState={setLoadingState}

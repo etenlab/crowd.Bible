@@ -15,7 +15,7 @@
     "@eten-lab/core": "^0.2.17",
     "@eten-lab/models": "^1.3.12",
     "@eten-lab/sso": "^0.1.9",
-    "@eten-lab/ui-kit": "^0.5.65",
+    "@eten-lab/ui-kit": "^0.5.67",
     "@ionic/react": "^6.0.0",
     "@ionic/react-router": "^6.0.0",
     "@mui/material": "^5.13.1",

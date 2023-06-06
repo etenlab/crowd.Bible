@@ -85,6 +85,7 @@ export function NewApplicationAddPage() {
           onChange={handleChangeName}
         />
         <LangSelector
+          label="Select the language"
           selected={language}
           onChange={handleChangeLanguage}
           setLoadingState={setLoadingState}
