@@ -35,8 +35,6 @@ export function LinkGroup({ group, linkItems }: LinkGroupType) {
   const { getColor } = useColorModeContext();
   const history = useHistory();
 
-  console.log('user ===>', user);
-
   const items = useMemo(() => {
     return linkItems
       .filter(({ adminOnly, betaOnly, noAuthOnly }) => {

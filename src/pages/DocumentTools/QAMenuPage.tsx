@@ -15,18 +15,16 @@ const cardGroup = {
   linkItems: [
     {
       to: RouteConst.TRANSLATOR_QA,
-      title: 'Editor for Translators',
-      description:
-        'Lorem ipsum is placeholder commonly used in the graphic, print',
+      title: 'Editors',
+      description: 'Annotate a document with questions for readers',
       startIcon: <DiAskQuestion color="blue" />,
       onlineOnly: true,
       implemented: true,
     },
     {
       to: RouteConst.READER_QA,
-      title: 'Editor for Readers',
-      description:
-        'Lorem ipsum is placeholder commonly used in the graphic, print',
+      title: 'Readers',
+      description: 'Read a document and answer questions',
       startIcon: <DiAskQuestion color="blue" />,
       onlineOnly: true,
       implemented: true,

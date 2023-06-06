@@ -131,7 +131,7 @@ export function AdminPage() {
       logger.error('syncOutRes', syncOutRes);
       setLoadResult('Syncing Out was successful!');
     } catch (error) {
-      console.error('Error occurred while syncing out::', error);
+      logger.error('Error occurred while syncing out::', error);
       setLoadResult('Error occurred while syncing out.');
     } finally {
       setSyncOutLoadingStatus(LoadingStatuses.FINISHED);

@@ -23,11 +23,22 @@ import { RouteConst } from '@/constants/route.constant';
 
 import { CardGroup, CardItemProps } from '@/components/CardGroup';
 
-const { Typography, Stack } = MuiMaterial;
+const { Stack } = MuiMaterial;
 
 const cardGroups = [
   {
-    group: 'Document Tools',
+    group: 'Media',
+    linkItems: [
+      {
+        to: RouteConst.MAP_LIST,
+        title: 'Map',
+        description: 'Upload, view, translate, link, and tag .svg map files.',
+        startIcon: <DiMap color="blue" />,
+      },
+    ],
+  },
+  {
+    group: 'Document',
     linkItems: [
       {
         to: RouteConst.DOCUMENTS_LIST,
@@ -84,7 +95,7 @@ const cardGroups = [
     ],
   },
   {
-    group: 'Language Tools',
+    group: 'Language',
     linkItems: [
       {
         to: RouteConst.DICTIONARY,
@@ -95,8 +106,7 @@ const cardGroups = [
       {
         to: RouteConst.PHRASE_BOOK,
         title: 'Phrase-book',
-        description:
-          'Lorem ipsum is placeholder commonly used in the graphic, print',
+        description: 'Common phrases in your language',
         startIcon: (
           <Stack>
             <DiRead color="blue" />
@@ -108,7 +118,7 @@ const cardGroups = [
         to: RouteConst.BILINGUAL_DICTIONARY,
         title: 'Bilingual Dictionary',
         description:
-          'Lorem ipsum is placeholder commonly used in the graphic, print',
+          'Connect the definitions in two different language dictionaries',
         startIcon: (
           <Stack>
             <DiRead color="blue" />
@@ -133,18 +143,7 @@ const cardGroups = [
     ],
   },
   {
-    group: 'Media Tools',
-    linkItems: [
-      {
-        to: RouteConst.MAP_LIST,
-        title: 'Map',
-        description: 'Upload, view, translate, link, and tag .svg map files.',
-        startIcon: <DiMap color="blue" />,
-      },
-    ],
-  },
-  {
-    group: 'Data Tools',
+    group: 'Data',
     linkItems: [
       {
         to: RouteConst.GRAPH_VIEWER,
@@ -170,7 +169,7 @@ const cardGroups = [
     ],
   },
   {
-    group: 'Application Development Tools',
+    group: 'Application Development',
     linkItems: [
       {
         to: RouteConst.SITE_TEXT_MENU_PAGE,
@@ -216,9 +215,6 @@ const cardGroups = [
 export function HomePage() {
   return (
     <IonContent>
-      <Typography variant="h2" color="text.dark" sx={{ padding: '20px' }}>
-        Home Screen
-      </Typography>
       {cardGroups.map(({ group, linkItems }) => (
         <CardGroup
           key={group}
@@ -226,6 +222,7 @@ export function HomePage() {
           linkItems={linkItems as CardItemProps[]}
         />
       ))}
+      <br />
     </IonContent>
   );
 }
