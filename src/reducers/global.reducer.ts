@@ -33,7 +33,6 @@ export interface IUser {
   userId: string;
   userEmail: string;
   roles: RoleType;
-  prefersColorScheme?: ColorThemes.LIGHT | ColorThemes.DARK;
 }
 
 export interface IMode {
@@ -45,6 +44,7 @@ export interface StateType {
   user: IUser | null;
   mode: IMode;
   snack: SnackType;
+  prefersColorScheme?: ColorThemes.LIGHT | ColorThemes.DARK;
   loading: boolean;
   connectivity: boolean;
   isNewDiscussion: boolean;
@@ -67,6 +67,7 @@ export const initialState: StateType = {
     beta: false,
   },
   snack: initialSnact,
+  prefersColorScheme: undefined,
   connectivity: true,
   loading: false,
   isNewDiscussion: false,
@@ -132,16 +133,9 @@ export function reducer(
       };
     }
     case actions.SET_PREFERS_COLOR_SCHEME: {
-      if (prevState.user === null) {
-        return prevState;
-      }
-
       return {
         ...prevState,
-        user: {
-          ...prevState.user,
-          prefersColorScheme: action.payload as PrefersColorSchemeType,
-        },
+        prefersColorScheme: action.payload as PrefersColorSchemeType,
       };
     }
     case actions.SET_CONNECTIVITY: {

@@ -55,5 +55,9 @@ export function CardGroup({ group, linkItems }: CardGroupType) {
     history.push(value);
   };
 
+  if (items.length === 0) {
+    return null;
+  }
+
   return <CardsMenu label={group} items={items} onClick={handleClickItem} />;
 }

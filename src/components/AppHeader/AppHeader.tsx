@@ -29,7 +29,7 @@ export function AppHeader({
 
   const {
     states: {
-      global: { user, isNewDiscussion, isNewNotification, mode },
+      global: { prefersColorScheme, isNewDiscussion, isNewNotification, mode },
     },
     actions: { setPrefersColorScheme },
   } = useAppContext();
@@ -37,8 +37,8 @@ export function AppHeader({
   const [themeMode, setThemeMode] = useState<
     ColorThemes.DARK | ColorThemes.LIGHT
   >(() => {
-    if (user && user.prefersColorScheme) {
-      return user.prefersColorScheme;
+    if (prefersColorScheme) {
+      return prefersColorScheme;
     } else {
       return ColorThemes.LIGHT;
     }
@@ -64,8 +64,8 @@ export function AppHeader({
   useEffect(() => {
     bodyRef.current = window.document.body;
 
-    if (user && user.prefersColorScheme) {
-      toggleDarkTheme(user.prefersColorScheme === ColorThemes.DARK);
+    if (prefersColorScheme) {
+      toggleDarkTheme(prefersColorScheme === ColorThemes.DARK);
       return;
     }
 
@@ -74,7 +74,7 @@ export function AppHeader({
       toggleDarkTheme(e.matches);
     });
     toggleDarkTheme(prefersDarkRef.current.matches);
-  }, [user, toggleDarkTheme]);
+  }, [toggleDarkTheme, prefersColorScheme]);
 
   const handleToogleTheme = () => {
     if (themeMode === ColorThemes.LIGHT) {
