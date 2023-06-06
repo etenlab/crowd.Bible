@@ -65,11 +65,18 @@ export class MapService {
     return MapMapper.entityToDto(langNode);
   }
 
-  async getMaps(langInfo: LanguageInfo): Promise<MapDto[]> {
-    const mapNodeIds = await this.graphFirstLayerService.getNodeIdsByProps(
-      NodeTypeConst.MAP,
-      makeFindPropsByLang(langInfo),
-    );
+  async getMaps(langInfo?: LanguageInfo): Promise<MapDto[]> {
+    let mapNodeIds: Nanoid[];
+    if (langInfo) {
+      mapNodeIds = await this.graphFirstLayerService.getNodeIdsByProps(
+        NodeTypeConst.MAP,
+        makeFindPropsByLang(langInfo),
+      );
+    } else {
+      mapNodeIds = (
+        await this.graphFirstLayerService.listAllNodesByType(NodeTypeConst.MAP)
+      ).map((n) => n.id);
+    }
     const mapNodes = await this.graphFirstLayerService.getNodesByIds(
       mapNodeIds,
     );
