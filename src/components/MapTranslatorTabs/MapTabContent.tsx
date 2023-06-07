@@ -268,6 +268,7 @@ export const MapTabContent = () => {
       if (langInfo) {
         setUploadMapBtnStatus(eUploadMapBtnStatus.UPLOAD_FILE);
       } else {
+        alertFeedback(FeedbackTypes.INFO, 'Please select language first');
         e.stopPropagation();
         e.preventDefault();
       }
@@ -300,6 +301,7 @@ export const MapTabContent = () => {
     >
       {uploadMapBtnStatus > eUploadMapBtnStatus.NONE ? (
         <LangSelector
+          fullRendered={true}
           label="Select the source language"
           onChange={handleLangChange}
           selected={langInfo}

@@ -168,6 +168,7 @@ export const WordTabContent = () => {
         <>
           <Box width={'100%'}>
             <LangSelector
+              fullRendered={true}
               label="Select the source language"
               onChange={(_langTag: string, langInfo: LanguageInfo) =>
                 setSourceLangInfo(langInfo)
@@ -177,6 +178,7 @@ export const WordTabContent = () => {
 
           <Box width={'100%'}>
             <LangSelector
+              fullRendered={true}
               label="Select the target language"
               onChange={(_langTag: string, langInfo: LanguageInfo) =>
                 setTargetLangInfo(langInfo)
