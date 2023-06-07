@@ -1,11 +1,27 @@
 import { defineConfig, devices } from '@playwright/test';
-
+import axios from 'axios';
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
+
+(async () => {
+  axios
+    .get('http://localhost:8080')
+    .then(function (response) {
+      // handle success
+      console.log(response);
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+    })
+    .finally(function () {
+      // always executed
+    });
+})();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
