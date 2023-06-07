@@ -11,10 +11,10 @@ const emailErrorMessage = '//p[@id = "email-helper-text"]';
 const userNameErrorMessage = '//p[@id = "username-helper-text"]';
 const passwordErrorMessage = '//p[@id = "password-helper-text"]';
 const repeatPasswordErrorMessage = '//p[@id = "passwordConfirm-helper-text"]';
-const existingUserValidation =
-  '//div[@class = "MuiAlert-message css-1pxa9xg-MuiAlert-message"]';
+const existingUserValidation = '//div[@id = "error-message"]';
 
 class RegistrationPage extends BasePage {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async fillRegistrationForm(registrationData: any) {
     await this.page.locator(emailTextBox).fill(registrationData.email);
     await this.page.locator(userNameTextBox).fill(registrationData.userName);

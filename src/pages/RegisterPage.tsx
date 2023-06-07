@@ -151,7 +151,11 @@ export function RegisterPage() {
         >
           Register
         </Typography>
-        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+        {errorMessage && (
+          <Alert severity="error" id="error-message">
+            {errorMessage}
+          </Alert>
+        )}
         {successMessage && <Alert severity="success">{successMessage}</Alert>}
         <Input
           id="email"

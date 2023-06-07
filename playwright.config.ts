@@ -4,7 +4,8 @@ import { defineConfig, devices } from '@playwright/test';
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// require('dotenv').config();
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -76,8 +77,8 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 500 * 1000,
     env: {
-      REACT_APP_CPG_SERVER_URL: 'https://localhost:8201',
-      REACT_APP_KEYCLOAK_URL: 'https://localhost:8080',
+      REACT_APP_CPG_SERVER_URL: 'http://localhost:8201',
+      REACT_APP_KEYCLOAK_URL: 'http://localhost:8080',
       REACT_APP_KEYCLOAK_REALM: 'showcase',
       REACT_APP_KEYCLOAK_CLIENT_ID: 'showcase-auth',
       REACT_APP_KEYCLOAK_CLIENT_SECRET: 'eXqrcJ2mHLwLaZCXoUlBFcUiYFdY6cCu',
