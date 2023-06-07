@@ -86,8 +86,6 @@ export function reducer(
     documentTools: documentToolsReducer(state.documentTools, action),
   };
 
-  console.log(action, newState);
-
   persistStore(newState);
 
   return newState;

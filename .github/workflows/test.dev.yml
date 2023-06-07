@@ -24,17 +24,11 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: example
           POSTGRES_DB: keycloak_db
+        volumes:
+          - ./github/keycloak_db.sql:/docker-entrypoint-initdb.d/keycloak_db.sql
         ports:
           - 5435:5432
 
-      pgadmin:
-        image: dpage/pgadmin4
-        env:
-          PGADMIN_DEFAULT_EMAIL: admin@etenlab.com
-          PGADMIN_DEFAULT_PASSWORD: asdfasdf
-        ports:
-          - 8104:80
-    
       keycloak:
         image: quay.io/keycloak/keycloak:latest
         env:
@@ -46,11 +40,9 @@ jobs:
           KC_DB_URL_HOST: postgres-sso
           KEYCLOAK_ADMIN: admin
           KEYCLOAK_ADMIN_PASSWORD: admin
-        # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
-        #JDBC_PARAMS: "ssl=true"
         ports:
           - 8080:8080
-    
+
       cpg-server:
         image: etenlab/cpg-server:latest
         env:
@@ -64,7 +56,7 @@ jobs:
           PORT: 80
         ports:
           - 8201:80
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -72,7 +64,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -97,13 +89,13 @@ jobs:
 
       - name: npm ci --force
         run: npm ci --force
-        
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      
+
       - name: Run unit test
         run: npm run test
-        
+
       - name: Run Playwright tests
         run: |
           npx playwright test
@@ -114,5 +106,3 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
-
-

@@ -80,6 +80,7 @@ export default defineConfig({
       REACT_APP_KEYCLOAK_URL: 'https://localhost:8080',
       REACT_APP_KEYCLOAK_REALM: 'showcase',
       REACT_APP_KEYCLOAK_CLIENT_ID: 'showcase-auth',
+      REACT_APP_KEYCLOAK_CLIENT_SECRET: 'eXqrcJ2mHLwLaZCXoUlBFcUiYFdY6cCu',
     },
   },
 });
