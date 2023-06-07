@@ -25,7 +25,7 @@ jobs:
           POSTGRES_PASSWORD: example
           POSTGRES_DB: keycloak_db
         volumes:
-          - ./github/keycloak_db.sql:/docker-entrypoint-initdb.d/keycloak_db.sql
+          - .github/keycloak_db.sql:/docker-entrypoint-initdb.d/keycloak_db.sql
         ports:
           - 5435:5432
 
