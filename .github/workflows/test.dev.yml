@@ -9,59 +9,17 @@ on:
 jobs:
   docker-env-test:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:14.5
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: example
-          POSTGRES_DB: eil
-        ports:
-          - 5432:5432
-
-      postgres-sso:
-        image: postgres:14.5
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: example
-          POSTGRES_DB: keycloak_db
-        volumes:
-          - keycloak-db.sql:/docker-entrypoint-initdb.d/keycloak-db.sql
-        ports:
-          - 5435:5432
-
-      keycloak:
-        image: quay.io/keycloak/keycloak:latest
-        env:
-          KC_DB: postgres
-          KC_DB_USERNAME: postgres
-          KC_DB_PASSWORD: example
-          KC_DB_SCHEMA: public
-          KC_DB_URL_DATABASE: keycloak_db
-          KC_DB_URL_HOST: postgres-sso
-          KEYCLOAK_ADMIN: admin
-          KEYCLOAK_ADMIN_PASSWORD: admin
-        ports:
-          - 8080:8080
-
-      cpg-server:
-        image: etenlab/cpg-server:latest
-        env:
-          DB_HOST: postgres
-          DB_PORT: 5432
-          DB_USERNAME: postgres
-          DB_PASSWORD: example
-          DB_NAME: eil
-          RUN_MIGRATIONS: false
-          MODE: DEV
-          PORT: 80
-        ports:
-          - 8201:80
-
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+
+      - uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: './.github/docker/docker-compose.yml'
+          down-flags: '--volumes'
+          services: |
+            postgres-sso
+            keycloak
 
       - uses: actions/setup-node@v3
         with:
