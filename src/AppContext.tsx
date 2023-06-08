@@ -86,10 +86,15 @@ export function AppContextProvider({ children }: AppProviderProps) {
 
   useEffect(() => {
     setSingletons(null);
-    getAppDataSource().then((_ds) => {
-      getSingletons(_ds).then(setSingletons);
-    });
   }, [setSingletons]);
+
+  useEffect(() => {
+    if (state.global.singletons === null) {
+      getAppDataSource().then((_ds) => {
+        getSingletons(_ds).then(setSingletons);
+      });
+    }
+  }, [setSingletons, state.global.singletons]);
 
   const value = {
     states: { global: state.global, documentTools: state.documentTools },

@@ -50,5 +50,6 @@ module.exports = {
         singleQuote: true,
       },
     ],
+    'import/no-anonymous-default-export': [2, { allowNew: true }],
   },
 };

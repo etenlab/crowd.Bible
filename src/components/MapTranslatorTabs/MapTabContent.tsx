@@ -238,6 +238,7 @@ export const MapTabContent = () => {
   );
 
   // for now we show all maps despite selected language
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const setMapsByLang = useCallback(
     async (langInfo: LanguageInfo) => {
       if (!singletons) return;
