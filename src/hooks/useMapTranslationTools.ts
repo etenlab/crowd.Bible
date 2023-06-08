@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useAppContext } from './useAppContext';
 import { gql, useApolloClient } from '@apollo/client';
 import { FeedbackTypes } from '@/constants/common.constant';
+import axios from 'axios';
 
 export const UPLOAD_FILE_MUTATION = gql`
   mutation UploadFile($file: Upload!, $file_type: String!, $file_size: Int!) {
@@ -106,8 +107,20 @@ export function useMapTranslationTools() {
     [alertFeedback, apolloClient, logger],
   );
 
+  const getFileDataBase64 = useCallback(
+    async (fileId: string | undefined): Promise<string | undefined> => {
+      if (!fileId) return;
+      const { fileUrl } = await getMapFileInfo(fileId);
+      if (!fileUrl) return;
+      const res = await axios.get(fileUrl, { responseType: 'arraybuffer' });
+      return Buffer.from(res.data, 'binary').toString('base64');
+    },
+    [getMapFileInfo],
+  );
+
   return {
     sendMapFile,
     getMapFileInfo,
+    getFileDataBase64,
   };
 }
