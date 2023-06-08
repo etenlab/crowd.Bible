@@ -1,6 +1,7 @@
 import {
   GraphFirstLayerService,
   GraphSecondLayerService,
+  LoggerService,
 } from '@eten-lab/core';
 
 import { WordService } from './word.service';
@@ -16,12 +17,14 @@ import { MapMapper } from '@/mappers/map.mapper';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 
 import { makeFindPropsByLang } from '@/utils/langUtils';
+
+import { type INode, parseSync } from 'svgson';
 export class MapService {
   constructor(
     private readonly graphFirstLayerService: GraphFirstLayerService,
     private readonly graphSecondLayerService: GraphSecondLayerService,
-
     private readonly wordService: WordService,
+    private readonly logger: LoggerService,
   ) {}
 
   async saveMap(
@@ -89,5 +92,46 @@ export class MapService {
       to_node_id: mapId,
       relationship_type: RelationshipTypeConst.WORD_MAP,
     });
+  }
+
+  async processMapWords(
+    words: string[],
+    langInfo: LanguageInfo,
+    mapId: string,
+  ) {
+    if (!words.length || !langInfo) return;
+    let hasNextBatch = true;
+    let batchNumber = 0;
+    const batchItemCount = 100;
+    const createdWords = [];
+    while (hasNextBatch) {
+      const startIdx = batchNumber * batchItemCount;
+      const endIdx = startIdx + batchItemCount;
+      const batchWords = words.slice(startIdx, endIdx);
+      createdWords.push(
+        ...(await this.wordService.createWordsWithLangForMap(
+          batchWords.map((w) => w.trim()).filter((w) => w !== ''),
+          langInfo,
+          mapId,
+        )),
+      );
+      if (batchWords.length !== batchItemCount) {
+        hasNextBatch = false;
+      }
+      batchNumber++;
+    }
+    this.logger.info('total created words', createdWords);
+  }
+
+  iterateOverINode(
+    node: INode,
+    skipNodeNames: string[],
+    cb: (node: INode) => void,
+  ) {
+    if (skipNodeNames.includes(node.name)) return;
+    cb(node);
+    for (const child of node.children || []) {
+      this.iterateOverINode(child, skipNodeNames, cb);
+    }
   }
 }

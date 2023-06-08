@@ -8,9 +8,9 @@ export class MapMapper {
     dto.id = entity.id;
     if (!entity.propertyKeys) return dto;
     for (const propertyKey of entity.propertyKeys) {
-      dto[propertyKey.property_key] = JSON.parse(
-        propertyKey.propertyValue?.property_value,
-      ).value;
+      dto[propertyKey.property_key] = propertyKey.propertyValue?.property_value
+        ? JSON.parse(propertyKey.propertyValue?.property_value).value
+        : undefined;
     }
     const langInfo = subTags2LangInfo({
       lang: dto.language,

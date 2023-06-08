@@ -3,6 +3,9 @@ import { useAppContext } from './useAppContext';
 import { gql, useApolloClient } from '@apollo/client';
 import { FeedbackTypes } from '@/constants/common.constant';
 import axios from 'axios';
+import { LanguageInfo } from '@eten-lab/ui-kit';
+import { nanoid } from 'nanoid';
+import { parseSync } from 'svgson';
 
 export const UPLOAD_FILE_MUTATION = gql`
   mutation UploadFile($file: Upload!, $file_type: String!, $file_size: Int!) {
@@ -27,9 +30,30 @@ export const FETCH_FILE_INFO_QUERY = gql`
   }
 `;
 
+export enum eProcessStatus {
+  NONE = 'NONE',
+  PARSING_STARTED = 'PARSING_STARTED',
+  PARSING_COMPLETED = 'PARSING_COMPLETED',
+  COMPLETED = 'SAVED_IN_DB',
+  FAILED = 'FAILED',
+}
+
+export type MapDetail = {
+  id?: string;
+  tempId?: string;
+  status: eProcessStatus;
+  words?: string[];
+  mapFileId?: string;
+  name?: string;
+  langInfo: LanguageInfo;
+};
+
 export function useMapTranslationTools() {
   const {
     actions: { alertFeedback },
+    states: {
+      global: { singletons },
+    },
     logger,
   } = useAppContext();
   const apolloClient = useApolloClient();
@@ -118,9 +142,112 @@ export function useMapTranslationTools() {
     [getMapFileInfo],
   );
 
+  const setMapStatus = useCallback(
+    (
+      tempId: string,
+      state: Partial<MapDetail>,
+      setMapList: (value: React.SetStateAction<MapDetail[]>) => void,
+    ) => {
+      setMapList((prevList) => {
+        const clonedList = [...prevList];
+        const idx = clonedList.findIndex((m) => m.tempId === tempId);
+        if (idx > -1) {
+          clonedList[idx] = { ...clonedList[idx], ...state };
+        }
+        return clonedList;
+      });
+    },
+    [],
+  );
+
+  const processFile = useCallback(
+    (
+      file: File,
+      langInfo: LanguageInfo,
+      setMapList: (value: React.SetStateAction<MapDetail[]>) => void,
+    ) => {
+      if (!singletons) return;
+      if (!langInfo) return;
+      if (!file) return;
+      const fileName = file.name?.split('.')[0];
+      const id = nanoid();
+      let alreadyExists = false;
+
+      setMapList((prevList) => {
+        const existingIdx = prevList.findIndex((map) => map.name === fileName);
+        if (existingIdx >= 0) {
+          alertFeedback(FeedbackTypes.ERROR, 'File already exists');
+          alreadyExists = true;
+          return [...prevList];
+        }
+        return [
+          ...prevList,
+          {
+            tempId: id,
+            name: fileName,
+            status: eProcessStatus.PARSING_STARTED,
+            langInfo,
+          },
+        ];
+      });
+      if (alreadyExists) return;
+      const fileReader = new FileReader();
+      fileReader.onload = function (evt: ProgressEvent<FileReader>) {
+        if (evt.target?.readyState !== 2) return;
+        if (evt.target.error != null) {
+          setMapStatus(id, { status: eProcessStatus.FAILED }, setMapList);
+          alertFeedback(
+            FeedbackTypes.ERROR,
+            'Error while reading file. Read console for more info',
+          );
+          return;
+        }
+        const filecontent = evt.target.result;
+        if (!filecontent) {
+          setMapStatus(id, { status: eProcessStatus.FAILED }, setMapList);
+          alertFeedback(
+            FeedbackTypes.ERROR,
+            'Error while reading file. Read console for more info',
+          );
+          return;
+        }
+        const originalSvg = filecontent.toString();
+        const parsed = parseSync(originalSvg);
+        const textArray: string[] = [];
+        singletons.mapService.iterateOverINode(parsed, ['style'], (node) => {
+          if (node.type === 'text' || node.type === 'textPath') {
+            if (!node.value) return;
+            textArray.push(node.value);
+          }
+        });
+
+        if (textArray.length === 0 && originalSvg) {
+          setMapStatus(id, { status: eProcessStatus.FAILED }, setMapList);
+          alertFeedback(FeedbackTypes.ERROR, 'No text or textPath tags found');
+        } else {
+          sendMapFile(file, (sentFileData) => {
+            setMapStatus(
+              id,
+              {
+                status: eProcessStatus.PARSING_COMPLETED,
+                mapFileId: sentFileData.id,
+                words: textArray,
+              },
+              setMapList,
+            );
+          });
+        }
+      };
+      fileReader.readAsText(file);
+    },
+    [alertFeedback, sendMapFile, setMapStatus, singletons],
+  );
+
   return {
     sendMapFile,
     getMapFileInfo,
     getFileDataBase64,
+    processFile,
+    setMapStatus,
   };
 }

@@ -180,6 +180,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     graphFirstLayerService,
     graphSecondLayerService,
     wordService,
+    loggerService,
   );
 
   const votingService = new VotingService(
