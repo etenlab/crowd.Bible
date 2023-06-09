@@ -5,9 +5,15 @@ import {
 } from './global.reducer';
 import {
   type StateType as DocumentToolsStateType,
-  initialState as DocumentToolsInitialState,
+  initialState as documentToolsInitialState,
   reducer as documentToolsReducer,
 } from './documentTools.reducer';
+import {
+  type StateType as ComponentsStateType,
+  initialState as componentsInitialState,
+  reducer as componentsReducer,
+} from './components.reducer';
+
 import { actions } from './global.actions';
 
 import { LoggerService } from '@eten-lab/core';
@@ -22,11 +28,13 @@ export interface ActionType<T> {
 export interface StateType {
   global: GlobalStateType;
   documentTools: DocumentToolsStateType;
+  components: ComponentsStateType;
 }
 
 export const initialState = {
   global: globalInitialState,
-  documentTools: DocumentToolsInitialState,
+  documentTools: documentToolsInitialState,
+  components: componentsInitialState,
 };
 
 const CROWD_BIBLE_STATE = 'CROWD_BIBLE_STATE';
@@ -42,6 +50,7 @@ export function persistStore(state: StateType) {
           singletons: null,
           loading: false,
         },
+        components: {},
       }),
     );
   } catch (err) {
@@ -64,6 +73,7 @@ export function loadPersistedStore(): StateType {
         ...newState.global,
         connectivity: window.navigator.onLine,
       },
+      components: {},
     };
   } catch (err) {
     logger.error(err);
@@ -84,9 +94,8 @@ export function reducer(
   const newState = {
     global: globalReducer(state.global, action),
     documentTools: documentToolsReducer(state.documentTools, action),
+    components: componentsReducer(state.components, action),
   };
-
-  console.log(action, newState);
 
   persistStore(newState);
 
