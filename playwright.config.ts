@@ -1,10 +1,27 @@
 import { defineConfig, devices } from '@playwright/test';
-
+import axios from 'axios';
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// require('dotenv').config();
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
+
+(async () => {
+  axios
+    .get('http://localhost:8080')
+    .then(function (response) {
+      // handle success
+      console.log(response);
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+    })
+    .finally(function () {
+      // always executed
+    });
+})();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -72,14 +89,15 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: process.env.CI ? 'npm run start' : '',
-    url: process.env.CI ? 'http://127.0.0.1:3000' : 'https://dev.crowd.bible',
+    url: process.env.CI ? 'http://localhost:3000/' : 'https://dev.crowd.bible',
     reuseExistingServer: !process.env.CI,
     timeout: 500 * 1000,
     env: {
-      REACT_APP_CPG_SERVER_URL: 'https://localhost:8201',
-      REACT_APP_KEYCLOAK_URL: 'https://localhost:8080',
+      REACT_APP_CPG_SERVER_URL: 'http://localhost:8201',
+      REACT_APP_KEYCLOAK_URL: 'http://localhost:8080',
       REACT_APP_KEYCLOAK_REALM: 'showcase',
       REACT_APP_KEYCLOAK_CLIENT_ID: 'showcase-auth',
+      REACT_APP_KEYCLOAK_CLIENT_SECRET: 'eXqrcJ2mHLwLaZCXoUlBFcUiYFdY6cCu',
     },
   },
 });
