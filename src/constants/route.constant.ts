@@ -6,6 +6,8 @@ export enum RouteConst {
   LOGIN = '/login',
   REGISTER = '/register',
   FORGET_PASSWORD = '/forgot-password',
+  RESET_PASSWORD = '/reset-password',
+  PROFILE = '/profile',
 
   GRAPH_VIEWER = '/graph-viewer',
   SQL_RUNNER = '/sql-runner',
@@ -51,14 +53,14 @@ export enum RouteConst {
   FEEDBACK_VERSE = '/feedback/verse',
 
   DISCUSSIONS = '/discussions',
+  DISCUSSIONS_LIST = '/discussions-list',
 
   QA_MENU_PAGE = '/qa-menu-page',
   TRANSLATOR_QA = '/translator-qa',
   READER_QA = '/reader-qa',
 
-  DISCUSSIONS_LIST = '/discussions-list',
-
   MAP_LIST = '/map-list',
+  MAP_DETAIL = 'map-detail',
 
   PLAYGROUND = '/playground',
 }
