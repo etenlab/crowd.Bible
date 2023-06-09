@@ -1,4 +1,8 @@
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
+import { useEffect } from 'react';
+
+import { Route, Redirect } from 'react-router-dom';
+
+import { IonRouterOutlet, setupIonicReact, IonApp } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
 /* Core CSS required for Ionic components to work properly */
@@ -23,31 +27,71 @@ import './styles.css';
 
 import { ThemeProvider } from '@eten-lab/ui-kit';
 import { AppContextProvider } from './AppContext';
-import useSeedService from './hooks/useSeedService';
-import { useEffect } from 'react';
-import { PageLayout } from '@/components/PageLayout';
+
+import useSeedService from '@/hooks/useSeedService';
+import { AppMenu } from '@/components/Layout';
+
+import { RouteConst } from '@/constants/route.constant';
+
 import { AppRoutes } from '@/routes/AppRoutes';
+import { RouteGuarder } from '@/components/RouteGuarder';
 
 setupIonicReact();
 
+const duplicated: string[] = [];
+
+for (let i = 0; i < AppRoutes.length; i++) {
+  const route = AppRoutes[i];
+  for (let j = i + 1; j < AppRoutes.length; j++) {
+    if (AppRoutes[j].path === route.path) {
+      duplicated.push(route.path as string);
+    }
+  }
+}
+
 export default function App() {
   const seedService = useSeedService();
+
   useEffect(() => {
     if (seedService) {
       seedService.init();
     }
   }, [seedService]);
 
+  if (duplicated.length > 0) {
+    alert(`There are duplicated Routes! \n ${duplicated.join('\n')}`);
+  }
+
   return (
     <IonApp>
       <AppContextProvider>
         <ThemeProvider autoDetectPrefersDarkMode={false}>
           <IonReactRouter>
-            <PageLayout>
-              <IonRouterOutlet id="crowd-bible-router-outlet">
-                <AppRoutes />
-              </IonRouterOutlet>
-            </PageLayout>
+            <AppMenu />
+            <IonRouterOutlet>
+              {AppRoutes.map((route) => {
+                if (route.protected) {
+                  return (
+                    <Route
+                      key={route.path as string}
+                      path={route.path}
+                      render={() => (
+                        <RouteGuarder>{route.children}</RouteGuarder>
+                      )}
+                    />
+                  );
+                } else {
+                  return (
+                    <Route
+                      key={route.path as string}
+                      path={route.path}
+                      render={() => <>{route.children}</>}
+                    />
+                  );
+                }
+              })}
+              <Route render={() => <Redirect to={RouteConst.HOME} />} />
+            </IonRouterOutlet>
           </IonReactRouter>
         </ThemeProvider>
       </AppContextProvider>

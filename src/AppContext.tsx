@@ -11,19 +11,22 @@ import {
   type PrefersColorSchemeType,
 } from '@/reducers/global.reducer';
 import { type StateType as DocumentToolsStateType } from '@/reducers/documentTools.reducer';
+import { type StateType as ComponentsStateType } from '@/reducers/components.reducer';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 
 import { useGlobal } from '@/hooks/useGlobal';
 import { useDocumentTools } from '@/hooks/useDocumentTools';
+import { useGlobalComponents } from '@/hooks/useGlobalComponents';
 
 import { getAppDataSource } from './data-source';
-import getSingletons from './singletons';
 import { LoggerService } from '@eten-lab/core';
+import getSingletons from './singletons';
 
 export interface ContextType {
   states: {
     global: GlobalStateType;
     documentTools: DocumentToolsStateType;
+    components: ComponentsStateType;
   };
   actions: {
     setUser: (user: IUser) => void;
@@ -38,6 +41,8 @@ export interface ContextType {
     setTargetLanguage: (lang: LanguageInfo | null) => void;
     setLoadingState: (state: boolean) => void;
     setSqlPortalShown: (isSqlPortalShown: boolean) => void;
+    setMenuCom: (com: HTMLIonMenuElement) => void;
+    clearMenuCom: () => void;
   };
   logger: LoggerService;
 }
@@ -69,6 +74,10 @@ export function AppContextProvider({ children }: AppProviderProps) {
     dispatch,
   });
 
+  const { setMenuCom, clearMenuCom } = useGlobalComponents({
+    dispatch,
+  });
+
   const { setTargetLanguage, setSourceLanguage } = useDocumentTools({
     dispatch,
   });
@@ -92,7 +101,11 @@ export function AppContextProvider({ children }: AppProviderProps) {
   }, [setSingletons]);
 
   const value = {
-    states: { global: state.global, documentTools: state.documentTools },
+    states: {
+      global: state.global,
+      documentTools: state.documentTools,
+      components: state.components,
+    },
     actions: {
       closeFeedback,
       alertFeedback,
@@ -107,6 +120,8 @@ export function AppContextProvider({ children }: AppProviderProps) {
       setTargetLanguage,
       logout,
       setSqlPortalShown,
+      setMenuCom,
+      clearMenuCom,
     },
     logger: state?.global?.singletons?.loggerService || logger.current,
   };
