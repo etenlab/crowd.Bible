@@ -1,0 +1,16 @@
+.crowd-bible-ion-content {
+  --offset-top: 0px !important;
+  --offset-bottom: 0px;
+}
+
+.ionic-toolbar {
+  --background: transparent;
+  --border-color: none;
+  --border-style: none;
+  --border-width: none;
+  --color: none;
+  --padding-bottom: 0;
+  --padding-end: 0;
+  --padding-start: 0;
+  --padding-top: 0;
+}
