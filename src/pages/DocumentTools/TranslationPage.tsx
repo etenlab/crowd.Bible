@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, type MouseEvent } from 'react';
 import { useParams } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import {
   FiPlus,
@@ -21,6 +20,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { WordSequenceDto, SubWordSequenceDto } from '@/dtos/word-sequence.dto';
 
 import { RouteConst } from '@/constants/route.constant';
+import { PageLayout } from '@/components/Layout';
 
 import { compareLangInfo } from '@/utils/langUtils';
 
@@ -131,7 +131,7 @@ export function TranslationPage() {
     : `${RouteConst.TRANSLATION_EDIT}/${documentId}`;
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
         <Typography
           variant="overline"
@@ -201,6 +201,6 @@ export function TranslationPage() {
           />
         </Stack>
       </Backdrop>
-    </IonContent>
+    </PageLayout>
   );
 }

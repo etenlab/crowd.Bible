@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 import {
   Button,
@@ -134,7 +134,7 @@ export function SiteTextAppListPage() {
   ) : null;
 
   return (
-    <IonContent>
+    <PageLayout>
       <HeadBox
         title="Applications"
         filter={{
@@ -146,6 +146,6 @@ export function SiteTextAppListPage() {
       />
       {langSelectorCom}
       {buttonListCom}
-    </IonContent>
+    </PageLayout>
   );
 }

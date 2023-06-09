@@ -1,5 +1,5 @@
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 export function BilingualDictionaryPage() {
-  return <IonContent>/bilingual-dictionary</IonContent>;
+  return <PageLayout>/bilingual-dictionary</PageLayout>;
 }

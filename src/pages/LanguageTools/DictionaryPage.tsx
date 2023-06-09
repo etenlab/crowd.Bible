@@ -8,7 +8,6 @@ import {
 } from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
-import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
 import { VotableItem } from '@/dtos/votable-item.dto';
@@ -19,6 +18,7 @@ import {
   UpOrDownVote,
   VoteTypes,
 } from '@/constants/common.constant';
+import { PageLayout } from '@/components/Layout';
 
 const { Box, Divider } = MuiMaterial;
 
@@ -210,7 +210,7 @@ export function DictionaryPage() {
   }, [alertFeedback, selectedLanguageInfo]);
 
   return (
-    <IonContent>
+    <PageLayout>
       {!selectedWord ? (
         <Box
           display={'flex'}
@@ -303,6 +303,6 @@ export function DictionaryPage() {
           />
         </Box>
       )}
-    </IonContent>
+    </PageLayout>
   );
 }

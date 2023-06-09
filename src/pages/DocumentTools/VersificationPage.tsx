@@ -1,5 +1,5 @@
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 export function VersificationPage() {
-  return <IonContent>/file-import</IonContent>;
+  return <PageLayout>/file-import</PageLayout>;
 }

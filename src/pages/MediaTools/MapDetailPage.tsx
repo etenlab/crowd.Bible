@@ -1,4 +1,4 @@
-import { IonChip, IonContent, useIonLoading, useIonRouter } from '@ionic/react';
+import { IonChip, useIonLoading, useIonRouter } from '@ionic/react';
 
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
@@ -10,6 +10,8 @@ import { WordMapper } from '@/src/mappers/word.mapper';
 import { useMapTranslationTools } from '@/src/hooks/useMapTranslationTools';
 import axios from 'axios';
 import { RouteConst } from '@/constants/route.constant';
+import { PageLayout } from '@/components/Layout';
+
 const { TitleWithIcon } = CrowdBibleUI;
 
 const { Box } = MuiMaterial;
@@ -80,8 +82,9 @@ export const MapDetailPage = () => {
   if (!mapDetail) {
     return <></>;
   }
+
   return (
-    <IonContent>
+    <PageLayout>
       <Box
         display={'flex'}
         flexDirection={'column'}
@@ -123,7 +126,7 @@ export const MapDetailPage = () => {
           <IonChip key={w.id}>{w.word}</IonChip>
         ))}
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 };
 

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
+
 import { useAppContext } from '@/hooks/useAppContext';
 
 import { Button, MuiMaterial, Typography, Input } from '@eten-lab/ui-kit';
@@ -9,6 +9,8 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { gql, useApolloClient } from '@apollo/client';
 import { RouteConst } from '@/constants/route.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { Box } = MuiMaterial;
 
@@ -82,7 +84,7 @@ export function ForgotPasswordPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <Box
         component="form"
         sx={{
@@ -146,6 +148,6 @@ export function ForgotPasswordPage() {
           {"Don't you have an account?"}
         </Button>
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 }

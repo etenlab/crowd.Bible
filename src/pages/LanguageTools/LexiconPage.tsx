@@ -1,5 +1,5 @@
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 export function LexiconPage() {
-  return <IonContent>/lexicon</IonContent>;
+  return <PageLayout>/lexicon</PageLayout>;
 }

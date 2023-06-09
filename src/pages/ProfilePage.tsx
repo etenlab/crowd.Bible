@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { IonContent } from '@ionic/react';
 import { decodeToken, isTokenValid } from '@/utils/AuthUtils';
 import { gql, useApolloClient } from '@apollo/client';
 import {
@@ -15,6 +13,8 @@ import * as Yup from 'yup';
 import { useState } from 'react';
 import { useAppContext } from '@/src/hooks/useAppContext';
 import { USER_TOKEN_KEY } from '@/constants/common.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { Box } = MuiMaterial;
 
@@ -40,6 +40,7 @@ export function ProfilePage() {
   const [successMessage, setSuccessMessage] = useState('');
   const userToken = localStorage.getItem(USER_TOKEN_KEY);
   const apolloClient = useApolloClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const token: any = decodeToken(userToken!);
 
   const formik = useFormik<{
@@ -64,6 +65,7 @@ export function ProfilePage() {
           setSuccessMessage('Password reset successfully');
           logger.info(res);
         })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .catch((error: any) => {
           setErrorMessage(error.message);
         });
@@ -83,14 +85,14 @@ export function ProfilePage() {
 
   if (!isTokenValid(token)) {
     return (
-      <IonContent>
+      <PageLayout>
         <h3>Token not valid</h3>
-      </IonContent>
+      </PageLayout>
     );
   }
 
   return (
-    <IonContent>
+    <PageLayout>
       <Box
         component="form"
         sx={{
@@ -187,6 +189,6 @@ export function ProfilePage() {
           Save
         </Button>
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 }

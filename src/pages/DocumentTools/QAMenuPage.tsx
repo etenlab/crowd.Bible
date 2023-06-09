@@ -1,5 +1,5 @@
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 import { DiAskQuestion, CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 
@@ -40,7 +40,7 @@ export function QAMenuPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack sx={{ padding: '20px 20px 0 20px' }}>
         <TitleWithIcon
           label="Question & Answer"
@@ -52,6 +52,6 @@ export function QAMenuPage() {
       </Stack>
 
       <CardGroup group={cardGroup.group} linkItems={cardGroup.linkItems} />
-    </IonContent>
+    </PageLayout>
   );
 }

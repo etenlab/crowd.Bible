@@ -1,5 +1,5 @@
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 export function CommentaryPage() {
-  return <IonContent>/commentary</IonContent>;
+  return <PageLayout>/commentary</PageLayout>;
 }

@@ -1,14 +1,16 @@
-import { IonContent } from '@ionic/react';
 import { MuiMaterial, Button } from '@eten-lab/ui-kit';
 import { useState } from 'react';
-import { WordTabContent } from '@/src/components/MapTranslatorTabs/WordTabContent';
-import { MapTabContent } from '@/src/components/MapTranslatorTabs/MapTabContent';
+import { WordTabContent } from '@/components/MapTranslatorTabs/WordTabContent';
+import { MapTabContent } from '@/components/MapTranslatorTabs/MapTabContent';
+
+import { PageLayout } from '@/components/Layout';
+
 const { Box, Typography, styled } = MuiMaterial;
 
 export const MapTranslatorPage = () => {
   const [activeTab, setActiveTab] = useState(0);
   return (
-    <IonContent>
+    <PageLayout>
       <Box
         display={'flex'}
         flexDirection={'row'}
@@ -60,7 +62,7 @@ export const MapTranslatorPage = () => {
         {activeTab === 0 ? <MapTabContent /> : <></>}
         {activeTab === 1 ? <WordTabContent /> : <></>}
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 };
 

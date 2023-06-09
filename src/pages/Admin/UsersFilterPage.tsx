@@ -1,11 +1,12 @@
-import { IonContent } from '@ionic/react';
 import { MuiMaterial, Typography } from '@eten-lab/ui-kit';
+
+import { PageLayout } from '@/components/Layout';
 
 const { Box } = MuiMaterial;
 
 export function UsersFilterPage() {
   return (
-    <IonContent>
+    <PageLayout>
       <Box
         component="form"
         sx={{
@@ -25,6 +26,6 @@ export function UsersFilterPage() {
           Edit Role
         </Typography>
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 }

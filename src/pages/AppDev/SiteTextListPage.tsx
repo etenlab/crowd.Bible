@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import {
   CrowdBibleUI,
@@ -21,6 +20,8 @@ import { AppDto } from '@/dtos/document.dto';
 import { TranslatedSiteTextDto } from '@/dtos/site-text.dto';
 
 import { compareLangInfo } from '@/utils/langUtils';
+
+import { PageLayout } from '@/components/Layout';
 
 const { HeadBox, ButtonList } = CrowdBibleUI;
 const { Stack, Chip } = MuiMaterial;
@@ -122,7 +123,7 @@ export function SiteTextListPage() {
       : true;
 
   return (
-    <IonContent>
+    <PageLayout>
       <HeadBox
         title="Applications"
         search={{
@@ -150,6 +151,6 @@ export function SiteTextListPage() {
           }
         />
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

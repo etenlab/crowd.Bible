@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import {
   Typography,
@@ -12,6 +11,8 @@ import {
 
 import { mockDocument } from './ReaderQAPage';
 import { RouteConst } from '@/constants/route.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { LabelWithIcon, KindSelectionBox } = CrowdBibleUI;
 const { Stack, Backdrop } = MuiMaterial;
@@ -46,7 +47,7 @@ export function FeedbackPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack sx={{ padding: '20px' }}>
         <LabelWithIcon
           label="translation"
@@ -89,6 +90,6 @@ export function FeedbackPage() {
           />
         </Stack>
       </Backdrop>
-    </IonContent>
+    </PageLayout>
   );
 }

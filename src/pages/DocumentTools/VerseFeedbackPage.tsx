@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 
 import { FeedbackInput } from '@/components/FeedbackInput';
 import { mockChapters } from './ChapterFeedbackPage';
 import { RouteConst } from '@/constants/route.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { TitleWithIcon, VerticalRadioList, ButtonList } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -148,7 +149,7 @@ export function VerseFeedbackPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       {selectedChapter ? (
         <VerseFeedback
           onClickCancel={handleClickCancel}
@@ -160,6 +161,6 @@ export function VerseFeedbackPage() {
           onClickChapter={handleClickChapter}
         />
       )}
-    </IonContent>
+    </PageLayout>
   );
 }
