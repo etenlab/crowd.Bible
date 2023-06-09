@@ -18,6 +18,8 @@ import {
 } from '@/src/hooks/useMapTranslationTools';
 import { langInfo2String } from '@/utils/langUtils';
 import { FeedbackTypes } from '@/constants/common.constant';
+import { PropertyKeyConst } from '@eten-lab/core';
+
 const { Box, styled, CircularProgress } = MuiMaterial;
 
 const PADDING = 20;
@@ -51,27 +53,27 @@ export const MapTabContent = () => {
       logger.error({ at: 'useEffect loading all maps' }, 'No singletons!');
       return;
     }
-    (async function loadAllMaps() {
+    (async function loadAllProcessedMaps() {
       const res = await singletons.mapService.getMaps();
       setMapList(
-        res.map(
-          (m) =>
-            ({
-              id: m.id,
-              name: m.name,
-              map: m.map,
-              status: eProcessStatus.NONE,
-              words: [],
-              langInfo: m.langInfo,
-            } as MapDetail),
-        ),
+        res
+          .filter((m) => m[PropertyKeyConst.IS_PROCESSING_FINISHED])
+          .map(
+            (m) =>
+              ({
+                id: m.id,
+                name: m[PropertyKeyConst.NAME],
+                status: eProcessStatus.NONE,
+                langInfo: m.langInfo,
+              } as MapDetail),
+          ),
       );
     })();
   }, [logger, singletons]);
 
   useEffect(() => {
     if (!singletons) {
-      logger.error({ at: 'useEffect stroing words' }, 'No singletons!');
+      logger.error({ at: 'useEffect storing words' }, 'No singletons!');
       return;
     }
     for (const mapState of mapList) {
@@ -83,9 +85,9 @@ export const MapTabContent = () => {
         };
         try {
           const mapId = await singletons.mapService.saveMap(argMap.langInfo, {
-            name: argMap.name!,
-            mapFileId: argMap.mapFileId!,
-            ext: 'svg',
+            [PropertyKeyConst.NAME]: argMap.name!,
+            [PropertyKeyConst.MAP_FILE_ID]: argMap.mapFileId!,
+            [PropertyKeyConst.EXT]: 'svg',
           });
           if (mapId) {
             newState.id = mapId;
@@ -93,6 +95,37 @@ export const MapTabContent = () => {
               argMap.words!,
               argMap.langInfo,
               mapId,
+            );
+            const isExists = await singletons.mapService.doesExistMapWithProps([
+              {
+                key: PropertyKeyConst.NAME,
+                value: argMap.name,
+              },
+              {
+                key: PropertyKeyConst.IS_PROCESSING_FINISHED,
+                value: true,
+              },
+            ]);
+            if (!isExists) {
+              await singletons.graphSecondLayerService.addNewNodeProperties(
+                mapId,
+                {
+                  [PropertyKeyConst.IS_PROCESSING_FINISHED]: true,
+                },
+              );
+              alertFeedback(
+                FeedbackTypes.SUCCESS,
+                `Map file (name:${argMap.name}) is uploaded.`,
+              );
+            } else {
+              alertFeedback(
+                FeedbackTypes.SUCCESS,
+                `Map file (name:${argMap.name}) already exists.`,
+              );
+            }
+            alertFeedback(
+              FeedbackTypes.SUCCESS,
+              `Map file (name:${argMap.name}) is uploaded.`,
             );
           } else newState.status = eProcessStatus.FAILED;
         } catch (error) {
@@ -102,7 +135,7 @@ export const MapTabContent = () => {
       };
       handleMapParsingCompleted(mapState);
     }
-  }, [logger, mapList, setMapStatus, singletons]);
+  }, [alertFeedback, logger, mapList, setMapStatus, singletons]);
 
   const fileHandler: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
@@ -115,6 +148,9 @@ export const MapTabContent = () => {
         alertFeedback(FeedbackTypes.ERROR, 'No language seleced');
         return;
       }
+      window.addEventListener('beforeunload', () => {
+        'alert';
+      });
       processFile(file, langInfo, setMapList);
       e.target.value = '';
     },
@@ -132,9 +168,7 @@ export const MapTabContent = () => {
             ({
               id: m.id,
               name: m.name,
-              map: m.map,
               status: eProcessStatus.NONE,
-              words: [],
               langInfo: m.langInfo,
             } as MapDetail),
         ),

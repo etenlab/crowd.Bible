@@ -18,7 +18,7 @@ import { LanguageInfo } from '@eten-lab/ui-kit';
 
 import { makeFindPropsByLang } from '@/utils/langUtils';
 
-import { type INode, parseSync } from 'svgson';
+import { type INode } from 'svgson';
 export class MapService {
   constructor(
     private readonly graphFirstLayerService: GraphFirstLayerService,
@@ -121,6 +121,19 @@ export class MapService {
       batchNumber++;
     }
     this.logger.info('total created words', createdWords);
+  }
+
+  async doesExistMapWithProps(
+    props: Array<{
+      key: string;
+      value: unknown;
+    }>,
+  ): Promise<boolean> {
+    const foundNodeIds = await this.graphFirstLayerService.getNodeIdsByProps(
+      NodeTypeConst.MAP,
+      props,
+    );
+    return !!foundNodeIds[0];
   }
 
   iterateOverINode(

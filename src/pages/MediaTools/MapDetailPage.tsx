@@ -57,7 +57,6 @@ export const MapDetailPage = () => {
             words: mapWordsNodes?.map
               ? mapWordsNodes.map((w) => WordMapper.entityToDto(w))
               : [],
-            map: mapDto.map,
           });
         } else {
           alertFeedback(FeedbackTypes.ERROR, 'No map data found');

@@ -78,9 +78,9 @@ export function useMapTranslationTools() {
           },
         })
         .then((res) => {
-          alertFeedback(
-            FeedbackTypes.SUCCESS,
-            `Map file (name:${file.name}) uploaded.`,
+          logger.info(
+            { at: 'useMapTranslationTools, gql mutation - upload map.' },
+            `Map file (name:${file.name}) is uploaded.`,
           );
           const { id, fileName, fileHash, fileUrl } = res.data.uploadFile;
           afterSuccess({ id, fileName, fileHash, fileUrl });
