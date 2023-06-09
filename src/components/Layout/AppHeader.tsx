@@ -87,7 +87,6 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
 
   const handleToggleMenu = () => {
     if (menu) {
-      console.log(menu);
       menu.toggle();
     }
   };
