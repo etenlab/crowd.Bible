@@ -47,7 +47,10 @@ export const MapTabContent = () => {
 
   // for now we show all maps despite selected language
   useEffect(() => {
-    if (!singletons) return;
+    if (!singletons) {
+      logger.error({ at: 'useEffect loading all maps' }, 'No singletons!');
+      return;
+    }
     (async function loadAllMaps() {
       const res = await singletons.mapService.getMaps();
       setMapList(
@@ -64,10 +67,13 @@ export const MapTabContent = () => {
         ),
       );
     })();
-  }, [singletons]);
+  }, [logger, singletons]);
 
   useEffect(() => {
-    if (!singletons) return;
+    if (!singletons) {
+      logger.error({ at: 'useEffect stroing words' }, 'No singletons!');
+      return;
+    }
     for (const mapState of mapList) {
       if (mapState.status !== eProcessStatus.PARSING_COMPLETED) continue;
 
@@ -83,7 +89,7 @@ export const MapTabContent = () => {
           });
           if (mapId) {
             newState.id = mapId;
-            singletons.mapService.processMapWords(
+            await singletons.mapService.processMapWords(
               argMap.words!,
               argMap.langInfo,
               mapId,
@@ -261,7 +267,7 @@ export const MapTabContent = () => {
                       eProcessStatus.PARSING_COMPLETED,
                     ].includes(map.status) && (
                       <Button variant={'text'} color={'blue-primary'}>
-                        Processing...
+                        Processing... Don`t close this page
                       </Button>
                     )}
                     {map.status === eProcessStatus.FAILED && (

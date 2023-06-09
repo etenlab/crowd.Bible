@@ -82,7 +82,6 @@ export function useMapTranslationTools() {
             FeedbackTypes.SUCCESS,
             `Map file (name:${file.name}) uploaded.`,
           );
-          logger.info(res);
           const { id, fileName, fileHash, fileUrl } = res.data.uploadFile;
           afterSuccess({ id, fileName, fileHash, fileUrl });
         })
@@ -166,7 +165,10 @@ export function useMapTranslationTools() {
       langInfo: LanguageInfo,
       setMapList: (value: React.SetStateAction<MapDetail[]>) => void,
     ) => {
-      if (!singletons) return;
+      if (!singletons) {
+        logger.error('---No singletons!');
+        return;
+      }
       if (!langInfo) return;
       if (!file) return;
       const fileName = file.name?.split('.')[0];
@@ -240,7 +242,7 @@ export function useMapTranslationTools() {
       };
       fileReader.readAsText(file);
     },
-    [alertFeedback, sendMapFile, setMapStatus, singletons],
+    [alertFeedback, logger, sendMapFile, setMapStatus, singletons],
   );
 
   return {
