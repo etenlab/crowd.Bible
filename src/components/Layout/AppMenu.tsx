@@ -38,15 +38,18 @@ const menuLinks = {
 
 export function AppMenu() {
   const {
+    states: {
+      components: { menu },
+    },
     actions: { setMenuCom },
   } = useAppContext();
   const ref = useRef<HTMLIonMenuElement>(null);
 
   useEffect(() => {
-    if (ref.current) {
+    if (ref.current && !menu) {
       setMenuCom(ref.current);
     }
-  }, [setMenuCom]);
+  }, [setMenuCom, menu]);
 
   return (
     <IonMenu ref={ref} contentId="crowd-bible-app">

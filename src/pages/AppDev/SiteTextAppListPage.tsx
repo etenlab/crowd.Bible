@@ -82,7 +82,7 @@ export function SiteTextAppListPage() {
   };
 
   const handleClickBack = () => {
-    history.push(`${RouteConst.APPLICATION_LIST}`);
+    history.push(`${RouteConst.SITE_TEXT_MENU_PAGE}`);
   };
 
   const handleClickSearchButton = () => {
