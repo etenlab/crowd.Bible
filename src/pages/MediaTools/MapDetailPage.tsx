@@ -4,12 +4,13 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
 import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
-import { MapDto } from '@/src/dtos/map.dto';
-import { WordMapper } from '@/src/mappers/word.mapper';
-import { useMapTranslationTools } from '@/src/hooks/useMapTranslationTools';
+import { WordMapper } from '@/mappers/word.mapper';
+import { useMapTranslationTools } from '@/hooks/useMapTranslationTools';
 import { RouteConst } from '@/constants/route.constant';
-import { useAppContext } from '../../hooks/useAppContext';
-import { FeedbackTypes } from '../../constants/common.constant';
+import { useAppContext } from '@/hooks/useAppContext';
+import { FeedbackTypes } from '@/constants/common.constant';
+import { MapDto } from '@/dtos/map.dto';
+
 const { TitleWithIcon } = CrowdBibleUI;
 
 const { Box } = MuiMaterial;

@@ -10,12 +10,12 @@ import {
   StyledFilterButton,
   StyledSectionTypography,
 } from './StyledComponents';
-import { useAppContext } from '@/src/hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 import {
   MapDetail,
   eProcessStatus,
   useMapTranslationTools,
-} from '@/src/hooks/useMapTranslationTools';
+} from '@/hooks/useMapTranslationTools';
 import { langInfo2String } from '@/utils/langUtils';
 import { FeedbackTypes } from '@/constants/common.constant';
 import { PropertyKeyConst } from '@eten-lab/core';

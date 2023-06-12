@@ -1,6 +1,6 @@
-import { MapDto } from '@/src/dtos/map.dto';
+import { MapDto } from '@/dtos/map.dto';
 import { Node } from '@/src/models';
-import { subTags2LangInfo } from '@/src/utils/langUtils';
+import { subTags2LangInfo } from '@/utils/langUtils';
 import { LoggerService } from '@eten-lab/core';
 const logger = new LoggerService();
 
