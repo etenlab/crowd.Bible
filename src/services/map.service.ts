@@ -100,6 +100,7 @@ export class MapService {
     mapId: string,
   ) {
     if (!words.length || !langInfo) return;
+    const start = performance.now();
     let hasNextBatch = true;
     let batchNumber = 0;
     const batchItemCount = 100;
@@ -121,6 +122,11 @@ export class MapService {
       batchNumber++;
     }
     this.logger.info('total created words', createdWords);
+    const end = performance.now();
+    this.logger.info(
+      { at: 'map.service#processMapWords' },
+      `processing has taken, ms: ${end - start}`,
+    );
   }
 
   async doesExistMapWithProps(

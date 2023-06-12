@@ -67,6 +67,7 @@ export function useMapTranslationTools() {
         fileHash: string;
         fileUrl: string;
       }) => void,
+      afterFail: (error: Error) => void,
     ): Promise<void> => {
       apolloClient
         .mutate({
@@ -90,6 +91,7 @@ export function useMapTranslationTools() {
             FeedbackTypes.ERROR,
             `Error on map uploading: ${error.message}`,
           );
+          afterFail(error);
           logger.error(JSON.stringify(error));
         });
     },
@@ -227,17 +229,23 @@ export function useMapTranslationTools() {
           setMapStatus(id, { status: eProcessStatus.FAILED }, setMapList);
           alertFeedback(FeedbackTypes.ERROR, 'No text or textPath tags found');
         } else {
-          sendMapFile(file, (sentFileData) => {
-            setMapStatus(
-              id,
-              {
-                status: eProcessStatus.PARSING_COMPLETED,
-                mapFileId: sentFileData.id,
-                words: textArray,
-              },
-              setMapList,
-            );
-          });
+          sendMapFile(
+            file,
+            (sentFileData) => {
+              setMapStatus(
+                id,
+                {
+                  status: eProcessStatus.PARSING_COMPLETED,
+                  mapFileId: sentFileData.id,
+                  words: textArray,
+                },
+                setMapList,
+              );
+            },
+            (_error) => {
+              setMapStatus(id, { status: eProcessStatus.FAILED }, setMapList);
+            },
+          );
         }
       };
       fileReader.readAsText(file);
