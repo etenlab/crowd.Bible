@@ -1,32 +1,38 @@
-import { IonChip, IonContent, useIonLoading, useIonRouter } from '@ionic/react';
+import { IonChip, IonContent, useIonRouter } from '@ionic/react';
 
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
 import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
-import { useSingletons } from '@/src/hooks/useSingletons';
-import { MapDto } from '@/src/dtos/map.dto';
-import { WordMapper } from '@/src/mappers/word.mapper';
-import { useMapTranslationTools } from '@/src/hooks/useMapTranslationTools';
-import axios from 'axios';
+import { WordMapper } from '@/mappers/word.mapper';
+import { useMapTranslationTools } from '@/hooks/useMapTranslationTools';
 import { RouteConst } from '@/constants/route.constant';
+import { useAppContext } from '@/hooks/useAppContext';
+import { FeedbackTypes } from '@/constants/common.constant';
+import { MapDto } from '@/dtos/map.dto';
+
 const { TitleWithIcon } = CrowdBibleUI;
 
 const { Box } = MuiMaterial;
 
 const PADDING = 20;
 export const MapDetailPage = () => {
+  const {
+    states: {
+      global: { singletons },
+    },
+    actions: { setLoadingState, alertFeedback },
+    logger,
+  } = useAppContext();
+
   const router = useIonRouter();
-  const [present] = useIonLoading();
   const { id } = useParams<{ id: string }>();
   const [windowWidth, setWindowWidth] = useState(getWindowWidth());
   const [mapDetail, setMapDetail] = useState<MapDto>();
   const [mapFileData, setMapFileData] = useState<string>();
-  const singletons = useSingletons();
-  const { getMapFileInfo } = useMapTranslationTools();
+  const { getFileDataBase64 } = useMapTranslationTools();
 
   useEffect(() => {
-    if (present) present({ message: 'Loading...', duration: 1000 });
     function handleWindowResize() {
       setWindowWidth(getWindowWidth());
     }
@@ -34,48 +40,45 @@ export const MapDetailPage = () => {
     return () => {
       window.removeEventListener('resize', handleWindowResize);
     };
-  }, [present]);
+  }, [setLoadingState]);
 
   useEffect(() => {
-    if (singletons && id) {
-      const getMapDetail = async (id: string) => {
-        try {
-          if (!singletons.mapService) return;
-          const [mapRes, mapWordsRes] = await Promise.allSettled([
-            singletons.mapService.getMap(id),
-            singletons.mapService.getMapWords(id),
-          ]);
-          if (mapRes.status === 'fulfilled' && mapRes.value) {
-            setMapDetail({
-              ...mapRes.value,
-              words:
-                mapWordsRes.status === 'fulfilled'
-                  ? mapWordsRes.value.map((w) => WordMapper.entityToDto(w))
-                  : [],
-              map: mapRes.value.map,
-            });
-          } else {
-            router.goBack();
-          }
-        } catch (error) {
-          router.goBack();
+    if (!singletons || !id) return;
+    if (!singletons.mapService) return;
+    setLoadingState(true);
+    const findMapDetail = async (id: string) => {
+      try {
+        const [mapDto, mapWordsNodes] = await Promise.all([
+          singletons.mapService.getMap(id),
+          singletons.mapService.getMapWords(id),
+        ]);
+        if (mapDto) {
+          setMapDetail({
+            ...mapDto,
+            words: mapWordsNodes?.map
+              ? mapWordsNodes.map((w) => WordMapper.entityToDto(w))
+              : [],
+          });
+        } else {
+          alertFeedback(FeedbackTypes.ERROR, 'No map data found');
         }
-      };
-      getMapDetail(id);
-    }
-  }, [singletons, id, router]);
+      } catch (error) {
+        logger.error({ error }, 'Error with getting map details');
+        router.goBack();
+      } finally {
+        setLoadingState(false);
+      }
+    };
+    findMapDetail(id);
+  }, [singletons, id, router, alertFeedback, logger, setLoadingState]);
 
   useEffect(() => {
-    if (!mapDetail?.mapFileId) return;
-    const getFileData = async (fileId: string) => {
-      const { fileUrl } = await getMapFileInfo(fileId);
-      if (!fileUrl) return;
-      const res = await axios.get(fileUrl, { responseType: 'arraybuffer' });
-      const f = Buffer.from(res.data, 'binary').toString('base64');
+    async function findFileData() {
+      const f = await getFileDataBase64(mapDetail?.mapFileId);
       setMapFileData(f);
-    };
-    getFileData(mapDetail?.mapFileId);
-  }, [getMapFileInfo, mapDetail, mapDetail?.mapFileId]);
+    }
+    findFileData();
+  }, [getFileDataBase64, mapDetail, mapDetail?.mapFileId]);
 
   if (!mapDetail) {
     return <></>;
