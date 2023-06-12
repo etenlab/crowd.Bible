@@ -1,9 +1,9 @@
 import { FindOptionsWhere } from 'typeorm';
-import { NodeRepository } from '@eten-lab/core';
 
 import {
   GraphFirstLayerService,
   GraphSecondLayerService,
+  NodeRepository,
 } from '@eten-lab/core';
 
 import {
@@ -47,7 +47,8 @@ export class WordService {
       ],
       where: {
         node_type: NodeTypeConst.WORD,
-        toNodeRelationships: relQuery,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        toNodeRelationships: relQuery as any,
       },
     });
 
@@ -99,6 +100,7 @@ export class WordService {
     langInfo: LanguageInfo,
     mapId?: Nanoid,
   ): Promise<Nanoid[]> {
+    //ill ---- TODO replace map with atomic batch creation without checking on existance
     const wordNodesPromises = words.map((word) => {
       return this.createWordOrPhraseWithLang(
         word,
@@ -114,15 +116,21 @@ export class WordService {
     langInfo: LanguageInfo,
     mapId: Nanoid,
   ): Promise<Nanoid[]> {
-    const wordNodeIds = await this.createWordsWithLang(words, langInfo);
-    for (const wordNodeId of wordNodeIds) {
-      await this.graphSecondLayerService.createRelationshipFromObject(
-        RelationshipTypeConst.WORD_MAP,
-        {},
-        wordNodeId,
-        mapId,
-      );
-    }
+    // filter out existing words to not to check their (and relations) existance in further.
+    const unexistingWords = [] as string[]; //ill----------- TODO
+    const wordNodeIds = await this.createWordsWithLang(
+      unexistingWords,
+      langInfo,
+    );
+
+    //ill --- TODO createRelationshipsFromNodesToNode without checking on exista
+    // await this.graphSecondLayerService.createRelationshipsFromNodesToNode(
+    await this.graphSecondLayerService.createRelationshipFromObject(
+      RelationshipTypeConst.WORD_MAP,
+      {},
+      wordNodeIds[0],
+      mapId,
+    );
     return wordNodeIds;
   }
 

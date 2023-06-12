@@ -34,7 +34,7 @@ import { SeedService } from '@/services/seed.service';
 
 import { DefinitionService } from '@/services/definition.service';
 import { SiteTextService } from '@/services/site-text.service';
-import { LexiconService } from '@/services/lexicon.service';
+// import { LexiconService } from '@/services/lexicon.service';
 import { TranslationService } from '@/services/translation.service';
 import { UserService } from '@/services/user.service';
 import { DocumentService } from '@/services/document.service';
@@ -55,7 +55,7 @@ export interface ISingletons {
   tableService: TableService;
   definitionService: DefinitionService;
   siteTextService: SiteTextService;
-  lexiconService: LexiconService;
+  // lexiconService: LexiconService;
   materializerService: MaterializerService;
   translationService: TranslationService;
   userService: UserService;
@@ -85,7 +85,8 @@ const _cache = new Map<DataSource, Promise<ISingletons>>();
 const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   const loggerService = new LoggerService();
   const ds = await dataSource.initialize();
-  const dbService = new DbService(ds);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const dbService = new DbService(ds as any);
 
   const syncSessionRepository = new SyncSessionRepository(dbService);
 
@@ -221,7 +222,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     documentService,
   );
 
-  const lexiconService = new LexiconService(graphSecondLayerService, nodeRepo);
+  // const lexiconService = new LexiconService(graphSecondLayerService, nodeRepo);
 
   const materializerService = new MaterializerService(tableService, dbService);
 
@@ -237,7 +238,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     tableService,
     definitionService,
     siteTextService,
-    lexiconService,
+    // lexiconService,
     materializerService,
     translationService,
     userService,
