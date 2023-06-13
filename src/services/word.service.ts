@@ -117,20 +117,26 @@ export class WordService {
     mapId: Nanoid,
   ): Promise<Nanoid[]> {
     // filter out existing words to not to check their (and relations) existance in further.
-    const unexistingWords = [] as string[]; //ill----------- TODO
-    const wordNodeIds = await this.createWordsWithLang(
-      unexistingWords,
-      langInfo,
-    );
+    // const unexistingWords = [] as string[]; //ill----------- TODO
+    const wordNodeIds = await this.createWordsWithLang(words, langInfo);
 
     //ill --- TODO createRelationshipsFromNodesToNode without checking on exista
     // await this.graphSecondLayerService.createRelationshipsFromNodesToNode(
-    await this.graphSecondLayerService.createRelationshipFromObject(
-      RelationshipTypeConst.WORD_MAP,
-      {},
-      wordNodeIds[0],
-      mapId,
-    );
+    // await this.graphSecondLayerService.createRelationshipFromObject(
+    //   RelationshipTypeConst.WORD_MAP,
+    //   {},
+    //   wordNodeIds[0],
+    //   mapId,
+    // );
+
+    for (const wordNodeId of wordNodeIds) {
+      await this.graphSecondLayerService.createRelationshipFromObject(
+        RelationshipTypeConst.WORD_MAP,
+        {},
+        wordNodeId,
+        mapId,
+      );
+    }
     return wordNodeIds;
   }
 
