@@ -103,7 +103,7 @@ export class MapService {
     const start = performance.now();
     let hasNextBatch = true;
     let batchNumber = 0;
-    const batchItemCount = 100;
+    const batchItemCount = 1000;
     const createdWords = [];
     while (hasNextBatch) {
       const startIdx = batchNumber * batchItemCount;

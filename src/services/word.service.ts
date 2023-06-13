@@ -116,28 +116,53 @@ export class WordService {
     langInfo: LanguageInfo,
     mapId: Nanoid,
   ): Promise<Nanoid[]> {
-    // filter out existing words to not to check their (and relations) existance in further.
-    // const unexistingWords = [] as string[]; //ill----------- TODO
-    const wordNodeIds = await this.createWordsWithLang(words, langInfo);
+    const wordsAsPropValues = words.map((w) => JSON.stringify({ value: w }));
+    const langRestricions = [
+      { key: PropertyKeyConst.LANGUAGE_TAG, value: langInfo.lang.tag },
+    ];
+    if (langInfo.dialect?.tag) {
+      langRestricions.push({
+        key: PropertyKeyConst.DIALECT_TAG,
+        value: langInfo.dialect.tag,
+      });
+    }
+    if (langInfo.region?.tag) {
+      langRestricions.push({
+        key: PropertyKeyConst.REGION_TAG,
+        value: langInfo.region.tag,
+      });
+    }
+    const existing = await this.graphFirstLayerService.findExistingPropsForNode(
+      NodeTypeConst.WORD,
+      MainKeyName[NodeTypeConst.WORD],
+      wordsAsPropValues,
+      langRestricions,
+    );
 
-    //ill --- TODO createRelationshipsFromNodesToNode without checking on exista
+    const unexistingWords = wordsAsPropValues.filter(
+      (w) => !existing.includes(w),
+    );
+
+    // const wordNodeIds = await this.createWordsWithLang(words, langInfo);
+
+    // ill --- TODO createRelationshipsFromNodesToNode without checking on exista
     // await this.graphSecondLayerService.createRelationshipsFromNodesToNode(
-    // await this.graphSecondLayerService.createRelationshipFromObject(
     //   RelationshipTypeConst.WORD_MAP,
     //   {},
     //   wordNodeIds[0],
     //   mapId,
     // );
 
-    for (const wordNodeId of wordNodeIds) {
-      await this.graphSecondLayerService.createRelationshipFromObject(
-        RelationshipTypeConst.WORD_MAP,
-        {},
-        wordNodeId,
-        mapId,
-      );
-    }
-    return wordNodeIds;
+    // for (const wordNodeId of unexistingWordIds) {
+    //   await this.graphSecondLayerService.createRelationshipFromObject(
+    //     RelationshipTypeConst.WORD_MAP,
+    //     {},
+    //     wordNodeId,
+    //     mapId,
+    //   );
+    // }
+
+    return ['wordNodeIds'];
   }
 
   async getWordsWithLang(langInfo: LanguageInfo): Promise<Node[] | null> {
