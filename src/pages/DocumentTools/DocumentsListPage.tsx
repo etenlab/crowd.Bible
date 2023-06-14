@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 import {
   MuiMaterial,
@@ -105,7 +105,7 @@ export function DocumentsListPage() {
   ) : null;
 
   return (
-    <IonContent>
+    <PageLayout>
       <HeadBox
         title="Documents"
         filter={{
@@ -130,6 +130,6 @@ export function DocumentsListPage() {
           <PlusButton variant="primary" onClick={handleClickAddDocumentBtn} />
         }
       />
-    </IonContent>
+    </PageLayout>
   );
 }

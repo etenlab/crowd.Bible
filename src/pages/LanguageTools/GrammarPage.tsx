@@ -1,5 +1,5 @@
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 export function GrammarPage() {
-  return <IonContent>/grammar</IonContent>;
+  return <PageLayout>/grammar</PageLayout>;
 }

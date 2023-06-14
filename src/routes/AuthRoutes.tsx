@@ -1,25 +1,26 @@
-import { Route, Switch } from 'react-router-dom';
-
 import { LoginPage } from '@/pages/LoginPage';
 import { RegisterPage } from '@/pages/RegisterPage';
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage';
 import { ResetPasswordPage } from '@/pages/ResetPasswordPage';
 
-export function AuthRoutes() {
-  return (
-    <Switch>
-      <Route exact path="/login">
-        <LoginPage />
-      </Route>
-      <Route exact path="/register">
-        <RegisterPage />
-      </Route>
-      <Route exact path="/forgot-password">
-        <ForgotPasswordPage />
-      </Route>
-      <Route exact path="/reset-password/:token">
-        <ResetPasswordPage />
-      </Route>
-    </Switch>
-  );
-}
+import { CustomRouteProps } from './AppRoutes';
+import { RouteConst } from '@/constants/route.constant';
+
+export const AuthRoutes: CustomRouteProps[] = [
+  {
+    path: RouteConst.LOGIN,
+    children: <LoginPage />,
+  },
+  {
+    path: RouteConst.REGISTER,
+    children: <RegisterPage />,
+  },
+  {
+    path: RouteConst.FORGET_PASSWORD,
+    children: <ForgotPasswordPage />,
+  },
+  {
+    path: `${RouteConst.RESET_PASSWORD}/:token`,
+    children: <ResetPasswordPage />,
+  },
+];

@@ -1,5 +1,5 @@
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 export function DiscussionsListPage() {
-  return <IonContent>/discussions-list</IonContent>;
+  return <PageLayout>/discussions-list</PageLayout>;
 }

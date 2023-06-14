@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { FeedbackTypes } from '@/constants/common.constant';
 import { RouteConst } from '@/constants/route.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { DotsText, LabelWithIcon, QuestionBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -145,7 +146,7 @@ export function ReaderQAPage() {
     ) : null;
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack
         justifyContent="space-between"
         sx={{ height: 'calc(100vh - 68px)' }}
@@ -167,6 +168,6 @@ export function ReaderQAPage() {
         </Stack>
         <Stack sx={{ flexGrow: 1 }}>{questionBox}</Stack>
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

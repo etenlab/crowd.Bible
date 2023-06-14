@@ -1,11 +1,13 @@
-import { IonContent, IonItem } from '@ionic/react';
+import { IonItem } from '@ionic/react';
 import { MuiMaterial, Typography } from '@eten-lab/ui-kit';
+
+import { PageLayout } from '@/components/Layout';
 
 const { Box } = MuiMaterial;
 
 export function OrganizationsPage() {
   return (
-    <IonContent>
+    <PageLayout>
       <Box
         component="form"
         sx={{
@@ -32,6 +34,6 @@ export function OrganizationsPage() {
         <IonItem>Seed some random data</IonItem>
         <IonItem>Sync data</IonItem>
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 }

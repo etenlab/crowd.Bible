@@ -18,6 +18,10 @@ test('1: Verify that user is register/logout and login again successfully', asyn
   //Navigate to the URL
   await page.goto('/login');
 
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isheaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
+
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
 
@@ -30,8 +34,8 @@ test('1: Verify that user is register/logout and login again successfully', asyn
   await register.clickOnRegisterButton();
 
   //Verify the header of the home page
-  // const headerTextPresntHomePage = await home.isheaderTextPresent();
-  // expect(headerTextPresntHomePage).toBeTruthy();
+  const headerTextPresntHomePage = await home.isheaderTextPresent();
+  expect(headerTextPresntHomePage).toBeTruthy();
 
   //logout to the app
   await home.clickOnExpandMenu();
@@ -69,6 +73,10 @@ test('2: Verify that email field is mandatory', async ({ page }) => {
   //Navigate to the URL
   await page.goto('/login');
 
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isheaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
+
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
 
@@ -93,6 +101,10 @@ test('3: Verify that username field is mandatory', async ({ page }) => {
 
   //Navigate to the URL
   await page.goto('/login');
+
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isheaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
 
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
@@ -119,6 +131,10 @@ test('4: Verify that password field is mandatory', async ({ page }) => {
   //Navigate to the URL
   await page.goto('/login');
 
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isheaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
+
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
 
@@ -143,6 +159,10 @@ test('5: Verify that repeat password field is mandatory', async ({ page }) => {
 
   //Navigate to the URL
   await page.goto('/login');
+
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isheaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
 
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
@@ -171,6 +191,10 @@ test('6: Verify that validation shown for invalid email format', async ({
   //Navigate to the URL
   await page.goto('/login');
 
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isheaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
+
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
 
@@ -197,6 +221,10 @@ test('7 & 8: Verify that validation shown for diff data in password & repeat pas
 
   //Navigate to the URL
   await page.goto('/login');
+
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isheaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
 
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
@@ -230,6 +258,10 @@ test('9: Verify that validation message shown while trying to registration with 
 
   //Navigate to the URL
   await page.goto('/login');
+
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isheaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
 
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();

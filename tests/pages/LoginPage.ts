@@ -10,18 +10,19 @@ const dontHaveAccountButton =
 
 class LoginPage extends BasePage {
   async isheaderTextPresent() {
-    await this.page.locator(headerText).waitFor();
+    await this.page.waitForSelector(headerText);
     const headerTextPresnt = await this.page.locator(headerText).isVisible();
     return headerTextPresnt;
   }
 
   async loginToApp(loginData: any) {
-    await this.page.locator(emailTextBox).fill(loginData.email);
-    await this.page.locator(passwordTextBox).fill(loginData.password);
-    await this.page.locator(loginNowButton).click();
+    await this.page.locator(emailTextBox).first().fill(loginData.email);
+    await this.page.locator(passwordTextBox).first().fill(loginData.password);
+    await this.page.locator(loginNowButton).first().click();
   }
 
   async clickOnDontHaveAccountButton() {
+    await this.page.waitForSelector(dontHaveAccountButton);
     await this.page.locator(dontHaveAccountButton).click();
   }
 
@@ -29,9 +30,11 @@ class LoginPage extends BasePage {
     const loginData = LoginDTO;
     loginData.email = await this.page
       .locator(emailTextBox)
+      .first()
       .getAttribute('value');
     loginData.password = await this.page
       .locator(passwordTextBox)
+      .first()
       .getAttribute('value');
     return loginData;
   }

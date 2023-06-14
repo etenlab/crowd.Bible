@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, MuiMaterial, Button } from '@eten-lab/ui-kit';
 
@@ -17,6 +16,8 @@ import { SiteTextTranslationDto, SiteTextDto } from '@/dtos/site-text.dto';
 import { AppDto } from '@/dtos/document.dto';
 import { compareLangInfo } from '@/src/utils/langUtils';
 import { FeedbackTypes } from '@/constants/common.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { HeadBox } = CrowdBibleUI;
 
@@ -238,7 +239,7 @@ export function SiteTextDetailPage() {
     siteText?.translatedDefinition || originalSiteText?.definition || '';
 
   return (
-    <IonContent>
+    <PageLayout>
       <HeadBox back={{ action: handleClickBackBtn }} title={siteTextString} />
       <Stack gap="20px" sx={{ padding: '20px' }}>
         <Typography variant="body1" color="text.dark">
@@ -283,6 +284,6 @@ export function SiteTextDetailPage() {
           onChangeVote: handleChangeVote,
         }}
       />
-    </IonContent>
+    </PageLayout>
   );
 }

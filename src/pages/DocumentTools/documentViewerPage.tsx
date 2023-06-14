@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 import { CrowdBibleUI, Typography } from '@eten-lab/ui-kit';
 
@@ -47,7 +47,7 @@ export function DocumentViewerPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <HeadBox title={document?.name} back={{ action: handleClickBackBtn }} />
       <Typography
         variant="overline"
@@ -66,6 +66,6 @@ export function DocumentViewerPage() {
       >
         {wordSequence?.text}
       </Typography>
-    </IonContent>
+    </PageLayout>
   );
 }

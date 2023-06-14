@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent, IonToolbar } from '@ionic/react';
+import { IonToolbar } from '@ionic/react';
 import { useKeycloakClient } from '@eten-lab/sso';
 import { useAppContext } from '@/hooks/useAppContext';
 
@@ -11,6 +11,8 @@ import {
   Input,
   PasswordInput,
 } from '@eten-lab/ui-kit';
+
+import { PageLayout } from '@/components/Layout';
 
 import { Link } from '@/components/Link';
 
@@ -121,7 +123,7 @@ export function RegisterPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <IonToolbar class="ionic-toolbar">
         <Link to="/">
           <Typography
@@ -235,6 +237,6 @@ export function RegisterPage() {
           Do you have an account?
         </Button>
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 }

@@ -5,13 +5,16 @@ const logoutOption = '//p[contains(text(), "Logout")]';
 
 class LeftMenuPage extends BasePage {
   async isheaderTextPresent() {
-    await this.page.locator(headerText).waitFor();
-    const headerTextPresnt = await this.page.locator(headerText).isVisible();
+    await this.page.locator(headerText).first().waitFor();
+    const headerTextPresnt = await this.page
+      .locator(headerText)
+      .first()
+      .isVisible();
     return headerTextPresnt;
   }
 
   async clickOnLogout() {
-    await this.page.locator(logoutOption).click();
+    await this.page.locator(logoutOption).first().click();
   }
 }
 

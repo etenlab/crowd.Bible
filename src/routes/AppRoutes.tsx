@@ -1,24 +1,22 @@
-import { Route } from 'react-router-dom';
+import { RouteProps } from 'react-router-dom';
 
-import { RoutesGuardian } from '@/components/RoutesGuardian';
 import { ProtectedRoutes } from './ProtectedRoutes';
 import { AuthRoutes } from './AuthRoutes';
 import { AdminRoutes } from './AdminRoutes';
+
 import { WelcomePage } from '@/pages/WelcomePage';
+import { RouteConst } from '@/constants/route.constant';
 
-export function AppRoutes() {
-  return (
-    <>
-      <Route exact path="/welcome">
-        <WelcomePage />
-      </Route>
-
-      <AuthRoutes />
-      <AdminRoutes />
-
-      <RoutesGuardian>
-        <ProtectedRoutes />
-      </RoutesGuardian>
-    </>
-  );
+export interface CustomRouteProps extends RouteProps {
+  protected?: boolean;
 }
+
+export const AppRoutes: CustomRouteProps[] = [
+  {
+    path: RouteConst.WELCOME,
+    children: <WelcomePage />,
+  },
+  ...AuthRoutes,
+  ...AdminRoutes,
+  ...ProtectedRoutes,
+];

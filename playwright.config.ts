@@ -1,27 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
-import axios from 'axios';
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
-
-(async () => {
-  axios
-    .get('http://localhost:8080')
-    .then(function (response) {
-      // handle success
-      console.log(response);
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
-    .finally(function () {
-      // always executed
-    });
-})();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -41,7 +25,9 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:3000',
+    baseURL: process.env.CI
+      ? 'http://localhost:3000/'
+      : 'https://dev.crowd.bible',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',

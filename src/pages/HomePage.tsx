@@ -1,4 +1,4 @@
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 import {
   MuiMaterial,
@@ -214,7 +214,7 @@ const cardGroups = [
 
 export function HomePage() {
   return (
-    <IonContent>
+    <PageLayout>
       {cardGroups.map(({ group, linkItems }) => (
         <CardGroup
           key={group}
@@ -223,6 +223,6 @@ export function HomePage() {
         />
       ))}
       <br />
-    </IonContent>
+    </PageLayout>
   );
 }

@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 // import { useHistory } from 'react-router-dom';
 import { useHistory, useParams } from 'react-router';
-import { IonContent } from '@ionic/react';
 import { gql, useApolloClient } from '@apollo/client';
 import {
   Button,
@@ -13,8 +12,10 @@ import {
 import { useFormik } from 'formik';
 
 import * as Yup from 'yup';
-import { useAppContext } from '@/src/hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 import { RouteConst } from '@/constants/route.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { Box, Alert } = MuiMaterial;
 
@@ -120,7 +121,7 @@ export function ResetPasswordPage() {
 
   if (!tokenValid) {
     return (
-      <IonContent>
+      <PageLayout>
         <Typography
           variant="h1"
           color="text.dark"
@@ -128,12 +129,12 @@ export function ResetPasswordPage() {
         >
           Reset Token Invalid / Expired
         </Typography>
-      </IonContent>
+      </PageLayout>
     );
   }
 
   return (
-    <IonContent>
+    <PageLayout>
       <Box
         component="form"
         sx={{
@@ -207,6 +208,6 @@ export function ResetPasswordPage() {
           Do you have an account?
         </Button>
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 }

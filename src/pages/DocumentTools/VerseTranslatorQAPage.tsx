@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
@@ -10,6 +9,8 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { mockVerses, ChapterList } from './VerseFeedbackPage';
 import { FeedbackTypes } from '@/constants/common.constant';
 import { RouteConst } from '@/constants/route.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { TitleWithIcon, VerticalRadioList, QuestionCreatorBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -89,7 +90,7 @@ export function VerseTranslatorQAPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       {selectedChapter ? (
         <VerseTranslatorQA
           onClickCancel={handleClickCancel}
@@ -101,6 +102,6 @@ export function VerseTranslatorQAPage() {
           onClickChapter={handleClickChapter}
         />
       )}
-    </IonContent>
+    </PageLayout>
   );
 }

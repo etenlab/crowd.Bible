@@ -1,6 +1,5 @@
 import { ChangeEventHandler, useState, useCallback, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 import { useDebounce } from 'use-debounce';
 
 import {
@@ -20,6 +19,8 @@ import { SelectableDefinitionCandidateList } from '@/components/SelectableDefini
 
 import { RouteConst } from '@/constants/route.constant';
 import { FeedbackTypes } from '@/constants/common.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { HeadBox } = CrowdBibleUI;
 const { Stack, Typography, Divider } = MuiMaterial;
@@ -175,7 +176,7 @@ export function NewSiteTextTranslationAddPage() {
     siteText?.translatedDefinition || originalSiteText?.definition || '';
 
   return (
-    <IonContent>
+    <PageLayout>
       <HeadBox
         back={{ action: handleClickBackBtn }}
         title="Add New Translation"
@@ -210,6 +211,6 @@ export function NewSiteTextTranslationAddPage() {
       <Divider />
 
       {selectableCandidateListCom}
-    </IonContent>
+    </PageLayout>
   );
 }

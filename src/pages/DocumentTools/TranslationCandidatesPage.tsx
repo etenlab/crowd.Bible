@@ -1,8 +1,9 @@
 import { useHistory } from 'react-router';
-import { IonContent } from '@ionic/react';
 
 import { Button, MuiMaterial, BiLeftArrowAlt } from '@eten-lab/ui-kit';
 import { RouteConst } from '@/constants/route.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 // import { TranslationList } from '@/components/TranslationList';
 
@@ -49,7 +50,7 @@ export function TranslationCandidatesPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack sx={{ padding: '20px' }}>
         <Button
           variant="text"
@@ -62,6 +63,6 @@ export function TranslationCandidatesPage() {
         </Button>
         {/* <TranslationList translations={mockTranslations} /> */}
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

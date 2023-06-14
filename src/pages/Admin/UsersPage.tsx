@@ -1,6 +1,7 @@
-import { IonContent } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import { MuiMaterial, CrowdBibleUI, Typography } from '@eten-lab/ui-kit';
+
+import { PageLayout } from '@/components/Layout';
 
 const { Box } = MuiMaterial;
 const { HeadBox } = CrowdBibleUI;
@@ -15,7 +16,7 @@ export function UsersPage() {
   const handleSearch = () => {};
 
   return (
-    <IonContent>
+    <PageLayout>
       <HeadBox
         back={{ action: handleClickBackBtn }}
         title="Users"
@@ -40,6 +41,6 @@ export function UsersPage() {
           Users
         </Typography>
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 }
