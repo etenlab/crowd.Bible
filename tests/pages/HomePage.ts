@@ -1,6 +1,6 @@
 import BasePage from './BasePage';
 
-const headerText = '//h2[contains(text(), "Home Screen")]';
+const headerText = '//h3[contains(text(), "crowd.Bible")]';
 const expandIcon =
   '//button[@class = "MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1s9j4fq-MuiButtonBase-root-MuiIconButton-root"]';
 
