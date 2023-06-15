@@ -22,6 +22,7 @@ export function AdminPage() {
     states: {
       global: { singletons },
     },
+    actions: { setLoadingState, alertFeedback },
     logger,
   } = useAppContext();
 
@@ -126,6 +127,7 @@ export function AdminPage() {
 
   const doSyncOut = async () => {
     if (!singletons?.syncService) return;
+    setLoadingState(true);
     setSyncOutLoadingStatus(LoadingStatuses.LOADING);
     try {
       const syncOutRes = await singletons.syncService.syncOut();
@@ -135,12 +137,14 @@ export function AdminPage() {
       logger.error('Error occurred while syncing out::', error);
       setLoadResult('Error occurred while syncing out.');
     } finally {
+      setLoadingState(false);
       setSyncOutLoadingStatus(LoadingStatuses.FINISHED);
     }
   };
 
   const doSyncIn = async () => {
     if (!singletons?.syncService) return;
+    setLoadingState(true);
     setSyncInLoadingStatus(LoadingStatuses.LOADING);
     try {
       const syncInRes = await singletons.syncService.syncIn();
@@ -150,12 +154,29 @@ export function AdminPage() {
       logger.fatal('Error occurred while syncing in::', error);
       setLoadResult('Error occurred while syncing in.');
     } finally {
+      setLoadingState(false);
       setSyncInLoadingStatus(LoadingStatuses.FINISHED);
     }
   };
 
   const materialize = async () => {
     singletons?.materializerService.materialize('iso_639_3_min.tab');
+  };
+
+  const handleResetLocalGraphData = async () => {
+    if (!singletons) return false;
+    setLoadingState(true);
+    try {
+      await singletons.dbService.resetAllData();
+      alertFeedback(FeedbackTypes.SUCCESS, 'All database data deleted.');
+    } catch (error) {
+      logger.error(
+        { at: 'handleResetLocalGraphData' },
+        'Error when resetting data',
+      );
+    } finally {
+      setLoadingState(false);
+    }
   };
 
   return (
@@ -195,6 +216,19 @@ export function AdminPage() {
             {syncOutLoadingStatus === LoadingStatuses.LOADING
               ? 'Syncing Out...'
               : 'Sync Out'}
+          </IonButton>
+        </IonCardContent>
+      </IonCard>
+      <IonCard>
+        <IonCardHeader>
+          <IonCardTitle>Delete all local data</IonCardTitle>
+        </IonCardHeader>
+        <IonCardContent>
+          <IonButton
+            className="text-transform-none"
+            onClick={handleResetLocalGraphData}
+          >
+            Reset Local Data
           </IonButton>
         </IonCardContent>
       </IonCard>
