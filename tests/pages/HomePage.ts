@@ -6,9 +6,12 @@ const expandIcon =
 
 class HomePage extends BasePage {
   async isheaderTextPresent() {
-    await this.page.waitForSelector(headerText);
-    const headerTextPresnt = await this.page.locator(headerText).isVisible();
-    return headerTextPresnt;
+    await this.page.locator(headerText).last().waitFor();
+    const headerTextPresent = await this.page
+      .locator(headerText)
+      .last()
+      .isVisible();
+    return headerTextPresent;
   }
 
   async clickOnExpandMenu() {

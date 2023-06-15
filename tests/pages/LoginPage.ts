@@ -9,9 +9,12 @@ const dontHaveAccountButton =
   '//button[contains(text(), "you have an account?")]';
 
 class LoginPage extends BasePage {
-  async isheaderTextPresent() {
+  async isHeaderTextPresent() {
     await this.page.waitForSelector(headerText);
-    const headerTextPresnt = await this.page.locator(headerText).isVisible();
+    const headerTextPresnt = await this.page
+      .locator(headerText)
+      .last()
+      .isVisible();
     return headerTextPresnt;
   }
 

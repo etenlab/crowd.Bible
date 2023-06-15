@@ -1,7 +1,7 @@
 import BasePage from './BasePage';
 
 const headerText = '//span[contains(text(), "Menu")]';
-const logoutOption = '//p[contains(text(), "Logout")]';
+const logoutOption = '//button[contains(text(), "Logout")]';
 
 class LeftMenuPage extends BasePage {
   async isheaderTextPresent() {
