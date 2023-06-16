@@ -10,7 +10,7 @@ const dontHaveAccountButton =
 
 class LoginPage extends BasePage {
   async isHeaderTextPresent() {
-    await this.page.waitForSelector(headerText);
+    await this.page.locator(headerText).last().waitFor();
     const headerTextPresnt = await this.page
       .locator(headerText)
       .last()
@@ -25,8 +25,8 @@ class LoginPage extends BasePage {
   }
 
   async clickOnDontHaveAccountButton() {
-    await this.page.waitForSelector(dontHaveAccountButton);
-    await this.page.locator(dontHaveAccountButton).click();
+    await this.page.locator(dontHaveAccountButton).first().waitFor();
+    await this.page.locator(dontHaveAccountButton).first().click();
   }
 
   async getLoginDetails() {
