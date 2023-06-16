@@ -15,7 +15,8 @@ class HomePage extends BasePage {
   }
 
   async clickOnExpandMenu() {
-    await this.page.locator(expandIcon).first().click();
+    await this.page.locator(expandIcon).last().waitFor();
+    await this.page.locator(expandIcon).last().click();
   }
 }
 

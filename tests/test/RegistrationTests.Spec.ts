@@ -18,6 +18,10 @@ test('1: Verify that user is register/logout and login again successfully', asyn
   //Navigate to the URL
   await page.goto('/login');
 
+  //Verify the current url
+  const currentUrl = await page.url();
+  console.log('Env url is: ' + currentUrl);
+
   //Verify the login header text
   expect(await login.isHeaderTextPresent()).toBeTruthy();
 
@@ -257,7 +261,8 @@ test('9: Verify that validation message shown while trying to registration with 
   const register = new RegisterPO(page);
   const login = new LoginPO(page);
   const home = new HomePO(page);
-  const registerData = RegisterData.registerDataWithExistingUser();
+  const leftMenu = new LeftMenuPO(page);
+  const registerData = RegisterData.validRegisterData();
 
   //Navigate to the URL
   await page.goto('/login');
@@ -269,17 +274,20 @@ test('9: Verify that validation message shown while trying to registration with 
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
 
-  //Verify the title of the page
-  const headerTextPresentRegisterPage = await register.isHeaderTextPresent();
-  expect(headerTextPresentRegisterPage).toBeTruthy();
+  //Fill and submit the register form
+  await register.fillRegistrationForm(registerData);
+  await register.clickOnRegisterButton();
+
+  //logout to the app
+  await home.clickOnExpandMenu();
+  await leftMenu.clickOnLogout();
+
+  //Click on the 'Don't have an count' button
+  await login.clickOnDontHaveAccountButton();
 
   //Fill and submit the register form with existing user
   await register.fillRegistrationForm(registerData);
   await register.clickOnRegisterButton();
-
-  //Verify the header of the home page
-  const headerTextPresentHomePage = await home.isheaderTextPresent();
-  expect(headerTextPresentHomePage).toBeTruthy();
 
   //Verify validation message is displayed for user
   const errorMessageForExistingUser =
