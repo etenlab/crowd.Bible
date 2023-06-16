@@ -1,5 +1,5 @@
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 import {
   DiSite,
@@ -54,7 +54,7 @@ export function SiteTextMenuPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <br />
       <TitleWithIcon
         label="Question & Answer"
@@ -65,6 +65,6 @@ export function SiteTextMenuPage() {
       />
 
       <CardGroup group={cardGroup.group} linkItems={cardGroup.linkItems} />
-    </IonContent>
+    </PageLayout>
   );
 }

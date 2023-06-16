@@ -7,7 +7,6 @@ import {
 } from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
-import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
 import { VotableItem } from '@/dtos/votable-item.dto';
 import { useAppContext } from '@/src/hooks/useAppContext';
@@ -19,6 +18,9 @@ import {
   UpOrDownVote,
   VoteTypes,
 } from '@/constants/common.constant';
+
+import { PageLayout } from '@/components/Layout';
+
 const { Box, Divider } = MuiMaterial;
 
 const {
@@ -216,7 +218,7 @@ export function PhraseBookPage() {
   }, [alertFeedback, selectedLanguageInfo]);
 
   return (
-    <IonContent>
+    <PageLayout>
       {!selectedPhrase ? (
         <Box
           display={'flex'}
@@ -308,6 +310,6 @@ export function PhraseBookPage() {
           />
         </Box>
       )}
-    </IonContent>
+    </PageLayout>
   );
 }

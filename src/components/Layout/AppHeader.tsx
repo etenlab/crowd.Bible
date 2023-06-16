@@ -16,19 +16,14 @@ const headerlessPages = [
   RouteConst.FORGET_PASSWORD,
 ];
 
-export function AppHeader({
-  kind,
-  onToggle,
-}: {
-  kind: 'menu' | 'page';
-  onToggle(): void;
-}) {
+export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
   const history = useHistory();
   const location = useLocation();
   const { setColorMode } = useColorModeContext();
 
   const {
     states: {
+      components: { menu },
       global: { prefersColorScheme, isNewDiscussion, isNewNotification, mode },
     },
     actions: { setPrefersColorScheme },
@@ -90,6 +85,12 @@ export function AppHeader({
     history.push(RouteConst.HOME);
   };
 
+  const handleToggleMenu = () => {
+    if (menu) {
+      menu.toggle();
+    }
+  };
+
   const isHeader = !headerlessPages.find(
     (routeStr) => location.pathname === routeStr,
   );
@@ -128,7 +129,7 @@ export function AppHeader({
           onClickNotificationBtn={() => {
             history.push(RouteConst.NOTIFICATIONS);
           }}
-          onClickMenuBtn={onToggle}
+          onClickMenuBtn={handleToggleMenu}
         />
       </IonToolbar>
     </IonHeader>
@@ -149,7 +150,7 @@ export function AppHeader({
           onClickNotificationBtn={() => {
             history.push(RouteConst.NOTIFICATIONS);
           }}
-          onClickMenuBtn={onToggle}
+          onClickMenuBtn={handleToggleMenu}
         />
       </IonToolbar>
     </IonHeader>

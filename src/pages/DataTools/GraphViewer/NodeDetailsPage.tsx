@@ -1,10 +1,11 @@
-import React, { useEffect, useReducer, useState } from 'react';
-import { IonContent } from '@ionic/react';
+import { useEffect, useReducer, useState } from 'react';
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { useGlobal } from '@/src/hooks/useGlobal';
 import { initialState, reducer } from '@/src/reducers';
 import { useHistory, useParams } from 'react-router';
 import { useAppContext } from '@/src/hooks/useAppContext';
+
+import { PageLayout } from '@/components/Layout';
 
 const { NodeDetails, TitleWithIcon } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -136,7 +137,7 @@ export function NodeDetailsPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack
         sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto', gap: '16px' }}
       >
@@ -151,6 +152,6 @@ export function NodeDetailsPage() {
         />
         <NodeDetails node={node} nodeClickHandler={nodeClickHandler} />
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

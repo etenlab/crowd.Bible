@@ -1,13 +1,11 @@
-import React from 'react';
+import { Redirect, RouteProps } from 'react-router-dom';
+
+import { RouteConst } from '@/constants/route.constant';
 // import { useHistory } from 'react-router-dom';
 // import { useAppContext } from '@/hooks/useAppContext';
 // import { type IUser } from '@/reducers/global.reducer';
 
-type GuardRoutesType = {
-  children: React.ReactNode;
-};
-
-export function RoutesGuardian({ children }: GuardRoutesType) {
+export function RouteGuarder({ children }: RouteProps) {
   // const history = useHistory();
   // const {
   //   states: {
@@ -22,10 +20,15 @@ export function RoutesGuardian({ children }: GuardRoutesType) {
   //     return false;
   //   }
   // };
+  const isAutherized = true;
 
   // if (!isAutherized(user)) {
   //   history.push(RouteConst.LOGIN);
   // }
 
-  return <>{children}</>;
+  if (isAutherized) {
+    return <>{children}</>;
+  } else {
+    return <Redirect to={RouteConst.HOME} />;
+  }
 }

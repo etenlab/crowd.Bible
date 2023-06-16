@@ -1,5 +1,5 @@
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 export function LanguageProficiencyPage() {
-  return <IonContent>/language-prificiency</IonContent>;
+  return <PageLayout>/language-prificiency</PageLayout>;
 }

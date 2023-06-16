@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
@@ -10,6 +9,8 @@ import { mockDocument } from './ReaderQAPage';
 import { useAppContext } from '@/hooks/useAppContext';
 import { FeedbackTypes } from '@/constants/common.constant';
 import { RouteConst } from '@/constants/route.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { LabelWithIcon, RangeSelectableTextArea, QuestionCreatorBox } =
   CrowdBibleUI;
@@ -56,7 +57,7 @@ export function TextPartTranslatorQAPage() {
     ) : null;
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack
         justifyContent="space-between"
         sx={{ height: 'calc(100vh - 68px)' }}
@@ -76,6 +77,6 @@ export function TextPartTranslatorQAPage() {
         </Stack>
         {questionCreatorBox}
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

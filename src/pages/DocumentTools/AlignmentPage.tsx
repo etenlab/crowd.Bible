@@ -1,5 +1,5 @@
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 export function AlignmentPage() {
-  return <IonContent>/alignment</IonContent>;
+  return <PageLayout>/alignment</PageLayout>;
 }

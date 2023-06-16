@@ -1,4 +1,4 @@
-import { IonChip, IonContent, useIonRouter } from '@ionic/react';
+import { IonChip, useIonRouter } from '@ionic/react';
 
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
@@ -10,6 +10,7 @@ import { RouteConst } from '@/constants/route.constant';
 import { useAppContext } from '@/hooks/useAppContext';
 import { FeedbackTypes } from '@/constants/common.constant';
 import { MapDto } from '@/dtos/map.dto';
+import { PageLayout } from '@/components/Layout';
 
 const { TitleWithIcon } = CrowdBibleUI;
 
@@ -83,8 +84,9 @@ export const MapDetailPage = () => {
   if (!mapDetail) {
     return <></>;
   }
+
   return (
-    <IonContent>
+    <PageLayout>
       <Box
         display={'flex'}
         flexDirection={'column'}
@@ -126,7 +128,7 @@ export const MapDetailPage = () => {
           <IonChip key={w.id}>{w.word}</IonChip>
         ))}
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 };
 

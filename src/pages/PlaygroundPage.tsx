@@ -1,5 +1,4 @@
-import { IonContent } from '@ionic/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   DragDropContext,
   StrictModeDroppable,
@@ -8,6 +7,8 @@ import {
   DraggableLocation,
 } from '@/components/Droppable';
 import { Button, MuiMaterial } from '@eten-lab/ui-kit';
+
+import { PageLayout } from '@/components/Layout';
 
 const { Box } = MuiMaterial;
 
@@ -104,7 +105,7 @@ export function PlaygroundPage() {
   }
 
   return (
-    <IonContent>
+    <PageLayout>
       <Box>
         <Button
           type="button"
@@ -181,6 +182,6 @@ export function PlaygroundPage() {
           </DragDropContext>
         </Box>
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 }

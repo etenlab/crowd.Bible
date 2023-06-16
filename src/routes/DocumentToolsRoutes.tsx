@@ -1,5 +1,3 @@
-import { Route, Switch } from 'react-router-dom';
-
 import { DocumentsListPage } from '@/pages/DocumentTools/DocumentsListPage';
 import { DocumentViewerPage } from '@/pages/DocumentTools/documentViewerPage';
 import { NewDocumentAddPage } from '@/pages/DocumentTools/NewDocumentAddPage';
@@ -26,82 +24,91 @@ import { VersificationPage } from '@/pages/DocumentTools/VersificationPage';
 import { AlignmentPage } from '@/pages/DocumentTools/AlignmentPage';
 
 import { RouteConst } from '@/constants/route.constant';
+import { CustomRouteProps } from './AppRoutes';
 
-export function DocumentToolsRoutes() {
-  return (
-    <Switch>
-      <Route exact path={RouteConst.DOCUMENTS_LIST}>
-        <DocumentsListPage />
-      </Route>
-      <Route exact path={`${RouteConst.DOCUMENTS_LIST}/:documentId`}>
-        <DocumentViewerPage />
-      </Route>
-      <Route exact path={`${RouteConst.ADD_DOCUMENT}`}>
-        <NewDocumentAddPage />
-      </Route>
-
-      <Route exact path={`${RouteConst.TRANSLATION_DOCUMENTS_LIST}`}>
-        <TranslationDocumentListPage />
-      </Route>
-      <Route exact path={`${RouteConst.TRANSLATION}/:documentId`}>
-        <TranslationPage />
-      </Route>
-      <Route
-        exact
-        path={`${RouteConst.TRANSLATION_EDIT}/:documentId/:wordSequenceId`}
-      >
-        <TranslationEditPage />
-      </Route>
-      <Route exact path={`${RouteConst.TRANSLATION_EDIT}/:documentId`}>
-        <TranslationEditPage />
-      </Route>
-      {/* <Route exact path={RouteConst.TRANSLATION_EDIT}>
-        <TranslationCandidatesPage />
-      </Route> */}
-
-      <Route exact path={`${RouteConst.FEEDBACK}/:documentId`}>
-        <FeedbackPage />
-      </Route>
-      <Route exact path={`${RouteConst.FEEDBACK}/text-part`}>
-        <TextPartFeedbackPage />
-      </Route>
-      <Route exact path={`${RouteConst.FEEDBACK}/chapter`}>
-        <ChapterFeedbackPage />
-      </Route>
-      <Route exact path={`${RouteConst.FEEDBACK}/verse`}>
-        <VerseFeedbackPage />
-      </Route>
-
-      <Route exact path={RouteConst.QA_MENU_PAGE}>
-        <QAMenuPage />
-      </Route>
-      <Route exact path={RouteConst.READER_QA}>
-        <ReaderQAPage />
-      </Route>
-      <Route exact path={RouteConst.TRANSLATOR_QA}>
-        <TranslatorQAPage />
-      </Route>
-      <Route exact path={`${RouteConst.TRANSLATOR_QA}/text-part`}>
-        <TextPartTranslatorQAPage />
-      </Route>
-      <Route exact path={`${RouteConst.TRANSLATOR_QA}/chapter`}>
-        <ChapterTranslatorQAPage />
-      </Route>
-      <Route exact path={`${RouteConst.TRANSLATOR_QA}/verse`}>
-        <VerseTranslatorQAPage />
-      </Route>
-
-      <Route exact path={RouteConst.COMMENTARY}>
-        <CommentaryPage />
-      </Route>
-
-      <Route exact path={RouteConst.VERSIFICATION}>
-        <VersificationPage />
-      </Route>
-
-      <Route exact path={RouteConst.ALIGNMENT}>
-        <AlignmentPage />
-      </Route>
-    </Switch>
-  );
-}
+export const DocumentToolsRoutes: CustomRouteProps[] = [
+  {
+    path: RouteConst.DOCUMENTS_LIST,
+    children: <DocumentsListPage />,
+  },
+  {
+    path: `${RouteConst.DOCUMENTS_LIST}/:documentId`,
+    children: <DocumentViewerPage />,
+  },
+  {
+    path: RouteConst.ADD_DOCUMENT,
+    children: <NewDocumentAddPage />,
+  },
+  {
+    path: RouteConst.TRANSLATION_DOCUMENTS_LIST,
+    children: <TranslationDocumentListPage />,
+  },
+  {
+    path: `${RouteConst.TRANSLATION}/:documentId`,
+    children: <TranslationPage />,
+  },
+  {
+    path: `${RouteConst.TRANSLATION_EDIT}/:documentId/:wordSequenceId`,
+    children: <TranslationEditPage />,
+  },
+  {
+    path: `${RouteConst.TRANSLATION_EDIT}/:documentId`,
+    children: <TranslationEditPage />,
+  },
+  // {
+  //   path: RouteConst.TRANSLATION_EDIT,
+  //   children: <TranslationCandidatesPage />,
+  // },
+  {
+    path: `${RouteConst.FEEDBACK}/:documentId`,
+    children: <FeedbackPage />,
+  },
+  {
+    path: `${RouteConst.FEEDBACK}/text-part`,
+    children: <TextPartFeedbackPage />,
+  },
+  {
+    path: `${RouteConst.FEEDBACK}/chapter`,
+    children: <ChapterFeedbackPage />,
+  },
+  {
+    path: `${RouteConst.FEEDBACK}/verse`,
+    children: <VerseFeedbackPage />,
+  },
+  {
+    path: RouteConst.QA_MENU_PAGE,
+    children: <QAMenuPage />,
+  },
+  {
+    path: RouteConst.READER_QA,
+    children: <ReaderQAPage />,
+  },
+  {
+    path: RouteConst.TRANSLATOR_QA,
+    children: <TranslatorQAPage />,
+  },
+  {
+    path: `${RouteConst.TRANSLATOR_QA}/text-part`,
+    children: <TextPartTranslatorQAPage />,
+  },
+  {
+    path: `${RouteConst.TRANSLATOR_QA}/chapter`,
+    children: <ChapterTranslatorQAPage />,
+  },
+  {
+    path: `${RouteConst.TRANSLATOR_QA}/verse`,
+    children: <VerseTranslatorQAPage />,
+  },
+  {
+    path: RouteConst.COMMENTARY,
+    children: <CommentaryPage />,
+  },
+  {
+    path: RouteConst.VERSIFICATION,
+    children: <VersificationPage />,
+  },
+  {
+    path: RouteConst.ALIGNMENT,
+    children: <AlignmentPage />,
+  },
+];

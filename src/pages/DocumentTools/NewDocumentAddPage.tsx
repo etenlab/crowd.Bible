@@ -1,6 +1,5 @@
 import { useState, useEffect, ChangeEventHandler } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import { Input, TextArea, Button, MuiMaterial } from '@eten-lab/ui-kit';
 
@@ -10,6 +9,8 @@ import { useAppContext } from '@/hooks/useAppContext';
 
 import { RouteConst } from '@/constants/route.constant';
 import { FeedbackTypes } from '@/constants/common.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { Stack } = MuiMaterial;
 
@@ -72,7 +73,7 @@ export function NewDocumentAddPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack sx={{ padding: '20px' }} gap="20px">
         <Input
           label="Input Document Name"
@@ -90,6 +91,6 @@ export function NewDocumentAddPage() {
           Save Document
         </Button>
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

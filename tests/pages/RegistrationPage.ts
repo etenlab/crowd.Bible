@@ -1,7 +1,7 @@
 import BasePage from './BasePage';
 
 const headerText = '//h1[contains(text(), "Register")]';
-const emailTextBox = '#email';
+const emailTextBox = '//input[@id = "email"]';
 const userNameTextBox = '#username';
 const passwordTextBox = '#password';
 const repeatPasswordTextBox = '#passwordConfirm';
@@ -16,30 +16,41 @@ const existingUserValidation = '//div[@id = "error-message"]';
 class RegistrationPage extends BasePage {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async fillRegistrationForm(registrationData: any) {
-    await this.page.locator(emailTextBox).fill(registrationData.email);
-    await this.page.locator(userNameTextBox).fill(registrationData.userName);
-    await this.page.locator(passwordTextBox).fill(registrationData.password);
+    await this.page.locator(emailTextBox).last().fill(registrationData.email);
+    await this.page
+      .locator(userNameTextBox)
+      .first()
+      .fill(registrationData.userName);
+    await this.page
+      .locator(passwordTextBox)
+      .last()
+      .fill(registrationData.password);
     await this.page
       .locator(repeatPasswordTextBox)
+      .last()
       .fill(registrationData.repeatPassword);
   }
 
   async clickOnRegisterButton() {
-    await this.page.locator(registerNowButton).click();
+    await this.page.locator(registerNowButton).first().click();
   }
 
   async isHeaderTextPresent() {
-    await this.page.locator(headerText).waitFor();
-    const headerTextPresnt = await this.page.locator(headerText).isVisible();
+    await this.page.locator(headerText).first().waitFor();
+    const headerTextPresnt = await this.page
+      .locator(headerText)
+      .first()
+      .isVisible();
     return headerTextPresnt;
   }
 
   async clickOnForgotPasswordButton() {
-    await this.page.locator(forgotPasswordButton).click();
+    await this.page.locator(forgotPasswordButton).first().click();
   }
   async isRegisterButtonDisabled() {
     const registerButtonDisabled = await this.page
       .locator(registerNowButton)
+      .first()
       .isDisabled();
     return registerButtonDisabled;
   }
@@ -47,6 +58,7 @@ class RegistrationPage extends BasePage {
   async getEmailErrorMessage() {
     const emailValidation = await this.page
       .locator(emailErrorMessage)
+      .first()
       .textContent();
     return emailValidation;
   }
@@ -54,6 +66,7 @@ class RegistrationPage extends BasePage {
   async getUserNameErrorMessage() {
     const userNameValidation = await this.page
       .locator(userNameErrorMessage)
+      .first()
       .textContent();
     return userNameValidation;
   }
@@ -61,6 +74,7 @@ class RegistrationPage extends BasePage {
   async getPasswordErrorMessage() {
     const passwordValidation = await this.page
       .locator(passwordErrorMessage)
+      .first()
       .textContent();
     return passwordValidation;
   }
@@ -68,6 +82,7 @@ class RegistrationPage extends BasePage {
   async getRepeatPasswordErrorMessage() {
     const repeatPasswordValidation = await this.page
       .locator(repeatPasswordErrorMessage)
+      .first()
       .textContent();
     return repeatPasswordValidation;
   }
@@ -75,6 +90,7 @@ class RegistrationPage extends BasePage {
   async getExistingUserErrorMessage() {
     const existingUserValidationMessage = await this.page
       .locator(existingUserValidation)
+      .first()
       .textContent();
     return existingUserValidationMessage;
   }

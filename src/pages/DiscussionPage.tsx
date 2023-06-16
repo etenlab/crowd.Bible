@@ -1,5 +1,3 @@
-import { IonContent } from '@ionic/react';
-
 import { useHistory, useParams } from 'react-router';
 
 import {
@@ -10,6 +8,7 @@ import {
 } from '@eten-lab/ui-kit';
 // import { DiscussionForDev } from '@eten-lab/discussion-box'; // needs refactor
 import { useAppContext } from '@/hooks/useAppContext';
+import { PageLayout } from '@/components/Layout';
 
 const { Stack, IconButton } = MuiMaterial;
 
@@ -39,7 +38,7 @@ export function DiscussionPage() {
     null;
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack>
         <Stack direction="row" justifyContent="flex-start" alignItems="center">
           <IconButton onClick={goBack}>
@@ -61,6 +60,6 @@ export function DiscussionPage() {
         </Stack>
         {discussionUI}
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }
