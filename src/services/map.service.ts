@@ -2,15 +2,12 @@ import {
   GraphFirstLayerService,
   GraphSecondLayerService,
   LoggerService,
-} from '@eten-lab/core';
-
-import { WordService } from './word.service';
-
-import {
   NodeTypeConst,
   PropertyKeyConst,
   RelationshipTypeConst,
 } from '@eten-lab/core';
+
+import { WordService } from './word.service';
 
 import { MapDto } from '@/dtos/map.dto';
 import { MapMapper } from '@/mappers/map.mapper';
@@ -30,9 +27,9 @@ export class MapService {
   async saveMap(
     langInfo: LanguageInfo,
     mapInfo: {
-      name: string;
-      mapFileId: string;
-      ext: string;
+      [PropertyKeyConst.NAME]: string;
+      [PropertyKeyConst.MAP_FILE_ID]: string;
+      [PropertyKeyConst.EXT]: string;
     },
   ): Promise<Nanoid | null> {
     const langProps: { [key: string]: string } = {
@@ -121,9 +118,9 @@ export class MapService {
       }
       batchNumber++;
     }
-    this.logger.info('total created words', createdWords);
+    this.logger.info('total created or re-linked words ', createdWords.length);
     const end = performance.now();
-    this.logger.info(
+    this.logger.trace(
       { at: 'map.service#processMapWords' },
       `processing has taken, ms: ${end - start}`,
     );

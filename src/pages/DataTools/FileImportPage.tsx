@@ -84,7 +84,7 @@ export function FileImportPage() {
       }
       if (langInfo) {
         for (const [index, word] of words.entries()) {
-          await singletons?.wordService.createWordOrPhraseWithLang(
+          await singletons?.wordService.createOrFindWordOrPhraseWithLang(
             word,
             langInfo,
             NodeTypeConst.WORD,

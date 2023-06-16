@@ -96,6 +96,8 @@ export const MapTabContent = () => {
               argMap.langInfo,
               mapId,
             );
+
+            // check in case if such a map was started uploading, and re-sarted from new window.
             const isExists = await singletons.mapService.doesExistMapWithProps([
               {
                 key: PropertyKeyConst.NAME,
@@ -107,7 +109,7 @@ export const MapTabContent = () => {
               },
             ]);
             if (!isExists) {
-              await singletons.graphSecondLayerService.addNewNodeProperties(
+              await singletons.graphSecondLayerService.addNewNodePropertiesNoChecks(
                 mapId,
                 {
                   [PropertyKeyConst.IS_PROCESSING_FINISHED]: true,
@@ -119,14 +121,10 @@ export const MapTabContent = () => {
               );
             } else {
               alertFeedback(
-                FeedbackTypes.SUCCESS,
+                FeedbackTypes.ERROR,
                 `Map file (name:${argMap.name}) already exists.`,
               );
             }
-            alertFeedback(
-              FeedbackTypes.SUCCESS,
-              `Map file (name:${argMap.name}) is uploaded.`,
-            );
           } else newState.status = eProcessStatus.FAILED;
         } catch (error) {
           newState.status = eProcessStatus.FAILED;

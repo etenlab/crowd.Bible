@@ -142,7 +142,7 @@ export const WordTabContent = () => {
       for (const translation of word.translations || []) {
         if (!translation.isNew) continue;
         const translationWordId =
-          await singletons.wordService.createWordOrPhraseWithLang(
+          await singletons.wordService.createOrFindWordOrPhraseWithLang(
             translation.word,
             targetLangInfo!,
             NodeTypeConst.WORD,

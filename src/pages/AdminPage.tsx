@@ -129,7 +129,7 @@ export function AdminPage() {
     setSyncOutLoadingStatus(LoadingStatuses.LOADING);
     try {
       const syncOutRes = await singletons.syncService.syncOut();
-      logger.error('syncOutRes', syncOutRes);
+      logger.info('syncOutRes: ', syncOutRes);
       setLoadResult('Syncing Out was successful!');
     } catch (error) {
       logger.error('Error occurred while syncing out::', error);

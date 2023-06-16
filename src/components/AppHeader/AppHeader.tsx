@@ -121,7 +121,6 @@ export function AppHeader({
             notification: false,
             discussion: false,
             menu: false,
-            language: false,
           }}
           themeMode={themeMode}
           onClickThemeModeBtn={handleToogleTheme}
@@ -132,7 +131,6 @@ export function AppHeader({
             history.push(RouteConst.NOTIFICATIONS);
           }}
           onClickMenuBtn={onToggle}
-          onClickLanguageBtn={() => {}}
         />
       </IonToolbar>
     </IonHeader>
@@ -154,7 +152,6 @@ export function AppHeader({
             history.push(RouteConst.NOTIFICATIONS);
           }}
           onClickMenuBtn={onToggle}
-          onClickLanguageBtn={() => {}}
         />
       </IonToolbar>
     </IonHeader>
