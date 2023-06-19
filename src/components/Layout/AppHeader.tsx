@@ -91,6 +91,18 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
     }
   };
 
+  const handleClickDiscussionButton = () => {
+    history.push(RouteConst.DISCUSSIONS_LIST);
+  };
+
+  const handleClickNotificationButton = () => {
+    history.push(RouteConst.NOTIFICATIONS);
+  };
+
+  const handleClickLanguageButton = () => {
+    history.push(RouteConst.SITE_TEXT_LANGUAGE_LIST);
+  };
+
   const isHeader = !headerlessPages.find(
     (routeStr) => location.pathname === routeStr,
   );
@@ -99,11 +111,13 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
     ? {
         notification: true,
         discussion: true,
+        language: true,
         menu: true,
       }
     : {
         notification: false,
         discussion: false,
+        language: true,
         menu: true,
       };
 
@@ -119,16 +133,14 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
           buttons={{
             notification: false,
             discussion: false,
+            language: false,
             menu: false,
           }}
           themeMode={themeMode}
           onClickThemeModeBtn={handleToogleTheme}
-          onClickDiscussionBtn={() => {
-            history.push(RouteConst.DISCUSSIONS_LIST);
-          }}
-          onClickNotificationBtn={() => {
-            history.push(RouteConst.NOTIFICATIONS);
-          }}
+          onClickDiscussionBtn={handleClickDiscussionButton}
+          onClickNotificationBtn={handleClickNotificationButton}
+          onClickLanguageBtn={handleClickLanguageButton}
           onClickMenuBtn={handleToggleMenu}
         />
       </IonToolbar>
@@ -144,12 +156,9 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
           onClickThemeModeBtn={handleToogleTheme}
           isNewDiscussion={isNewDiscussion}
           isNewNotification={isNewNotification}
-          onClickDiscussionBtn={() => {
-            history.push(RouteConst.DISCUSSIONS_LIST);
-          }}
-          onClickNotificationBtn={() => {
-            history.push(RouteConst.NOTIFICATIONS);
-          }}
+          onClickDiscussionBtn={handleClickDiscussionButton}
+          onClickNotificationBtn={handleClickNotificationButton}
+          onClickLanguageBtn={handleClickLanguageButton}
           onClickMenuBtn={handleToggleMenu}
         />
       </IonToolbar>

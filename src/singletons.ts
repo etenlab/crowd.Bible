@@ -127,18 +127,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   const candidateRepo = new CandidateRepository(dbService, syncService);
   const voteRepo = new VoteRepository(dbService, syncService);
 
-  const seedService = new SeedService(
-    nodeRepo,
-    nodeTypeRepo,
-    nodePropertyKeyRepo,
-    nodePropertyValueRepo,
-    relationshipRepo,
-    relationshipTypeRepo,
-    relationshipPropertyKeyRepo,
-    relationshipPropertyValueRepo,
-    loggerService,
-  );
-
   const graphFirstLayerService = new GraphFirstLayerService(
     nodeTypeRepo,
     nodeRepo,
@@ -219,6 +207,19 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     translationService,
     wordService,
     documentService,
+  );
+
+  const seedService = new SeedService(
+    nodeRepo,
+    nodeTypeRepo,
+    nodePropertyKeyRepo,
+    nodePropertyValueRepo,
+    relationshipRepo,
+    relationshipTypeRepo,
+    relationshipPropertyKeyRepo,
+    relationshipPropertyValueRepo,
+    documentService,
+    loggerService,
   );
 
   const lexiconService = new LexiconService(graphSecondLayerService, nodeRepo);

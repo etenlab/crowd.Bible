@@ -18,8 +18,12 @@ import { useGlobal } from '@/hooks/useGlobal';
 import { useDocumentTools } from '@/hooks/useDocumentTools';
 import { useGlobalComponents } from '@/hooks/useGlobalComponents';
 
-import { getAppDataSource } from './data-source';
 import { LoggerService } from '@eten-lab/core';
+import { ISingletons } from './singletons';
+
+import { AppDto } from '@/dtos/document.dto';
+
+import { getAppDataSource } from './data-source';
 import getSingletons from './singletons';
 
 export interface ContextType {
@@ -43,8 +47,13 @@ export interface ContextType {
     setSqlPortalShown: (isSqlPortalShown: boolean) => void;
     setMenuCom: (com: HTMLIonMenuElement) => void;
     clearMenuCom: () => void;
+    setSiteTextMap: (
+      siteTextMap: Record<string, { siteText: string; isTranslated: boolean }>,
+    ) => void;
+    setSingletons: (singletons: ISingletons | null) => void;
   };
   logger: LoggerService;
+  crowdBibleApp: AppDto | null;
 }
 
 export const AppContext = createContext<ContextType | undefined>(undefined);
@@ -70,6 +79,7 @@ export function AppContextProvider({ children }: AppProviderProps) {
     setLoadingState,
     setSingletons,
     setSqlPortalShown,
+    setSiteTextMap,
   } = useGlobal({
     dispatch,
   });
@@ -83,6 +93,7 @@ export function AppContextProvider({ children }: AppProviderProps) {
   });
 
   const logger = useRef(new LoggerService());
+  const crowdBibleApp = useRef<AppDto | null>(null);
 
   useEffect(() => {
     window.addEventListener('offline', () => {
@@ -92,6 +103,16 @@ export function AppContextProvider({ children }: AppProviderProps) {
       setConnectivity(true);
     });
   }, [setConnectivity]);
+
+  useEffect(() => {
+    if (state.global.singletons) {
+      state.global.singletons.documentService
+        .getApp('crowd.Bible')
+        .then((app) => {
+          crowdBibleApp.current = app;
+        });
+    }
+  }, [state.global.singletons]);
 
   useEffect(() => {
     setSingletons(null);
@@ -127,8 +148,10 @@ export function AppContextProvider({ children }: AppProviderProps) {
       setSqlPortalShown,
       setMenuCom,
       clearMenuCom,
+      setSiteTextMap,
     },
     logger: state?.global?.singletons?.loggerService || logger.current,
+    crowdBibleApp: crowdBibleApp.current,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

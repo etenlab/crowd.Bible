@@ -12,6 +12,7 @@ import {
   setLoadingState as setLoadingStateAction,
   setSingletons as setSingletonsAction,
   setSqlPortalShown as setSqlPortalShownAction,
+  setSiteTextMap as setSiteTextMapAction,
 } from '@/reducers/global.actions';
 
 import { type ActionType } from '@/reducers/index';
@@ -83,6 +84,15 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     dispatchRef.current.dispatch(setSqlPortalShownAction(isSqlPortalShown));
   }, []);
 
+  const setSiteTextMap = useCallback(
+    (
+      siteTextMap: Record<string, { siteText: string; isTranslated: boolean }>,
+    ) => {
+      dispatchRef.current.dispatch(setSiteTextMapAction(siteTextMap));
+    },
+    [],
+  );
+
   return {
     setRole,
     setUser,
@@ -95,5 +105,6 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     setLoadingState,
     setSingletons,
     setSqlPortalShown,
+    setSiteTextMap,
   };
 }
