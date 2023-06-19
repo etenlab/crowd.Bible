@@ -1,6 +1,6 @@
 import { useHistory } from 'react-router-dom';
 
-import { IonGrid, IonRow, IonCol, IonContent } from '@ionic/react';
+import { IonGrid, IonRow, IonCol } from '@ionic/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper';
 import { Button, Typography } from '@eten-lab/ui-kit';
@@ -9,6 +9,8 @@ import 'swiper/swiper-bundle.css';
 import '../styles.css';
 import { useAppContext } from '@/src/hooks/useAppContext';
 import { RouteConst } from '@/constants/route.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 export function WelcomePage() {
   const { logger } = useAppContext();
@@ -25,7 +27,7 @@ export function WelcomePage() {
   );
 
   return (
-    <IonContent>
+    <PageLayout>
       <IonGrid className="grid-full-height">
         <IonRow>
           <IonCol>
@@ -192,6 +194,6 @@ export function WelcomePage() {
           </IonCol>
         </IonRow>
       </IonGrid>
-    </IonContent>
+    </PageLayout>
   );
 }

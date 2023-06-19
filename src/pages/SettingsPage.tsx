@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import {
   CrowdBibleUI,
@@ -12,6 +11,8 @@ import {
 import { useAppContext } from '@/hooks/useAppContext';
 import { IMode } from '@/reducers/global.reducer';
 import { RouteConst } from '@/constants/route.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { VerticalRadioList } = CrowdBibleUI;
 const { Divider, FormControlLabel, FormGroup, FormLabel, Stack, Switch } =
@@ -69,7 +70,7 @@ export function SettingsPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack sx={{ padding: '20px' }} gap="20px">
         <Typography variant="h2" color="text.dark">
           Settings
@@ -114,6 +115,6 @@ export function SettingsPage() {
           Save
         </Button>
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

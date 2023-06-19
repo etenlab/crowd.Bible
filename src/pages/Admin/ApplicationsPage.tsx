@@ -1,6 +1,8 @@
-import { IonContent, IonItem } from '@ionic/react';
+import { IonItem } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import { MuiMaterial, CrowdBibleUI, Typography } from '@eten-lab/ui-kit';
+
+import { PageLayout } from '@/components/Layout';
 
 const { Box } = MuiMaterial;
 const { HeadBox } = CrowdBibleUI;
@@ -13,7 +15,7 @@ export function ApplicationsPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <HeadBox back={{ action: handleClickBackBtn }} title="Applications" />
       <Box
         component="form"
@@ -41,6 +43,6 @@ export function ApplicationsPage() {
         <IonItem>Seed some random data</IonItem>
         <IonItem>Sync data</IonItem>
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 }

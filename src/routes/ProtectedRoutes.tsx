@@ -1,7 +1,5 @@
-import { Redirect, Route, Switch } from 'react-router-dom';
-// import { IonRouterOutlet } from '@ionic/react';
+import { NotificationsPage } from '@/pages/Notifications';
 
-import NotificationsPage from '@/pages/Notifications';
 import { SettingsPage } from '@/pages/SettingsPage';
 import { DiscussionPage } from '@/pages/DiscussionPage';
 import { HomePage } from '@/pages/HomePage';
@@ -16,59 +14,47 @@ import { MediaToolsRoutes } from './MediaToolsRoutes';
 import { DataToolsRoutes } from './DataToolsRoutes';
 import { AppDevRoutes } from './AppDevRoutes';
 import { DiscussionRoutes } from './DiscussionRoutes';
-import { RouteConst } from '../constants/route.constant';
 
-export function ProtectedRoutes() {
-  return (
-    <>
-      <Switch>
-        <Route exact path="/home">
-          <HomePage />
-        </Route>
+import { RouteConst } from '@/constants/route.constant';
+import { CustomRouteProps } from './AppRoutes';
 
-        <Route exact path="/profile">
-          <ProfilePage />
-        </Route>
-
-        <Route exact path="/discussion/table-name/:table_name/row/:row">
-          <DiscussionPage />
-        </Route>
-        <Route exact path="/discussions-list">
-          <DiscussionsListPage />
-        </Route>
-
-        <Route exact path="/notifications">
-          <NotificationsPage />
-        </Route>
-
-        <Route exact path="/settings">
-          <SettingsPage />
-        </Route>
-
-        <Route exact path="/admin">
-          <AdminPage />
-        </Route>
-      </Switch>
-
-      <DocumentToolsRoutes />
-
-      <LanguageToolsRoutes />
-
-      <MediaToolsRoutes />
-
-      <DataToolsRoutes />
-
-      <AppDevRoutes />
-
-      <DiscussionRoutes />
-
-      <Route exact path={RouteConst.PLAYGROUND}>
-        <PlaygroundPage />
-      </Route>
-
-      <Route exact path="/">
-        <Redirect to="/home" />
-      </Route>
-    </>
-  );
-}
+export const ProtectedRoutes: CustomRouteProps[] = [
+  {
+    path: RouteConst.HOME,
+    children: <HomePage />,
+  },
+  {
+    path: RouteConst.PROFILE,
+    children: <ProfilePage />,
+  },
+  {
+    path: `${RouteConst.DISCUSSIONS}/table-name/:table_name/row/:row`,
+    children: <DiscussionPage />,
+  },
+  {
+    path: RouteConst.DISCUSSIONS_LIST,
+    children: <DiscussionsListPage />,
+  },
+  {
+    path: RouteConst.NOTIFICATIONS,
+    children: <NotificationsPage />,
+  },
+  {
+    path: RouteConst.SETTINGS,
+    children: <SettingsPage />,
+  },
+  {
+    path: RouteConst.ADMIN,
+    children: <AdminPage />,
+  },
+  {
+    path: RouteConst.PLAYGROUND,
+    children: <PlaygroundPage />,
+  },
+  ...DocumentToolsRoutes,
+  ...LanguageToolsRoutes,
+  ...MediaToolsRoutes,
+  ...DataToolsRoutes,
+  ...AppDevRoutes,
+  ...DiscussionRoutes,
+].map((route) => ({ ...route, protected: true }));

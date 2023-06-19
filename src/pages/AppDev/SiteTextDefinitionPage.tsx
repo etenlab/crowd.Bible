@@ -1,6 +1,5 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, Button, MuiMaterial, Input } from '@eten-lab/ui-kit';
 
@@ -18,6 +17,8 @@ import { SiteTextDto } from '@/src/dtos/site-text.dto';
 
 import { compareLangInfo } from '@/utils/langUtils';
 import { FeedbackTypes } from '@/constants/common.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { HeadBox } = CrowdBibleUI;
 const { Stack, Typography } = MuiMaterial;
@@ -177,7 +178,7 @@ export function SiteTextDefinitionPage() {
   }, [definitionList]);
 
   return (
-    <IonContent>
+    <PageLayout>
       <HeadBox
         back={{ action: handleClickCancel }}
         title="Site Text Definitions"
@@ -210,6 +211,6 @@ export function SiteTextDefinitionPage() {
           Cancel
         </Button>
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

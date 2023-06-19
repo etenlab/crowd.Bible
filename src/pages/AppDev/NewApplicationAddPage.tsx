@@ -1,6 +1,7 @@
 import { useState, ChangeEventHandler } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
+
+import { PageLayout } from '@/components/Layout';
 
 import {
   Input,
@@ -69,7 +70,7 @@ export function NewApplicationAddPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <HeadBox title="Add New Application" />
       <Stack sx={{ padding: '20px' }} gap="12px">
         <Autocomplete
@@ -99,6 +100,6 @@ export function NewApplicationAddPage() {
           Cancel
         </Button>
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

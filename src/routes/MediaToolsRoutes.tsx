@@ -1,17 +1,16 @@
-import { Route, Switch } from 'react-router-dom';
-
 import { MapDetailPage } from '@/pages/MediaTools/MapDetailPage';
 import { MapTranslatorPage } from '@/pages/MediaTools/MapTranslator';
 
-export function MediaToolsRoutes() {
-  return (
-    <Switch>
-      <Route exact path="/map-list">
-        <MapTranslatorPage />
-      </Route>
-      <Route exact path="/map-detail/:id">
-        <MapDetailPage />
-      </Route>
-    </Switch>
-  );
-}
+import { RouteConst } from '@/constants/route.constant';
+import { CustomRouteProps } from './AppRoutes';
+
+export const MediaToolsRoutes: CustomRouteProps[] = [
+  {
+    path: RouteConst.MAP_LIST,
+    children: <MapTranslatorPage />,
+  },
+  {
+    path: `${RouteConst.MAP_DETAIL}/:id`,
+    children: <MapDetailPage />,
+  },
+];

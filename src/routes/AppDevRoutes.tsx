@@ -1,5 +1,3 @@
-import { Route, Switch } from 'react-router-dom';
-
 import { AppListPage } from '@/pages/AppDev/AppListPage';
 import { NewApplicationAddPage } from '@/pages/AppDev/NewApplicationAddPage';
 
@@ -8,8 +6,8 @@ import { SiteTextAdminPage } from '@/pages/AppDev/SiteTextAdminPage';
 import { SiteTextAppListPage } from '@/pages/AppDev/SiteTextAppListPage';
 import { SiteTextListPage } from '@/pages/AppDev/SiteTextListPage';
 
-import { NewSiteTextAddPage } from '@/src/pages/AppDev/NewSiteTextAddPage';
-import { NewSiteTextTranslationAddPage } from '@/src/pages/AppDev/NewSiteTextTranslationAddPage';
+import { NewSiteTextAddPage } from '@/pages/AppDev/NewSiteTextAddPage';
+import { NewSiteTextTranslationAddPage } from '@/pages/AppDev/NewSiteTextTranslationAddPage';
 
 import { SiteTextDetailPage } from '@/pages/AppDev/SiteTextDetailPage';
 
@@ -17,80 +15,67 @@ import { SiteTextDefinitionPage } from '@/pages/AppDev/SiteTextDefinitionPage';
 import { SiteTextTranslationSwitchPage } from '@/pages/AppDev/SiteTextTranslationSwitchPage';
 
 import { RouteConst } from '@/constants/route.constant';
+import { CustomRouteProps } from './AppRoutes';
 
-export function AppDevRoutes() {
-  return (
-    <Switch>
-      <Route exact path={RouteConst.APPLICATION_LIST}>
-        <AppListPage />
-      </Route>
-      <Route exact path={RouteConst.ADD_APPLICATION}>
-        <NewApplicationAddPage />
-      </Route>
-
-      <Route exact path={RouteConst.SITE_TEXT_MENU_PAGE}>
-        <SiteTextMenuPage />
-      </Route>
-      <Route exact path={RouteConst.SITE_TEXT_ADMIN}>
-        <SiteTextAdminPage />
-      </Route>
-
-      <Route exact path={RouteConst.SITE_TEXT_TRANSLATION_APP_LIST}>
-        <SiteTextAppListPage />
-      </Route>
-      <Route exact path={`${RouteConst.SITE_TEXT_LIST}/:appId`}>
-        <SiteTextListPage />
-      </Route>
-
-      <Route exact path={`${RouteConst.SITE_TEXT_DETAIL}/:appId/:siteTextId`}>
-        <SiteTextDetailPage />
-      </Route>
-      <Route
-        exact
-        path={`${RouteConst.SITE_TEXT_DETAIL}/:appId/:siteTextId/:originalDefinitionRel`}
-      >
-        <SiteTextDetailPage />
-      </Route>
-      <Route
-        exact
-        path={`${RouteConst.SITE_TEXT_DETAIL}/:appId/:siteTextId/:originalDefinitionRel/:translatedDefinitionRel`}
-      >
-        <SiteTextDetailPage />
-      </Route>
-
-      <Route exact path={`${RouteConst.ADD_NEW_SITE_TEXT}/:appId`}>
-        <NewSiteTextAddPage />
-      </Route>
-      <Route exact path={`${RouteConst.ADD_NEW_SITE_TEXT}/:appId/:siteTextId`}>
-        <NewSiteTextAddPage />
-      </Route>
-
-      <Route
-        exact
-        path={`${RouteConst.ADD_NEW_SITE_TEXT_TRANSLATION}/:appId/:siteTextId/:originalDefinitionRel`}
-      >
-        <NewSiteTextTranslationAddPage />
-      </Route>
-      <Route
-        exact
-        path={`${RouteConst.ADD_NEW_SITE_TEXT_TRANSLATION}/:appId/:siteTextId/:originalDefinitionRel/:translatedDefinitionRel`}
-      >
-        <NewSiteTextTranslationAddPage />
-      </Route>
-
-      <Route
-        exact
-        path={`${RouteConst.SITE_TEXT_DEFINITION}/:appId/:siteTextId/:originalDefinitionRel`}
-      >
-        <SiteTextDefinitionPage />
-      </Route>
-
-      <Route
-        exact
-        path={`${RouteConst.SITE_TEXT_TRANSLATION_SWITCH}/:appId/:siteTextId/:originalDefinitionRel/:translatedDefinitionRel`}
-      >
-        <SiteTextTranslationSwitchPage />
-      </Route>
-    </Switch>
-  );
-}
+export const AppDevRoutes: CustomRouteProps[] = [
+  {
+    path: RouteConst.APPLICATION_LIST,
+    children: <AppListPage />,
+  },
+  {
+    path: RouteConst.ADD_APPLICATION,
+    children: <NewApplicationAddPage />,
+  },
+  {
+    path: RouteConst.SITE_TEXT_MENU_PAGE,
+    children: <SiteTextMenuPage />,
+  },
+  {
+    path: RouteConst.SITE_TEXT_ADMIN,
+    children: <SiteTextAdminPage />,
+  },
+  {
+    path: RouteConst.SITE_TEXT_TRANSLATION_APP_LIST,
+    children: <SiteTextAppListPage />,
+  },
+  {
+    path: `${RouteConst.SITE_TEXT_LIST}/:appId`,
+    children: <SiteTextListPage />,
+  },
+  {
+    path: `${RouteConst.SITE_TEXT_DETAIL}/:appId/:siteTextId`,
+    children: <SiteTextDetailPage />,
+  },
+  {
+    path: `${RouteConst.SITE_TEXT_DETAIL}/:appId/:siteTextId/:originalDefinitionRel`,
+    children: <SiteTextDetailPage />,
+  },
+  {
+    path: `${RouteConst.SITE_TEXT_DETAIL}/:appId/:siteTextId/:originalDefinitionRel/:translatedDefinitionRel`,
+    children: <SiteTextDetailPage />,
+  },
+  {
+    path: `${RouteConst.ADD_NEW_SITE_TEXT}/:appId`,
+    children: <NewSiteTextAddPage />,
+  },
+  {
+    path: `${RouteConst.ADD_NEW_SITE_TEXT}/:appId/:siteTextId`,
+    children: <NewSiteTextAddPage />,
+  },
+  {
+    path: `${RouteConst.ADD_NEW_SITE_TEXT_TRANSLATION}/:appId/:siteTextId/:originalDefinitionRel`,
+    children: <NewSiteTextTranslationAddPage />,
+  },
+  {
+    path: `${RouteConst.ADD_NEW_SITE_TEXT_TRANSLATION}/:appId/:siteTextId/:originalDefinitionRel/:translatedDefinitionRel`,
+    children: <NewSiteTextTranslationAddPage />,
+  },
+  {
+    path: `${RouteConst.SITE_TEXT_DEFINITION}/:appId/:siteTextId/:originalDefinitionRel`,
+    children: <SiteTextDefinitionPage />,
+  },
+  {
+    path: `${RouteConst.SITE_TEXT_TRANSLATION_SWITCH}/:appId/:siteTextId/:originalDefinitionRel/:translatedDefinitionRel`,
+    children: <SiteTextTranslationSwitchPage />,
+  },
+];

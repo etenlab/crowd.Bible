@@ -1,6 +1,5 @@
 import { ChangeEventHandler, useState, useEffect, useCallback } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 import { useDebounce } from 'use-debounce';
 
 import {
@@ -19,6 +18,8 @@ import { SelectableDefinitionCandidateList } from '@/components/SelectableDefini
 
 import { AppDto } from '@/dtos/document.dto';
 import { FeedbackTypes } from '@/constants/common.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { HeadBox } = CrowdBibleUI;
 const { Stack, Divider } = MuiMaterial;
@@ -117,7 +118,7 @@ export function NewSiteTextAddPage() {
   ) : null;
 
   return (
-    <IonContent>
+    <PageLayout>
       <HeadBox title="Add New Site Txt" appTitle={app?.name || ''} />
       <Stack gap="12px" sx={{ padding: '20px' }}>
         <Input
@@ -143,6 +144,6 @@ export function NewSiteTextAddPage() {
 
       <Divider />
       {selectableCandidateListCom}
-    </IonContent>
+    </PageLayout>
   );
 }

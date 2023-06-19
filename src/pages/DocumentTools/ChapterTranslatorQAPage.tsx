@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
@@ -10,6 +9,8 @@ import { mockChapters } from './ChapterFeedbackPage';
 import { useAppContext } from '@/hooks/useAppContext';
 import { FeedbackTypes } from '@/constants/common.constant';
 import { RouteConst } from '@/constants/route.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { TitleWithIcon, VerticalRadioList, QuestionCreatorBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -49,7 +50,7 @@ export function ChapterTranslatorQAPage() {
     ) : null;
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack
         justifyContent="space-between"
         sx={{ height: 'calc(100vh - 68px)' }}
@@ -72,6 +73,6 @@ export function ChapterTranslatorQAPage() {
 
         {questionCreatorBox}
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

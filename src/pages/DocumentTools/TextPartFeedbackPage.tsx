@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent } from '@ionic/react';
 
 import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 
 import { mockDocument } from './ReaderQAPage';
 import { FeedbackInput } from '@/components/FeedbackInput';
 import { RouteConst } from '@/constants/route.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { LabelWithIcon, RangeSelectableTextArea } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -36,7 +37,7 @@ export function TextPartFeedbackPage() {
     range.start !== null && range.end !== null ? <FeedbackInput /> : null;
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack
         justifyContent="space-between"
         sx={{ height: 'calc(100vh - 68px)' }}
@@ -56,6 +57,6 @@ export function TextPartFeedbackPage() {
         </Stack>
         {feedbackInput}
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

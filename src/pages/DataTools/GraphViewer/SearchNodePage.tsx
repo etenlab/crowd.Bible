@@ -1,11 +1,12 @@
-import React, { useEffect, useReducer, useState } from 'react';
-import { IonContent } from '@ionic/react';
+import { useEffect, useReducer, useState } from 'react';
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { Like } from 'typeorm';
-import { useGlobal } from '@/src/hooks/useGlobal';
+import { useGlobal } from '@/hooks/useGlobal';
 import { initialState, reducer } from '@/src/reducers';
 import { useHistory } from 'react-router';
-import { useAppContext } from '@/src/hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
+
+import { PageLayout } from '@/components/Layout';
 
 const { SearchNode, TitleWithIcon } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -89,7 +90,7 @@ export function SearchNodePage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack
         sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto', gap: '16px' }}
       >
@@ -106,6 +107,6 @@ export function SearchNodePage() {
           setSearch={setSearch}
         />
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

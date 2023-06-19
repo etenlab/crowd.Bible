@@ -18,29 +18,33 @@ test('1: Verify that user is register/logout and login again successfully', asyn
   //Navigate to the URL
   await page.goto('/login');
 
-  //Click on the 'Don't have an count' button
+  //Verify the current url
+  const currentUrl = await page.url();
+  console.log('Env url is: ' + currentUrl);
+
+  //Verify the login header text
+  expect(await login.isHeaderTextPresent()).toBeTruthy();
+
+  //Click on the 'Don't have an account' button
   await login.clickOnDontHaveAccountButton();
 
   //Verify the title of the page
-  const headerTextPresntRegisterPage = await register.isHeaderTextPresent();
-  expect(headerTextPresntRegisterPage).toBeTruthy();
+  expect(await register.isHeaderTextPresent()).toBeTruthy();
 
   //Fill and submit the register form
   await register.fillRegistrationForm(registerData);
   await register.clickOnRegisterButton();
 
   //Verify the header of the home page
-  // const headerTextPresntHomePage = await home.isheaderTextPresent();
-  // expect(headerTextPresntHomePage).toBeTruthy();
+  expect(await home.isheaderTextPresent()).toBeTruthy();
 
   //logout to the app
   await home.clickOnExpandMenu();
-  await leftMenu.isheaderTextPresent();
+  expect(await leftMenu.isheaderTextPresent()).toBeTruthy();
   await leftMenu.clickOnLogout();
 
   //Verify the user is redirected to the login page
-  const headerTextPresntLoginPage = await login.isheaderTextPresent();
-  expect(headerTextPresntLoginPage).toBeTruthy();
+  expect(await login.isHeaderTextPresent()).toBeTruthy();
 
   //Login to the app with registered data
   const loginData = LoginDTO;
@@ -50,15 +54,15 @@ test('1: Verify that user is register/logout and login again successfully', asyn
   await login.loginToApp(loginData);
 
   //Verify user is logged in
-  // expect(headerTextPresntHomePage).toBeTruthy();
+  expect(await home.isheaderTextPresent()).toBeTruthy();
 
   //logout to the app
   await home.clickOnExpandMenu();
-  await leftMenu.isheaderTextPresent();
+  expect(await leftMenu.isheaderTextPresent()).toBeTruthy();
   await leftMenu.clickOnLogout();
 
   //Verify the user is redirected to the login page
-  expect(headerTextPresntLoginPage).toBeTruthy();
+  expect(await login.isHeaderTextPresent()).toBeTruthy();
 });
 
 test('2: Verify that email field is mandatory', async ({ page }) => {
@@ -69,11 +73,16 @@ test('2: Verify that email field is mandatory', async ({ page }) => {
   //Navigate to the URL
   await page.goto('/login');
 
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isHeaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
+
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
 
   //Verify the title of the page
-  await register.isHeaderTextPresent();
+  const headerTextPresentRegisterPage = await register.isHeaderTextPresent();
+  expect(headerTextPresentRegisterPage).toBeTruthy();
 
   //Fill the register form without email
   await register.fillRegistrationForm(registerData);
@@ -94,11 +103,16 @@ test('3: Verify that username field is mandatory', async ({ page }) => {
   //Navigate to the URL
   await page.goto('/login');
 
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isHeaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
+
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
 
   //Verify the title of the page
-  await register.isHeaderTextPresent();
+  const headerTextPresentRegisterPage = await register.isHeaderTextPresent();
+  expect(headerTextPresentRegisterPage).toBeTruthy();
 
   //Fill the register form withoutusername
   await register.fillRegistrationForm(registerData);
@@ -119,11 +133,16 @@ test('4: Verify that password field is mandatory', async ({ page }) => {
   //Navigate to the URL
   await page.goto('/login');
 
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isHeaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
+
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
 
   //Verify the title of the page
-  await register.isHeaderTextPresent();
+  const headerTextPresentRegisterPage = await register.isHeaderTextPresent();
+  expect(headerTextPresentRegisterPage).toBeTruthy();
 
   //Fill the register form without password
   await register.fillRegistrationForm(registerData);
@@ -144,11 +163,16 @@ test('5: Verify that repeat password field is mandatory', async ({ page }) => {
   //Navigate to the URL
   await page.goto('/login');
 
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isHeaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
+
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
 
   //Verify the title of the page
-  await register.isHeaderTextPresent();
+  const headerTextPresentRegisterPage = await register.isHeaderTextPresent();
+  expect(headerTextPresentRegisterPage).toBeTruthy();
 
   //Fill the registration form without password
   await register.fillRegistrationForm(registerData);
@@ -171,11 +195,16 @@ test('6: Verify that validation shown for invalid email format', async ({
   //Navigate to the URL
   await page.goto('/login');
 
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isHeaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
+
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
 
   //Verify the title of the page
-  await register.isHeaderTextPresent();
+  const headerTextPresentRegisterPage = await register.isHeaderTextPresent();
+  expect(headerTextPresentRegisterPage).toBeTruthy();
 
   //Fill and submit the register form with invalid email format
   await register.fillRegistrationForm(registerData);
@@ -198,11 +227,16 @@ test('7 & 8: Verify that validation shown for diff data in password & repeat pas
   //Navigate to the URL
   await page.goto('/login');
 
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isHeaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
+
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
 
   //Verify the title of the page
-  await register.isHeaderTextPresent();
+  const headerTextPresentRegisterPage = await register.isHeaderTextPresent();
+  expect(headerTextPresentRegisterPage).toBeTruthy();
 
   //Fill and submit the register form with diff password & repeat Pass
   await register.fillRegistrationForm(registerData);
@@ -224,28 +258,39 @@ test('7 & 8: Verify that validation shown for diff data in password & repeat pas
 test('9: Verify that validation message shown while trying to registration with existing user', async ({
   page,
 }) => {
-  const registration = new RegisterPO(page);
+  const register = new RegisterPO(page);
   const login = new LoginPO(page);
-  const registerData = RegisterData.registerDataWithExistingUser();
+  const home = new HomePO(page);
+  const leftMenu = new LeftMenuPO(page);
+  const registerData = RegisterData.validRegisterData();
 
   //Navigate to the URL
   await page.goto('/login');
 
+  //Verify the login header text
+  const headerTextPresentLoginPage = await login.isHeaderTextPresent();
+  expect(headerTextPresentLoginPage).toBeTruthy();
+
   //Click on the 'Don't have an count' button
   await login.clickOnDontHaveAccountButton();
 
-  //Verify the title of the page
-  await registration.isHeaderTextPresent();
+  //Fill and submit the register form
+  await register.fillRegistrationForm(registerData);
+  await register.clickOnRegisterButton();
+
+  //logout to the app
+  await home.clickOnExpandMenu();
+  await leftMenu.clickOnLogout();
+
+  //Click on the 'Don't have an count' button
+  await login.clickOnDontHaveAccountButton();
 
   //Fill and submit the register form with existing user
-  await registration.fillRegistrationForm(registerData);
-  await registration.clickOnRegisterButton();
-
-  await registration.fillRegistrationForm(registerData);
-  await registration.clickOnRegisterButton();
+  await register.fillRegistrationForm(registerData);
+  await register.clickOnRegisterButton();
 
   //Verify validation message is displayed for user
   const errorMessageForExistingUser =
-    await registration.getExistingUserErrorMessage();
+    await register.getExistingUserErrorMessage();
   expect(errorMessageForExistingUser).toEqual('User exists with same username');
 });

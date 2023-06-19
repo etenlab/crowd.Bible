@@ -6,7 +6,6 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonContent,
   IonLoading,
   IonToast,
 } from '@ionic/react';
@@ -15,6 +14,8 @@ import txtfile from '@/utils/iso_639_3_min.tab';
 import { NodeTypeConst } from '@/constants/graph.constant';
 import { useAppContext } from '@/hooks/useAppContext';
 import { FeedbackTypes, LoadingStatuses } from '@/constants/common.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 export function AdminPage() {
   const {
@@ -182,7 +183,7 @@ export function AdminPage() {
   };
 
   return (
-    <IonContent>
+    <PageLayout>
       <IonCard>
         <IonCardHeader>
           <IonCardTitle>Import Partial ISO-639-3 Dataset</IonCardTitle>
@@ -261,6 +262,6 @@ export function AdminPage() {
         message={loadResult}
         duration={5000}
       />
-    </IonContent>
+    </PageLayout>
   );
 }

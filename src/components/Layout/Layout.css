@@ -14,3 +14,7 @@
   --padding-start: 0;
   --padding-top: 0;
 }
+
+.footer-md::before {
+  display: none;
+}

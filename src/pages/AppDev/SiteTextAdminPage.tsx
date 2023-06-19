@@ -1,5 +1,5 @@
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 export function SiteTextAdminPage() {
-  return <IonContent>/site-text-admin</IonContent>;
+  return <PageLayout>/site-text-admin</PageLayout>;
 }

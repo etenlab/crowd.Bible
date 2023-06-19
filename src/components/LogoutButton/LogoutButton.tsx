@@ -1,14 +1,13 @@
 import { useHistory } from 'react-router-dom';
 
-import { IonItem } from '@ionic/react';
-
-import { Typography } from '@eten-lab/ui-kit';
+import { Button, useColorModeContext } from '@eten-lab/ui-kit';
 import { RouteConst } from '@/src/constants/route.constant';
 // import { decodeToken } from '@/src/utils/AuthUtils';
 import { useAppContext } from '@/src/hooks/useAppContext';
 import { USER_TOKEN_KEY } from '@/constants/common.constant';
 
 export function LogoutButton() {
+  const { getColor } = useColorModeContext();
   const {
     logger,
     states: {
@@ -35,10 +34,22 @@ export function LogoutButton() {
   }
 
   return (
-    <IonItem button onClick={handleLogout}>
-      <Typography variant="body1" color="text.red" sx={{ padding: '20px' }}>
-        Logout
-      </Typography>
-    </IonItem>
+    <Button
+      onClick={handleLogout}
+      sx={{
+        margin: '20px',
+        justifyContent: 'flex-start',
+        width: 'calc(100% - 40px)',
+        borderTop: `1px solid ${getColor('divider-color')}`,
+        borderRadius: 0,
+        padding: '12px 0',
+        color: getColor('red'),
+        fontWeight: 600,
+        fontSize: '16px',
+        lineHeight: '26px',
+      }}
+    >
+      Logout
+    </Button>
   );
 }

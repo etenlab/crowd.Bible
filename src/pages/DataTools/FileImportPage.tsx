@@ -1,5 +1,4 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { IonContent } from '@ionic/react';
 import {
   CrowdBibleUI,
   MuiMaterial,
@@ -13,6 +12,9 @@ import {
 import { NodeTypeConst } from '@eten-lab/core';
 import { useAppContext } from '@/hooks/useAppContext';
 import JSZip from 'jszip';
+
+import { PageLayout } from '@/components/Layout';
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Proskomma } = require('proskomma');
 
@@ -101,7 +103,7 @@ export function FileImportPage() {
 
   if (wordProgress === '') {
     return (
-      <IonContent>
+      <PageLayout>
         <Stack
           justifyContent="space-between"
           sx={{ height: 'calc(100vh - 68px)' }}
@@ -157,35 +159,35 @@ export function FileImportPage() {
             />
           </Stack>
         </Stack>
-      </IonContent>
+      </PageLayout>
     );
   }
 
   if (wordProgress === 'success') {
     return (
-      <IonContent>
+      <PageLayout>
         <Stack sx={{ pt: '25vh' }}>
           <IconBox isSuccess text="Process completed successfully!" />
         </Stack>
-      </IonContent>
+      </PageLayout>
     );
   }
 
   if (wordProgress === 'failed') {
     return (
-      <IonContent>
+      <PageLayout>
         <Stack sx={{ pt: '25vh' }}>
           <IconBox isSuccess text="Oops... something went wrong!" />
         </Stack>
-      </IonContent>
+      </PageLayout>
     );
   }
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack sx={{ pt: '20vh' }}>
         <FadeSpinner color="black" progress={wordProgress} />
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

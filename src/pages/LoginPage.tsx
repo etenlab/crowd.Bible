@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IonContent, IonToolbar } from '@ionic/react';
+import { IonToolbar } from '@ionic/react';
 import { useKeycloakClient } from '@eten-lab/sso';
 
 import {
@@ -20,6 +20,8 @@ import * as Yup from 'yup';
 import { decodeToken } from '@/utils/AuthUtils';
 import { RouteConst } from '@/constants/route.constant';
 import { USER_TOKEN_KEY } from '@/constants/common.constant';
+
+import { PageLayout } from '@/components/Layout';
 
 const { Box } = MuiMaterial;
 
@@ -108,7 +110,7 @@ export function LoginPage() {
   }, [userToken]);
 
   return (
-    <IonContent>
+    <PageLayout>
       <IonToolbar class="ionic-toolbar">
         <Link to="/">
           <Typography
@@ -200,6 +202,6 @@ export function LoginPage() {
           Don&apos;t you have an account?
         </Button>
       </Box>
-    </IonContent>
+    </PageLayout>
   );
 }

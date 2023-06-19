@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
 
@@ -107,7 +107,7 @@ export function TranslationEditPage() {
   );
 
   return (
-    <IonContent>
+    <PageLayout>
       <Stack
         justifyContent="space-between"
         sx={{ height: 'calc(100vh - 68px)' }}
@@ -127,6 +127,6 @@ export function TranslationEditPage() {
         </Stack>
         <Stack sx={{ flexGrow: 1 }}>{translationEdit}</Stack>
       </Stack>
-    </IonContent>
+    </PageLayout>
   );
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { IonContent } from '@ionic/react';
+import { PageLayout } from '@/components/Layout';
 
 import {
   CrowdBibleUI,
@@ -179,7 +179,7 @@ export function TranslationDocumentListPage() {
   ) : null;
 
   return (
-    <IonContent>
+    <PageLayout>
       <HeadBox
         title="Documents"
         filter={{
@@ -188,6 +188,6 @@ export function TranslationDocumentListPage() {
       />
       {langSelectorCom}
       {buttonListCom}
-    </IonContent>
+    </PageLayout>
   );
 }
