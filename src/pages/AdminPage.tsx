@@ -35,7 +35,6 @@ export function AdminPage() {
     useState<LoadingStatuses>(LoadingStatuses.INITIAL);
 
   const [loadResult, setLoadResult] = useState('');
-  // const seedService = useSeedService();
 
   const [loadingMessage, setLoadingMessage] = useState('Loading table...');
 
@@ -131,7 +130,7 @@ export function AdminPage() {
     setSyncOutLoadingStatus(LoadingStatuses.LOADING);
     try {
       const syncOutRes = await singletons.syncService.syncOut();
-      logger.error('syncOutRes', syncOutRes);
+      logger.info('syncOutRes: ', syncOutRes);
       setLoadResult('Syncing Out was successful!');
     } catch (error) {
       logger.error('Error occurred while syncing out::', error);
@@ -147,11 +146,14 @@ export function AdminPage() {
     setLoadingState(true);
     setSyncInLoadingStatus(LoadingStatuses.LOADING);
     try {
-      const syncInRes = await singletons.syncService.syncIn();
-      logger.fatal('syncInRes', syncInRes);
+      await singletons.syncService.syncIn();
+      logger.info('sync done.');
       setLoadResult('Syncing In was successful!');
     } catch (error) {
-      logger.fatal('Error occurred while syncing in::', error);
+      logger.fatal(
+        'Error occurred while syncing in: ',
+        JSON.stringify((error as Error).message),
+      );
       setLoadResult('Error occurred while syncing in.');
     } finally {
       setLoadingState(false);
@@ -168,6 +170,7 @@ export function AdminPage() {
     setLoadingState(true);
     try {
       await singletons.dbService.resetAllData();
+      singletons.syncService.clearAllSyncInfo();
       alertFeedback(FeedbackTypes.SUCCESS, 'All database data deleted.');
     } catch (error) {
       logger.error(

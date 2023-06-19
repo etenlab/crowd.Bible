@@ -44,7 +44,8 @@ export function SearchNodePage() {
           where: {
             propertyKeys: {
               propertyValue: {
-                property_value: Like(`%${search}%`),
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                property_value: Like(`%${search}%`) as any,
               },
             },
           },

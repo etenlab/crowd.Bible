@@ -86,7 +86,7 @@ export class SiteTextService {
     siteText: string,
     definitionText: string,
   ): Promise<{ wordId: Nanoid; definitionId: Nanoid; relationshipId: Nanoid }> {
-    const wordId = await this.wordService.createWordOrPhraseWithLang(
+    const wordId = await this.wordService.createOrFindWordOrPhraseWithLang(
       siteText,
       languageInfo,
     );

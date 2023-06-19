@@ -20,6 +20,7 @@ import { useFormik } from 'formik';
 import { decodeToken } from '@/utils/AuthUtils';
 import * as Yup from 'yup';
 import { RouteConst } from '@/constants/route.constant';
+import { USER_TOKEN_KEY } from '../constants/common.constant';
 const { Box, Alert } = MuiMaterial;
 
 const validationSchema = Yup.object().shape({
@@ -81,7 +82,7 @@ export function RegisterPage() {
               })
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               .then((res: any) => {
-                localStorage.setItem('userToken', res.access_token);
+                localStorage.setItem(USER_TOKEN_KEY, res.access_token);
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const token: any = decodeToken(res.access_token);
                 setUser({

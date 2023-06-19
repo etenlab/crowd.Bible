@@ -100,11 +100,13 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
         notification: true,
         discussion: true,
         menu: true,
+        language: false,
       }
     : {
         notification: false,
         discussion: false,
         menu: true,
+        language: false,
       };
 
   if (!isHeader) {

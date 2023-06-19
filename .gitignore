@@ -8,6 +8,7 @@
 # testing
 /coverage
 local-ui-kit
+local-core
 
 # production
 /build
