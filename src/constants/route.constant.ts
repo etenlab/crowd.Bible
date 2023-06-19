@@ -2,6 +2,7 @@ export enum RouteConst {
   HOME = '/home',
   SETTINGS = '/settings',
   ADMIN = '/admin',
+  ADMIN_MANAGE = '/admin/manage',
   WELCOME = '/welcome',
   LOGIN = '/login',
   REGISTER = '/register',

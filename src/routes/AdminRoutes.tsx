@@ -1,4 +1,4 @@
-import { HomePage } from '@/pages/Admin/HomePage';
+import { ManagePage } from '@/pages/Admin/ManagePage';
 import { UsersPage } from '@/pages/Admin/UsersPage';
 import { ApplicationsPage } from '@/pages/Admin/ApplicationsPage';
 import { OrganizationsPage } from '@/pages/Admin/OrganizationsPage';
@@ -9,8 +9,8 @@ import { CustomRouteProps } from './AppRoutes';
 
 export const AdminRoutes: CustomRouteProps[] = [
   {
-    path: `${RouteConst.ADMIN}/home`,
-    children: <HomePage />,
+    path: `${RouteConst.ADMIN}/manage`,
+    children: <ManagePage />,
   },
   {
     path: `${RouteConst.ADMIN}/users`,

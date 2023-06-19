@@ -33,6 +33,12 @@ const menuLinks = {
       implemented: true,
       noAuthOnly: true,
     },
+    {
+      to: RouteConst.ADMIN_MANAGE,
+      label: 'AdminManage',
+      implemented: true,
+      noAuthOnly: true,
+    },
   ],
 };
 
