@@ -60,7 +60,7 @@ export enum RouteConst {
   READER_QA = '/reader-qa',
 
   MAP_LIST = '/map-list',
-  MAP_DETAIL = 'map-detail',
+  MAP_DETAIL = '/map-detail',
 
   PLAYGROUND = '/playground',
 }
