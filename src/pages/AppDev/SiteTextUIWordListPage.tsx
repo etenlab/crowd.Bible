@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 
-import { PageLayout } from '@/components/PageLayout';
+import { PageLayout } from '@/components/Layout';
 
 import { RouteConst } from '@/constants/route.constant';
 
@@ -21,17 +21,21 @@ export function SiteTextUIWordListPage() {
     states: {
       global: { singletons, siteTextMap },
     },
+    crowdBibleApp,
   } = useAppContext();
-  const { loadSiteTextMap } = useSiteText();
+  const { loadSiteTextMap, tr } = useSiteText();
 
   const [searchStr, setSearchStr] = useState<string>('');
+  const updated = useRef<boolean>(false);
 
   // Fetch Mock App Info from db
   useEffect(() => {
-    if (singletons) {
-      loadSiteTextMap();
+    if (singletons && crowdBibleApp && updated.current === false) {
+      // loadSiteTextMap();
+      // updated.current = true;
+      console.log('loadSiteTextMap calling');
     }
-  }, [loadSiteTextMap, singletons]);
+  }, [loadSiteTextMap, singletons, crowdBibleApp]);
 
   const handleChangeSearchStr = (str: string) => {
     setSearchStr(str);
@@ -43,69 +47,60 @@ export function SiteTextUIWordListPage() {
 
   const handleClickItem = (_siteTextId: string) => {};
 
-  console.log('siteTextMap ===>', siteTextMap);
+  console.log(siteTextMap);
 
-  // const items: ButtonListItemType[] = useMemo(() => {
-  //   const keys = Object.keys(siteTextMap);
-  //   return keys.map((key) => {
-  //     // const notranslatedBadgeCom = !siteTextMap[key].isTranslated ? (
-  //     //   <Chip
-  //     //     component="span"
-  //     //     label="Not translated"
-  //     //     variant="outlined"
-  //     //     color="error"
-  //     //     size="small"
-  //     //     sx={{ marginLeft: 2 }}
-  //     //   />
-  //     // ) : null;
+  const items: ButtonListItemType[] = useMemo(() => {
+    const keys = Object.keys(siteTextMap);
 
-  //     // const notranslatedBadgeCom = null;
+    console.log(keys);
+    return keys.map((key) => {
+      const notranslatedBadgeCom = !siteTextMap[key].isTranslated ? (
+        <Chip
+          component="span"
+          label={tr('Not translated')}
+          variant="outlined"
+          color="error"
+          size="small"
+          sx={{ marginLeft: 2 }}
+        />
+      ) : null;
 
-  //     // const labelCom = (
-  //     //   <>
-  //     //     {/* <Typography variant="body1" color="text.dark"> */}
-  //     //     {key}
-  //     //     {/* </Typography> */}
+      const labelCom = (
+        <>
+          {siteTextMap[key].siteText}
+          {notranslatedBadgeCom}
+        </>
+      );
 
-  //     //     {/* {siteTextMap[key].isTranslated
-  //     //       ? // <Typography variant="body1" color="text.dark">
-  //     //         siteTextMap[key].siteText
-  //     //       : // </Typography>
-  //     //         notranslatedBadgeCom} */}
-  //     //   </>
-  //     // );
+      return {
+        value: key,
+        label: labelCom,
+      };
+    });
+  }, [tr, siteTextMap]);
 
-  //     // const labelCom = key;
-
-  //     return {
-  //       value: key,
-  //       label: key,
-  //     };
-  //   });
-  // }, [siteTextMap]);
-
-  // console.log('items ===>', items);
+  console.log(items, crowdBibleApp, singletons);
 
   return (
     <PageLayout>
       <HeadBox
-        title={'User Interface Word'}
+        title={tr('User Interface Word')}
         search={{
           value: searchStr,
           onChange: handleChangeSearchStr,
-          placeHolder: 'Input a search word!',
+          placeHolder: tr('Input a search word!'),
         }}
         back={{
           action: handleClickBackBtn,
         }}
       />
       <Stack gap="16px">
-        {/* <ButtonList
-          label={'List of site text'}
+        <ButtonList
+          label={tr('List of site text')}
           withUnderline={true}
-          items={[]}
+          items={items}
           onClick={handleClickItem}
-        /> */}
+        />
       </Stack>
     </PageLayout>
   );

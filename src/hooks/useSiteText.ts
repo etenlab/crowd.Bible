@@ -51,7 +51,6 @@ export function useSiteText() {
           );
 
         setLoadingState(false);
-        alertFeedback(FeedbackTypes.SUCCESS, 'Created a new Site Text!');
 
         return siteTextEntity.definitionId;
       } catch (err) {
@@ -462,13 +461,9 @@ export function useSiteText() {
     logger,
   ]);
 
-  const tr = useCallback(
+  const trWithInfo = useCallback(
     (siteText: string) => {
       if (!singletons || !crowdBibleApp) {
-        alertFeedback(
-          FeedbackTypes.ERROR,
-          'Internal Error! at translateSiteText',
-        );
         return {
           siteText,
           isTranslated: false,
@@ -494,9 +489,8 @@ export function useSiteText() {
           '',
         )
         .catch((err) => {
-          console.log(err);
           logger.error(err);
-          alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
+          alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at TrWithInto');
         });
 
       return {
@@ -507,8 +501,67 @@ export function useSiteText() {
     [singletons, crowdBibleApp, siteTextMap, alertFeedback, logger],
   );
 
+  const tr = useCallback(
+    (siteText: string) => {
+      if (!singletons || !crowdBibleApp) {
+        return siteText;
+      }
+
+      if (siteText.trim() === '') {
+        return '';
+      }
+
+      if (siteTextMap[siteText]) {
+        return siteTextMap[siteText].siteText;
+      }
+
+      singletons.siteTextService
+        .createOrFindSiteText(
+          crowdBibleApp.id,
+          crowdBibleApp.languageInfo,
+          siteText,
+          '',
+        )
+        .catch((err) => {
+          logger.error(err);
+          alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at Tr');
+        });
+
+      return siteText;
+    },
+    [singletons, crowdBibleApp, siteTextMap, alertFeedback, logger],
+  );
+
+  const getAppLanguageList = useCallback(async (): Promise<LanguageInfo[]> => {
+    if (!singletons || !crowdBibleApp) {
+      alertFeedback(
+        FeedbackTypes.ERROR,
+        'Internal Error! at getAppLanguageList',
+      );
+      return [];
+    }
+
+    try {
+      setLoadingState(true);
+
+      const result = await singletons.siteTextService.getAppLanguageList(
+        crowdBibleApp.id,
+      );
+
+      setLoadingState(false);
+
+      return result;
+    } catch (err) {
+      logger.error(err);
+      setLoadingState(false);
+      alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
+      return [];
+    }
+  }, [singletons, crowdBibleApp, alertFeedback, setLoadingState, logger]);
+
   return {
     tr,
+    trWithInfo,
     loadSiteTextMap,
     createOrFindSiteText,
     createOrFindTranslation,
@@ -520,5 +573,6 @@ export function useSiteText() {
     getSiteTextDtoWithRel,
     getSiteTextTranslationDtoWithRel,
     getOriginalAndTranslatedRelFromSiteTextTranslationDto,
+    getAppLanguageList,
   };
 }

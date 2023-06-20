@@ -1,4 +1,10 @@
-import React, { createContext, useReducer, useEffect, useRef } from 'react';
+import React, {
+  createContext,
+  useReducer,
+  useEffect,
+  useRef,
+  ReactNode,
+} from 'react';
 
 import { reducer, loadPersistedStore } from '@/reducers/index';
 
@@ -47,10 +53,13 @@ export interface ContextType {
     setSqlPortalShown: (isSqlPortalShown: boolean) => void;
     setMenuCom: (com: HTMLIonMenuElement) => void;
     clearMenuCom: () => void;
+    setModalCom: (com: ReactNode) => void;
+    clearModalCom: () => void;
     setSiteTextMap: (
       siteTextMap: Record<string, { siteText: string; isTranslated: boolean }>,
     ) => void;
     setSingletons: (singletons: ISingletons | null) => void;
+    changeAppLanguage: (langInfo: LanguageInfo) => void;
   };
   logger: LoggerService;
   crowdBibleApp: AppDto | null;
@@ -80,13 +89,15 @@ export function AppContextProvider({ children }: AppProviderProps) {
     setSingletons,
     setSqlPortalShown,
     setSiteTextMap,
+    changeAppLanguage,
   } = useGlobal({
     dispatch,
   });
 
-  const { setMenuCom, clearMenuCom } = useGlobalComponents({
-    dispatch,
-  });
+  const { setMenuCom, clearMenuCom, setModalCom, clearModalCom } =
+    useGlobalComponents({
+      dispatch,
+    });
 
   const { setTargetLanguage, setSourceLanguage } = useDocumentTools({
     dispatch,
@@ -148,7 +159,10 @@ export function AppContextProvider({ children }: AppProviderProps) {
       setSqlPortalShown,
       setMenuCom,
       clearMenuCom,
+      setModalCom,
+      clearModalCom,
       setSiteTextMap,
+      changeAppLanguage,
     },
     logger: state?.global?.singletons?.loggerService || logger.current,
     crowdBibleApp: crowdBibleApp.current,

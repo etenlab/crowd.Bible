@@ -202,11 +202,11 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
 
   const siteTextService = new SiteTextService(
     graphFirstLayerService,
+    graphSecondLayerService,
     votingService,
     definitionService,
     translationService,
     wordService,
-    documentService,
   );
 
   const seedService = new SeedService(
