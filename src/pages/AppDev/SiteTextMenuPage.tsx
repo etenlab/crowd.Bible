@@ -25,8 +25,8 @@ const cardGroup = {
       description: 'User interface words for your application',
       startIcon: (
         <Stack>
-          <DiSite color="blue" />
-          <DiAdmin color="blue" />
+          <DiSite color="blue-primary" />
+          <DiAdmin color="blue-primary" />
         </Stack>
       ),
     },
@@ -37,8 +37,8 @@ const cardGroup = {
         'Translate user interface words so applications can be available in many languages',
       startIcon: (
         <Stack>
-          <DiSite color="blue" />
-          <DiTranslator color="blue" />
+          <DiSite color="blue-primary" />
+          <DiTranslator color="blue-primary" />
         </Stack>
       ),
       implemented: true,

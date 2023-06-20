@@ -1626,10 +1626,10 @@
     "axios" "^1.3.6"
     "qs" "^6.11.1"
 
-"@eten-lab/ui-kit@^0.5.42", "@eten-lab/ui-kit@^0.5.71":
-  "integrity" "sha512-N+CmZL6Bu1jNXHr3hDWZTQEUY9z65XsRbB0c4IggbIAXIJ5f86p1UxvLd/oS5NEHAhP16H5abkwC3IWxmrCJ0Q=="
-  "resolved" "https://registry.npmjs.org/@eten-lab/ui-kit/-/ui-kit-0.5.71.tgz"
-  "version" "0.5.71"
+"@eten-lab/ui-kit@^0.5.42", "@eten-lab/ui-kit@^0.5.79":
+  "integrity" "sha512-7Rys3D2M6ynPz+aN3o1XQ2FfEUABPf7zhn2XqP90Ks4DYIDvysO+etoEOk3IkfTeb/fePsD5p7b8YW5BqIOvtA=="
+  "resolved" "https://registry.npmjs.org/@eten-lab/ui-kit/-/ui-kit-0.5.79.tgz"
+  "version" "0.5.79"
   dependencies:
     "@emotion/react" "^11.10.4"
     "@emotion/styled" "^11.10.4"
