@@ -2,12 +2,19 @@ import { useHistory } from 'react-router-dom';
 import { CrowdBibleUI, FilterButton, PlusButton } from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
+import { RouteConst } from '@/constants/route.constant';
+
 const { ButtonList, HeadBox } = CrowdBibleUI;
+
 export function UsersPage() {
   const history = useHistory();
 
   const handleClickBackBtn = () => {
     history.goBack();
+  };
+
+  const handleClickItem = (value: string) => {
+    history.push(`${RouteConst.ADMIN}/user/${value}`);
   };
 
   const handleSearch = () => {};
@@ -42,7 +49,7 @@ export function UsersPage() {
         label="List of Users"
         withUnderline={true}
         items={items}
-        onClick={() => {}}
+        onClick={handleClickItem}
         toolBtnGroup={
           <>
             <FilterButton variant="secondary" onClick={() => {}} />

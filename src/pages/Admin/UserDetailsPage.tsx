@@ -1,31 +1,87 @@
-import { MuiMaterial, Typography } from '@eten-lab/ui-kit';
+import { useHistory, useParams } from 'react-router-dom';
+import {
+  CrowdBibleUI,
+  PlusButton,
+  MuiMaterial,
+  DiEdit,
+  Typography,
+} from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
 
-const { Box } = MuiMaterial;
+const { ButtonList, HeadBox } = CrowdBibleUI;
+const { Box, Stack } = MuiMaterial;
 
 export function UserDetailsPage() {
+  const history = useHistory();
+  const { user_id } = useParams<{ user_id: string }>();
+
+  const handleClickBackBtn = () => {
+    history.goBack();
+  };
+
+  const roles = [
+    {
+      application: 'Application Name 1',
+      organization: 'Organization Name 1',
+      role: 'Project Manager',
+      id: 'role_id_1',
+    },
+    {
+      application: 'Application Name 2',
+      organization: 'Organization Name 1',
+      role: 'Developer',
+      id: 'role_id_2',
+    },
+    {
+      application: 'Application Name 2',
+      organization: 'Organization Name 2',
+      role: 'Project Manager',
+      id: 'role_id_3',
+    },
+  ];
+
+  const items = roles.map((r) => ({
+    label: (
+      <Stack>
+        <Stack>
+          <Typography>{r.application}</Typography>
+        </Stack>
+        <Stack>
+          <Typography>{r.organization}</Typography>
+        </Stack>
+        <Stack>
+          <Typography>{r.role}</Typography>
+        </Stack>
+      </Stack>
+    ),
+    value: r.id,
+    endIcon: <DiEdit />,
+  }));
+
   return (
     <PageLayout>
       <Box
-        component="form"
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '123px 20px 20px 20px',
-          gap: '12px',
+          '.MuiTypography-root': {
+            textTransform: 'none',
+          },
         }}
-        noValidate
-        autoComplete="off"
       >
-        <Typography
-          variant="h1"
-          color="text.dark"
-          sx={{ marginBottom: '18px' }}
-        >
-          User Details
-        </Typography>
+        <HeadBox back={{ action: handleClickBackBtn }} title={user_id} />
       </Box>
+
+      <ButtonList
+        label="Roles"
+        withUnderline={true}
+        items={items}
+        onClick={() => {}}
+        toolBtnGroup={
+          <>
+            <PlusButton variant="primary" onClick={() => {}} />
+          </>
+        }
+      />
     </PageLayout>
   );
 }
