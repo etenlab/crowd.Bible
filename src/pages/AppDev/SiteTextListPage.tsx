@@ -39,6 +39,7 @@ export function SiteTextListPage() {
   } = useAppContext();
   const { getTranslatedSiteTextListByAppId } = useSiteText();
   const { getAppById } = useDocument();
+  const { tr } = useSiteText();
 
   const [searchStr, setSearchStr] = useState<string>('');
   const [siteTextList, setSiteTextList] = useState<TranslatedSiteTextDto[]>([]);
@@ -125,11 +126,11 @@ export function SiteTextListPage() {
   return (
     <PageLayout>
       <HeadBox
-        title="Applications"
+        title={tr('Applications')}
         search={{
           value: searchStr,
           onChange: handleChangeSearchStr,
-          placeHolder: 'Input a search word!',
+          placeHolder: tr('Input a search word!'),
         }}
         back={{
           action: handleClickBackBtn,
@@ -138,7 +139,7 @@ export function SiteTextListPage() {
       <Stack gap="16px">
         <LanguageStatusBar />
         <ButtonList
-          label="List of site text"
+          label={tr('List of site text')}
           withUnderline={true}
           items={items}
           onClick={handleClickItem}

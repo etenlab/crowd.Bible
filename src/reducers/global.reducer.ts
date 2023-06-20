@@ -57,7 +57,7 @@ export interface StateType {
   siteTextMap: Record<string, { siteText: string; isTranslated: boolean }>;
 }
 
-const initialSnact: SnackType = {
+const initialSnack: SnackType = {
   open: false,
   message: '',
   severity: FeedbackTypes.SUCCESS,
@@ -69,7 +69,7 @@ export const initialState: StateType = {
     admin: false,
     beta: false,
   },
-  snack: initialSnact,
+  snack: initialSnack,
   prefersColorScheme: undefined,
   connectivity: true,
   loading: false,
@@ -112,7 +112,7 @@ export function reducer(
     case actions.CLOSE_FEEDBACK: {
       return {
         ...prevState,
-        snack: { ...initialSnact },
+        snack: { ...initialSnack },
       };
     }
     case actions.SET_USER: {

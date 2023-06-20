@@ -1,9 +1,8 @@
 import { useHistory } from 'react-router-dom';
 
 import { Button, useColorModeContext } from '@eten-lab/ui-kit';
-import { RouteConst } from '@/src/constants/route.constant';
-// import { decodeToken } from '@/src/utils/AuthUtils';
-import { useAppContext } from '@/src/hooks/useAppContext';
+import { RouteConst } from '@/constants/route.constant';
+import { useAppContext } from '@/hooks/useAppContext';
 import { USER_TOKEN_KEY } from '@/constants/common.constant';
 
 export function LogoutButton() {

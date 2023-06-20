@@ -13,7 +13,6 @@ import { SiteTextDetailPage } from '@/pages/AppDev/SiteTextDetailPage';
 
 import { SiteTextDefinitionPage } from '@/pages/AppDev/SiteTextDefinitionPage';
 import { SiteTextTranslationSwitchPage } from '@/pages/AppDev/SiteTextTranslationSwitchPage';
-import { SiteTextLanguageListPage } from '@/pages/AppDev/SiteTextLanguageListPage';
 
 import { RouteConst } from '@/constants/route.constant';
 import { CustomRouteProps } from './AppRoutes';
@@ -78,9 +77,5 @@ export const AppDevRoutes: CustomRouteProps[] = [
   {
     path: `${RouteConst.SITE_TEXT_TRANSLATION_SWITCH}/:appId/:siteTextId/:originalDefinitionRel/:translatedDefinitionRel`,
     children: <SiteTextTranslationSwitchPage />,
-  },
-  {
-    path: `${RouteConst.SITE_TEXT_LANGUAGE_LIST}`,
-    children: <SiteTextLanguageListPage />,
   },
 ];

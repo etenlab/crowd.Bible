@@ -1,15 +1,19 @@
+import React, { ReactNode, useCallback, useState, useEffect } from 'react';
+import { IonToolbar } from '@ionic/react';
+import Editor from 'react-simple-code-editor';
+
 import {
   MuiMaterial,
   useColorModeContext,
   FiX,
   Button,
 } from '@eten-lab/ui-kit';
-import React, { ReactNode, useCallback, useState, useEffect } from 'react';
 
 import { TableFromResponce } from './tools';
-import { IonToolbar } from '@ionic/react';
-import Editor from 'react-simple-code-editor';
-import { useAppContext } from '@/src/hooks/useAppContext';
+
+import { useSiteText } from '@/hooks/useSiteText';
+import { useAppContext } from '@/hooks/useAppContext';
+
 import { SQLRUNNER_LOCAL_FORAGE_KEY } from '@/constants/common.constant';
 
 import { PageLayout } from '@/components/Layout';
@@ -87,6 +91,8 @@ export function SqlRunner({
     },
     actions: { setSqlPortalShown },
   } = useAppContext();
+  const { tr } = useSiteText();
+
   const dbService = singletons?.dbService;
   const { getColor } = useColorModeContext();
   const [selectedTab, setSelectedTab] = useState(0);
@@ -214,7 +220,7 @@ export function SqlRunner({
               }
             />
           ))}
-          <Tab label=" + Add New" key={-1} sx={{ padding: 0 }} />
+          <Tab label={tr(' + Add New')} key={-1} sx={{ padding: 0 }} />
         </Tabs>
         <Box width={'100%'} maxHeight={'300px'} overflow="auto">
           <Editor
@@ -232,7 +238,7 @@ export function SqlRunner({
 
         {!isSqlPortalShown && (
           <Button onClick={() => setSqlPortalShown(true)}>
-            Show in portal
+            {tr('Show in portal')}
           </Button>
         )}
         {sqls.data[selectedTab]?.body && (
@@ -243,7 +249,7 @@ export function SqlRunner({
             window.confirm('Reset all sqls?') ? resetToDefault() : null
           }
         >
-          Reset sqls to default
+          {tr('Reset sqls to default')}
         </Button>
       </IonToolbar>
       <Box

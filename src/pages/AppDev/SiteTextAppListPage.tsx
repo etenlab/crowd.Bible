@@ -15,6 +15,7 @@ import { AppDto } from '@/dtos/document.dto';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useDocument } from '@/hooks/useDocument';
+import { useSiteText } from '@/hooks/useSiteText';
 
 import { compareLangInfo } from '@/utils/langUtils';
 import { RouteConst } from '@/constants/route.constant';
@@ -35,6 +36,7 @@ export function SiteTextAppListPage() {
     },
     actions: { setSourceLanguage, setTargetLanguage, setLoadingState },
   } = useAppContext();
+  const { tr } = useSiteText();
 
   const { listApp, listAppByLanguageInfo } = useDocument();
 
@@ -99,19 +101,19 @@ export function SiteTextAppListPage() {
   const langSelectorCom = filterOpen ? (
     <Stack gap="30px" sx={{ padding: '20px' }}>
       <LangSelector
-        label="Select the source language"
+        label={tr('Select the source language')}
         selected={sourceLanguage || undefined}
         onChange={handleSetSourceLanguage}
         setLoadingState={setLoadingState}
       />
       <LangSelector
-        label="Select the target language"
+        label={tr('Select the target language')}
         selected={targetLanguage || undefined}
         onChange={handleSetTargetLanguage}
         setLoadingState={setLoadingState}
       />
       <Button variant="contained" onClick={handleClickSearchButton}>
-        Search
+        {tr('Search')}
       </Button>
     </Stack>
   ) : null;
@@ -120,11 +122,11 @@ export function SiteTextAppListPage() {
     <Stack gap="16px">
       <LanguageStatusBar />
       <ButtonList
-        label="List of Docs"
+        label={tr('List of Docs')}
         search={{
           value: searchStr,
           onChange: handleChangeSearchStr,
-          placeHolder: 'Input Search Word...',
+          placeHolder: tr('Input Search Word...'),
         }}
         withUnderline={true}
         items={items}
@@ -136,7 +138,7 @@ export function SiteTextAppListPage() {
   return (
     <PageLayout>
       <HeadBox
-        title="Applications"
+        title={tr('Applications')}
         filter={{
           onClick: handleClickLanguageFilter,
         }}

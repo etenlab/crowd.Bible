@@ -16,6 +16,7 @@ import { AppDto } from '@/dtos/document.dto';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useDocument } from '@/hooks/useDocument';
+import { useSiteText } from '@/hooks/useSiteText';
 
 import { compareLangInfo } from '@/utils/langUtils';
 import { RouteConst } from '@/constants/route.constant';
@@ -36,7 +37,7 @@ export function AppListPage() {
     },
     actions: { setSourceLanguage, setLoadingState },
   } = useAppContext();
-
+  const { tr } = useSiteText();
   const { listApp, listAppByLanguageInfo } = useDocument();
 
   const [apps, setApps] = useState<AppDto[]>([]);
@@ -101,7 +102,7 @@ export function AppListPage() {
 
   const langSelectorCom = filterOpen ? (
     <LangSelector
-      label="Select the source language"
+      label={tr('Select the source language')}
       selected={sourceLanguage || undefined}
       onChange={handleSetSourceLanguage}
       setLoadingState={setLoadingState}
@@ -111,7 +112,7 @@ export function AppListPage() {
   return (
     <PageLayout>
       <HeadBox
-        title="Applications"
+        title={tr('Applications')}
         filter={{
           onClick: handleClickLanguageFilter,
         }}
@@ -119,7 +120,7 @@ export function AppListPage() {
         search={{
           value: searchStr,
           onChange: handleChangeSearchStr,
-          placeHolder: 'Input a search word!',
+          placeHolder: tr('Input a search word!'),
         }}
       />
       <Box sx={{ padding: '20px' }}>
@@ -127,7 +128,7 @@ export function AppListPage() {
         {langSelectorCom}
       </Box>
       <ButtonList
-        label="List of Applications"
+        label={tr('List of Applications')}
         withUnderline={true}
         items={items}
         onClick={handleClickApp}

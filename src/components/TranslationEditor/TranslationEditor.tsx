@@ -14,8 +14,10 @@ import { Link } from '@/components/Link';
 
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSiteText } from '@/hooks/useSiteText';
 
 import { WordSequenceDto } from '@/dtos/word-sequence.dto';
+import { RouteConst } from '@/constants/route.constant';
 
 const { Box } = MuiMaterial;
 
@@ -38,6 +40,7 @@ export function TranslationEditor({
 }: TranslationEditorProps) {
   const history = useHistory();
   const { getColor } = useColorModeContext();
+  const { tr } = useSiteText();
 
   const { createSubWordSequence } = useWordSequence();
   const { createOrFindWordSequenceTranslation } = useTranslation();
@@ -73,7 +76,7 @@ export function TranslationEditor({
       return;
     }
 
-    history.push(`/translation/${documentId}`);
+    history.push(`${RouteConst.TRANSLATION}/${documentId}`);
   };
 
   const handleChangeText = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -89,14 +92,14 @@ export function TranslationEditor({
         boxShadow: '0px 0px 20px rgba(4, 16, 31, 0.1)',
       }}
     >
-      <Link to={`/translation/${documentId}`}>
+      <Link to={`${RouteConst.TRANSLATION}/${documentId}`}>
         <Button color="dark" variant="text" sx={{ paddingLeft: 0 }}>
           <BiLeftArrowAlt style={{ fontSize: '24px' }} />
-          Add My Translation
+          {tr('Add My Translation')}
         </Button>
       </Link>
       <TextArea
-        label="Your translation..."
+        label={tr('Your translation...')}
         value={text}
         fullWidth
         onChange={handleChangeText}
@@ -109,7 +112,7 @@ export function TranslationEditor({
         onClick={handleSaveTranslation}
         sx={{ margin: '10px 0' }}
       >
-        Add My Translation
+        {tr('Add My Translation')}
       </Button>
     </Box>
   );
