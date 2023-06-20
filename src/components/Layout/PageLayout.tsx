@@ -2,12 +2,13 @@ import { IonPage, IonContent } from '@ionic/react';
 
 import { AppHeader } from './AppHeader';
 
-import { MuiMaterial, Alert } from '@eten-lab/ui-kit';
+import { MuiMaterial, useColorModeContext } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
+
 import { SqlPortal } from '@/pages/DataTools/SqlRunner/SqlPortal';
 
-const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
+const { Snackbar, CircularProgress, Backdrop, Stack, Alert } = MuiMaterial;
 
 interface PageLayoutProps {
   children?: React.ReactNode;
@@ -17,9 +18,11 @@ export function PageLayout({ children }: PageLayoutProps) {
   const {
     states: {
       global: { snack, loading, singletons, isSqlPortalShown },
+      components: { modal },
     },
-    actions: { closeFeedback },
+    actions: { closeFeedback, clearModalCom },
   } = useAppContext();
+  const { getColor } = useColorModeContext();
 
   const isLoading = loading || !singletons;
 
@@ -48,15 +51,40 @@ export function PageLayout({ children }: PageLayoutProps) {
             onClose={closeFeedback}
             severity={snack.severity}
             sx={{ width: '100%' }}
-            content={undefined}
-            rel={undefined}
-            rev={undefined}
           >
             {snack.message}
           </Alert>
         </Snackbar>
 
-        <Backdrop sx={{ color: '#fff', zIndex: 1000 }} open={isLoading}>
+        <Backdrop
+          open={!!modal}
+          sx={{
+            alignItems: 'flex-start',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            zIndex: 999,
+            marginTop: '61px',
+          }}
+          onClick={() => {
+            clearModalCom();
+          }}
+        >
+          <Stack
+            sx={{
+              width: '100%',
+              background: getColor('disabled'),
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            {modal}
+          </Stack>
+        </Backdrop>
+
+        <Backdrop
+          sx={{ color: getColor('white'), zIndex: 1000 }}
+          open={isLoading}
+        >
           <Stack justifyContent="center">
             <div style={{ margin: 'auto' }}>
               <CircularProgress color="inherit" />

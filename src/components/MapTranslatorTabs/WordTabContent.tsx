@@ -10,12 +10,12 @@ import {
   MuiMaterial,
 } from '@eten-lab/ui-kit';
 
-import { WordDto } from '@/src/dtos/word.dto';
+import { WordDto } from '@/dtos/word.dto';
 import {
   NodeTypeConst,
   PropertyKeyConst,
   RelationshipTypeConst,
-} from '@/src/constants/graph.constant';
+} from '@/constants/graph.constant';
 import { StyledFilterButton } from './StyledComponents';
 import { arrowForwardOutline } from 'ionicons/icons';
 import {
@@ -25,6 +25,7 @@ import {
 } from '@/utils/langUtils';
 import { WordMapper } from '@/mappers/word.mapper';
 import { useAppContext } from '@/hooks/useAppContext';
+import { useSiteText } from '@/hooks/useSiteText';
 
 const { Box, Divider, Stack } = MuiMaterial;
 
@@ -40,6 +41,8 @@ export const WordTabContent = () => {
       global: { singletons },
     },
   } = useAppContext();
+  const { tr } = useSiteText();
+
   const [words, setWords] = useState<Item[]>([]);
   const [sourceLangInfo, setSourceLangInfo] = useState<LanguageInfo>();
   const [targetLangInfo, setTargetLangInfo] = useState<LanguageInfo>();
@@ -168,7 +171,7 @@ export const WordTabContent = () => {
         <>
           <Box width={'100%'}>
             <LangSelector
-              label="Select the source language"
+              label={tr('Select the source language')}
               onChange={(_langTag: string, langInfo: LanguageInfo) =>
                 setSourceLangInfo(langInfo)
               }
@@ -177,7 +180,7 @@ export const WordTabContent = () => {
 
           <Box width={'100%'}>
             <LangSelector
-              label="Select the target language"
+              label={tr('Select the target language')}
               onChange={(_langTag: string, langInfo: LanguageInfo) =>
                 setTargetLangInfo(langInfo)
               }
@@ -189,7 +192,7 @@ export const WordTabContent = () => {
             onClick={onShowStringListClick}
             variant={'contained'}
           >
-            Show String List
+            {tr('Show String List')}
           </Button>
         </>
       ) : (
@@ -266,7 +269,7 @@ export const WordTabContent = () => {
                               label={
                                 translation.isNew
                                   ? ''
-                                  : 'Already in target language'
+                                  : tr('Already in target language')
                               }
                               value={translation[PropertyKeyConst.WORD]}
                               onChange={(e) =>
@@ -286,7 +289,7 @@ export const WordTabContent = () => {
                       sx={{ color: 'text.gray' }}
                       onClick={() => addEmptyTranslation(idx)}
                     >
-                      + Add Translation
+                      {tr('+ Add Translation')}
                     </Button>
                   </Box>
                 </Box>
@@ -294,7 +297,7 @@ export const WordTabContent = () => {
             })}
           </Stack>
           <Button variant={'contained'} fullWidth onClick={storeTranslations}>
-            Save
+            {tr('Save')}
           </Button>
         </>
       ) : (

@@ -9,6 +9,7 @@ import {
   RelationshipPropertyValueRepository,
 } from '@eten-lab/core';
 import { LoggerService } from '@eten-lab/core';
+import { DocumentService } from './document.service';
 
 const DATA_SEEDED = 'DATA_SEEDED';
 export class SeedService {
@@ -28,6 +29,7 @@ export class SeedService {
     private readonly relationshipTypeRepository: RelationshipTypeRepository,
     private readonly relationshipPropertyKeyRepository: RelationshipPropertyKeyRepository,
     private readonly relationshipPropertyValueRepository: RelationshipPropertyValueRepository,
+    private readonly documentRepository: DocumentService,
     private readonly logger: LoggerService,
   ) {
     this.init();
@@ -37,8 +39,15 @@ export class SeedService {
     try {
       if (this.dataSeeded) return;
       this.logger.info('*** data seeding started ***');
-      // No lang nodes are needed anymore
-      // await Promise.allSettled([this.seedLanguages()]);
+
+      // create seed app
+      this.documentRepository.createOrFindApp('crowd.Bible', 'ETEN Lab', {
+        lang: {
+          tag: 'en',
+          descriptions: ['English'],
+        },
+      });
+
       this.logger.info('*** data seeding completed ***');
       this.dataSeeded = true;
     } catch (error) {

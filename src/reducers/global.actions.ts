@@ -6,6 +6,7 @@ import {
   type PrefersColorSchemeType,
 } from './global.reducer';
 import { type ISingletons } from '@/src/singletons';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 
 export const actions = {
   ALERT_FEEDBACK: 'ALERT_FEEDBACK',
@@ -19,6 +20,8 @@ export const actions = {
   SET_LOGING_STATE: 'SET_LOGING_STATE',
   SET_SINGLETONS: 'SET_SINGLETONS',
   SET_SQL_PORTAL_SHOWN: 'SET_SQL_PORTAL_SHOWN',
+  CHANGE_APP_LANGUAGE: 'CHANGE_APP_LANGUAGE',
+  SET_SITE_TEXT_MAP: 'SET_SITE_TEXT_MAP',
 };
 
 export function setUser(user: IUser) {
@@ -98,5 +101,21 @@ export function setSqlPortalShown(isShown: boolean) {
   return {
     type: actions.SET_SQL_PORTAL_SHOWN,
     payload: isShown,
+  };
+}
+
+export function changeAppLanguage(langInfo: LanguageInfo) {
+  return {
+    type: actions.CHANGE_APP_LANGUAGE,
+    payload: langInfo,
+  };
+}
+
+export function setSiteTextMap(
+  siteTextMap: Record<string, { siteText: string; isTranslated: boolean }>,
+) {
+  return {
+    type: actions.SET_SITE_TEXT_MAP,
+    payload: siteTextMap,
   };
 }

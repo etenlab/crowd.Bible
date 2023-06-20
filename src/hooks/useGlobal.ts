@@ -12,6 +12,8 @@ import {
   setLoadingState as setLoadingStateAction,
   setSingletons as setSingletonsAction,
   setSqlPortalShown as setSqlPortalShownAction,
+  setSiteTextMap as setSiteTextMapAction,
+  changeAppLanguage as changeAppLanguageAction,
 } from '@/reducers/global.actions';
 
 import { type ActionType } from '@/reducers/index';
@@ -23,6 +25,8 @@ import {
   type PrefersColorSchemeType,
 } from '@/reducers/global.reducer';
 import { type ISingletons } from '@/src/singletons';
+
+import { LanguageInfo } from '@eten-lab/ui-kit';
 
 interface UseGlobalProps {
   dispatch: Dispatch<ActionType<unknown>>;
@@ -83,6 +87,19 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     dispatchRef.current.dispatch(setSqlPortalShownAction(isSqlPortalShown));
   }, []);
 
+  const setSiteTextMap = useCallback(
+    (
+      siteTextMap: Record<string, { siteText: string; isTranslated: boolean }>,
+    ) => {
+      dispatchRef.current.dispatch(setSiteTextMapAction(siteTextMap));
+    },
+    [],
+  );
+
+  const changeAppLanguage = useCallback((langInfo: LanguageInfo) => {
+    dispatchRef.current.dispatch(changeAppLanguageAction(langInfo));
+  }, []);
+
   return {
     setRole,
     setUser,
@@ -95,5 +112,7 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     setLoadingState,
     setSingletons,
     setSqlPortalShown,
+    setSiteTextMap,
+    changeAppLanguage,
   };
 }
