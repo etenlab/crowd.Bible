@@ -1,11 +1,8 @@
 import { useHistory } from 'react-router-dom';
-import { MuiMaterial, CrowdBibleUI, Typography } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, FilterButton, PlusButton } from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
-
-const { Box } = MuiMaterial;
-const { HeadBox } = CrowdBibleUI;
-
+const { ButtonList, HeadBox } = CrowdBibleUI;
 export function UsersPage() {
   const history = useHistory();
 
@@ -15,32 +12,44 @@ export function UsersPage() {
 
   const handleSearch = () => {};
 
+  const items = [
+    {
+      label: 'michael@test.com',
+      value: 'michael@test.com',
+    },
+    {
+      label: 'hiroshi@test.com',
+      value: 'hiroshi@test.com',
+    },
+    {
+      label: 'takeshi@test.com',
+      value: 'takeshi@test.com',
+    },
+  ];
+
   return (
     <PageLayout>
       <HeadBox
         back={{ action: handleClickBackBtn }}
         title="Users"
-        search={{ onChange: handleSearch, placeHolder: 'Search', value: '' }}
-      />
-      <Box
-        component="form"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '123px 20px 20px 20px',
-          gap: '12px',
+        search={{
+          onChange: handleSearch,
+          placeHolder: 'Find users',
+          value: '',
         }}
-        noValidate
-        autoComplete="off"
-      >
-        <Typography
-          variant="h1"
-          color="text.dark"
-          sx={{ marginBottom: '18px' }}
-        >
-          Users
-        </Typography>
-      </Box>
+      />
+      <ButtonList
+        label="List of Users"
+        withUnderline={true}
+        items={items}
+        onClick={() => {}}
+        toolBtnGroup={
+          <>
+            <FilterButton variant="secondary" onClick={() => {}} />
+            <PlusButton variant="primary" onClick={() => {}} />
+          </>
+        }
+      />
     </PageLayout>
   );
 }
