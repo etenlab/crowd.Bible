@@ -45,13 +45,19 @@ export function UserDetailsPage() {
     label: (
       <Stack>
         <Stack>
-          <Typography>{r.application}</Typography>
+          <Typography variant="body1" color="text.dark">
+            {r.application}
+          </Typography>
         </Stack>
         <Stack>
-          <Typography>{r.organization}</Typography>
+          <Typography variant="body2" color="text.grey">
+            {r.organization}
+          </Typography>
         </Stack>
         <Stack>
-          <Typography>{r.role}</Typography>
+          <Typography variant="body2" color="text.grey">
+            {r.role}
+          </Typography>
         </Stack>
       </Stack>
     ),
@@ -66,11 +72,11 @@ export function UserDetailsPage() {
           '.MuiTypography-root': {
             textTransform: 'none',
           },
+          marginBottom: '14px',
         }}
       >
         <HeadBox back={{ action: handleClickBackBtn }} title={user_id} />
       </Box>
-
       <ButtonList
         label="Roles"
         withUnderline={true}

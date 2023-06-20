@@ -45,6 +45,7 @@ export function UsersPage() {
           value: '',
         }}
       />
+      <br />
       <ButtonList
         label="List of Users"
         withUnderline={true}
