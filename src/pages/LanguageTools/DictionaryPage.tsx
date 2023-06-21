@@ -300,6 +300,7 @@ export function DictionaryPage() {
             changeContentValue={changeWordDefinition}
             changeContentVotes={changeWordDefinitionVotes}
             addContent={addDefinitionToWord}
+            isAddable={true}
           />
         </Box>
       )}

@@ -2,12 +2,12 @@ import { IonPage, IonContent } from '@ionic/react';
 
 import { AppHeader } from './AppHeader';
 
-import { MuiMaterial, Alert } from '@eten-lab/ui-kit';
+import { MuiMaterial } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { SqlPortal } from '@/pages/DataTools/SqlRunner/SqlPortal';
 
-const { Snackbar, CircularProgress, Backdrop, Stack } = MuiMaterial;
+const { Snackbar, CircularProgress, Backdrop, Stack, Alert } = MuiMaterial;
 
 interface PageLayoutProps {
   children?: React.ReactNode;
@@ -48,9 +48,6 @@ export function PageLayout({ children }: PageLayoutProps) {
             onClose={closeFeedback}
             severity={snack.severity}
             sx={{ width: '100%' }}
-            content={undefined}
-            rel={undefined}
-            rev={undefined}
           >
             {snack.message}
           </Alert>

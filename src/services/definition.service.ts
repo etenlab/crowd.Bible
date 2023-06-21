@@ -1,5 +1,5 @@
 import {
-  MainKeyName,
+  // MainKeyName,
   NodeTypeConst,
   PropertyKeyConst,
   RelationshipTypeConst,
@@ -20,6 +20,13 @@ import { VotableContent, VotableItem } from '@/src/dtos/votable-item.dto';
 import { makeFindPropsByLang } from '@/utils/langUtils';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { LanguageMapper } from '@/mappers/language.mapper';
+
+//ill TODO: change to import from core
+const MainKeyName = {
+  [NodeTypeConst.WORD]: PropertyKeyConst.WORD,
+  [NodeTypeConst.PHRASE]: PropertyKeyConst.PHRASE,
+  [NodeTypeConst.DEFINITION]: PropertyKeyConst.DEFINITION,
+};
 
 export class DefinitionService {
   constructor(
@@ -234,6 +241,7 @@ export class DefinitionService {
       await this.graphFirstLayerService.getNodesByTypeAndRelatedNodes({
         type: votableNodesType,
         [relationDirection]: electionTargetId,
+        //todo: restrict by languguage
       });
     const vcPromises: Promise<VotableContent>[] = votableNodes.map(
       async (votableNode) => {
@@ -276,13 +284,33 @@ export class DefinitionService {
       forNodeId,
       electionId,
       NodeTypeConst.DEFINITION,
-      PropertyKeyConst.DEFINITION,
+      MainKeyName[NodeTypeConst.DEFINITION],
     );
   }
 
   /**
-   * Finds nodes with given languageInfo as VotableItems (e.g .VotableItem = word,  with some contents=definitions to be voted)
-   * These contents (e.g. definitions) are related to VotebleItem (e.g. word) through ElectionId which connects VotableItem and each of its votable contents
+   * Finds words for given node Id and election Id and returns as VotableContent
+   *
+   * @param forNodeId
+   * @param electionId
+   * @returns
+   */
+  async getWordsAsVotableContent(
+    forNodeId: Nanoid,
+    electionId: Nanoid,
+  ): Promise<Array<VotableContent>> {
+    return this.getVotableContent(
+      forNodeId,
+      electionId,
+      NodeTypeConst.WORD,
+      MainKeyName[NodeTypeConst.WORD],
+    );
+  }
+
+  //ill TODO: move to core repo
+  /**
+   * Finds nodes with given languageInfo as VotableItems (e.g .VotableItem = word,  with some contents=definitions or translation words to be voted)
+   * These contents (e.g. definitions/translation words) are related to VotebleItem (e.g. word) through ElectionId which connects VotableItem and each of its votable contents
    * Note: Also we vote not on votable contents(defintions) directly, but we vote on relevant relations.
    *
    * From the other hand, VotableItem have own content(not contents!) witch represent item's own value(i.e. word by itself)
@@ -296,6 +324,9 @@ export class DefinitionService {
     languageInfo: LanguageInfo,
     type: NodeTypeConst.WORD | NodeTypeConst.PHRASE,
     customPropValues?: [{ key: string; value: string }],
+    forElectionType:
+      | ElectionTypeConst.DEFINITION
+      | ElectionTypeConst.TRANSLATION = ElectionTypeConst.DEFINITION,
   ): Promise<Array<VotableItem>> {
     const itemContents = await this.getSelfVotableContentByLang(
       type,
@@ -311,15 +342,32 @@ export class DefinitionService {
       // election for word to elect definitions.
       // if electionId exists, it won't be created, Just found and returned.
       const election = await this.votingService.createOrFindElection(
-        ElectionTypeConst.DEFINITION,
+        forElectionType,
         wc.id,
         TableNameConst.NODES,
         TableNameConst.RELATIONSHIPS,
       );
 
+      let contents: VotableContent[] = [];
+      switch (forElectionType) {
+        case ElectionTypeConst.DEFINITION:
+          contents = await this.getDefinitionsAsVotableContent(
+            wc.id,
+            election.id,
+          );
+          break;
+        case ElectionTypeConst.TRANSLATION:
+          contents = await this.getWordsAsVotableContent(wc.id, election.id);
+          break;
+        default:
+          throw new Error(
+            `Don't know how to find contents fro  Election Type ${forElectionType}`,
+          );
+      }
+
       return {
         title: wc,
-        contents: await this.getDefinitionsAsVotableContent(wc.id, election.id),
+        contents,
         contentElectionId: election.id,
       } as VotableItem;
     });

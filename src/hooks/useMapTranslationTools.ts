@@ -6,6 +6,10 @@ import axios from 'axios';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
 import { parseSync } from 'svgson';
+import { WordDto } from '../dtos/word.dto';
+import { RelationshipTypeConst } from '@eten-lab/core';
+import { WordMapper } from '../mappers/word.mapper';
+import { compareLangInfo, wordProps2LangInfo } from '../utils/langUtils';
 
 export const UPLOAD_FILE_MUTATION = gql`
   mutation UploadFile($file: Upload!, $file_type: String!, $file_size: Int!) {
@@ -47,6 +51,10 @@ export type MapDetail = {
   name?: string;
   langInfo: LanguageInfo;
 };
+
+export type WordItem = {
+  translations?: Array<WordDto & { isNew: boolean }>;
+} & WordDto;
 
 export function useMapTranslationTools() {
   const {
@@ -256,11 +264,58 @@ export function useMapTranslationTools() {
     [alertFeedback, logger, sendMapFile, setMapStatus, singletons],
   );
 
+  const getWordsWithLangs = useCallback(
+    async (
+      sourceLangInfo: LanguageInfo,
+      targetLangInfo: LanguageInfo,
+    ): Promise<WordItem[]> => {
+      if (!singletons) return [];
+      const wordNodes =
+        await singletons.wordService.getWordsWithLangAndRelationships(
+          sourceLangInfo,
+          [RelationshipTypeConst.WORD_MAP],
+        );
+      if (!wordNodes) return [];
+      const wordItemList: Array<WordItem> = [];
+
+      for (const wordNode of wordNodes) {
+        const currWordItem: WordItem = WordMapper.entityToDto(wordNode);
+        currWordItem.translations = [];
+
+        for (const relationship of wordNode.toNodeRelationships || []) {
+          if (
+            relationship.relationship_type ===
+            RelationshipTypeConst.WORD_TO_TRANSLATION
+          ) {
+            const translationNode = (
+              await singletons.graphFirstLayerService.getNodesWithRelationshipsByIds(
+                [relationship.to_node_id],
+              )
+            )[0];
+            const translatedWord = WordMapper.entityToDto(translationNode);
+            const translatedWordLangInfo = wordProps2LangInfo(translatedWord);
+
+            if (compareLangInfo(translatedWordLangInfo, targetLangInfo)) {
+              currWordItem.translations.push({
+                ...translatedWord,
+                isNew: false,
+              });
+            }
+          }
+        }
+        wordItemList.push(currWordItem);
+      }
+      return wordItemList;
+    },
+    [singletons],
+  );
+
   return {
     sendMapFile,
     getMapFileInfo,
     getFileDataBase64,
     processFile,
     setMapStatus,
+    getWordsWithLangs,
   };
 }
