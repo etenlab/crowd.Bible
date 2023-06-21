@@ -45,6 +45,7 @@ export function SiteTextDetailPage() {
     getTranslationListBySiteTextRel,
     getSiteTextTranslationDtoWithRel,
     getOriginalAndTranslatedRelFromSiteTextTranslationDto,
+    tr,
   } = useSiteText();
   const { toggleVote, getVotesStats } = useVote();
   const { getAppById } = useDocument();
@@ -260,8 +261,8 @@ export function SiteTextDetailPage() {
           >
             {sourceLanguage &&
             compareLangInfo(app?.languageInfo || null, sourceLanguage)
-              ? 'Definition'
-              : 'Switch'}
+              ? tr('Definition')
+              : tr('Switch')}
           </Button>
           <Button
             variant="contained"
@@ -269,13 +270,13 @@ export function SiteTextDetailPage() {
             onClick={handleClickPlusTranslationBtn}
             sx={{ minWidth: '160px' }}
           >
-            + New Translation
+            {tr('+ New Translation')}
           </Button>
         </Stack>
       </Stack>
 
       <DescriptionList
-        title="Translation Candidates"
+        title={tr('Translation Candidates')}
         items={items}
         discussionBtn={{
           onClickDiscussionBtn: handleClickDiscussionBtn,

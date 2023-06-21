@@ -9,13 +9,16 @@ import {
 import { WordDto } from '@/dtos/word.dto';
 import { VotableContent } from '@/dtos/votable-item.dto';
 
-import { RelationshipTypeConst } from '@eten-lab/core';
-
-import { GraphFirstLayerService, VotingService } from '@eten-lab/core';
+import {
+  RelationshipTypeConst,
+  PropertyKeyConst,
+  GraphFirstLayerService,
+  GraphSecondLayerService,
+  VotingService,
+} from '@eten-lab/core';
 import { DefinitionService } from './definition.service';
 import { TranslationService } from './translation.service';
 import { WordService } from './word.service';
-import { DocumentService } from './document.service';
 
 import { Candidate } from '@/src/models/';
 
@@ -27,12 +30,12 @@ import { compareLangInfo } from '@/utils/langUtils';
 export class SiteTextService {
   constructor(
     private readonly graphFirstLayerService: GraphFirstLayerService,
+    private readonly graphSecondLayerService: GraphSecondLayerService,
 
     private readonly votingService: VotingService,
     private readonly definitionService: DefinitionService,
     private readonly translationService: TranslationService,
     private readonly wordService: WordService,
-    private readonly documentService: DocumentService,
   ) {}
 
   private async filterDefinitionCandidatesByLanguage(
@@ -89,6 +92,13 @@ export class SiteTextService {
     const wordId = await this.wordService.createOrFindWordOrPhraseWithLang(
       siteText,
       languageInfo,
+    );
+
+    console.log(
+      'createOrFindSiteTextOnGraph ===>',
+      siteText,
+      languageInfo,
+      wordId,
     );
 
     const { definitionId } = await this.definitionService.createDefinition(
@@ -194,6 +204,8 @@ export class SiteTextService {
       },
     );
 
+    console.log(siteText, wordId, definitionId, relationshipId, election.id);
+
     return {
       wordId,
       definitionId,
@@ -251,6 +263,40 @@ export class SiteTextService {
 
     if (election === null) {
       throw new Error('An Election with the specified Ref does not exist!');
+    }
+
+    const nodes = await this.graphFirstLayerService.getNodeIdsByProps(
+      'application-language',
+      [
+        {
+          key: 'appId',
+          value: appId,
+        },
+        {
+          key: PropertyKeyConst.LANGUAGE_TAG,
+          value: languageInfo.lang.tag,
+        },
+        {
+          key: PropertyKeyConst.DIALECT_TAG,
+          value: languageInfo.dialect?.tag,
+        },
+        {
+          key: PropertyKeyConst.REGION_TAG,
+          value: languageInfo.region?.tag,
+        },
+      ],
+    );
+
+    if (nodes.length === 0) {
+      await this.graphSecondLayerService.createNodeFromObject(
+        'application-language',
+        {
+          appId,
+          [PropertyKeyConst.LANGUAGE_TAG]: languageInfo.lang.tag,
+          [PropertyKeyConst.DIALECT_TAG]: languageInfo.dialect?.tag,
+          [PropertyKeyConst.REGION_TAG]: languageInfo.region?.tag,
+        },
+      );
     }
 
     await this.votingService.addCandidate(election.id, relationshipId);
@@ -534,5 +580,23 @@ export class SiteTextService {
     }
 
     return translatedSiteTextList;
+  }
+
+  async getAppLanguageList(appId: Nanoid): Promise<LanguageInfo[]> {
+    const nodeIds = await this.graphFirstLayerService.getNodeIdsByProps(
+      'application-language',
+      [
+        {
+          key: 'appId',
+          value: appId,
+        },
+      ],
+    );
+
+    const nodes = await this.graphFirstLayerService.getNodesByIds(nodeIds);
+
+    return nodes
+      .map((node) => LanguageMapper.entityToDto(node))
+      .filter((lang) => lang !== null) as LanguageInfo[];
   }
 }

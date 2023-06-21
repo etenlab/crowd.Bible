@@ -10,7 +10,10 @@ import {
   StyledFilterButton,
   StyledSectionTypography,
 } from './StyledComponents';
+
 import { useAppContext } from '@/hooks/useAppContext';
+import { useSiteText } from '@/hooks/useSiteText';
+
 import {
   MapDetail,
   eProcessStatus,
@@ -40,6 +43,7 @@ export const MapTabContent = () => {
     actions: { alertFeedback },
     logger,
   } = useAppContext();
+  const { tr } = useSiteText();
 
   const [mapList, setMapList] = useState<MapDetail[]>([]);
   const [langInfo, setLangInfo] = useState<LanguageInfo | undefined>();
@@ -218,7 +222,7 @@ export const MapTabContent = () => {
     >
       {uploadMapBtnStatus > eUploadMapBtnStatus.NONE ? (
         <LangSelector
-          label="Select the source language"
+          label={tr('Select the source language')}
           onChange={handleLangChange}
           selected={langInfo}
         />
@@ -259,7 +263,9 @@ export const MapTabContent = () => {
       {mapList.length ? (
         <>
           <StyledBox>
-            <StyledSectionTypography>Uploaded Maps</StyledSectionTypography>
+            <StyledSectionTypography>
+              {tr('Uploaded Maps')}
+            </StyledSectionTypography>
             <StyledFilterButton
               onClick={handleClearLanguageFilter}
             ></StyledFilterButton>
@@ -300,12 +306,12 @@ export const MapTabContent = () => {
                       eProcessStatus.PARSING_COMPLETED,
                     ].includes(map.status) && (
                       <Button variant={'text'} color={'blue-primary'}>
-                        Processing... Don`t close this page
+                        {tr('Processing... Don`t close this page')}
                       </Button>
                     )}
                     {map.status === eProcessStatus.FAILED && (
                       <Button variant={'text'} color={'error'}>
-                        Error
+                        {tr('Error')}
                       </Button>
                     )}
                   </IonItem>

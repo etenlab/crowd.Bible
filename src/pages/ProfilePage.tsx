@@ -1,7 +1,6 @@
 import { decodeToken, isTokenValid } from '@/utils/AuthUtils';
 import { gql, useApolloClient } from '@apollo/client';
 import {
-  Alert,
   Button,
   Input,
   MuiMaterial,
@@ -11,11 +10,12 @@ import {
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useState } from 'react';
-import { useAppContext } from '@/src/hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
 import { USER_TOKEN_KEY } from '@/constants/common.constant';
 
 import { PageLayout } from '@/components/Layout';
 
+import { FeedbackTypes } from '@/constants/common.constant';
 const { Box } = MuiMaterial;
 
 const validationSchema = Yup.object().shape({
@@ -34,10 +34,11 @@ const RESET_UPDATE_PASSWORD = gql`
 `;
 
 export function ProfilePage() {
-  const { logger } = useAppContext();
+  const {
+    logger,
+    actions: { alertFeedback },
+  } = useAppContext();
   const [show, setShow] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
   const userToken = localStorage.getItem(USER_TOKEN_KEY);
   const apolloClient = useApolloClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -62,12 +63,12 @@ export function ProfilePage() {
           },
         })
         .then((res) => {
-          setSuccessMessage('Password reset successfully');
+          alertFeedback(FeedbackTypes.SUCCESS, 'Password reset successfully');
           logger.info(res);
         })
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .catch((error: any) => {
-          setErrorMessage(error.message);
+          alertFeedback(FeedbackTypes.ERROR, error.message);
         });
     },
   });
@@ -111,27 +112,6 @@ export function ProfilePage() {
         >
           My Profile
         </Typography>
-        {errorMessage && (
-          <Alert
-            severity="error"
-            content={undefined}
-            rel={undefined}
-            rev={undefined}
-          >
-            {errorMessage}
-          </Alert>
-        )}
-        {successMessage && (
-          <Alert
-            severity="success"
-            content={undefined}
-            rel={undefined}
-            rev={undefined}
-          >
-            {' '}
-            {successMessage}
-          </Alert>
-        )}
         <Typography variant="h6" sx={{ color: '#5C6673', marginBottom: '5px' }}>
           EMAIL
         </Typography>

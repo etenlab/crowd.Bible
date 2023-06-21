@@ -33,7 +33,7 @@ const cardGroups = [
         to: RouteConst.MAP_LIST,
         title: 'Map',
         description: 'Upload, view, translate, link, and tag .svg map files.',
-        startIcon: <DiMap color="blue" />,
+        startIcon: <DiMap color="blue-primary" />,
       },
     ],
   },
@@ -44,7 +44,7 @@ const cardGroups = [
         to: RouteConst.DOCUMENTS_LIST,
         title: 'Documents',
         description: 'Upload a document to use in other crowd sourcing tools',
-        startIcon: <DiFileText color="blue" />,
+        startIcon: <DiFileText color="blue-primary" />,
         onlineOnly: true,
         betaOnly: true,
         implemented: true,
@@ -54,7 +54,7 @@ const cardGroups = [
         title: 'Question & Answer',
         description:
           'Annotate a text with questions so other users can provide answers',
-        startIcon: <DiAskQuestion color="blue" />,
+        startIcon: <DiAskQuestion color="blue-primary" />,
         onlineOnly: true,
         implemented: true,
       },
@@ -64,7 +64,7 @@ const cardGroups = [
         title: 'Translation',
         description:
           'Translate a document by submitting and voting on translations',
-        startIcon: <DiTranslate color="blue" />,
+        startIcon: <DiTranslate color="blue-primary" />,
         label: '',
         betaOnly: true,
         implemented: true,
@@ -81,7 +81,7 @@ const cardGroups = [
         to: RouteConst.VERSIFICATION,
         title: 'Versification',
         description: 'Chapter and verse annotations for a Biblical text',
-        startIcon: <DiHome color="blue" />,
+        startIcon: <DiHome color="blue-primary" />,
         betaOnly: true,
         onlineOnly: true,
       },
@@ -101,7 +101,7 @@ const cardGroups = [
         to: RouteConst.DICTIONARY,
         title: 'Dictionary',
         description: 'Create and vote on words and their definitions',
-        startIcon: <DiRead color="blue" />,
+        startIcon: <DiRead color="blue-primary" />,
       },
       {
         to: RouteConst.PHRASE_BOOK,
@@ -109,8 +109,8 @@ const cardGroups = [
         description: 'Common phrases in your language',
         startIcon: (
           <Stack>
-            <DiRead color="blue" />
-            <DiPhrase color="blue" />
+            <DiRead color="blue-primary" />
+            <DiPhrase color="blue-primary" />
           </Stack>
         ),
       },
@@ -121,8 +121,8 @@ const cardGroups = [
           'Connect the definitions in two different language dictionaries',
         startIcon: (
           <Stack>
-            <DiRead color="blue" />
-            <DiTranslate color="blue" />
+            <DiRead color="blue-primary" />
+            <DiTranslate color="blue-primary" />
           </Stack>
         ),
       },
@@ -150,20 +150,20 @@ const cardGroups = [
         title: 'Data Viewer',
         description:
           'Navigate the graph layer where most data in crowd.Bible data is stored ',
-        startIcon: <DiDataViewer color="blue" />,
+        startIcon: <DiDataViewer color="blue-primary" />,
       },
       {
         to: RouteConst.SQL_RUNNER,
         title: 'SQL Runner',
         description: 'Run custom queries on any local database table',
-        startIcon: <DiDatabase color="blue" />,
+        startIcon: <DiDatabase color="blue-primary" />,
         adminOnly: true,
       },
       {
         to: RouteConst.FILE_IMPORT,
         title: 'File Import',
         description: 'Custom data importing into the crowd.Bible ecosystem',
-        startIcon: <DiImport color="blue" />,
+        startIcon: <DiImport color="blue-primary" />,
         adminOnly: true,
       },
     ],
@@ -178,8 +178,8 @@ const cardGroups = [
           'Create and translate the user interface for crowd.Bible or any other application',
         startIcon: (
           <Stack>
-            <DiSite color="blue" />
-            <DiText color="blue" />
+            <DiSite color="blue-primary" />
+            <DiText color="blue-primary" />
           </Stack>
         ),
       },
@@ -190,8 +190,8 @@ const cardGroups = [
           'Lorem ipsum is placeholder commonly used in the graphic, print',
         startIcon: (
           <Stack>
-            <DiSite color="blue" />
-            <DiList color="blue" />
+            <DiSite color="blue-primary" />
+            <DiList color="blue-primary" />
           </Stack>
         ),
         implemented: true,
@@ -205,7 +205,7 @@ const cardGroups = [
         to: RouteConst.PLAYGROUND,
         title: 'Playground',
         description: 'Drag & Drop playground',
-        startIcon: <DiPlay color="blue" />,
+        startIcon: <DiPlay color="blue-primary" />,
         betaOnly: true,
       },
     ],

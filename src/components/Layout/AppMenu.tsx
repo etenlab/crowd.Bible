@@ -8,33 +8,9 @@ import { AppHeader } from './AppHeader';
 import './Layout.css';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { RouteConst } from '@/constants/route.constant';
+import { useSiteText } from '@/hooks/useSiteText';
 
-const menuLinks = {
-  group: 'Menu',
-  linkItems: [
-    { to: RouteConst.HOME, label: 'Home', implemented: true },
-    { to: RouteConst.SETTINGS, label: 'Settings', implemented: true },
-    {
-      to: RouteConst.ADMIN,
-      label: 'Admin',
-      onlineOnly: true,
-      adminOnly: true,
-    },
-    {
-      to: RouteConst.LOGIN,
-      label: 'Login',
-      implemented: true,
-      noAuthOnly: true,
-    },
-    {
-      to: RouteConst.REGISTER,
-      label: 'Register',
-      implemented: true,
-      noAuthOnly: true,
-    },
-  ],
-};
+import { RouteConst } from '@/constants/route.constant';
 
 export function AppMenu() {
   const {
@@ -44,6 +20,33 @@ export function AppMenu() {
     actions: { setMenuCom },
   } = useAppContext();
   const ref = useRef<HTMLIonMenuElement>(null);
+  const { tr } = useSiteText();
+
+  const menuLinks = {
+    group: tr('Menu'),
+    linkItems: [
+      { to: RouteConst.HOME, label: tr('Home'), implemented: true },
+      { to: RouteConst.SETTINGS, label: tr('Settings'), implemented: true },
+      {
+        to: RouteConst.ADMIN,
+        label: tr('Admin'),
+        onlineOnly: true,
+        adminOnly: true,
+      },
+      {
+        to: RouteConst.LOGIN,
+        label: tr('Login'),
+        implemented: true,
+        noAuthOnly: true,
+      },
+      {
+        to: RouteConst.REGISTER,
+        label: tr('Register'),
+        implemented: true,
+        noAuthOnly: true,
+      },
+    ],
+  };
 
   useEffect(() => {
     if (ref.current && !menu) {

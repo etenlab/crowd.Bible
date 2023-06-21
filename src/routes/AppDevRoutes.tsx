@@ -2,7 +2,7 @@ import { AppListPage } from '@/pages/AppDev/AppListPage';
 import { NewApplicationAddPage } from '@/pages/AppDev/NewApplicationAddPage';
 
 import { SiteTextMenuPage } from '@/pages/AppDev/SiteTextMenuPage';
-import { SiteTextAdminPage } from '@/pages/AppDev/SiteTextAdminPage';
+import { SiteTextUIWordListPage } from '@/pages/AppDev/SiteTextUIWordListPage';
 import { SiteTextAppListPage } from '@/pages/AppDev/SiteTextAppListPage';
 import { SiteTextListPage } from '@/pages/AppDev/SiteTextListPage';
 
@@ -31,8 +31,8 @@ export const AppDevRoutes: CustomRouteProps[] = [
     children: <SiteTextMenuPage />,
   },
   {
-    path: RouteConst.SITE_TEXT_ADMIN,
-    children: <SiteTextAdminPage />,
+    path: RouteConst.SITE_TEXT_UI_WORD_LIST,
+    children: <SiteTextUIWordListPage />,
   },
   {
     path: RouteConst.SITE_TEXT_TRANSLATION_APP_LIST,

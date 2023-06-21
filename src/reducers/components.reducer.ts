@@ -1,8 +1,11 @@
+import { ReactNode } from 'react';
+
 import { actions } from './components.actions';
 import { type ActionType } from '.';
 
 export interface StateType {
   menu?: HTMLIonMenuElement;
+  modal?: ReactNode;
 }
 
 export const initialState: StateType = {};
@@ -25,6 +28,18 @@ export function reducer(
       return {
         ...prevState,
         menu: undefined,
+      };
+    }
+    case actions.SET_MODAL_COM: {
+      return {
+        ...prevState,
+        modal: action.payload as ReactNode,
+      };
+    }
+    case actions.CLEAR_MODAL_COM: {
+      return {
+        ...prevState,
+        modal: undefined,
       };
     }
     default: {

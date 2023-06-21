@@ -6,6 +6,7 @@ import {
   FeedbackTypes,
   UserRoles,
 } from '@/constants/common.constant';
+import { LanguageInfo } from '@eten-lab/ui-kit';
 
 export type FeedbackType =
   | FeedbackTypes.SUCCESS
@@ -51,10 +52,12 @@ export interface StateType {
   isNewNotification: boolean;
   translatedMap: TranslatedMap;
   singletons: ISingletons | null;
+  appLanguage: LanguageInfo;
   isSqlPortalShown: boolean;
+  siteTextMap: Record<string, { siteText: string; isTranslated: boolean }>;
 }
 
-const initialSnact: SnackType = {
+const initialSnack: SnackType = {
   open: false,
   message: '',
   severity: FeedbackTypes.SUCCESS,
@@ -66,7 +69,7 @@ export const initialState: StateType = {
     admin: false,
     beta: false,
   },
-  snack: initialSnact,
+  snack: initialSnack,
   prefersColorScheme: undefined,
   connectivity: true,
   loading: false,
@@ -74,7 +77,14 @@ export const initialState: StateType = {
   isNewNotification: false,
   translatedMap: initialTranslatedMap,
   singletons: null,
+  appLanguage: {
+    lang: {
+      tag: 'en',
+      descriptions: ['English'],
+    },
+  },
   isSqlPortalShown: false,
+  siteTextMap: {},
 };
 
 export function reducer(
@@ -102,7 +112,7 @@ export function reducer(
     case actions.CLOSE_FEEDBACK: {
       return {
         ...prevState,
-        snack: { ...initialSnact },
+        snack: { ...initialSnack },
       };
     }
     case actions.SET_USER: {
@@ -166,6 +176,21 @@ export function reducer(
       return {
         ...prevState,
         isSqlPortalShown: action.payload as boolean,
+      };
+    }
+    case actions.CHANGE_APP_LANGUAGE: {
+      return {
+        ...prevState,
+        appLanguage: action.payload as LanguageInfo,
+      };
+    }
+    case actions.SET_SITE_TEXT_MAP: {
+      return {
+        ...prevState,
+        siteTextMap: action.payload as Record<
+          string,
+          { siteText: string; isTranslated: boolean }
+        >,
       };
     }
     default: {
