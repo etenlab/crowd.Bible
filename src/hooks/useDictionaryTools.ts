@@ -221,6 +221,9 @@ export function useDictionaryTools(
     ],
   );
 
+  /**
+   * @deprecated due to immutability of the graph
+   */
   const changeDefinitionValue = useCallback(
     async (
       items: VotableItem[],

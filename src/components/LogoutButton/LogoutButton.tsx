@@ -20,7 +20,7 @@ export function LogoutButton() {
   // let tokenObj = null;
   if (userToken && userToken !== undefined) {
     // tokenObj = decodeToken(userToken);
-    logger.debug({ at: 'LogoutButton' }, USER_TOKEN_KEY, userToken);
+    // logger.debug({ at: 'LogoutButton' }, USER_TOKEN_KEY, userToken);
   }
 
   const handleLogout = () => {
