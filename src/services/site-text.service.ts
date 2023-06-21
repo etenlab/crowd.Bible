@@ -94,6 +94,13 @@ export class SiteTextService {
       languageInfo,
     );
 
+    console.log(
+      'createOrFindSiteTextOnGraph ===>',
+      siteText,
+      languageInfo,
+      wordId,
+    );
+
     const { definitionId } = await this.definitionService.createDefinition(
       definitionText,
       wordId,
@@ -196,6 +203,8 @@ export class SiteTextService {
         siteTextTranslation: true,
       },
     );
+
+    console.log(siteText, wordId, definitionId, relationshipId, election.id);
 
     return {
       wordId,

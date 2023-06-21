@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
@@ -26,14 +26,13 @@ export function SiteTextUIWordListPage() {
   const { loadSiteTextMap, tr } = useSiteText();
 
   const [searchStr, setSearchStr] = useState<string>('');
-  const updated = useRef<boolean>(false);
 
+  console.log(singletons, crowdBibleApp);
   // Fetch Mock App Info from db
   useEffect(() => {
-    if (singletons && crowdBibleApp && updated.current === false) {
-      // loadSiteTextMap();
-      // updated.current = true;
-      console.log('loadSiteTextMap calling');
+    if (singletons && crowdBibleApp) {
+      console.log('loadSiteTextMap ===>', singletons, crowdBibleApp);
+      loadSiteTextMap();
     }
   }, [loadSiteTextMap, singletons, crowdBibleApp]);
 
@@ -47,39 +46,44 @@ export function SiteTextUIWordListPage() {
 
   const handleClickItem = (_siteTextId: string) => {};
 
-  console.log(siteTextMap);
-
   const items: ButtonListItemType[] = useMemo(() => {
     const keys = Object.keys(siteTextMap);
 
-    console.log(keys);
-    return keys.map((key) => {
-      const notranslatedBadgeCom = !siteTextMap[key].isTranslated ? (
-        <Chip
-          component="span"
-          label={tr('Not translated')}
-          variant="outlined"
-          color="error"
-          size="small"
-          sx={{ marginLeft: 2 }}
-        />
-      ) : null;
+    return keys
+      .map((key) => {
+        const notranslatedBadgeCom = !siteTextMap[key].isTranslated ? (
+          <Chip
+            component="span"
+            label={tr('Not translated')}
+            variant="outlined"
+            color="error"
+            size="small"
+            sx={{ marginLeft: 2 }}
+          />
+        ) : null;
 
-      const labelCom = (
-        <>
-          {siteTextMap[key].siteText}
-          {notranslatedBadgeCom}
-        </>
-      );
+        const labelCom = (
+          <>
+            {siteTextMap[key].siteText}
+            {notranslatedBadgeCom}
+          </>
+        );
 
-      return {
-        value: key,
-        label: labelCom,
-      };
-    });
+        return {
+          value: key,
+          label: labelCom,
+        };
+      })
+      .sort((a, b) => {
+        if (a.value > b.value) {
+          return 1;
+        } else if (a.value < b.value) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
   }, [tr, siteTextMap]);
-
-  console.log(items, crowdBibleApp, singletons);
 
   return (
     <PageLayout>

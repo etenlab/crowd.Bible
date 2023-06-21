@@ -430,6 +430,20 @@ export function useSiteText() {
           appLanguage,
         );
 
+      for (let i = 0; i < 10; i++) {
+        singletons.siteTextService
+          .createOrFindSiteText(
+            crowdBibleApp.id,
+            crowdBibleApp.languageInfo,
+            'test',
+            '',
+          )
+          .catch((err) => {
+            logger.error(err);
+            alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at Tr');
+          });
+      }
+
       const temp: Record<string, { siteText: string; isTranslated: boolean }> =
         {};
 
@@ -481,17 +495,17 @@ export function useSiteText() {
         return siteTextMap[siteText];
       }
 
-      singletons.siteTextService
-        .createOrFindSiteText(
-          crowdBibleApp.id,
-          crowdBibleApp.languageInfo,
-          siteText,
-          '',
-        )
-        .catch((err) => {
-          logger.error(err);
-          alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at TrWithInto');
-        });
+      // singletons.siteTextService
+      //   .createOrFindSiteText(
+      //     crowdBibleApp.id,
+      //     crowdBibleApp.languageInfo,
+      //     siteText.trim(),
+      //     '',
+      //   )
+      //   .catch((err) => {
+      //     logger.error(err);
+      //     alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at TrWithInto');
+      //   });
 
       return {
         siteText,
@@ -515,17 +529,17 @@ export function useSiteText() {
         return siteTextMap[siteText].siteText;
       }
 
-      singletons.siteTextService
-        .createOrFindSiteText(
-          crowdBibleApp.id,
-          crowdBibleApp.languageInfo,
-          siteText,
-          '',
-        )
-        .catch((err) => {
-          logger.error(err);
-          alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at Tr');
-        });
+      // singletons.siteTextService
+      //   .createOrFindSiteText(
+      //     crowdBibleApp.id,
+      //     crowdBibleApp.languageInfo,
+      //     siteText.trim(),
+      //     '',
+      //   )
+      //   .catch((err) => {
+      //     logger.error(err);
+      //     alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at Tr');
+      //   });
 
       return siteText;
     },

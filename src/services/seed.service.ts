@@ -41,12 +41,14 @@ export class SeedService {
       this.logger.info('*** data seeding started ***');
 
       // create seed app
-      this.documentRepository.createOrFindApp('crowd.Bible', 'ETEN Lab', {
+      await this.documentRepository.createOrFindApp('crowd.Bible', 'ETEN Lab', {
         lang: {
           tag: 'en',
           descriptions: ['English'],
         },
       });
+
+      console.log('created crowd.Bible');
 
       this.logger.info('*** data seeding completed ***');
       this.dataSeeded = true;

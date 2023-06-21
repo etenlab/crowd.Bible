@@ -21,10 +21,11 @@ export function PageLayout({ children }: PageLayoutProps) {
       components: { modal },
     },
     actions: { closeFeedback, clearModalCom },
+    crowdBibleApp,
   } = useAppContext();
   const { getColor } = useColorModeContext();
 
-  const isLoading = loading || !singletons;
+  const isLoading = loading || !singletons || !crowdBibleApp;
 
   return (
     <IonPage id="crowd-bible-app">
