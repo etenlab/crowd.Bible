@@ -8,6 +8,7 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
+import { RouteConst } from '@/constants/route.constant';
 
 const { ButtonList, HeadBox } = CrowdBibleUI;
 const { Box, Stack } = MuiMaterial;
@@ -18,6 +19,10 @@ export function UserDetailsPage() {
 
   const handleClickBackBtn = () => {
     history.goBack();
+  };
+
+  const addRole = () => {
+    history.push(`${RouteConst.ADMIN}/role/${user_id}`);
   };
 
   const roles = [
@@ -84,7 +89,7 @@ export function UserDetailsPage() {
         onClick={() => {}}
         toolBtnGroup={
           <>
-            <PlusButton variant="primary" onClick={() => {}} />
+            <PlusButton variant="primary" onClick={addRole} />
           </>
         }
       />
