@@ -20,44 +20,44 @@ const orgs = [
   'Organization Name 2',
   'Organization Name 3',
 ];
-const apps = ['Application Name 2', 'Application Name 2', 'Application Name 3'];
-const roles = ['Role 1', 'Role 2', 'Role 3'];
+const apps = ['Application Name 1', 'Application Name 2', 'Application Name 3'];
+const roles = ['Project Manager', 'Developer', 'Administrator'];
 
 export function AddRolePage() {
   const history = useHistory();
-  const { user_id } = useParams<{ user_id: string }>();
+  const { userId } = useParams<{ userId: string }>();
 
-  const [org, setOrg] = useState<string>('');
-  const [app, setApp] = useState<string>('');
-  const [role, setRole] = useState<string>('');
+  const [org, setOrg] = useState<string | null>(null);
+  const [app, setApp] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
 
   const handleOrgChange = (
     _event: React.SyntheticEvent<Element, Event>,
     value: string | null,
   ) => {
-    setOrg(value ? value : '');
+    setOrg(value);
   };
 
   const handleAppChange = (
     _event: React.SyntheticEvent<Element, Event>,
     value: string | null,
   ) => {
-    setApp(value ? value : '');
+    setApp(value);
   };
 
   const handleRoleChange = (
     _event: React.SyntheticEvent<Element, Event>,
     value: string | null,
   ) => {
-    setRole(value ? value : '');
+    setRole(value);
   };
 
   const handleAdd = () => {
-    history.push(`${RouteConst.ADMIN}/user/${user_id}`);
+    history.push(`${RouteConst.ADMIN}/user/${userId}`);
   };
 
   const handleCancel = () => {
-    history.push(`${RouteConst.ADMIN}/user/${user_id}`);
+    history.push(`${RouteConst.ADMIN}/user/${userId}`);
   };
 
   return (
@@ -102,9 +102,7 @@ export function AddRolePage() {
             onClick={handleAdd}
           >
             <DiAdd fontSize="small" />
-            <Typography variant="subtitle2" color="text.light">
-              Add New Role
-            </Typography>
+            Add New Role
           </Button>
           <Button
             variant="text"

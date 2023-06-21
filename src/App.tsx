@@ -86,6 +86,7 @@ export default function App() {
                   return (
                     <Route
                       key={route.path as string}
+                      exact
                       path={route.path}
                       render={() => <>{route.children}</>}
                     />

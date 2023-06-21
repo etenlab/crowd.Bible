@@ -19,6 +19,10 @@ export function UsersPage() {
 
   const handleSearch = () => {};
 
+  const handleFilter = () => {
+    history.push(`${RouteConst.ADMIN}/filter`);
+  };
+
   const items = [
     {
       label: 'michael@test.com',
@@ -53,7 +57,7 @@ export function UsersPage() {
         onClick={handleClickItem}
         toolBtnGroup={
           <>
-            <FilterButton variant="secondary" onClick={() => {}} />
+            <FilterButton variant="secondary" onClick={handleFilter} />
             <PlusButton variant="primary" onClick={() => {}} />
           </>
         }

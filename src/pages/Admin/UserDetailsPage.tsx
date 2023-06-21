@@ -15,14 +15,18 @@ const { Box, Stack } = MuiMaterial;
 
 export function UserDetailsPage() {
   const history = useHistory();
-  const { user_id } = useParams<{ user_id: string }>();
+  const { userId } = useParams<{ userId: string }>();
 
   const handleClickBackBtn = () => {
     history.goBack();
   };
 
   const addRole = () => {
-    history.push(`${RouteConst.ADMIN}/role/${user_id}`);
+    history.push(`${RouteConst.ADMIN}/create-role/${userId}`);
+  };
+
+  const editRole = (roleId: string) => () => {
+    history.push(`${RouteConst.ADMIN}/role/${roleId}`);
   };
 
   const roles = [
@@ -67,7 +71,7 @@ export function UserDetailsPage() {
       </Stack>
     ),
     value: r.id,
-    endIcon: <DiEdit />,
+    endIcon: <DiEdit onClick={editRole(r.id)} />,
   }));
 
   return (
@@ -80,7 +84,7 @@ export function UserDetailsPage() {
           marginBottom: '14px',
         }}
       >
-        <HeadBox back={{ action: handleClickBackBtn }} title={user_id} />
+        <HeadBox back={{ action: handleClickBackBtn }} title={userId} />
       </Box>
       <ButtonList
         label="Roles"

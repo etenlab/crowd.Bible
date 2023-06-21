@@ -7,6 +7,8 @@ import { AddRolePage } from '../pages/Admin/AddRolePage';
 
 import { RouteConst } from '@/constants/route.constant';
 import { CustomRouteProps } from './AppRoutes';
+import { EditRolePage } from '../pages/Admin/EditRolePage';
+import { UsersFilterPage } from '../pages/Admin/UsersFilterPage';
 
 export const AdminRoutes: CustomRouteProps[] = [
   {
@@ -26,11 +28,19 @@ export const AdminRoutes: CustomRouteProps[] = [
     children: <OrganizationsPage />,
   },
   {
-    path: `${RouteConst.ADMIN}/role/:user_id`,
+    path: `${RouteConst.ADMIN}/create-role/:userId`,
     children: <AddRolePage />,
   },
   {
-    path: `${RouteConst.ADMIN}/user/:user_id`,
+    path: `${RouteConst.ADMIN}/role/:roleId`,
+    children: <EditRolePage />,
+  },
+  {
+    path: `${RouteConst.ADMIN}/user/:userId`,
     children: <UserDetailsPage />,
+  },
+  {
+    path: `${RouteConst.ADMIN}/filter`,
+    children: <UsersFilterPage />,
   },
 ];
