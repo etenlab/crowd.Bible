@@ -1,5 +1,5 @@
 import {
-  // MainKeyName,
+  MainKeyName,
   NodeTypeConst,
   PropertyKeyConst,
   RelationshipTypeConst,
@@ -20,13 +20,6 @@ import { VotableContent, VotableItem } from '@/src/dtos/votable-item.dto';
 import { makeFindPropsByLang } from '@/utils/langUtils';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { LanguageMapper } from '@/mappers/language.mapper';
-
-//ill TODO: change to import from core
-const MainKeyName = {
-  [NodeTypeConst.WORD]: PropertyKeyConst.WORD,
-  [NodeTypeConst.PHRASE]: PropertyKeyConst.PHRASE,
-  [NodeTypeConst.DEFINITION]: PropertyKeyConst.DEFINITION,
-};
 
 export class DefinitionService {
   constructor(
@@ -235,13 +228,16 @@ export class DefinitionService {
     votableNodesType: NodeTypeConst,
     propertyKeyText: PropertyKeyConst,
     fromVotableNodes = true,
+    onlyWithLangInfo?: LanguageInfo,
   ): Promise<Array<VotableContent>> {
     const relationDirection = fromVotableNodes ? 'from_node_id' : 'to_node_id';
     const votableNodes =
       await this.graphFirstLayerService.getNodesByTypeAndRelatedNodes({
         type: votableNodesType,
         [relationDirection]: electionTargetId,
-        //todo: restrict by languguage
+        onlyWithProps: onlyWithLangInfo
+          ? makeFindPropsByLang(onlyWithLangInfo)
+          : undefined,
       });
     const vcPromises: Promise<VotableContent>[] = votableNodes.map(
       async (votableNode) => {
@@ -288,6 +284,7 @@ export class DefinitionService {
     );
   }
 
+  //ill todo move to other service
   /**
    * Finds words for given node Id and election Id and returns as VotableContent
    *
@@ -298,12 +295,15 @@ export class DefinitionService {
   async getWordsAsVotableContent(
     forNodeId: Nanoid,
     electionId: Nanoid,
+    langInfo?: LanguageInfo,
   ): Promise<Array<VotableContent>> {
     return this.getVotableContent(
       forNodeId,
       electionId,
       NodeTypeConst.WORD,
       MainKeyName[NodeTypeConst.WORD],
+      undefined,
+      langInfo,
     );
   }
 
@@ -327,6 +327,7 @@ export class DefinitionService {
     forElectionType:
       | ElectionTypeConst.DEFINITION
       | ElectionTypeConst.TRANSLATION = ElectionTypeConst.DEFINITION,
+    contentLangInfo?: LanguageInfo,
   ): Promise<Array<VotableItem>> {
     const itemContents = await this.getSelfVotableContentByLang(
       type,
@@ -357,7 +358,11 @@ export class DefinitionService {
           );
           break;
         case ElectionTypeConst.TRANSLATION:
-          contents = await this.getWordsAsVotableContent(wc.id, election.id);
+          contents = await this.getWordsAsVotableContent(
+            wc.id,
+            election.id,
+            contentLangInfo,
+          );
           break;
         default:
           throw new Error(

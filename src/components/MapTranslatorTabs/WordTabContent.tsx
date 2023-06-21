@@ -24,12 +24,7 @@ import {
 } from '../../hooks/useMapTranslationTools';
 import { VotableItem } from '../../dtos/votable-item.dto';
 import { ElectionTypeConst, LoggerService } from '@eten-lab/core';
-import {
-  FeedbackTypes,
-  UpOrDownVote,
-  VoteTypes,
-} from '../../constants/common.constant';
-import { useVote } from '../../hooks/useVote';
+import { UpOrDownVote, VoteTypes } from '../../constants/common.constant';
 
 const { ItemContentListEdit } = CrowdBibleUI;
 const { Box, Divider, Stack } = MuiMaterial;
@@ -53,87 +48,46 @@ export const WordTabContent = () => {
   const [sourceLangInfo, setSourceLangInfo] = useState<LanguageInfo>();
   const [targetLangInfo, setTargetLangInfo] = useState<LanguageInfo>();
   const [step, setStep] = useState<Steps>(Steps.GET_LANGUAGES);
-  const { getWordsWithLangs } = useMapTranslationTools();
+  const { getWordsWithLangs, changeTranslationVotes } =
+    useMapTranslationTools();
   const [wordsVotableItems, setWordsVotableItems] = useState<VotableItem[]>([]);
-  const { getVotesStats, toggleVote } = useVote();
-  const {
-    actions: { alertFeedback, setLoadingState },
-    logger,
-  } = useAppContext();
 
-  //ill TODO: move to tools hook
-  const changeTranslationVotes = useCallback(
-    async (
-      items: VotableItem[],
-      candidateId: Nanoid | null,
-      upOrDown: UpOrDownVote,
-    ) => {
-      try {
-        if (!candidateId) {
-          throw new Error(`!candidateId: There is no candidateId`);
-        }
-        let translationIdx = -1;
-        const wordIdx = items.findIndex((w) => {
-          translationIdx = w.contents.findIndex(
-            (t) => t.candidateId === candidateId,
-          );
-          return translationIdx >= 0;
-        });
-
-        await toggleVote(candidateId, upOrDown === VoteTypes.UP); // if not upVote, it calculated as false and toggleVote treats false as downVote
-        const votes = await getVotesStats(candidateId);
-        if (translationIdx < 0) {
-          throw new Error(
-            `Can't find definition by candidateId ${candidateId}`,
-          );
-        }
-        items[wordIdx].contents[translationIdx] = {
-          ...items[wordIdx].contents[translationIdx],
-          upVotes: votes?.upVotes || 0,
-          downVotes: votes?.downVotes || 0,
-        };
-        setWordsVotableItems([...items]);
-      } catch (error) {
-        logger.error(error);
-        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
-      } finally {
-        setLoadingState(false);
-      }
-    },
-    [toggleVote, getVotesStats, alertFeedback, setLoadingState, logger],
-  );
-
-  const changeWordTranslationVotes = useCallback(
+  const handleChangeTranslationVotes = useCallback(
     (candidateId: Nanoid | null, vote: 'upVote' | 'downVote') => {
       const upOrDown: UpOrDownVote =
         vote === 'upVote' ? VoteTypes.UP : VoteTypes.DOWN;
-      changeTranslationVotes(wordsVotableItems, candidateId, upOrDown);
+      changeTranslationVotes(
+        wordsVotableItems,
+        setWordsVotableItems,
+        candidateId,
+        upOrDown,
+      );
     },
     [changeTranslationVotes, wordsVotableItems],
   );
 
-  const getWordsAsVotableItems = useCallback(async (): Promise<
-    Array<VotableItem>
-  > => {
-    if (!singletons) {
-      logger.error({ at: 'getWordsAsVotableItems' }, 'No singletons');
-      return [];
-    }
-    if (!sourceLangInfo) {
-      logger.error({ at: 'getWordsAsVotableItems' }, 'No sourceLangInfo');
-      return [];
-    }
+  const getWordsAsVotableItems = useCallback(
+    async (
+      forLangInfo: LanguageInfo,
+      contentLangInfo: LanguageInfo,
+    ): Promise<Array<VotableItem>> => {
+      if (!singletons) {
+        logger.error({ at: 'getWordsAsVotableItems' }, 'No singletons');
+        return [];
+      }
+      const wordsAsVotableItems =
+        await singletons.definitionService.getVotableItems(
+          forLangInfo,
+          NodeTypeConst.WORD,
+          undefined,
+          ElectionTypeConst.TRANSLATION,
+          contentLangInfo,
+        );
 
-    const wordsAsVotableItems =
-      await singletons.definitionService.getVotableItems(
-        sourceLangInfo,
-        NodeTypeConst.WORD,
-        undefined,
-        ElectionTypeConst.TRANSLATION,
-      );
-
-    return wordsAsVotableItems;
-  }, [singletons, sourceLangInfo]);
+      return wordsAsVotableItems;
+    },
+    [singletons],
+  );
 
   const onShowStringListClick = useCallback(async () => {
     if (sourceLangInfo && targetLangInfo) {
@@ -176,6 +130,11 @@ export const WordTabContent = () => {
   );
 
   const storeTranslations = useCallback(async () => {
+    if (!sourceLangInfo)
+      throw new Error(`No sourceLangInfo when storeTranslations`);
+    if (!targetLangInfo)
+      throw new Error(`No sourceLangInfo when storeTranslations`);
+    const savedWordIds: string[] = [];
     for (const word of words) {
       if (!singletons) return;
       if (!word.translations)
@@ -195,13 +154,27 @@ export const WordTabContent = () => {
           word.id,
           translationWordId,
         );
+        savedWordIds.push(word.id);
       }
     }
-    // const wordItems = await getWordsWithLangs(sourceLangInfo!, targetLangInfo!);
-    // setWords(wordItems);
-    setWordsVotableItems(await getWordsAsVotableItems());
+    // TODO may be optimised if invend special methods to get words prefiltered by map also (not only language)
+    const allWordsAsVotableItems = await getWordsAsVotableItems(
+      sourceLangInfo,
+      targetLangInfo,
+    );
+    const existingWordIds = words.map((w) => w.id);
+    const onlyWordInAnyMap = allWordsAsVotableItems.filter((w) =>
+      [...savedWordIds, ...existingWordIds].includes(w.title.id as string),
+    );
+    setWordsVotableItems(onlyWordInAnyMap);
     setStep(Steps.VOTE);
-  }, [getWordsAsVotableItems, singletons, targetLangInfo, words]);
+  }, [
+    getWordsAsVotableItems,
+    singletons,
+    sourceLangInfo,
+    targetLangInfo,
+    words,
+  ]);
 
   return (
     <Box
@@ -398,7 +371,7 @@ export const WordTabContent = () => {
                 onBack={() => setStep(Steps.INPUT_TRANSLATIONS)}
                 buttonText="New Definition"
                 changeContentValue={() => {}}
-                changeContentVotes={changeWordTranslationVotes}
+                changeContentVotes={handleChangeTranslationVotes}
                 addContent={() => {}}
                 customTitle={
                   <Typography variant="body1">{w.title.content}</Typography>

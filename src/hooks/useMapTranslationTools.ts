@@ -1,7 +1,11 @@
 import { useCallback } from 'react';
 import { useAppContext } from './useAppContext';
 import { gql, useApolloClient } from '@apollo/client';
-import { FeedbackTypes } from '@/constants/common.constant';
+import {
+  FeedbackTypes,
+  UpOrDownVote,
+  VoteTypes,
+} from '@/constants/common.constant';
 import axios from 'axios';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
@@ -10,6 +14,8 @@ import { WordDto } from '../dtos/word.dto';
 import { RelationshipTypeConst } from '@eten-lab/core';
 import { WordMapper } from '../mappers/word.mapper';
 import { compareLangInfo, wordProps2LangInfo } from '../utils/langUtils';
+import { VotableItem } from '../dtos/votable-item.dto';
+import { useVote } from './useVote';
 
 export const UPLOAD_FILE_MUTATION = gql`
   mutation UploadFile($file: Upload!, $file_type: String!, $file_size: Int!) {
@@ -58,13 +64,14 @@ export type WordItem = {
 
 export function useMapTranslationTools() {
   const {
-    actions: { alertFeedback },
+    actions: { alertFeedback, setLoadingState },
     states: {
       global: { singletons },
     },
     logger,
   } = useAppContext();
   const apolloClient = useApolloClient();
+  const { getVotesStats, toggleVote } = useVote();
 
   const sendMapFile = useCallback(
     async (
@@ -310,6 +317,48 @@ export function useMapTranslationTools() {
     [singletons],
   );
 
+  const changeTranslationVotes = useCallback(
+    async (
+      items: VotableItem[],
+      setWordsVotableItems: React.Dispatch<React.SetStateAction<VotableItem[]>>,
+      candidateId: Nanoid | null,
+      upOrDown: UpOrDownVote,
+    ) => {
+      try {
+        if (!candidateId) {
+          throw new Error(`!candidateId: There is no candidateId`);
+        }
+        let translationIdx = -1;
+        const wordIdx = items.findIndex((w) => {
+          translationIdx = w.contents.findIndex(
+            (t) => t.candidateId === candidateId,
+          );
+          return translationIdx >= 0;
+        });
+
+        await toggleVote(candidateId, upOrDown === VoteTypes.UP); // if not upVote, it calculated as false and toggleVote treats false as downVote
+        const votes = await getVotesStats(candidateId);
+        if (translationIdx < 0) {
+          throw new Error(
+            `Can't find definition by candidateId ${candidateId}`,
+          );
+        }
+        items[wordIdx].contents[translationIdx] = {
+          ...items[wordIdx].contents[translationIdx],
+          upVotes: votes?.upVotes || 0,
+          downVotes: votes?.downVotes || 0,
+        };
+        setWordsVotableItems([...items]);
+      } catch (error) {
+        logger.error(error);
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
+      } finally {
+        setLoadingState(false);
+      }
+    },
+    [toggleVote, getVotesStats, alertFeedback, setLoadingState, logger],
+  );
+
   return {
     sendMapFile,
     getMapFileInfo,
@@ -317,5 +366,6 @@ export function useMapTranslationTools() {
     processFile,
     setMapStatus,
     getWordsWithLangs,
+    changeTranslationVotes,
   };
 }
