@@ -8,7 +8,7 @@ import { USER_TOKEN_KEY } from '@/constants/common.constant';
 export function LogoutButton() {
   const { getColor } = useColorModeContext();
   const {
-    logger,
+    // logger,
     states: {
       global: { user },
     },

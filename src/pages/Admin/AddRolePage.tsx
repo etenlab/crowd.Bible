@@ -1,19 +1,16 @@
 import { useState } from 'react';
-import {
-  useHistory,
-  // useParams
-} from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import {
   CrowdBibleUI,
   MuiMaterial,
   Autocomplete,
   Button,
+  DiAdd,
   Typography,
-  Input,
 } from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
-// import { RouteConst } from '@/constants/route.constant';
+import { RouteConst } from '@/constants/route.constant';
 
 const { HeadBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
@@ -26,46 +23,64 @@ const orgs = [
 const apps = ['Application Name 1', 'Application Name 2', 'Application Name 3'];
 const roles = ['Project Manager', 'Developer', 'Administrator'];
 
-export function EditRolePage() {
+export function AddRolePage() {
   const history = useHistory();
-  // const { roleId } = useParams<{ roleId: string }>();
+  const { userId } = useParams<{ userId: string }>();
 
-  const org = orgs[0];
-  const app = apps[0];
-  const [role, setRole] = useState<string>(roles[0]);
+  const [org, setOrg] = useState<string | null>(null);
+  const [app, setApp] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
+
+  const handleOrgChange = (
+    _event: React.SyntheticEvent<Element, Event>,
+    value: string | null,
+  ) => {
+    setOrg(value);
+  };
+
+  const handleAppChange = (
+    _event: React.SyntheticEvent<Element, Event>,
+    value: string | null,
+  ) => {
+    setApp(value);
+  };
 
   const handleRoleChange = (
     _event: React.SyntheticEvent<Element, Event>,
     value: string | null,
   ) => {
-    setRole(value ? value : '');
+    setRole(value);
   };
 
-  const handleSave = () => {
-    history.goBack();
+  const handleAdd = () => {
+    history.push(`${RouteConst.ADMIN}/user/${userId}`);
   };
 
   const handleCancel = () => {
-    history.goBack();
+    history.push(`${RouteConst.ADMIN}/user/${userId}`);
   };
 
   return (
     <PageLayout>
-      <HeadBox title="Edit Role" />
+      <HeadBox title="assign new role" />
       <Stack sx={{ padding: '20px' }} gap="30px">
         <Stack gap="12px">
-          <Input
-            label="Organization"
-            disabled
-            fullWidth
+          <Autocomplete
+            label="Choose Organization Name"
+            options={orgs}
             value={org}
+            isOptionEqualToValue={(option, value) => option === value}
+            getOptionLabel={(option) => option}
+            onChange={handleOrgChange}
             withLegend={false}
           />
-          <Input
-            label="Application"
-            disabled
-            fullWidth
+          <Autocomplete
+            label="Choose Application Name"
+            options={apps}
             value={app}
+            isOptionEqualToValue={(option, value) => option === value}
+            getOptionLabel={(option) => option}
+            onChange={handleAppChange}
             withLegend={false}
           />
           <Autocomplete
@@ -84,9 +99,10 @@ export function EditRolePage() {
             color="blue-primary"
             size="large"
             sx={{ alignItems: 'center' }}
-            onClick={handleSave}
+            onClick={handleAdd}
           >
-            Save
+            <DiAdd fontSize="small" />
+            Add New Role
           </Button>
           <Button
             variant="text"

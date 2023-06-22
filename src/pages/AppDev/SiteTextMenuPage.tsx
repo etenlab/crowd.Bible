@@ -61,7 +61,7 @@ export function SiteTextMenuPage() {
     <PageLayout>
       <br />
       <TitleWithIcon
-        label={tr('Question & Answer')}
+        label={tr('Site Text')}
         withCloseIcon={false}
         withBackIcon={true}
         onClose={() => {}}

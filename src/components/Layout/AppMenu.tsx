@@ -48,6 +48,12 @@ export function AppMenu() {
         implemented: true,
         noAuthOnly: true,
       },
+      {
+        to: RouteConst.ADMIN_MANAGE,
+        label: tr('AdminManage'),
+        implemented: true,
+        noAuthOnly: true,
+      },
     ],
   };
 
