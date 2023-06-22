@@ -311,6 +311,7 @@ export function PhraseBookPage() {
             changeContentValue={changePhraseDefinition}
             changeContentVotes={changePhraseDefinitionVotes}
             addContent={addDefinitionToPhrase}
+            isAddable={true}
           />
         </Box>
       )}

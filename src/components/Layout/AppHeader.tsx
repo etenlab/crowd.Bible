@@ -150,6 +150,7 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
             discussion: false,
             language: false,
             menu: false,
+            language: false,
           }}
           themeMode={themeMode}
           onClickThemeModeBtn={handleToogleTheme}
@@ -157,6 +158,7 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
           onClickNotificationBtn={handleClickNotificationButton}
           onClickLanguageBtn={handleClickLanguageButton}
           onClickMenuBtn={handleToggleMenu}
+          onClickLanguageBtn={() => {}}
         />
       </IonToolbar>
     </IonHeader>
@@ -175,6 +177,7 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
           onClickNotificationBtn={handleClickNotificationButton}
           onClickLanguageBtn={handleClickLanguageButton}
           onClickMenuBtn={handleToggleMenu}
+          onClickLanguageBtn={() => {}}
         />
       </IonToolbar>
     </IonHeader>
