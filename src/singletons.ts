@@ -219,7 +219,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipTypeRepo,
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
-    documentService,
     loggerService,
   );
 

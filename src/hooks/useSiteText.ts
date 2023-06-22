@@ -4,7 +4,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useVote } from '@/hooks/useVote';
 
 import { LanguageInfo } from '@eten-lab/ui-kit';
-import { VotableContent } from '@/src/dtos/votable-item.dto';
+import { VotableContent } from '@/dtos/votable-item.dto';
 
 import { SiteTextDto, SiteTextTranslationDto } from '@/dtos/site-text.dto';
 
@@ -14,12 +14,15 @@ import { FeedbackTypes } from '@/constants/common.constant';
 export function useSiteText() {
   const {
     states: {
-      global: { singletons, siteTextMap, appLanguage },
-      // documentTools: { sourceLanguage, targetLanguage },
+      global: { singletons, appLanguage, tempSiteTexts, crowdBibleApp },
     },
-    actions: { alertFeedback, setLoadingState, setSiteTextMap },
+    actions: {
+      alertFeedback,
+      setLoadingState,
+      setSiteTextMap,
+      clearTempSiteTexts,
+    },
     logger,
-    crowdBibleApp,
   } = useAppContext();
 
   const { getCandidateById } = useVote();
@@ -80,14 +83,6 @@ export function useSiteText() {
         alertFeedback(
           FeedbackTypes.ERROR,
           'translated site text should be non empty string!',
-        );
-        return null;
-      }
-
-      if (translatedDefinitionText.trim().length === 0) {
-        alertFeedback(
-          FeedbackTypes.ERROR,
-          'translated site text definition should be non empty string!',
         );
         return null;
       }
@@ -421,28 +416,14 @@ export function useSiteText() {
     }
 
     try {
-      setLoadingState(true);
+      setLoadingState(true, 'Loading Site Text Map', undefined, true);
 
       const candidate =
         await singletons.siteTextService.getTranslatedSiteTextListByAppId(
           crowdBibleApp.id,
-          crowdBibleApp.languageInfo,
+          appLanguage,
           appLanguage,
         );
-
-      for (let i = 0; i < 10; i++) {
-        singletons.siteTextService
-          .createOrFindSiteText(
-            crowdBibleApp.id,
-            crowdBibleApp.languageInfo,
-            'test',
-            '',
-          )
-          .catch((err) => {
-            logger.error(err);
-            alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at Tr');
-          });
-      }
 
       const temp: Record<string, { siteText: string; isTranslated: boolean }> =
         {};
@@ -475,76 +456,41 @@ export function useSiteText() {
     logger,
   ]);
 
-  const trWithInfo = useCallback(
-    (siteText: string) => {
-      if (!singletons || !crowdBibleApp) {
-        return {
-          siteText,
-          isTranslated: false,
-        };
+  const saveTempSiteTexts = useCallback(async () => {
+    if (!singletons || !crowdBibleApp) {
+      return;
+    }
+
+    setLoadingState(true);
+
+    for (const item of tempSiteTexts) {
+      try {
+        await singletons.siteTextService.createOrFindSiteText(
+          item.appId,
+          item.languageInfo,
+          item.siteText,
+          item.definition,
+        );
+      } catch (err) {
+        logger.error(err);
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at TrWithInto');
       }
+    }
 
-      if (siteText.trim() === '') {
-        return {
-          siteText: '',
-          isTranslated: false,
-        };
-      }
+    clearTempSiteTexts();
 
-      if (siteTextMap[siteText]) {
-        return siteTextMap[siteText];
-      }
-
-      // singletons.siteTextService
-      //   .createOrFindSiteText(
-      //     crowdBibleApp.id,
-      //     crowdBibleApp.languageInfo,
-      //     siteText.trim(),
-      //     '',
-      //   )
-      //   .catch((err) => {
-      //     logger.error(err);
-      //     alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at TrWithInto');
-      //   });
-
-      return {
-        siteText,
-        isTranslated: false,
-      };
-    },
-    [singletons, crowdBibleApp, siteTextMap, alertFeedback, logger],
-  );
-
-  const tr = useCallback(
-    (siteText: string) => {
-      if (!singletons || !crowdBibleApp) {
-        return siteText;
-      }
-
-      if (siteText.trim() === '') {
-        return '';
-      }
-
-      if (siteTextMap[siteText]) {
-        return siteTextMap[siteText].siteText;
-      }
-
-      // singletons.siteTextService
-      //   .createOrFindSiteText(
-      //     crowdBibleApp.id,
-      //     crowdBibleApp.languageInfo,
-      //     siteText.trim(),
-      //     '',
-      //   )
-      //   .catch((err) => {
-      //     logger.error(err);
-      //     alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at Tr');
-      //   });
-
-      return siteText;
-    },
-    [singletons, crowdBibleApp, siteTextMap, alertFeedback, logger],
-  );
+    setLoadingState(false);
+    loadSiteTextMap();
+  }, [
+    singletons,
+    crowdBibleApp,
+    setLoadingState,
+    clearTempSiteTexts,
+    loadSiteTextMap,
+    tempSiteTexts,
+    logger,
+    alertFeedback,
+  ]);
 
   const getAppLanguageList = useCallback(async (): Promise<LanguageInfo[]> => {
     if (!singletons || !crowdBibleApp) {
@@ -574,9 +520,8 @@ export function useSiteText() {
   }, [singletons, crowdBibleApp, alertFeedback, setLoadingState, logger]);
 
   return {
-    tr,
-    trWithInfo,
     loadSiteTextMap,
+    saveTempSiteTexts,
     createOrFindSiteText,
     createOrFindTranslation,
     getDefinitionList,

@@ -4,9 +4,11 @@ import {
   type IUser,
   type IMode,
   type PrefersColorSchemeType,
+  type TempSiteTextItem,
 } from './global.reducer';
 import { type ISingletons } from '@/src/singletons';
 import { LanguageInfo } from '@eten-lab/ui-kit';
+import { AppDto } from '@/dtos/document.dto';
 
 export const actions = {
   ALERT_FEEDBACK: 'ALERT_FEEDBACK',
@@ -22,6 +24,9 @@ export const actions = {
   SET_SQL_PORTAL_SHOWN: 'SET_SQL_PORTAL_SHOWN',
   CHANGE_APP_LANGUAGE: 'CHANGE_APP_LANGUAGE',
   SET_SITE_TEXT_MAP: 'SET_SITE_TEXT_MAP',
+  ADD_TEMP_SITE_TEXTS: 'ADD_TEMP_SITE_TEXTS',
+  CLEAR_TEMP_SITE_TEXTS: 'CLEAR_TEMP_SITE_TEXTS',
+  SET_CROWD_BIBLE_APP: 'SET_CROWD_BIBLE_APP',
 };
 
 export function setUser(user: IUser) {
@@ -83,11 +88,27 @@ export function logout() {
   };
 }
 
-export function setLoadingState(state: boolean) {
-  return {
-    type: actions.SET_LOGING_STATE,
-    payload: state,
-  };
+export function setLoadingState(
+  isLoading: boolean,
+  message?: string,
+  status?: string,
+  isCancelButton?: boolean,
+) {
+  if (isLoading) {
+    return {
+      type: actions.SET_LOGING_STATE,
+      payload: {
+        message,
+        status,
+        isCancelButton,
+      },
+    };
+  } else {
+    return {
+      type: actions.SET_LOGING_STATE,
+      payload: undefined,
+    };
+  }
 }
 
 export function setSingletons(singletons: ISingletons | null) {
@@ -117,5 +138,26 @@ export function setSiteTextMap(
   return {
     type: actions.SET_SITE_TEXT_MAP,
     payload: siteTextMap,
+  };
+}
+
+export function addTempSiteTextItem(item: TempSiteTextItem) {
+  return {
+    type: actions.ADD_TEMP_SITE_TEXTS,
+    payload: item,
+  };
+}
+
+export function clearTempSiteTexts() {
+  return {
+    type: actions.CLEAR_TEMP_SITE_TEXTS,
+    payload: null,
+  };
+}
+
+export function setCrowdBibleApp(app: AppDto) {
+  return {
+    type: actions.SET_CROWD_BIBLE_APP,
+    payload: app,
   };
 }

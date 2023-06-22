@@ -8,19 +8,22 @@ import { AppHeader } from './AppHeader';
 import './Layout.css';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 import { RouteConst } from '@/constants/route.constant';
+import { useSiteText } from '@/hooks/useSiteText';
 
 export function AppMenu() {
   const {
     states: {
+      global: { singletons, crowdBibleApp, appLanguage },
       components: { menu },
     },
     actions: { setMenuCom },
   } = useAppContext();
   const ref = useRef<HTMLIonMenuElement>(null);
-  const { tr } = useSiteText();
+  const { tr } = useTr();
+  const { loadSiteTextMap } = useSiteText();
 
   const menuLinks = {
     group: tr('Menu'),
@@ -47,6 +50,12 @@ export function AppMenu() {
       },
     ],
   };
+
+  useEffect(() => {
+    if (singletons && crowdBibleApp && appLanguage) {
+      loadSiteTextMap();
+    }
+  }, [loadSiteTextMap, appLanguage, crowdBibleApp, singletons]);
 
   useEffect(() => {
     if (ref.current && !menu) {

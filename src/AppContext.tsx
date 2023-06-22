@@ -15,6 +15,7 @@ import {
   type StateType as GlobalStateType,
   type FeedbackType,
   type PrefersColorSchemeType,
+  type TempSiteTextItem,
 } from '@/reducers/global.reducer';
 import { type StateType as DocumentToolsStateType } from '@/reducers/documentTools.reducer';
 import { type StateType as ComponentsStateType } from '@/reducers/components.reducer';
@@ -26,8 +27,6 @@ import { useGlobalComponents } from '@/hooks/useGlobalComponents';
 
 import { LoggerService } from '@eten-lab/core';
 import { ISingletons } from './singletons';
-
-import { AppDto } from '@/dtos/document.dto';
 
 import { getAppDataSource } from './data-source';
 import getSingletons from './singletons';
@@ -49,7 +48,12 @@ export interface ContextType {
     closeFeedback: () => void;
     setSourceLanguage: (lang: LanguageInfo | null) => void;
     setTargetLanguage: (lang: LanguageInfo | null) => void;
-    setLoadingState: (state: boolean) => void;
+    setLoadingState: (
+      isLoading: boolean,
+      message?: string,
+      status?: string,
+      isCancelButton?: boolean,
+    ) => void;
     setSqlPortalShown: (isSqlPortalShown: boolean) => void;
     setMenuCom: (com: HTMLIonMenuElement) => void;
     clearMenuCom: () => void;
@@ -60,9 +64,10 @@ export interface ContextType {
     ) => void;
     setSingletons: (singletons: ISingletons | null) => void;
     changeAppLanguage: (langInfo: LanguageInfo) => void;
+    addTempSiteTextItem: (item: TempSiteTextItem) => void;
+    clearTempSiteTexts: () => void;
   };
   logger: LoggerService;
-  crowdBibleApp: AppDto | null;
 }
 
 export const AppContext = createContext<ContextType | undefined>(undefined);
@@ -90,6 +95,9 @@ export function AppContextProvider({ children }: AppProviderProps) {
     setSqlPortalShown,
     setSiteTextMap,
     changeAppLanguage,
+    addTempSiteTextItem,
+    clearTempSiteTexts,
+    setCrowdBibleApp,
   } = useGlobal({
     dispatch,
   });
@@ -104,7 +112,6 @@ export function AppContextProvider({ children }: AppProviderProps) {
   });
 
   const logger = useRef(new LoggerService());
-  const crowdBibleApp = useRef<AppDto | null>(null);
 
   useEffect(() => {
     window.addEventListener('offline', () => {
@@ -118,12 +125,17 @@ export function AppContextProvider({ children }: AppProviderProps) {
   useEffect(() => {
     if (state.global.singletons) {
       state.global.singletons.documentService
-        .getApp('crowd.Bible')
+        .createOrFindApp('crowd.Bible', 'ETEN Lab', {
+          lang: {
+            tag: 'en',
+            descriptions: ['English'],
+          },
+        })
         .then((app) => {
-          crowdBibleApp.current = app;
+          setCrowdBibleApp(app);
         });
     }
-  }, [state.global.singletons]);
+  }, [state.global.singletons, setCrowdBibleApp]);
 
   useEffect(() => {
     setSingletons(null);
@@ -163,9 +175,10 @@ export function AppContextProvider({ children }: AppProviderProps) {
       clearModalCom,
       setSiteTextMap,
       changeAppLanguage,
+      addTempSiteTextItem,
+      clearTempSiteTexts,
     },
     logger: state?.global?.singletons?.loggerService || logger.current,
-    crowdBibleApp: crowdBibleApp.current,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

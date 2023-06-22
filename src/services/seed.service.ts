@@ -9,9 +9,9 @@ import {
   RelationshipPropertyValueRepository,
 } from '@eten-lab/core';
 import { LoggerService } from '@eten-lab/core';
-import { DocumentService } from './document.service';
 
 const DATA_SEEDED = 'DATA_SEEDED';
+
 export class SeedService {
   private get dataSeeded() {
     return localStorage.getItem(DATA_SEEDED) === 'true';
@@ -29,7 +29,6 @@ export class SeedService {
     private readonly relationshipTypeRepository: RelationshipTypeRepository,
     private readonly relationshipPropertyKeyRepository: RelationshipPropertyKeyRepository,
     private readonly relationshipPropertyValueRepository: RelationshipPropertyValueRepository,
-    private readonly documentRepository: DocumentService,
     private readonly logger: LoggerService,
   ) {
     this.init();
@@ -39,16 +38,6 @@ export class SeedService {
     try {
       if (this.dataSeeded) return;
       this.logger.info('*** data seeding started ***');
-
-      // create seed app
-      await this.documentRepository.createOrFindApp('crowd.Bible', 'ETEN Lab', {
-        lang: {
-          tag: 'en',
-          descriptions: ['English'],
-        },
-      });
-
-      console.log('created crowd.Bible');
 
       this.logger.info('*** data seeding completed ***');
       this.dataSeeded = true;

@@ -7,6 +7,7 @@ import {
   UserRoles,
 } from '@/constants/common.constant';
 import { LanguageInfo } from '@eten-lab/ui-kit';
+import { AppDto } from '@/dtos/document.dto';
 
 export type FeedbackType =
   | FeedbackTypes.SUCCESS
@@ -41,20 +42,35 @@ export interface IMode {
   beta: boolean;
 }
 
+export interface TempSiteTextItem {
+  appId: Nanoid;
+  siteText: string;
+  definition: string;
+  languageInfo: LanguageInfo;
+}
+
+export interface Loading {
+  message?: string;
+  status?: string;
+  isCancelButton?: boolean;
+}
+
 export interface StateType {
   user: IUser | null;
   mode: IMode;
   snack: SnackType;
   prefersColorScheme?: ColorThemes.LIGHT | ColorThemes.DARK;
-  loading: boolean;
+  loading?: Loading;
   connectivity: boolean;
   isNewDiscussion: boolean;
   isNewNotification: boolean;
   translatedMap: TranslatedMap;
   singletons: ISingletons | null;
   appLanguage: LanguageInfo;
+  crowdBibleApp: AppDto | null;
   isSqlPortalShown: boolean;
   siteTextMap: Record<string, { siteText: string; isTranslated: boolean }>;
+  tempSiteTexts: TempSiteTextItem[];
 }
 
 const initialSnack: SnackType = {
@@ -72,7 +88,6 @@ export const initialState: StateType = {
   snack: initialSnack,
   prefersColorScheme: undefined,
   connectivity: true,
-  loading: false,
   isNewDiscussion: false,
   isNewNotification: false,
   translatedMap: initialTranslatedMap,
@@ -83,8 +98,10 @@ export const initialState: StateType = {
       descriptions: ['English'],
     },
   },
+  crowdBibleApp: null,
   isSqlPortalShown: false,
   siteTextMap: {},
+  tempSiteTexts: [],
 };
 
 export function reducer(
@@ -163,7 +180,7 @@ export function reducer(
     case actions.SET_LOGING_STATE: {
       return {
         ...prevState,
-        loading: action.payload as boolean,
+        loading: action.payload as Loading | undefined,
       };
     }
     case actions.SET_SINGLETONS: {
@@ -191,6 +208,38 @@ export function reducer(
           string,
           { siteText: string; isTranslated: boolean }
         >,
+      };
+    }
+    case actions.ADD_TEMP_SITE_TEXTS: {
+      const item = action.payload as TempSiteTextItem;
+
+      if (
+        prevState.tempSiteTexts.find(
+          (data) =>
+            data.appId === item.appId && data.siteText === item.siteText,
+        ) ||
+        prevState.siteTextMap[item.siteText]
+      ) {
+        return {
+          ...prevState,
+        };
+      } else {
+        return {
+          ...prevState,
+          tempSiteTexts: [...prevState.tempSiteTexts, item],
+        };
+      }
+    }
+    case actions.CLEAR_TEMP_SITE_TEXTS: {
+      return {
+        ...prevState,
+        tempSiteTexts: [],
+      };
+    }
+    case actions.SET_CROWD_BIBLE_APP: {
+      return {
+        ...prevState,
+        crowdBibleApp: action.payload as AppDto,
       };
     }
     default: {
