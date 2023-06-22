@@ -1,13 +1,14 @@
-import { useHistory } from 'react-router-dom';
-import { CrowdBibleUI, PlusButton } from '@eten-lab/ui-kit';
+import { useHistory, useParams } from 'react-router-dom';
+import { CrowdBibleUI, FilterButton, PlusButton } from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
 import { RouteConst } from '@/constants/route.constant';
 
 const { ButtonList, HeadBox } = CrowdBibleUI;
 
-export function ApplicationsPage() {
+export function OrganizationUsersPage() {
   const history = useHistory();
+  const { orgId } = useParams<{ orgId: string }>();
 
   const handleClickBackBtn = () => {
     history.goBack();
@@ -15,20 +16,24 @@ export function ApplicationsPage() {
 
   const handleClickItem = (value: string) => {};
 
-  const handleAddApp = () => {
-    history.push(`${RouteConst.ADMIN}/create-application`);
-  };
-
   const handleSearch = () => {};
+
+  const handleFilter = () => {
+    history.push(`${RouteConst.ADMIN}/filter`);
+  };
 
   const items = [
     {
-      label: 'Application Name 1',
-      value: 'Application Name 1',
+      label: 'michael@test.com',
+      value: 'michael@test.com',
     },
     {
-      label: 'Application Name 2',
-      value: 'Application Name 2',
+      label: 'hiroshi@test.com',
+      value: 'hiroshi@test.com',
+    },
+    {
+      label: 'takeshi@test.com',
+      value: 'takeshi@test.com',
     },
   ];
 
@@ -36,22 +41,23 @@ export function ApplicationsPage() {
     <PageLayout>
       <HeadBox
         back={{ action: handleClickBackBtn }}
-        title="Applications"
+        title={orgId}
         search={{
           onChange: handleSearch,
-          placeHolder: 'Find applications',
+          placeHolder: 'Find users',
           value: '',
         }}
       />
       <br />
       <ButtonList
-        label="List of Applications"
+        label="List of Users"
         withUnderline={true}
         items={items}
         onClick={handleClickItem}
         toolBtnGroup={
           <>
-            <PlusButton variant="primary" onClick={handleAddApp} />
+            <FilterButton variant="secondary" onClick={handleFilter} />
+            <PlusButton variant="primary" onClick={() => {}} />
           </>
         }
       />

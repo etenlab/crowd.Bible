@@ -51,7 +51,7 @@ export function EditRolePage() {
 
   return (
     <PageLayout>
-      <HeadBox title="assign new role" />
+      <HeadBox title="Edit Role" />
       <Stack sx={{ padding: '20px' }} gap="30px">
         <Stack gap="12px">
           <Input

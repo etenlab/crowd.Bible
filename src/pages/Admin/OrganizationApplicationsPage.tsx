@@ -1,13 +1,18 @@
-import { useHistory } from 'react-router-dom';
-import { CrowdBibleUI, PlusButton } from '@eten-lab/ui-kit';
+import { useHistory, useParams } from 'react-router-dom';
+import {
+  CrowdBibleUI,
+  PlusButton,
+  //  FilterButton
+} from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
 import { RouteConst } from '@/constants/route.constant';
 
 const { ButtonList, HeadBox } = CrowdBibleUI;
 
-export function ApplicationsPage() {
+export function OrganizationApplicationsPage() {
   const history = useHistory();
+  const { orgId } = useParams<{ orgId: string }>();
 
   const handleClickBackBtn = () => {
     history.goBack();
@@ -15,11 +20,17 @@ export function ApplicationsPage() {
 
   const handleClickItem = (value: string) => {};
 
-  const handleAddApp = () => {
-    history.push(`${RouteConst.ADMIN}/create-application`);
-  };
-
   const handleSearch = () => {};
+
+  // const handleFilter = () => {
+  //   history.push(`${RouteConst.ADMIN}/filter`);
+  // };
+
+  const handleAddOrg = () => {
+    history.push(
+      `${RouteConst.ADMIN}/organization/${orgId}/create-application`,
+    );
+  };
 
   const items = [
     {
@@ -30,16 +41,20 @@ export function ApplicationsPage() {
       label: 'Application Name 2',
       value: 'Application Name 2',
     },
+    {
+      label: 'Application Name 3',
+      value: 'Application Name 3',
+    },
   ];
 
   return (
     <PageLayout>
       <HeadBox
         back={{ action: handleClickBackBtn }}
-        title="Applications"
+        title={orgId}
         search={{
           onChange: handleSearch,
-          placeHolder: 'Find applications',
+          placeHolder: 'Find users',
           value: '',
         }}
       />
@@ -51,7 +66,8 @@ export function ApplicationsPage() {
         onClick={handleClickItem}
         toolBtnGroup={
           <>
-            <PlusButton variant="primary" onClick={handleAddApp} />
+            {/* <FilterButton variant="secondary" onClick={handleFilter} /> */}
+            <PlusButton variant="primary" onClick={handleAddOrg} />
           </>
         }
       />
