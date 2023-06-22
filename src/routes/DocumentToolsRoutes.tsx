@@ -1,5 +1,5 @@
 import { DocumentsListPage } from '@/pages/DocumentTools/DocumentsListPage';
-import { DocumentViewerPage } from '@/pages/DocumentTools/documentViewerPage';
+import { DocumentViewerPage } from '@/pages/DocumentTools/DocumentViewerPage';
 import { NewDocumentAddPage } from '@/pages/DocumentTools/NewDocumentAddPage';
 
 import { TranslationDocumentListPage } from '@/pages/DocumentTools/TranslationDocumentListPage';

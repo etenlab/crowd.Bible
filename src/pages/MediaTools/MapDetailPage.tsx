@@ -1,15 +1,21 @@
-import { IonChip, useIonRouter } from '@ionic/react';
-
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
-import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
-import { WordMapper } from '@/mappers/word.mapper';
+import { useParams } from 'react-router';
+import { IonChip, useIonRouter } from '@ionic/react';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+
+import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
+
 import { useMapTranslationTools } from '@/hooks/useMapTranslationTools';
-import { RouteConst } from '@/constants/route.constant';
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
+import { WordMapper } from '@/mappers/word.mapper';
+
+import { RouteConst } from '@/constants/route.constant';
 import { FeedbackTypes } from '@/constants/common.constant';
+
 import { MapDto } from '@/dtos/map.dto';
+
 import { PageLayout } from '@/components/Layout';
 
 const { TitleWithIcon } = CrowdBibleUI;
@@ -25,6 +31,7 @@ export const MapDetailPage = () => {
     actions: { setLoadingState, alertFeedback },
     logger,
   } = useAppContext();
+  const { tr } = useTr();
 
   const router = useIonRouter();
   const { id } = useParams<{ id: string }>();
@@ -122,7 +129,7 @@ export const MapDetailPage = () => {
       </Box>
       <Box flex={'row'} flexWrap={'wrap'} padding={'20px'}>
         <Typography variant={'caption'} fontWeight={600}>
-          Total Words: ({mapDetail?.words?.length})
+          {tr('Total Words:')} ({mapDetail?.words?.length})
         </Typography>
         {mapDetail?.words?.map((w) => (
           <IonChip key={w.id}>{w.word}</IonChip>

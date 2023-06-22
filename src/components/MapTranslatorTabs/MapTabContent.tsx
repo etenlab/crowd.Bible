@@ -12,7 +12,7 @@ import {
 } from './StyledComponents';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 import {
   MapDetail,
@@ -43,7 +43,7 @@ export const MapTabContent = () => {
     actions: { alertFeedback },
     logger,
   } = useAppContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const [mapList, setMapList] = useState<MapDetail[]>([]);
   const [langInfo, setLangInfo] = useState<LanguageInfo | undefined>();

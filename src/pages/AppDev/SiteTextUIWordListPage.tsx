@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, MuiMaterial, Button } from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
 
@@ -9,6 +9,7 @@ import { RouteConst } from '@/constants/route.constant';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 const { HeadBox, ButtonList } = CrowdBibleUI;
 const { Stack, Chip } = MuiMaterial;
@@ -19,19 +20,17 @@ export function SiteTextUIWordListPage() {
   const history = useHistory();
   const {
     states: {
-      global: { singletons, siteTextMap },
+      global: { singletons, siteTextMap, crowdBibleApp, tempSiteTexts },
     },
-    crowdBibleApp,
   } = useAppContext();
-  const { loadSiteTextMap, tr } = useSiteText();
+  const { loadSiteTextMap, saveTempSiteTexts } = useSiteText();
+  const { tr } = useTr();
 
   const [searchStr, setSearchStr] = useState<string>('');
 
-  console.log(singletons, crowdBibleApp);
   // Fetch Mock App Info from db
   useEffect(() => {
     if (singletons && crowdBibleApp) {
-      console.log('loadSiteTextMap ===>', singletons, crowdBibleApp);
       loadSiteTextMap();
     }
   }, [loadSiteTextMap, singletons, crowdBibleApp]);
@@ -45,6 +44,10 @@ export function SiteTextUIWordListPage() {
   };
 
   const handleClickItem = (_siteTextId: string) => {};
+
+  const handleClickTempSiteTextLoadingBtn = () => {
+    saveTempSiteTexts();
+  };
 
   const items: ButtonListItemType[] = useMemo(() => {
     const keys = Object.keys(siteTextMap);
@@ -98,7 +101,15 @@ export function SiteTextUIWordListPage() {
           action: handleClickBackBtn,
         }}
       />
-      <Stack gap="16px">
+      <Stack gap="16px" sx={{ marginTop: '20px' }}>
+        <Button
+          variant="contained"
+          sx={{ margin: '0px 20px' }}
+          disabled={tempSiteTexts.length === 0}
+          onClick={handleClickTempSiteTextLoadingBtn}
+        >
+          {`${tr('Load Temp Site Text')} (${tempSiteTexts.length})`}
+        </Button>
         <ButtonList
           label={tr('List of site text')}
           withUnderline={true}

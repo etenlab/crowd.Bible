@@ -14,7 +14,7 @@ import { Link } from '@/components/Link';
 
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 import { WordSequenceDto } from '@/dtos/word-sequence.dto';
 import { RouteConst } from '@/constants/route.constant';
@@ -40,7 +40,7 @@ export function TranslationEditor({
 }: TranslationEditorProps) {
   const history = useHistory();
   const { getColor } = useColorModeContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const { createSubWordSequence } = useWordSequence();
   const { createOrFindWordSequenceTranslation } = useTranslation();

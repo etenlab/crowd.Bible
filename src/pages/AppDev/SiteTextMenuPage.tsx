@@ -13,14 +13,14 @@ import { RouteConst } from '@/constants/route.constant';
 
 import { CardGroup } from '@/components/CardGroup';
 
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 const { Stack } = MuiMaterial;
 const { TitleWithIcon } = CrowdBibleUI;
 
 export function SiteTextMenuPage() {
   const history = useHistory();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const cardGroup = {
     group: tr('Application Development Tools'),

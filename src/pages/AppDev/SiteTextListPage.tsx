@@ -11,6 +11,7 @@ import {
 import { RouteConst } from '@/constants/route.constant';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
 import { useSiteText } from '@/hooks/useSiteText';
 import { useDocument } from '@/hooks/useDocument';
 
@@ -39,7 +40,7 @@ export function SiteTextListPage() {
   } = useAppContext();
   const { getTranslatedSiteTextListByAppId } = useSiteText();
   const { getAppById } = useDocument();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const [searchStr, setSearchStr] = useState<string>('');
   const [siteTextList, setSiteTextList] = useState<TranslatedSiteTextDto[]>([]);

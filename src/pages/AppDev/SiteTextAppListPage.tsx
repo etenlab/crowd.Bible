@@ -15,7 +15,7 @@ import { AppDto } from '@/dtos/document.dto';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useDocument } from '@/hooks/useDocument';
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 import { compareLangInfo } from '@/utils/langUtils';
 import { RouteConst } from '@/constants/route.constant';
@@ -36,7 +36,7 @@ export function SiteTextAppListPage() {
     },
     actions: { setSourceLanguage, setTargetLanguage, setLoadingState },
   } = useAppContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const { listApp, listAppByLanguageInfo } = useDocument();
 

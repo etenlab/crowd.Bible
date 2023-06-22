@@ -20,6 +20,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useDocument } from '@/hooks/useDocument';
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useTr } from '@/hooks/useTr';
 
 import { compareLangInfo } from '@/utils/langUtils';
 
@@ -39,6 +40,7 @@ export function TranslationDocumentListPage() {
     },
     actions: { setSourceLanguage, setTargetLanguage, setLoadingState },
   } = useAppContext();
+  const { tr } = useTr();
 
   const { listDocument } = useDocument();
   const { getWordSequenceByDocumentId } = useWordSequence();
@@ -89,7 +91,7 @@ export function TranslationDocumentListPage() {
           endIcon: !recommendedId && (
             <Chip
               component="span"
-              label="Not translated"
+              label={tr('Not translated')}
               variant="outlined"
               color="error"
               size="small"
@@ -103,6 +105,7 @@ export function TranslationDocumentListPage() {
       setItems(items);
     })();
   }, [
+    tr,
     documents,
     sourceLanguage,
     getWordSequenceByDocumentId,
@@ -144,19 +147,19 @@ export function TranslationDocumentListPage() {
   const langSelectorCom = filterOpen ? (
     <Stack gap="30px" sx={{ padding: '20px' }}>
       <LangSelector
-        label="Select the source language"
+        label={tr('Select the source language')}
         selected={sourceLanguage || undefined}
         onChange={handleSetSourceLanguage}
         setLoadingState={setLoadingState}
       />
       <LangSelector
-        label="Select the target language"
+        label={tr('Select the target language')}
         selected={targetLanguage || undefined}
         onChange={handleSetTargetLanguage}
         setLoadingState={setLoadingState}
       />
       <Button variant="contained" onClick={handleClickSearchButton}>
-        Search
+        {tr('Search')}
       </Button>
     </Stack>
   ) : null;
@@ -165,11 +168,11 @@ export function TranslationDocumentListPage() {
     <Stack gap="16px">
       <LanguageStatusBar />
       <ButtonList
-        label="List of Docs"
+        label={tr('List of Docs')}
         search={{
           value: searchStr,
           onChange: handleChangeSearchStr,
-          placeHolder: 'Input Search Word...',
+          placeHolder: tr('Input Search Word...'),
         }}
         withUnderline={true}
         items={items}
@@ -181,7 +184,7 @@ export function TranslationDocumentListPage() {
   return (
     <PageLayout>
       <HeadBox
-        title="Documents"
+        title={tr('Documents')}
         filter={{
           onClick: handleClickLanguageFilter,
         }}

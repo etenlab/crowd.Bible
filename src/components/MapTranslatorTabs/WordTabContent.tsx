@@ -25,7 +25,7 @@ import {
 } from '@/utils/langUtils';
 import { WordMapper } from '@/mappers/word.mapper';
 import { useAppContext } from '@/hooks/useAppContext';
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 const { Box, Divider, Stack } = MuiMaterial;
 
@@ -41,7 +41,7 @@ export const WordTabContent = () => {
       global: { singletons },
     },
   } = useAppContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const [words, setWords] = useState<Item[]>([]);
   const [sourceLangInfo, setSourceLangInfo] = useState<LanguageInfo>();

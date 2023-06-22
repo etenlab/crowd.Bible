@@ -1,9 +1,12 @@
 import { useEffect, useReducer, useState } from 'react';
-import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
-import { useGlobal } from '@/src/hooks/useGlobal';
-import { initialState, reducer } from '@/src/reducers';
 import { useHistory, useParams } from 'react-router';
-import { useAppContext } from '@/src/hooks/useAppContext';
+
+import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
+import { initialState, reducer } from '@/src/reducers';
+
+import { useGlobal } from '@/hooks/useGlobal';
+import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
 
 import { PageLayout } from '@/components/Layout';
 
@@ -17,6 +20,7 @@ export function NodeDetailsPage() {
     },
     logger,
   } = useAppContext();
+  const { tr } = useTr();
   const [, dispatch] = useReducer(reducer, initialState);
   const { setLoadingState } = useGlobal({ dispatch });
   const history = useHistory();
@@ -142,7 +146,7 @@ export function NodeDetailsPage() {
         sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto', gap: '16px' }}
       >
         <TitleWithIcon
-          label="Graph Viewer"
+          label={tr('Graph Viewer')}
           withBackIcon
           withCloseIcon={false}
           onClose={() => {}}

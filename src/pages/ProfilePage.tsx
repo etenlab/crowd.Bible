@@ -1,5 +1,9 @@
-import { decodeToken, isTokenValid } from '@/utils/AuthUtils';
+import { useState } from 'react';
 import { gql, useApolloClient } from '@apollo/client';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
+
+import { decodeToken, isTokenValid } from '@/utils/AuthUtils';
 import {
   Button,
   Input,
@@ -7,10 +11,10 @@ import {
   PasswordInput,
   Typography,
 } from '@eten-lab/ui-kit';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { useState } from 'react';
+
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
 import { USER_TOKEN_KEY } from '@/constants/common.constant';
 
 import { PageLayout } from '@/components/Layout';
@@ -38,12 +42,7 @@ export function ProfilePage() {
     logger,
     actions: { alertFeedback },
   } = useAppContext();
-  const [show, setShow] = useState<boolean>(false);
-  const userToken = localStorage.getItem(USER_TOKEN_KEY);
-  const apolloClient = useApolloClient();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const token: any = decodeToken(userToken!);
-
+  const { tr } = useTr();
   const formik = useFormik<{
     password: string;
     passwordConfirm: string;
@@ -73,6 +72,12 @@ export function ProfilePage() {
     },
   });
 
+  const [show, setShow] = useState<boolean>(false);
+  const userToken = localStorage.getItem(USER_TOKEN_KEY);
+  const apolloClient = useApolloClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const token: any = decodeToken(userToken!);
+
   const handleToggleShow = () => {
     setShow((show) => !show);
   };
@@ -87,7 +92,7 @@ export function ProfilePage() {
   if (!isTokenValid(token)) {
     return (
       <PageLayout>
-        <h3>Token not valid</h3>
+        <h3>{tr('Token not valid')}</h3>
       </PageLayout>
     );
   }
@@ -110,10 +115,10 @@ export function ProfilePage() {
           color="text.dark"
           sx={{ marginBottom: '18px' }}
         >
-          My Profile
+          {tr('My Profile')}
         </Typography>
         <Typography variant="h6" sx={{ color: '#5C6673', marginBottom: '5px' }}>
-          EMAIL
+          {tr('EMAIL')}
         </Typography>
 
         <Input
@@ -125,12 +130,12 @@ export function ProfilePage() {
           disabled
         />
         <Typography variant="h6" sx={{ color: '#5C6673', margin: '5px 0px' }}>
-          PASSWORD
+          {tr('PASSWORD')}
         </Typography>
         <PasswordInput
           id="password"
           name="password"
-          label="Password"
+          label={tr('Password')}
           onChange={formik.handleChange}
           onClickShowIcon={handleToggleShow}
           show={show}
@@ -145,7 +150,7 @@ export function ProfilePage() {
         <PasswordInput
           id="passwordConfirm"
           name="passwordConfirm"
-          label="Repeat Password"
+          label={tr('Repeat Password')}
           onChange={formik.handleChange}
           onClickShowIcon={handleToggleShow}
           show={show}
@@ -166,7 +171,7 @@ export function ProfilePage() {
           onClick={handleSave}
           disabled={!formik.isValid}
         >
-          Save
+          {tr('Save')}
         </Button>
       </Box>
     </PageLayout>
