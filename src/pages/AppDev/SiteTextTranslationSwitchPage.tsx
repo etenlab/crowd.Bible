@@ -7,6 +7,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useSiteText } from '@/hooks/useSiteText';
 import { useDocument } from '@/hooks/useDocument';
 import { useVote } from '@/hooks/useVote';
+import { useTr } from '@/hooks/useTr';
 
 import { DescriptionList, DescriptionItem } from '@/components/DescriptionList';
 
@@ -42,8 +43,8 @@ export function SiteTextTranslationSwitchPage() {
     getTranslationListBySiteTextRel,
     getSiteTextTranslationDtoWithRel,
     getOriginalAndTranslatedRelFromSiteTextTranslationDto,
-    tr,
   } = useSiteText();
+  const { tr } = useTr();
   const { getAppById } = useDocument();
   const { getVotesStats, toggleVote } = useVote();
 

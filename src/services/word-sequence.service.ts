@@ -63,10 +63,11 @@ export class WordSequenceService {
       const words = text.split(' ');
 
       for (const [i, word] of words.entries()) {
-        const new_word_id = await this.wordService.createWordOrPhraseWithLang(
-          word,
-          languageInfo,
-        );
+        const new_word_id =
+          await this.wordService.createOrFindWordOrPhraseWithLang(
+            word,
+            languageInfo,
+          );
         await this.graphSecondLayerService.createRelationshipFromObject(
           RelationshipTypeConst.WORD_SEQUENCE_TO_WORD,
           { position: i + 1 },

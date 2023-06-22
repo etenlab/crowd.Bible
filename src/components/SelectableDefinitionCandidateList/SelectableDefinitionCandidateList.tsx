@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, memo } from 'react';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useDefinition } from '@/hooks/useDefinition';
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 import { VotableContent } from '@/dtos/votable-item.dto';
 
@@ -31,7 +31,7 @@ function SelectableDefinitionCandidateListPure({
       global: { singletons },
     },
   } = useAppContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
   const { getDefinitionsAsVotableContentByWord } = useDefinition();
 
   const [definitionVotableContent, setDefintionVotableContent] = useState<

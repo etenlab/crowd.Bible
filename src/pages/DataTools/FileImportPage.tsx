@@ -1,4 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
+import JSZip from 'jszip';
+
 import {
   CrowdBibleUI,
   MuiMaterial,
@@ -9,9 +11,11 @@ import {
   FadeSpinner,
   IconBox,
 } from '@eten-lab/ui-kit';
+
 import { NodeTypeConst } from '@eten-lab/core';
+
 import { useAppContext } from '@/hooks/useAppContext';
-import JSZip from 'jszip';
+import { useTr } from '@/hooks/useTr';
 
 import { PageLayout } from '@/components/Layout';
 
@@ -28,6 +32,8 @@ export function FileImportPage() {
     },
     logger,
   } = useAppContext();
+  const { tr } = useTr();
+
   const downloadRef = useRef<HTMLAnchorElement>(null);
   const importRef = useRef<HTMLInputElement>(null);
   const [langInfo, setLangInfo] = useState<LanguageInfo>();
@@ -86,7 +92,7 @@ export function FileImportPage() {
       }
       if (langInfo) {
         for (const [index, word] of words.entries()) {
-          await singletons?.wordService.createWordOrPhraseWithLang(
+          await singletons?.wordService.createOrFindWordOrPhraseWithLang(
             word,
             langInfo,
             NodeTypeConst.WORD,
@@ -110,7 +116,7 @@ export function FileImportPage() {
         >
           <Stack sx={{ padding: '20px', overflowY: 'auto' }}>
             <LabelWithIcon
-              label="File import"
+              label={tr('File import')}
               // icon={<FiX />}
               color="gray"
               onClick={() => {}}
@@ -122,12 +128,12 @@ export function FileImportPage() {
             sx={{ paddingX: '20px', overflowY: 'auto', flexGrow: 1 }}
           >
             <LangSelector
-              label="Select the source language"
+              label={tr('Select the source language')}
               onChange={handleLangChange}
               selected={langInfo}
             />
             <Input
-              placeholder="File URL..."
+              placeholder={tr('File URL...')}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setDownloadLink(e.target.value);
               }}
@@ -139,7 +145,7 @@ export function FileImportPage() {
               color={'dark'}
               variant="contained"
             >
-              Download
+              {tr('Download')}
             </Button>
             <Link href={downloadLink} hidden ref={downloadRef} />
             <Button
@@ -149,7 +155,7 @@ export function FileImportPage() {
               color={'dark'}
               variant="contained"
             >
-              Import
+              {tr('Import')}
             </Button>
             <Input
               type={'file'}
@@ -167,7 +173,7 @@ export function FileImportPage() {
     return (
       <PageLayout>
         <Stack sx={{ pt: '25vh' }}>
-          <IconBox isSuccess text="Process completed successfully!" />
+          <IconBox isSuccess text={tr('Process completed successfully!')} />
         </Stack>
       </PageLayout>
     );
@@ -177,7 +183,7 @@ export function FileImportPage() {
     return (
       <PageLayout>
         <Stack sx={{ pt: '25vh' }}>
-          <IconBox isSuccess text="Oops... something went wrong!" />
+          <IconBox isSuccess text={tr('Oops... something went wrong!')} />
         </Stack>
       </PageLayout>
     );

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { FeedbackTypes } from '@/constants/common.constant';
@@ -16,7 +16,7 @@ export function FeedbackInput() {
   const {
     actions: { alertFeedback },
   } = useAppContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const [optionalFeedback, setOptionalFeedback] = useState<string>('');
 

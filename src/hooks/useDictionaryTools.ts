@@ -53,17 +53,19 @@ export function useDictionaryTools(
 
         switch (type) {
           case NodeTypeConst.WORD:
-            itemId = await singletons.wordService.createWordOrPhraseWithLang(
-              itemText,
-              languageInfo,
-            );
+            itemId =
+              await singletons.wordService.createOrFindWordOrPhraseWithLang(
+                itemText,
+                languageInfo,
+              );
             break;
           case NodeTypeConst.PHRASE:
-            itemId = await singletons.wordService.createWordOrPhraseWithLang(
-              itemText,
-              languageInfo,
-              NodeTypeConst.PHRASE,
-            );
+            itemId =
+              await singletons.wordService.createOrFindWordOrPhraseWithLang(
+                itemText,
+                languageInfo,
+                NodeTypeConst.PHRASE,
+              );
             break;
           default:
             alertFeedback(
@@ -219,6 +221,9 @@ export function useDictionaryTools(
     ],
   );
 
+  /**
+   * @deprecated due to immutability of the graph
+   */
   const changeDefinitionValue = useCallback(
     async (
       items: VotableItem[],

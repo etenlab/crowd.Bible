@@ -9,6 +9,8 @@ import {
   useColorModeContext,
 } from '@eten-lab/ui-kit';
 
+import { useTr } from '@/hooks/useTr';
+
 import { mockDocument } from './ReaderQAPage';
 import { RouteConst } from '@/constants/route.constant';
 
@@ -20,6 +22,8 @@ const { Stack, Backdrop } = MuiMaterial;
 export function FeedbackPage() {
   const { getColor } = useColorModeContext();
   const history = useHistory();
+  const { tr } = useTr();
+
   const [openedKindSelectionBox, setOpenedKindSelectionBox] =
     useState<boolean>(false);
 
@@ -50,7 +54,7 @@ export function FeedbackPage() {
     <PageLayout>
       <Stack sx={{ padding: '20px' }}>
         <LabelWithIcon
-          label="translation"
+          label={tr('translation')}
           icon={<BiCommentAdd />}
           color="gray"
           onClick={handleClickPlus}
@@ -81,8 +85,8 @@ export function FeedbackPage() {
           }}
         >
           <KindSelectionBox
-            title="Leave Feedback"
-            label="Choose what you want to leave feedback for:"
+            title={tr('Leave Feedback')}
+            label={tr('Choose what you want to leave feedback for:')}
             onTextClick={handleTextClick}
             onChapterClick={handleChapterClick}
             onVerseClick={handleVerseClick}

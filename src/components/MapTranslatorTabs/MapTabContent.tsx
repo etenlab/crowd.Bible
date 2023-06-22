@@ -12,7 +12,7 @@ import {
 } from './StyledComponents';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 import {
   MapDetail,
@@ -43,7 +43,7 @@ export const MapTabContent = () => {
     actions: { alertFeedback },
     logger,
   } = useAppContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const [mapList, setMapList] = useState<MapDetail[]>([]);
   const [langInfo, setLangInfo] = useState<LanguageInfo | undefined>();
@@ -100,6 +100,8 @@ export const MapTabContent = () => {
               argMap.langInfo,
               mapId,
             );
+
+            // check in case if such a map was started uploading, and re-sarted from new window.
             const isExists = await singletons.mapService.doesExistMapWithProps([
               {
                 key: PropertyKeyConst.NAME,
@@ -111,7 +113,7 @@ export const MapTabContent = () => {
               },
             ]);
             if (!isExists) {
-              await singletons.graphSecondLayerService.addNewNodeProperties(
+              await singletons.graphSecondLayerService.addNewNodePropertiesNoChecks(
                 mapId,
                 {
                   [PropertyKeyConst.IS_PROCESSING_FINISHED]: true,
@@ -123,14 +125,10 @@ export const MapTabContent = () => {
               );
             } else {
               alertFeedback(
-                FeedbackTypes.SUCCESS,
+                FeedbackTypes.ERROR,
                 `Map file (name:${argMap.name}) already exists.`,
               );
             }
-            alertFeedback(
-              FeedbackTypes.SUCCESS,
-              `Map file (name:${argMap.name}) is uploaded.`,
-            );
           } else newState.status = eProcessStatus.FAILED;
         } catch (error) {
           newState.status = eProcessStatus.FAILED;

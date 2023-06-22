@@ -11,7 +11,7 @@ import {
 
 import { TableFromResponce } from './tools';
 
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 import { useAppContext } from '@/hooks/useAppContext';
 
 import { SQLRUNNER_LOCAL_FORAGE_KEY } from '@/constants/common.constant';
@@ -91,7 +91,7 @@ export function SqlRunner({
     },
     actions: { setSqlPortalShown },
   } = useAppContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const dbService = singletons?.dbService;
   const { getColor } = useColorModeContext();

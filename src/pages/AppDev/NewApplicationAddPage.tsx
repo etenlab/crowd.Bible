@@ -15,7 +15,7 @@ import {
 
 import { useDocument } from '@/hooks/useDocument';
 import { useAppContext } from '@/hooks/useAppContext';
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 import { RouteConst } from '@/constants/route.constant';
 import { FeedbackTypes } from '@/constants/common.constant';
@@ -32,7 +32,7 @@ export function NewApplicationAddPage() {
   const {
     actions: { setLoadingState, alertFeedback },
   } = useAppContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const [appName, setAppName] = useState<string>('');
   const [language, setLanguage] = useState<LanguageInfo>();

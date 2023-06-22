@@ -12,6 +12,7 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
 import { useSiteText } from '@/hooks/useSiteText';
 
 import { RouteConst } from '@/constants/route.constant';
@@ -33,7 +34,7 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
   const history = useHistory();
   const location = useLocation();
   const { setColorMode } = useColorModeContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const {
     states: {
@@ -183,14 +184,14 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
 function LanguageList() {
   const {
     states: {
-      global: { singletons },
+      global: { singletons, crowdBibleApp },
     },
     actions: { changeAppLanguage },
-    crowdBibleApp,
   } = useAppContext();
   const { getColor } = useColorModeContext();
 
-  const { getAppLanguageList, tr } = useSiteText();
+  const { getAppLanguageList } = useSiteText();
+  const { tr } = useTr();
 
   const [languageList, setLanguageList] = useState<LanguageInfo[]>([]);
 
@@ -222,6 +223,7 @@ function LanguageList() {
         maxHeight: '300px',
         padding: '20px 0',
         backgroundColor: getColor('light-blue'),
+        overflowY: 'auto',
       }}
     >
       <ButtonList
@@ -229,6 +231,7 @@ function LanguageList() {
         withUnderline
         items={items}
         onClick={handleClickItem}
+        subheaderBGColor={getColor('light-blue')}
       />
     </Box>
   );

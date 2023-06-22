@@ -18,7 +18,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useVote } from '@/hooks/useVote';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 import {
   WordSequenceDto,
@@ -79,7 +79,7 @@ function Translation({
       global: { singletons },
     },
   } = useAppContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const [translatedWordSequence, setTranslatedWordSequence] =
     useState<WordSequenceDto | null>(null);
@@ -176,7 +176,7 @@ export function TranslationList({
       global: { singletons },
     },
   } = useAppContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const [currentTab, setCurrentTab] = useState<TabState>(TabStates.ALL);
   const [translations, setTranslations] = useState<

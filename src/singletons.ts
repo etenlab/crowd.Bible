@@ -85,7 +85,8 @@ const _cache = new Map<DataSource, Promise<ISingletons>>();
 const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   const loggerService = new LoggerService();
   const ds = await dataSource.initialize();
-  const dbService = new DbService(ds);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const dbService = new DbService(ds as any);
 
   const syncSessionRepository = new SyncSessionRepository(dbService);
 
@@ -218,7 +219,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipTypeRepo,
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
-    documentService,
     loggerService,
   );
 

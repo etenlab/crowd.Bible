@@ -14,6 +14,9 @@ import {
   setSqlPortalShown as setSqlPortalShownAction,
   setSiteTextMap as setSiteTextMapAction,
   changeAppLanguage as changeAppLanguageAction,
+  addTempSiteTextItem as addTempSiteTextItemAction,
+  clearTempSiteTexts as clearTempSiteTextsAction,
+  setCrowdBibleApp as setCrowdBibleAppAction,
 } from '@/reducers/global.actions';
 
 import { type ActionType } from '@/reducers/index';
@@ -23,10 +26,12 @@ import {
   type IUser,
   type IMode,
   type PrefersColorSchemeType,
+  type TempSiteTextItem,
 } from '@/reducers/global.reducer';
 import { type ISingletons } from '@/src/singletons';
 
 import { LanguageInfo } from '@eten-lab/ui-kit';
+import { AppDto } from '@/dtos/document.dto';
 
 interface UseGlobalProps {
   dispatch: Dispatch<ActionType<unknown>>;
@@ -75,9 +80,19 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     dispatchRef.current.dispatch(logoutAction());
   }, []);
 
-  const setLoadingState = useCallback((state: boolean) => {
-    dispatchRef.current.dispatch(setLoadingStateAction(state));
-  }, []);
+  const setLoadingState = useCallback(
+    (
+      isLoading: boolean,
+      message?: string,
+      status?: string,
+      isCancelButton?: boolean,
+    ) => {
+      dispatchRef.current.dispatch(
+        setLoadingStateAction(isLoading, message, status, isCancelButton),
+      );
+    },
+    [],
+  );
 
   const setSingletons = useCallback((singletons: ISingletons | null) => {
     dispatchRef.current.dispatch(setSingletonsAction(singletons));
@@ -100,6 +115,18 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     dispatchRef.current.dispatch(changeAppLanguageAction(langInfo));
   }, []);
 
+  const addTempSiteTextItem = useCallback((item: TempSiteTextItem) => {
+    dispatchRef.current.dispatch(addTempSiteTextItemAction(item));
+  }, []);
+
+  const clearTempSiteTexts = useCallback(() => {
+    dispatchRef.current.dispatch(clearTempSiteTextsAction());
+  }, []);
+
+  const setCrowdBibleApp = useCallback((app: AppDto) => {
+    dispatchRef.current.dispatch(setCrowdBibleAppAction(app));
+  }, []);
+
   return {
     setRole,
     setUser,
@@ -114,5 +141,8 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     setSqlPortalShown,
     setSiteTextMap,
     changeAppLanguage,
+    addTempSiteTextItem,
+    clearTempSiteTexts,
+    setCrowdBibleApp,
   };
 }

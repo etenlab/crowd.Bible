@@ -9,6 +9,8 @@ import {
 } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
 import { IMode } from '@/reducers/global.reducer';
 import { RouteConst } from '@/constants/route.constant';
 
@@ -23,11 +25,6 @@ export const roles = [
   { value: 'reader', label: 'Reader Role' },
 ];
 
-export const connectivities = [
-  { value: 'online', label: 'Online' },
-  { value: 'offline', label: 'Offline' },
-];
-
 export function SettingsPage() {
   const history = useHistory();
   const {
@@ -36,6 +33,12 @@ export function SettingsPage() {
     },
     actions: { setMode, setConnectivity },
   } = useAppContext();
+  const { tr } = useTr();
+
+  const connectivities = [
+    { value: 'online', label: tr('Online') },
+    { value: 'offline', label: tr('Offline') },
+  ];
 
   const [selectedMode, setSelectedMode] = useState<IMode>({
     admin: true,
@@ -73,17 +76,17 @@ export function SettingsPage() {
     <PageLayout>
       <Stack sx={{ padding: '20px' }} gap="20px">
         <Typography variant="h2" color="text.dark">
-          Settings
+          {tr('Settings')}
         </Typography>
         <VerticalRadioList
-          label="Network"
+          label={tr('Network')}
           withUnderline={true}
           items={connectivities}
           value={connectivity ? 'online' : 'offline'}
           onChange={handleChangeConnectivity}
         />
         <FormGroup>
-          <FormLabel color="gray">Mode</FormLabel>
+          <FormLabel color="gray">{tr('Mode')}</FormLabel>
           <FormControlLabel
             control={
               <Switch
@@ -91,7 +94,7 @@ export function SettingsPage() {
                 onChange={handleChangeMode}
               />
             }
-            label="admin"
+            label={tr('admin')}
             name="admin"
             sx={{ padding: '12px 0' }}
           />
@@ -100,7 +103,7 @@ export function SettingsPage() {
             control={
               <Switch checked={selectedMode.beta} onChange={handleChangeMode} />
             }
-            label="Beta"
+            label={tr('Beta')}
             name="beta"
             sx={{ padding: '12px 0' }}
           />
@@ -112,7 +115,7 @@ export function SettingsPage() {
           onClick={handleClickSave}
           sx={{ marginBottom: '5px !important' }}
         >
-          Save
+          {tr('Save')}
         </Button>
       </Stack>
     </PageLayout>

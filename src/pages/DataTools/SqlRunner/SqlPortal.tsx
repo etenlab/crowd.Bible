@@ -13,7 +13,7 @@ import { Resizable } from 're-resizable';
 import { SqlRunner } from './SqlRunner';
 
 import { useAppContext } from '@/hooks/useAppContext';
-import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 const { Box } = MuiMaterial;
 
@@ -22,7 +22,7 @@ export function SqlPortal() {
     actions: { setSqlPortalShown },
   } = useAppContext();
   const { getColor } = useColorModeContext();
-  const { tr } = useSiteText();
+  const { tr } = useTr();
 
   const [dimensions, setDimensions] = useState({ w: 800, h: 600 });
 

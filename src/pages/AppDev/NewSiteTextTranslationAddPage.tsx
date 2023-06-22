@@ -12,6 +12,7 @@ import {
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 import { SiteTextTranslationDto, SiteTextDto } from '@/dtos/site-text.dto';
 
@@ -46,8 +47,8 @@ export function NewSiteTextTranslationAddPage() {
     createOrFindTranslation,
     getSiteTextTranslationDtoWithRel,
     getSiteTextDtoWithRel,
-    tr,
   } = useSiteText();
+  const { tr } = useTr();
 
   const [originalSiteText, setOriginalSiteText] = useState<SiteTextDto | null>(
     null,

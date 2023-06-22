@@ -16,6 +16,7 @@ import { Link } from '@/components/Link';
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useAppContext } from '@/hooks/useAppContext';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useTr } from '@/hooks/useTr';
 
 import { WordSequenceDto, SubWordSequenceDto } from '@/dtos/word-sequence.dto';
 
@@ -35,9 +36,8 @@ export function TranslationPage() {
     getWordSequenceById,
     listSubWordSequenceByWordSequenceId,
   } = useWordSequence();
-
+  const { tr } = useTr();
   const { getRecommendedWordSequenceTranslation } = useTranslation();
-
   const {
     states: {
       global: { singletons },
@@ -141,7 +141,7 @@ export function TranslationPage() {
             opacity: 0.5,
           }}
         >
-          Original
+          {tr('Original')}
         </Typography>
         <DotsText
           text={origin.text}
@@ -157,7 +157,7 @@ export function TranslationPage() {
             fullWidth
             sx={{ margin: '10px 0' }}
           >
-            Add My Translation
+            {tr('Add My Translation')}
           </Button>
         </Link>
 
@@ -170,7 +170,7 @@ export function TranslationPage() {
             endIcon
             disabled={true}
           >
-            Go To Translation List
+            {tr('Go To Translation List')}
           </Button>
         </Link>
       </Stack>

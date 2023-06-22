@@ -9,8 +9,11 @@ import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
 import { useCallback, useEffect, useState } from 'react';
 import { VotableItem } from '@/dtos/votable-item.dto';
-import { useAppContext } from '@/src/hooks/useAppContext';
-import { useDictionaryTools } from '@/src/hooks/useDictionaryTools';
+
+import { useAppContext } from '@/hooks/useAppContext';
+import { useDictionaryTools } from '@/hooks/useDictionaryTools';
+import { useTr } from '@/hooks/useTr';
+
 import { NodeTypeConst } from '@/constants/graph.constant';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import {
@@ -110,10 +113,11 @@ export function PhraseBookPage() {
     actions: { setLoadingState, alertFeedback },
     logger,
   } = useAppContext();
-
   const [selectedPhrase, setSelectedPhrase] = useState<VotableItem | null>(
     null,
   );
+  const { tr } = useTr();
+
   const [isDialogOpened, setIsDialogOpened] = useState(false);
   const definitionService = singletons?.definitionService;
   const [phrases, setPhrases] = useState<VotableItem[]>([]);
@@ -239,7 +243,7 @@ export function PhraseBookPage() {
                 onBack={() => {}}
                 withBackIcon={false}
                 withCloseIcon={false}
-                label="Phrase book editor"
+                label={tr('Phrase book editor')}
               ></TitleWithIcon>
             </Box>
           </Box>
@@ -259,7 +263,7 @@ export function PhraseBookPage() {
             >
               <Box flex={3}>
                 <Typography variant="subtitle1" color={'text.gray'}>
-                  Phrases
+                  {tr('Phrases')}
                 </Typography>
               </Box>
               <Box flex={1} width={1} minWidth={'140px'}>
@@ -269,7 +273,7 @@ export function PhraseBookPage() {
                   fullWidth
                   onClick={handleAddPhraseButtonClick}
                 >
-                  New Phrase
+                  {tr('New Phrase')}
                 </Button>
               </Box>
             </Box>
@@ -286,7 +290,7 @@ export function PhraseBookPage() {
             ></ItemsClickableList>
           </Box>
           <SimpleFormDialog
-            title={'Enter new Phrase'}
+            title={tr('Enter new Phrase')}
             isOpened={isDialogOpened}
             handleCancel={() => setIsDialogOpened(false)}
             handleOk={addPhrase}
@@ -303,10 +307,11 @@ export function PhraseBookPage() {
           <ItemContentListEdit
             item={selectedPhrase}
             onBack={() => setSelectedPhrase(null as unknown as VotableItem)}
-            buttonText="New Definition"
+            buttonText={tr('New Definition')}
             changeContentValue={changePhraseDefinition}
             changeContentVotes={changePhraseDefinitionVotes}
             addContent={addDefinitionToPhrase}
+            isAddable={true}
           />
         </Box>
       )}

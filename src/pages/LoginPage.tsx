@@ -15,6 +15,8 @@ import { Link } from '@/components/Link';
 
 import { useFormik } from 'formik';
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
 import * as Yup from 'yup';
 
 import { decodeToken } from '@/utils/AuthUtils';
@@ -35,11 +37,13 @@ const validationSchema = Yup.object().shape({
 });
 
 export function LoginPage() {
+  const history = useHistory();
   const kcClient = useKeycloakClient();
+  const { tr } = useTr();
+
   const [show, setShow] = useState<boolean>(false);
   const [userToken, setUserToken] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const history = useHistory();
 
   const {
     actions: { setUser },
@@ -118,7 +122,7 @@ export function LoginPage() {
             color="text.dark"
             sx={{ textTransform: 'none', px: '20px' }}
           >
-            crowd.Bible
+            {tr('crowd.Bible')}
           </Typography>
         </Link>
       </IonToolbar>
@@ -138,7 +142,7 @@ export function LoginPage() {
           color="text.dark"
           sx={{ marginBottom: '18px' }}
         >
-          Login
+          {tr('Login')}
         </Typography>
         {errorMessage && (
           <Typography sx={{ marginBottom: '18px', color: '#ff0000' }}>
@@ -149,7 +153,7 @@ export function LoginPage() {
           id="email"
           name="email"
           type="text"
-          label="Email"
+          label={tr('Email')}
           onChange={formik.handleChange}
           value={formik.values.email}
           valid={formik.values.email !== '' ? !formik.errors.email : undefined}
@@ -160,7 +164,7 @@ export function LoginPage() {
         <PasswordInput
           id="password"
           name="password"
-          label="Password"
+          label={tr('Password')}
           onChange={formik.handleChange}
           onClickShowIcon={handleToggleShow}
           show={show}
@@ -179,7 +183,7 @@ export function LoginPage() {
           onClick={handleLogin}
           disabled={!formik.isValid}
         >
-          Login Now
+          {tr('Login Now')}
         </Button>
 
         <Button
@@ -189,7 +193,7 @@ export function LoginPage() {
           color="gray"
           onClick={handleForgotPassword}
         >
-          Forgot Password?
+          {tr('Forgot Password?')}
         </Button>
 
         <Button
@@ -199,7 +203,7 @@ export function LoginPage() {
           color="gray"
           onClick={handleGoRegister}
         >
-          Don&apos;t you have an account?
+          {tr(`Don't you have an account?`)}
         </Button>
       </Box>
     </PageLayout>

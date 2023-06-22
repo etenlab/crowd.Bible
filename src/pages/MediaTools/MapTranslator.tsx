@@ -1,14 +1,20 @@
-import { MuiMaterial, Button } from '@eten-lab/ui-kit';
 import { useState } from 'react';
+
+import { MuiMaterial, Button } from '@eten-lab/ui-kit';
+
+import { useTr } from '@/hooks/useTr';
+
 import { WordTabContent } from '@/components/MapTranslatorTabs/WordTabContent';
 import { MapTabContent } from '@/components/MapTranslatorTabs/MapTabContent';
-
 import { PageLayout } from '@/components/Layout';
 
 const { Box, Typography, styled } = MuiMaterial;
 
 export const MapTranslatorPage = () => {
+  const { tr } = useTr();
+
   const [activeTab, setActiveTab] = useState(0);
+
   return (
     <PageLayout>
       <Box
@@ -23,7 +29,7 @@ export const MapTranslatorPage = () => {
           color={'text.dark'}
           sx={{ fontSize: '20px', lineHeight: '28px', fontWeight: 600 }}
         >
-          Map Translator
+          {tr('Map Translator')}
         </Typography>
       </Box>
       <Box
@@ -48,7 +54,7 @@ export const MapTranslatorPage = () => {
               setActiveTab(0);
             }}
           >
-            Map
+            {tr('Map')}
           </StyledButtonTab>
           <StyledButtonTab
             variant={activeTab === 1 ? 'contained' : 'text'}
@@ -56,7 +62,7 @@ export const MapTranslatorPage = () => {
               setActiveTab(1);
             }}
           >
-            Word List
+            {tr('Word List')}
           </StyledButtonTab>
         </Box>
         {activeTab === 0 ? <MapTabContent /> : <></>}

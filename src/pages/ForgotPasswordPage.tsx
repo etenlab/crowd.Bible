@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
 
 import { Button, MuiMaterial, Typography, Input } from '@eten-lab/ui-kit';
 import { useFormik } from 'formik';
@@ -31,15 +32,16 @@ const FORGET_PASSWORD_MUTATION = gql`
 `;
 
 export function ForgotPasswordPage() {
-  // const [show, setShow] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const apolloClient = useApolloClient();
   const history = useHistory();
+  const apolloClient = useApolloClient();
   const {
     actions: { setLoadingState },
     logger,
   } = useAppContext();
+  const { tr } = useTr();
+
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const formik = useFormik<{
     email: string;
@@ -101,18 +103,18 @@ export function ForgotPasswordPage() {
           color="text.dark"
           sx={{ marginBottom: '18px' }}
         >
-          Forgot Password
+          {tr('Forgot Password')}
         </Typography>
 
         {errorMessage && (
           <Typography sx={{ marginBottom: '18px', color: '#ff0000' }}>
-            {errorMessage}{' '}
+            {errorMessage}
           </Typography>
         )}
 
         {successMessage && (
           <Typography sx={{ marginBottom: '18px', color: '#008000' }}>
-            {successMessage}{' '}
+            {successMessage}
           </Typography>
         )}
 
@@ -120,7 +122,7 @@ export function ForgotPasswordPage() {
           id="email"
           name="email"
           type="text"
-          label="Email"
+          label={tr('Email')}
           onChange={formik.handleChange}
           value={formik.values.email}
           valid={formik.values.email !== '' ? !formik.errors.email : undefined}
@@ -135,7 +137,7 @@ export function ForgotPasswordPage() {
           onClick={handleLogin}
           disabled={!formik.isValid}
         >
-          Send recovery email
+          {tr('Send recovery email')}
         </Button>
 
         <Button
@@ -145,7 +147,7 @@ export function ForgotPasswordPage() {
           color="gray"
           onClick={handleGoRegister}
         >
-          {"Don't you have an account?"}
+          {tr(`Don't you have an account?`)}
         </Button>
       </Box>
     </PageLayout>

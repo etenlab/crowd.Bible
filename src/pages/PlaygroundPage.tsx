@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import {
   DragDropContext,
   StrictModeDroppable,
@@ -6,7 +7,10 @@ import {
   DropResult,
   DraggableLocation,
 } from '@/components/Droppable';
+
 import { Button, MuiMaterial } from '@eten-lab/ui-kit';
+
+import { useTr } from '@/hooks/useTr';
 
 import { PageLayout } from '@/components/Layout';
 
@@ -77,6 +81,8 @@ const getListStyle = (isDraggingOver: boolean) => ({
 });
 
 export function PlaygroundPage() {
+  const { tr } = useTr();
+
   const [state, setState] = useState([getItems(10), getItems(5, 10)]);
 
   function onDragEnd(result: DropResult) {
@@ -113,7 +119,7 @@ export function PlaygroundPage() {
             setState([...state, []]);
           }}
         >
-          Add new group
+          {tr('Add new group')}
         </Button>
         <Button
           type="button"
@@ -121,7 +127,7 @@ export function PlaygroundPage() {
             setState([...state, getItems(1)]);
           }}
         >
-          Add new item
+          {tr('Add new item')}
         </Button>
         <Box sx={{ display: 'flex' }}>
           <DragDropContext onDragEnd={onDragEnd}>
@@ -167,7 +173,7 @@ export function PlaygroundPage() {
                                   );
                                 }}
                               >
-                                delete
+                                {tr('Delete')}
                               </Button>
                             </Box>
                           </div>

@@ -7,6 +7,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useSiteText } from '@/hooks/useSiteText';
 import { useDocument } from '@/hooks/useDocument';
 import { useVote } from '@/hooks/useVote';
+import { useTr } from '@/hooks/useTr';
 
 import { DescriptionList, DescriptionItem } from '@/components/DescriptionList';
 
@@ -37,7 +38,8 @@ export function SiteTextDefinitionPage() {
     },
     actions: { alertFeedback },
   } = useAppContext();
-  const { getDefinitionList, getSiteTextDtoWithRel, tr } = useSiteText();
+  const { getDefinitionList, getSiteTextDtoWithRel } = useSiteText();
+  const { tr } = useTr();
   const { getAppById } = useDocument();
   const { getVotesStats, toggleVote, getCandidateById } = useVote();
 

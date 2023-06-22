@@ -7,6 +7,8 @@ import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 import { mockChapters } from './ChapterFeedbackPage';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
 import { FeedbackTypes } from '@/constants/common.constant';
 import { RouteConst } from '@/constants/route.constant';
 
@@ -20,6 +22,7 @@ export function ChapterTranslatorQAPage() {
   const {
     actions: { alertFeedback },
   } = useAppContext();
+  const { tr } = useTr();
 
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
 
@@ -57,13 +60,13 @@ export function ChapterTranslatorQAPage() {
       >
         <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
           <TitleWithIcon
-            label="Chapters"
+            label={tr('Chapters')}
             withBackIcon={false}
             onClose={handleClickCancel}
             onBack={() => {}}
           />
           <VerticalRadioList
-            label="Select a chapter"
+            label={tr('Select a chapter')}
             withUnderline={true}
             items={mockChapters}
             value={selectedChapter}

@@ -1,11 +1,21 @@
 import { useCallback } from 'react';
 import { useAppContext } from './useAppContext';
 import { gql, useApolloClient } from '@apollo/client';
-import { FeedbackTypes } from '@/constants/common.constant';
+import {
+  FeedbackTypes,
+  UpOrDownVote,
+  VoteTypes,
+} from '@/constants/common.constant';
 import axios from 'axios';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
 import { parseSync } from 'svgson';
+import { WordDto } from '../dtos/word.dto';
+import { RelationshipTypeConst } from '@eten-lab/core';
+import { WordMapper } from '../mappers/word.mapper';
+import { compareLangInfo, wordProps2LangInfo } from '../utils/langUtils';
+import { VotableItem } from '../dtos/votable-item.dto';
+import { useVote } from './useVote';
 
 export const UPLOAD_FILE_MUTATION = gql`
   mutation UploadFile($file: Upload!, $file_type: String!, $file_size: Int!) {
@@ -48,15 +58,20 @@ export type MapDetail = {
   langInfo: LanguageInfo;
 };
 
+export type WordItem = {
+  translations?: Array<WordDto & { isNew: boolean }>;
+} & WordDto;
+
 export function useMapTranslationTools() {
   const {
-    actions: { alertFeedback },
+    actions: { alertFeedback, setLoadingState },
     states: {
       global: { singletons },
     },
     logger,
   } = useAppContext();
   const apolloClient = useApolloClient();
+  const { getVotesStats, toggleVote } = useVote();
 
   const sendMapFile = useCallback(
     async (
@@ -67,6 +82,7 @@ export function useMapTranslationTools() {
         fileHash: string;
         fileUrl: string;
       }) => void,
+      afterFail: (error: Error) => void,
     ): Promise<void> => {
       apolloClient
         .mutate({
@@ -90,6 +106,7 @@ export function useMapTranslationTools() {
             FeedbackTypes.ERROR,
             `Error on map uploading: ${error.message}`,
           );
+          afterFail(error);
           logger.error(JSON.stringify(error));
         });
     },
@@ -219,7 +236,10 @@ export function useMapTranslationTools() {
         singletons.mapService.iterateOverINode(parsed, ['style'], (node) => {
           if (node.type === 'text' || node.type === 'textPath') {
             if (!node.value) return;
-            textArray.push(node.value);
+            const isExist = textArray.findIndex((w) => w === node.value);
+            if (isExist < 0) {
+              textArray.push(node.value);
+            }
           }
         });
 
@@ -227,22 +247,116 @@ export function useMapTranslationTools() {
           setMapStatus(id, { status: eProcessStatus.FAILED }, setMapList);
           alertFeedback(FeedbackTypes.ERROR, 'No text or textPath tags found');
         } else {
-          sendMapFile(file, (sentFileData) => {
-            setMapStatus(
-              id,
-              {
-                status: eProcessStatus.PARSING_COMPLETED,
-                mapFileId: sentFileData.id,
-                words: textArray,
-              },
-              setMapList,
-            );
-          });
+          sendMapFile(
+            file,
+            (sentFileData) => {
+              setMapStatus(
+                id,
+                {
+                  status: eProcessStatus.PARSING_COMPLETED,
+                  mapFileId: sentFileData.id,
+                  words: textArray,
+                },
+                setMapList,
+              );
+            },
+            (_error) => {
+              setMapStatus(id, { status: eProcessStatus.FAILED }, setMapList);
+            },
+          );
         }
       };
       fileReader.readAsText(file);
     },
     [alertFeedback, logger, sendMapFile, setMapStatus, singletons],
+  );
+
+  const getWordsWithLangs = useCallback(
+    async (
+      sourceLangInfo: LanguageInfo,
+      targetLangInfo: LanguageInfo,
+    ): Promise<WordItem[]> => {
+      if (!singletons) return [];
+      const wordNodes =
+        await singletons.wordService.getWordsWithLangAndRelationships(
+          sourceLangInfo,
+          [RelationshipTypeConst.WORD_MAP],
+        );
+      if (!wordNodes) return [];
+      const wordItemList: Array<WordItem> = [];
+
+      for (const wordNode of wordNodes) {
+        const currWordItem: WordItem = WordMapper.entityToDto(wordNode);
+        currWordItem.translations = [];
+
+        for (const relationship of wordNode.toNodeRelationships || []) {
+          if (
+            relationship.relationship_type ===
+            RelationshipTypeConst.WORD_TO_TRANSLATION
+          ) {
+            const translationNode = (
+              await singletons.graphFirstLayerService.getNodesWithRelationshipsByIds(
+                [relationship.to_node_id],
+              )
+            )[0];
+            const translatedWord = WordMapper.entityToDto(translationNode);
+            const translatedWordLangInfo = wordProps2LangInfo(translatedWord);
+
+            if (compareLangInfo(translatedWordLangInfo, targetLangInfo)) {
+              currWordItem.translations.push({
+                ...translatedWord,
+                isNew: false,
+              });
+            }
+          }
+        }
+        wordItemList.push(currWordItem);
+      }
+      return wordItemList;
+    },
+    [singletons],
+  );
+
+  const changeTranslationVotes = useCallback(
+    async (
+      items: VotableItem[],
+      setWordsVotableItems: React.Dispatch<React.SetStateAction<VotableItem[]>>,
+      candidateId: Nanoid | null,
+      upOrDown: UpOrDownVote,
+    ) => {
+      try {
+        if (!candidateId) {
+          throw new Error(`!candidateId: There is no candidateId`);
+        }
+        let translationIdx = -1;
+        const wordIdx = items.findIndex((w) => {
+          translationIdx = w.contents.findIndex(
+            (t) => t.candidateId === candidateId,
+          );
+          return translationIdx >= 0;
+        });
+
+        await toggleVote(candidateId, upOrDown === VoteTypes.UP); // if not upVote, it calculated as false and toggleVote treats false as downVote
+        const votes = await getVotesStats(candidateId);
+        if (translationIdx < 0) {
+          throw new Error(
+            `Can't find definition by candidateId ${candidateId}`,
+          );
+        }
+        items[wordIdx].contents[translationIdx] = {
+          ...items[wordIdx].contents[translationIdx],
+          upVotes: votes?.upVotes || 0,
+          downVotes: votes?.downVotes || 0,
+        };
+        setWordsVotableItems([...items]);
+      } catch (error) {
+        logger.error(error);
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
+      } finally {
+        setLoadingState(false);
+      }
+    },
+    [toggleVote, getVotesStats, alertFeedback, setLoadingState, logger],
   );
 
   return {
@@ -251,5 +365,7 @@ export function useMapTranslationTools() {
     getFileDataBase64,
     processFile,
     setMapStatus,
+    getWordsWithLangs,
+    changeTranslationVotes,
   };
 }

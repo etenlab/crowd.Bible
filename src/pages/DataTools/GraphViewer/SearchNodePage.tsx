@@ -1,10 +1,14 @@
 import { useEffect, useReducer, useState } from 'react';
-import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
-import { Like } from 'typeorm';
-import { useGlobal } from '@/hooks/useGlobal';
-import { initialState, reducer } from '@/src/reducers';
 import { useHistory } from 'react-router';
+import { Like } from 'typeorm';
+
+import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
+
+import { initialState, reducer } from '@/src/reducers';
+
+import { useGlobal } from '@/hooks/useGlobal';
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
 
 import { PageLayout } from '@/components/Layout';
 
@@ -18,6 +22,8 @@ export function SearchNodePage() {
     },
     logger,
   } = useAppContext();
+  const { tr } = useTr();
+
   const [, dispatch] = useReducer(reducer, initialState);
   const { setLoadingState } = useGlobal({ dispatch });
   const [search, setSearch] = useState('');
@@ -44,7 +50,8 @@ export function SearchNodePage() {
           where: {
             propertyKeys: {
               propertyValue: {
-                property_value: Like(`%${search}%`),
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                property_value: Like(`%${search}%`) as any,
               },
             },
           },
@@ -94,7 +101,7 @@ export function SearchNodePage() {
         sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto', gap: '16px' }}
       >
         <TitleWithIcon
-          label="Graph Viewer"
+          label={tr('Graph Viewer')}
           withCloseIcon={false}
           onClose={() => {}}
           onBack={() => {}}

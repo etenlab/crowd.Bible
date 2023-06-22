@@ -8,8 +8,12 @@ export class DiscussionRepository {
   userRepository: Repository<User>;
 
   constructor(private readonly dbService: DbService) {
-    this.repository = this.dbService.dataSource.getRepository(Discussion);
-    this.userRepository = this.dbService.dataSource.getRepository(User);
+    this.repository = this.dbService.dataSource.getRepository(
+      Discussion,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ) as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.userRepository = this.dbService.dataSource.getRepository(User) as any;
   }
 
   async create(

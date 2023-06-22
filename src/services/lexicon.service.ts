@@ -84,3 +84,5 @@ export class LexiconService {
     this.wordForms = service(NodeTypeConst.WORD_FORM, wordFormSchema);
   }
 }
+
+export {};

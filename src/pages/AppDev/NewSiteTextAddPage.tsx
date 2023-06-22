@@ -13,6 +13,7 @@ import {
 import { useAppContext } from '@/hooks/useAppContext';
 import { useSiteText } from '@/hooks/useSiteText';
 import { useDocument } from '@/hooks/useDocument';
+import { useTr } from '@/hooks/useTr';
 
 import { SelectableDefinitionCandidateList } from '@/components/SelectableDefinitionCandidateList';
 
@@ -36,7 +37,8 @@ export function NewSiteTextAddPage() {
     },
     actions: { alertFeedback },
   } = useAppContext();
-  const { createOrFindSiteText, getRecommendedSiteText, tr } = useSiteText();
+  const { createOrFindSiteText, getRecommendedSiteText } = useSiteText();
+  const { tr } = useTr();
   const { getAppById } = useDocument();
 
   const [app, setApp] = useState<AppDto | null>(null);

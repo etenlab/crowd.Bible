@@ -176,10 +176,11 @@ export class TranslationService {
       throw new Error('Not exists original word with given Id');
     }
 
-    const translatedId = await this.wordService.createWordOrPhraseWithLang(
-      translation.word,
-      translation.languageInfo,
-    );
+    const translatedId =
+      await this.wordService.createOrFindWordOrPhraseWithLang(
+        translation.word,
+        translation.languageInfo,
+      );
 
     const {
       electionId,
