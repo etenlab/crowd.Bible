@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useState } from 'react';
+
 import {
   MuiMaterial,
   Lang,
@@ -8,16 +10,18 @@ import {
 } from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
-import { useCallback, useEffect, useState } from 'react';
 import { useAppContext } from '@/hooks/useAppContext';
-import { VotableItem } from '@/dtos/votable-item.dto';
 import { useDictionaryTools } from '@/hooks/useDictionaryTools';
+import { useTr } from '@/hooks/useTr';
+
+import { VotableItem } from '@/dtos/votable-item.dto';
 import { NodeTypeConst } from '@eten-lab/core';
 import {
   FeedbackTypes,
   UpOrDownVote,
   VoteTypes,
 } from '@/constants/common.constant';
+
 import { PageLayout } from '@/components/Layout';
 
 const { Box, Divider } = MuiMaterial;
@@ -109,6 +113,8 @@ export function DictionaryPage() {
     actions: { setLoadingState, alertFeedback },
     logger,
   } = useAppContext();
+  const { tr } = useTr();
+
   const [selectedWord, setSelectedWord] = useState<VotableItem | null>(null);
   const [isDialogOpened, setIsDialogOpened] = useState(false);
   const [words, setWords] = useState<VotableItem[]>([]);
@@ -231,7 +237,7 @@ export function DictionaryPage() {
                 onBack={() => {}}
                 withBackIcon={false}
                 withCloseIcon={false}
-                label="Dictionary"
+                label={tr('Dictionary')}
               ></TitleWithIcon>
             </Box>
           </Box>
@@ -252,7 +258,7 @@ export function DictionaryPage() {
             >
               <Box flex={3}>
                 <Typography variant="subtitle1" color={'text.gray'}>
-                  Words
+                  {tr('Words')}
                 </Typography>
               </Box>
               <Box flex={1} width={1} minWidth={'140px'}>
@@ -262,7 +268,7 @@ export function DictionaryPage() {
                   fullWidth
                   onClick={handleAddWordButtonClick}
                 >
-                  New Word
+                  {tr('New Word')}
                 </Button>
               </Box>
             </Box>
@@ -279,7 +285,7 @@ export function DictionaryPage() {
             ></ItemsClickableList>
           </Box>
           <SimpleFormDialog
-            title={'Enter new Word'}
+            title={tr('Enter new Word')}
             isOpened={isDialogOpened}
             handleCancel={() => setIsDialogOpened(false)}
             handleOk={(newWord) => addWord(newWord)}
@@ -296,7 +302,7 @@ export function DictionaryPage() {
           <ItemContentListEdit
             item={selectedWord}
             onBack={() => setSelectedWord(null as unknown as VotableItem)}
-            buttonText="New Definition"
+            buttonText={tr('New Definition')}
             changeContentValue={changeWordDefinition}
             changeContentVotes={changeWordDefinitionVotes}
             addContent={addDefinitionToWord}

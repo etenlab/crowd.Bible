@@ -1,15 +1,19 @@
+import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
+
 import {
   Button,
   MuiMaterial,
   Typography,
   useColorModeContext,
 } from '@eten-lab/ui-kit';
-import React, { useState } from 'react';
-import { createPortal } from 'react-dom';
+
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
 import { SqlRunner } from './SqlRunner';
-import { useAppContext } from '@/src/hooks/useAppContext';
+
+import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
 
 const { Box } = MuiMaterial;
 
@@ -18,6 +22,8 @@ export function SqlPortal() {
     actions: { setSqlPortalShown },
   } = useAppContext();
   const { getColor } = useColorModeContext();
+  const { tr } = useTr();
+
   const [dimensions, setDimensions] = useState({ w: 800, h: 600 });
 
   const nodeRef = React.useRef(null);
@@ -57,7 +63,7 @@ export function SqlPortal() {
                 alignContent="space-between"
               >
                 <Typography flex={1} className="draggable-header">
-                  SqlRunner
+                  {tr('SqlRunner')}
                 </Typography>
                 <Button
                   onClick={() => {
@@ -65,7 +71,7 @@ export function SqlPortal() {
                   }}
                   sx={{ padding: 0 }}
                 >
-                  Close
+                  {tr('Close')}
                 </Button>
               </Box>
 

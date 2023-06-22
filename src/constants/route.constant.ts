@@ -46,6 +46,8 @@ export enum RouteConst {
   SITE_TEXT_DEFINITION = '/site-text-definition',
   SITE_TEXT_TRANSLATION_SWITCH = '/site-text-translation-switch',
   SITE_TEXT_ADMIN = '/site-text-admin',
+  SITE_TEXT_LANGUAGE_LIST = '/site-text-language-list',
+  SITE_TEXT_UI_WORD_LIST = '/site-text-ui-word-list',
 
   FEEDBACK = '/feedback',
   FEEDBACK_TEXT_PART = '/feedback/text-part',

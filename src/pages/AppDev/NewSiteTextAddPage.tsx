@@ -13,6 +13,7 @@ import {
 import { useAppContext } from '@/hooks/useAppContext';
 import { useSiteText } from '@/hooks/useSiteText';
 import { useDocument } from '@/hooks/useDocument';
+import { useTr } from '@/hooks/useTr';
 
 import { SelectableDefinitionCandidateList } from '@/components/SelectableDefinitionCandidateList';
 
@@ -37,6 +38,7 @@ export function NewSiteTextAddPage() {
     actions: { alertFeedback },
   } = useAppContext();
   const { createOrFindSiteText, getRecommendedSiteText } = useSiteText();
+  const { tr } = useTr();
   const { getAppById } = useDocument();
 
   const [app, setApp] = useState<AppDto | null>(null);
@@ -119,26 +121,26 @@ export function NewSiteTextAddPage() {
 
   return (
     <PageLayout>
-      <HeadBox title="Add New Site Txt" appTitle={app?.name || ''} />
+      <HeadBox title={tr('Add New Site Txt')} appTitle={app?.name || ''} />
       <Stack gap="12px" sx={{ padding: '20px' }}>
         <Input
-          label="Site Text"
+          label={tr('Site Text')}
           withLegend={false}
           value={word}
           onChange={handleChangeWord}
         />
         <TextArea
-          label="Description"
+          label={tr('Description')}
           withLegend={false}
           value={description}
           onChange={handleChangeDescription}
         />
 
         <Button variant="contained" onClick={handleClickSave}>
-          Save
+          {tr('Save')}
         </Button>
         <Button variant="text" onClick={handleClickCancel}>
-          Cancel
+          {tr('Cancel')}
         </Button>
       </Stack>
 

@@ -4,7 +4,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useVote } from '@/hooks/useVote';
 
 import { LanguageInfo } from '@eten-lab/ui-kit';
-import { VotableContent } from '@/src/dtos/votable-item.dto';
+import { VotableContent } from '@/dtos/votable-item.dto';
 
 import { SiteTextDto, SiteTextTranslationDto } from '@/dtos/site-text.dto';
 
@@ -14,10 +14,14 @@ import { FeedbackTypes } from '@/constants/common.constant';
 export function useSiteText() {
   const {
     states: {
-      global: { singletons },
-      // documentTools: { sourceLanguage, targetLanguage },
+      global: { singletons, appLanguage, tempSiteTexts, crowdBibleApp },
     },
-    actions: { alertFeedback, setLoadingState },
+    actions: {
+      alertFeedback,
+      setLoadingState,
+      setSiteTextMap,
+      clearTempSiteTexts,
+    },
     logger,
   } = useAppContext();
 
@@ -50,7 +54,6 @@ export function useSiteText() {
           );
 
         setLoadingState(false);
-        alertFeedback(FeedbackTypes.SUCCESS, 'Created a new Site Text!');
 
         return siteTextEntity.definitionId;
       } catch (err) {
@@ -80,14 +83,6 @@ export function useSiteText() {
         alertFeedback(
           FeedbackTypes.ERROR,
           'translated site text should be non empty string!',
-        );
-        return null;
-      }
-
-      if (translatedDefinitionText.trim().length === 0) {
-        alertFeedback(
-          FeedbackTypes.ERROR,
-          'translated site text definition should be non empty string!',
         );
         return null;
       }
@@ -414,7 +409,119 @@ export function useSiteText() {
     [singletons, alertFeedback, setLoadingState, getCandidateById, logger],
   );
 
+  const loadSiteTextMap = useCallback(async () => {
+    if (!singletons || !crowdBibleApp) {
+      alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at loadSiteTextMap');
+      return;
+    }
+
+    try {
+      setLoadingState(true, 'Loading Site Text Map', undefined, true);
+
+      const candidate =
+        await singletons.siteTextService.getTranslatedSiteTextListByAppId(
+          crowdBibleApp.id,
+          appLanguage,
+          appLanguage,
+        );
+
+      const temp: Record<string, { siteText: string; isTranslated: boolean }> =
+        {};
+
+      candidate.forEach((data) => {
+        temp[data.siteText] = {
+          siteText: data.translatedSiteText || data.siteText,
+          isTranslated: !!(
+            data.translatedSiteText && data.translatedSiteText.length > 0
+          ),
+        };
+      });
+
+      setSiteTextMap(temp);
+
+      setLoadingState(false);
+    } catch (err) {
+      logger.error(err);
+      setLoadingState(false);
+      alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
+      return;
+    }
+  }, [
+    singletons,
+    crowdBibleApp,
+    alertFeedback,
+    setLoadingState,
+    appLanguage,
+    setSiteTextMap,
+    logger,
+  ]);
+
+  const saveTempSiteTexts = useCallback(async () => {
+    if (!singletons || !crowdBibleApp) {
+      return;
+    }
+
+    setLoadingState(true);
+
+    for (const item of tempSiteTexts) {
+      try {
+        await singletons.siteTextService.createOrFindSiteText(
+          item.appId,
+          item.languageInfo,
+          item.siteText,
+          item.definition,
+        );
+      } catch (err) {
+        logger.error(err);
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at TrWithInto');
+      }
+    }
+
+    clearTempSiteTexts();
+
+    setLoadingState(false);
+    loadSiteTextMap();
+  }, [
+    singletons,
+    crowdBibleApp,
+    setLoadingState,
+    clearTempSiteTexts,
+    loadSiteTextMap,
+    tempSiteTexts,
+    logger,
+    alertFeedback,
+  ]);
+
+  const getAppLanguageList = useCallback(async (): Promise<LanguageInfo[]> => {
+    if (!singletons || !crowdBibleApp) {
+      alertFeedback(
+        FeedbackTypes.ERROR,
+        'Internal Error! at getAppLanguageList',
+      );
+      return [];
+    }
+
+    try {
+      setLoadingState(true);
+
+      const result = await singletons.siteTextService.getAppLanguageList(
+        crowdBibleApp.id,
+      );
+
+      setLoadingState(false);
+
+      return result;
+    } catch (err) {
+      logger.error(err);
+      setLoadingState(false);
+      alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
+      return [];
+    }
+  }, [singletons, crowdBibleApp, alertFeedback, setLoadingState, logger]);
+
   return {
+    loadSiteTextMap,
+    saveTempSiteTexts,
     createOrFindSiteText,
     createOrFindTranslation,
     getDefinitionList,
@@ -425,5 +532,6 @@ export function useSiteText() {
     getSiteTextDtoWithRel,
     getSiteTextTranslationDtoWithRel,
     getOriginalAndTranslatedRelFromSiteTextTranslationDto,
+    getAppLanguageList,
   };
 }

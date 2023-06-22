@@ -4,6 +4,8 @@ import { useHistory } from 'react-router-dom';
 import { CrowdBibleUI, MuiMaterial, FiX } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
 import { FeedbackTypes } from '@/constants/common.constant';
 import { RouteConst } from '@/constants/route.constant';
 
@@ -95,6 +97,8 @@ export function ReaderQAPage() {
   const {
     actions: { alertFeedback },
   } = useAppContext();
+  const { tr } = useTr();
+
   const [questionId, setQuestionId] = useState<number | null>(null);
 
   const handleDotClick = (id: number) => {
@@ -153,7 +157,7 @@ export function ReaderQAPage() {
       >
         <Stack sx={{ padding: '20px', overflowY: 'auto' }}>
           <LabelWithIcon
-            label="translation"
+            label={tr('translation')}
             icon={<FiX />}
             color="gray"
             onClick={handleGoToTranslationPage}

@@ -2,9 +2,16 @@ import { IonPage, IonContent } from '@ionic/react';
 
 import { AppHeader } from './AppHeader';
 
-import { MuiMaterial } from '@eten-lab/ui-kit';
+import {
+  MuiMaterial,
+  Typography,
+  useColorModeContext,
+  Button,
+} from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
 import { SqlPortal } from '@/pages/DataTools/SqlRunner/SqlPortal';
 
 const { Snackbar, CircularProgress, Backdrop, Stack, Alert } = MuiMaterial;
@@ -16,12 +23,24 @@ interface PageLayoutProps {
 export function PageLayout({ children }: PageLayoutProps) {
   const {
     states: {
-      global: { snack, loading, singletons, isSqlPortalShown },
+      global: { snack, loading, singletons, isSqlPortalShown, crowdBibleApp },
+      components: { modal },
     },
-    actions: { closeFeedback },
+    actions: { closeFeedback, clearModalCom, setLoadingState },
   } = useAppContext();
+  const { getColor } = useColorModeContext();
+  const { tr } = useTr();
 
-  const isLoading = loading || !singletons;
+  const handleClickCancelBtn = () => {
+    setLoadingState(false);
+  };
+
+  const isLoading = !!loading || !singletons || !crowdBibleApp;
+  const loadingMessage =
+    loading?.message ||
+    (!singletons && tr('Loading Singletons')) ||
+    (!crowdBibleApp && tr('Loading App Data')) ||
+    tr('Loading');
 
   return (
     <IonPage id="crowd-bible-app">
@@ -53,12 +72,54 @@ export function PageLayout({ children }: PageLayoutProps) {
           </Alert>
         </Snackbar>
 
-        <Backdrop sx={{ color: '#fff', zIndex: 1000 }} open={isLoading}>
-          <Stack justifyContent="center">
-            <div style={{ margin: 'auto' }}>
-              <CircularProgress color="inherit" />
-            </div>
-            <div>LOADING</div>
+        <Backdrop
+          open={!!modal}
+          sx={{
+            alignItems: 'flex-start',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            zIndex: 900,
+            marginTop: '61px',
+          }}
+          onClick={() => {
+            clearModalCom();
+          }}
+        >
+          <Stack
+            sx={{
+              width: '100%',
+              background: getColor('disabled'),
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            {modal}
+          </Stack>
+        </Backdrop>
+
+        <Backdrop
+          sx={{ zIndex: 1000, color: getColor('white') }}
+          open={isLoading}
+        >
+          <Stack
+            justifyContent="center"
+            alignItems="center"
+            sx={{ maxWidth: '80%' }}
+          >
+            <CircularProgress color="inherit" />
+            <Typography variant="body1" color="text.white">
+              {loadingMessage}
+            </Typography>
+            {loading?.status ? (
+              <Typography variant="body2" color="text.white">
+                {loading?.status}
+              </Typography>
+            ) : null}
+            {loading?.isCancelButton ? (
+              <Button variant="text" onClick={handleClickCancelBtn}>
+                {tr('Cancel')}
+              </Button>
+            ) : null}
           </Stack>
         </Backdrop>
 

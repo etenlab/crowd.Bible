@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { FeedbackTypes } from '@/constants/common.constant';
 import { RouteConst } from '@/constants/route.constant';
@@ -14,6 +16,8 @@ export function FeedbackInput() {
   const {
     actions: { alertFeedback },
   } = useAppContext();
+  const { tr } = useTr();
+
   const [optionalFeedback, setOptionalFeedback] = useState<string>('');
 
   const handleChangeOptionalFeedback = (newValue: string) => {
@@ -22,7 +26,7 @@ export function FeedbackInput() {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmitFeedback = (agree: 'agree' | 'disagree') => {
-    alertFeedback(FeedbackTypes.SUCCESS, 'Your feedback has been sent!');
+    alertFeedback(FeedbackTypes.SUCCESS, tr('Your feedback has been sent!'));
     history.push(RouteConst.FEEDBACK);
   };
 
@@ -30,7 +34,7 @@ export function FeedbackInput() {
     <Box>
       <AgreeConfirm onClick={handleSubmitFeedback} />
       <SimpleQuill
-        placeholder="Leave Feedback (optional)..."
+        placeholder={tr('Leave Feedback (optional)...')}
         value={optionalFeedback}
         onChange={handleChangeOptionalFeedback}
       />

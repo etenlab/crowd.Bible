@@ -7,6 +7,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useSiteText } from '@/hooks/useSiteText';
 import { useDocument } from '@/hooks/useDocument';
 import { useVote } from '@/hooks/useVote';
+import { useTr } from '@/hooks/useTr';
 
 import { DescriptionList, DescriptionItem } from '@/components/DescriptionList';
 
@@ -43,6 +44,7 @@ export function SiteTextTranslationSwitchPage() {
     getSiteTextTranslationDtoWithRel,
     getOriginalAndTranslatedRelFromSiteTextTranslationDto,
   } = useSiteText();
+  const { tr } = useTr();
   const { getAppById } = useDocument();
   const { getVotesStats, toggleVote } = useVote();
 
@@ -207,7 +209,7 @@ export function SiteTextTranslationSwitchPage() {
     <PageLayout>
       <HeadBox
         back={{ action: handleClickCancel }}
-        title="Switch Translation"
+        title={tr('Switch Translation')}
         extraNode={
           <Input value={siteText?.translatedSiteText || ''} disabled />
         }
@@ -218,7 +220,7 @@ export function SiteTextTranslationSwitchPage() {
         </Typography>
       </Stack>
       <DescriptionList
-        title="Site Text Translation List"
+        title={tr('Site Text Translation List')}
         items={items}
         discussionBtn={{
           onClickDiscussionBtn: handleClickDiscussionBtn,
@@ -230,10 +232,10 @@ export function SiteTextTranslationSwitchPage() {
       />
       <Stack gap="12px" sx={{ padding: '20px' }}>
         <Button variant="contained" onClick={handleClickAddNew}>
-          + Add New Translation
+          {tr('+ Add New Translation')}
         </Button>
         <Button variant="text" onClick={handleClickCancel}>
-          Cancel
+          {tr('Cancel')}
         </Button>
       </Stack>
     </PageLayout>

@@ -7,6 +7,8 @@ import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 import { mockDocument } from './ReaderQAPage';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
 import { FeedbackTypes } from '@/constants/common.constant';
 import { RouteConst } from '@/constants/route.constant';
 
@@ -21,6 +23,7 @@ export function TextPartTranslatorQAPage() {
   const {
     actions: { alertFeedback },
   } = useAppContext();
+  const { tr } = useTr();
 
   const [range, setRange] = useState<{
     start: number | null;
@@ -64,7 +67,7 @@ export function TextPartTranslatorQAPage() {
       >
         <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
           <LabelWithIcon
-            label="translation"
+            label={tr('translation')}
             icon={<FiX />}
             color="gray"
             onClick={handleClickCancel}

@@ -11,6 +11,7 @@ import { WordSequenceDto } from '@/src/dtos/word-sequence.dto';
 import { useAppContext } from '@/hooks/useAppContext';
 import { useDocument } from '@/hooks/useDocument';
 import { useWordSequence } from '@/hooks/useWordSequence';
+import { useTr } from '@/hooks/useTr';
 
 const { HeadBox } = CrowdBibleUI;
 
@@ -25,6 +26,7 @@ export function DocumentViewerPage() {
       global: { singletons },
     },
   } = useAppContext();
+  const { tr } = useTr();
 
   const { getDocumentById } = useDocument();
   const { getWordSequenceByDocumentId } = useWordSequence();
@@ -57,7 +59,7 @@ export function DocumentViewerPage() {
           opacity: 0.5,
         }}
       >
-        Original
+        {tr('Original')}
       </Typography>
       <Typography
         variant="body1"

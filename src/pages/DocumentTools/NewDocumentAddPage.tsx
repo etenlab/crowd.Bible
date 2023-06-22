@@ -6,6 +6,7 @@ import { Input, TextArea, Button, MuiMaterial } from '@eten-lab/ui-kit';
 import { useDocument } from '@/hooks/useDocument';
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
 
 import { RouteConst } from '@/constants/route.constant';
 import { FeedbackTypes } from '@/constants/common.constant';
@@ -26,6 +27,7 @@ export function NewDocumentAddPage() {
     },
     actions: { alertFeedback },
   } = useAppContext();
+  const { tr } = useTr();
 
   const [name, setName] = useState<string>('');
   const [origin, setOrigin] = useState<string>('');
@@ -76,19 +78,19 @@ export function NewDocumentAddPage() {
     <PageLayout>
       <Stack sx={{ padding: '20px' }} gap="20px">
         <Input
-          label="Input Document Name"
+          label={tr('Input Document Name')}
           value={name}
           onChange={handleChangeName}
         />
 
         <TextArea
-          label="Input Original Document"
+          label={tr('Input Original Document')}
           value={origin}
           onChange={handleChangeOrigin}
         />
 
         <Button variant="contained" onClick={handleClickSave} fullWidth>
-          Save Document
+          {tr('Save Document')}
         </Button>
       </Stack>
     </PageLayout>

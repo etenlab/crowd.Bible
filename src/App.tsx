@@ -28,13 +28,14 @@ import './styles.css';
 import { ThemeProvider } from '@eten-lab/ui-kit';
 import { AppContextProvider } from './AppContext';
 
-import useSeedService from '@/hooks/useSeedService';
 import { AppMenu } from '@/components/Layout';
 
 import { RouteConst } from '@/constants/route.constant';
 
 import { AppRoutes } from '@/routes/AppRoutes';
 import { RouteGuarder } from '@/components/RouteGuarder';
+
+import useSeedService from '@/hooks/useSeedService';
 
 setupIonicReact();
 

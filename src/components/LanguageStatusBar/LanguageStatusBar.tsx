@@ -9,16 +9,20 @@ import {
   useColorModeContext,
 } from '@eten-lab/ui-kit';
 
+import { useTr } from '@/hooks/useTr';
+
 const { Stack, Typography } = MuiMaterial;
 
 export function LanguageStatus({ lang }: { lang: LanguageInfo | null }) {
+  const { tr } = useTr();
+
   return lang ? (
     <Typography variant="body2" color="text.gray">
       {langInfo2String(lang)}
     </Typography>
   ) : (
     <Typography variant="body2" color="text.red">
-      Not Selected Source Language
+      {tr('Not Selected Language')}
     </Typography>
   );
 }

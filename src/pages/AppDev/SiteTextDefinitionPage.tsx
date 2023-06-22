@@ -7,6 +7,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useSiteText } from '@/hooks/useSiteText';
 import { useDocument } from '@/hooks/useDocument';
 import { useVote } from '@/hooks/useVote';
+import { useTr } from '@/hooks/useTr';
 
 import { DescriptionList, DescriptionItem } from '@/components/DescriptionList';
 
@@ -38,6 +39,7 @@ export function SiteTextDefinitionPage() {
     actions: { alertFeedback },
   } = useAppContext();
   const { getDefinitionList, getSiteTextDtoWithRel } = useSiteText();
+  const { tr } = useTr();
   const { getAppById } = useDocument();
   const { getVotesStats, toggleVote, getCandidateById } = useVote();
 
@@ -181,7 +183,7 @@ export function SiteTextDefinitionPage() {
     <PageLayout>
       <HeadBox
         back={{ action: handleClickCancel }}
-        title="Site Text Definitions"
+        title={tr('Site Text Definitions')}
         extraNode={<Input value={siteText?.siteText || ''} disabled />}
       />
 
@@ -192,7 +194,7 @@ export function SiteTextDefinitionPage() {
       </Stack>
 
       <DescriptionList
-        title="Translation Candidates"
+        title={tr('Translation Candidates')}
         items={items}
         discussionBtn={{
           onClickDiscussionBtn: handleClickDiscussionBtn,
@@ -205,10 +207,10 @@ export function SiteTextDefinitionPage() {
 
       <Stack gap="12px" sx={{ padding: '20px' }}>
         <Button variant="contained" onClick={handleClickAddNew}>
-          + Add New Definition
+          {tr('+ Add New Definition')}
         </Button>
         <Button variant="text" onClick={handleClickCancel}>
-          Cancel
+          {tr('Cancel')}
         </Button>
       </Stack>
     </PageLayout>

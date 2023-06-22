@@ -12,6 +12,7 @@ import {
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useSiteText } from '@/hooks/useSiteText';
+import { useTr } from '@/hooks/useTr';
 
 import { SiteTextTranslationDto, SiteTextDto } from '@/dtos/site-text.dto';
 
@@ -47,6 +48,7 @@ export function NewSiteTextTranslationAddPage() {
     getSiteTextTranslationDtoWithRel,
     getSiteTextDtoWithRel,
   } = useSiteText();
+  const { tr } = useTr();
 
   const [originalSiteText, setOriginalSiteText] = useState<SiteTextDto | null>(
     null,
@@ -179,7 +181,7 @@ export function NewSiteTextTranslationAddPage() {
     <PageLayout>
       <HeadBox
         back={{ action: handleClickBackBtn }}
-        title="Add New Translation"
+        title={tr('Add New Translation')}
         extraNode={<Input value={siteTextString} disabled />}
       />
       <Stack gap="12px" sx={{ padding: '20px' }}>
@@ -188,23 +190,23 @@ export function NewSiteTextTranslationAddPage() {
         </Typography>
 
         <Input
-          label="Translation"
+          label={tr('Translation')}
           withLegend={false}
           value={word}
           onChange={handleChangeWord}
         />
         <TextArea
-          label="Description of Translation"
+          label={tr('Description of Translation')}
           withLegend={false}
           value={description}
           onChange={handleChangeDescription}
         />
 
         <Button variant="contained" onClick={handleClickSave}>
-          Save
+          {tr('Save')}
         </Button>
         <Button variant="text" onClick={handleClickBackBtn}>
-          Cancel
+          {tr('Cancel')}
         </Button>
       </Stack>
 

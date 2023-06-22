@@ -15,10 +15,11 @@ import {
 
 import { useDocument } from '@/hooks/useDocument';
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
 
 import { RouteConst } from '@/constants/route.constant';
-import { compareLangInfo } from '@/utils/langUtils';
 import { FeedbackTypes } from '@/constants/common.constant';
+import { compareLangInfo } from '@/utils/langUtils';
 
 const { Stack } = MuiMaterial;
 const { HeadBox } = CrowdBibleUI;
@@ -31,6 +32,7 @@ export function NewApplicationAddPage() {
   const {
     actions: { setLoadingState, alertFeedback },
   } = useAppContext();
+  const { tr } = useTr();
 
   const [appName, setAppName] = useState<string>('');
   const [language, setLanguage] = useState<LanguageInfo>();
@@ -71,22 +73,22 @@ export function NewApplicationAddPage() {
 
   return (
     <PageLayout>
-      <HeadBox title="Add New Application" />
+      <HeadBox title={tr('Add New Application')} />
       <Stack sx={{ padding: '20px' }} gap="12px">
         <Autocomplete
-          label="Choose Organization Name"
+          label={tr('Choose Organization Name')}
           defaultValue={mockOrganizationName}
           options={[mockOrganizationName]}
           withLegend={false}
           disabled={true}
         />
         <Input
-          label="Input Application Name"
+          label={tr('Input Application Name')}
           value={appName}
           onChange={handleChangeName}
         />
         <LangSelector
-          label="Select the language"
+          label={tr('Select the language')}
           selected={language}
           onChange={handleChangeLanguage}
           setLoadingState={setLoadingState}
@@ -94,10 +96,10 @@ export function NewApplicationAddPage() {
       </Stack>
       <Stack sx={{ padding: '20px' }}>
         <Button variant="contained" onClick={handleClickSave} fullWidth>
-          + Add New
+          {tr('+ Add New')}
         </Button>
         <Button variant="text" onClick={handleClickCancel} fullWidth>
-          Cancel
+          {tr('Cancel')}
         </Button>
       </Stack>
     </PageLayout>

@@ -6,6 +6,8 @@ import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { FeedbackInput } from '@/components/FeedbackInput';
 import { RouteConst } from '@/constants/route.constant';
 
+import { useTr } from '@/hooks/useTr';
+
 import { PageLayout } from '@/components/Layout';
 
 const { TitleWithIcon, VerticalRadioList } = CrowdBibleUI;
@@ -28,6 +30,8 @@ export const mockChapters = [
 
 export function ChapterFeedbackPage() {
   const history = useHistory();
+  const { tr } = useTr();
+
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
 
   const handleChangeChapter = (
@@ -51,13 +55,13 @@ export function ChapterFeedbackPage() {
       >
         <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
           <TitleWithIcon
-            label="Chapters"
+            label={tr('Chapters')}
             withBackIcon={false}
             onClose={handleClickCancel}
             onBack={() => {}}
           />
           <VerticalRadioList
-            label="Select a chapter"
+            label={tr('Select a chapter')}
             withUnderline={true}
             items={mockChapters}
             value={selectedChapter}

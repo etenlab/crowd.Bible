@@ -7,6 +7,7 @@ import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
 
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
 
 import { TranslationEditor } from '@/components/TranslationEditor';
 import { WordSequenceDto } from '@/dtos/word-sequence.dto';
@@ -26,6 +27,7 @@ export function TranslationEditPage() {
       global: { singletons },
     },
   } = useAppContext();
+  const { tr } = useTr();
 
   const [range, setRange] = useState<{
     start: number | null;
@@ -121,7 +123,7 @@ export function TranslationEditPage() {
               opacity: 0.5,
             }}
           >
-            Original
+            {tr('Original')}
           </Typography>
           {originalTextComponent}
         </Stack>

@@ -1,4 +1,10 @@
-import React, { createContext, useReducer, useEffect, useRef } from 'react';
+import React, {
+  createContext,
+  useReducer,
+  useEffect,
+  useRef,
+  ReactNode,
+} from 'react';
 
 import { reducer, loadPersistedStore } from '@/reducers/index';
 
@@ -9,6 +15,7 @@ import {
   type StateType as GlobalStateType,
   type FeedbackType,
   type PrefersColorSchemeType,
+  type TempSiteTextItem,
 } from '@/reducers/global.reducer';
 import { type StateType as DocumentToolsStateType } from '@/reducers/documentTools.reducer';
 import { type StateType as ComponentsStateType } from '@/reducers/components.reducer';
@@ -18,8 +25,10 @@ import { useGlobal } from '@/hooks/useGlobal';
 import { useDocumentTools } from '@/hooks/useDocumentTools';
 import { useGlobalComponents } from '@/hooks/useGlobalComponents';
 
-import { getAppDataSource } from './data-source';
 import { LoggerService } from '@eten-lab/core';
+import { ISingletons } from './singletons';
+
+import { getAppDataSource } from './data-source';
 import getSingletons from './singletons';
 
 export interface ContextType {
@@ -39,10 +48,24 @@ export interface ContextType {
     closeFeedback: () => void;
     setSourceLanguage: (lang: LanguageInfo | null) => void;
     setTargetLanguage: (lang: LanguageInfo | null) => void;
-    setLoadingState: (state: boolean) => void;
+    setLoadingState: (
+      isLoading: boolean,
+      message?: string,
+      status?: string,
+      isCancelButton?: boolean,
+    ) => void;
     setSqlPortalShown: (isSqlPortalShown: boolean) => void;
     setMenuCom: (com: HTMLIonMenuElement) => void;
     clearMenuCom: () => void;
+    setModalCom: (com: ReactNode) => void;
+    clearModalCom: () => void;
+    setSiteTextMap: (
+      siteTextMap: Record<string, { siteText: string; isTranslated: boolean }>,
+    ) => void;
+    setSingletons: (singletons: ISingletons | null) => void;
+    changeAppLanguage: (langInfo: LanguageInfo) => void;
+    addTempSiteTextItem: (item: TempSiteTextItem) => void;
+    clearTempSiteTexts: () => void;
   };
   logger: LoggerService;
 }
@@ -70,13 +93,19 @@ export function AppContextProvider({ children }: AppProviderProps) {
     setLoadingState,
     setSingletons,
     setSqlPortalShown,
+    setSiteTextMap,
+    changeAppLanguage,
+    addTempSiteTextItem,
+    clearTempSiteTexts,
+    setCrowdBibleApp,
   } = useGlobal({
     dispatch,
   });
 
-  const { setMenuCom, clearMenuCom } = useGlobalComponents({
-    dispatch,
-  });
+  const { setMenuCom, clearMenuCom, setModalCom, clearModalCom } =
+    useGlobalComponents({
+      dispatch,
+    });
 
   const { setTargetLanguage, setSourceLanguage } = useDocumentTools({
     dispatch,
@@ -92,6 +121,21 @@ export function AppContextProvider({ children }: AppProviderProps) {
       setConnectivity(true);
     });
   }, [setConnectivity]);
+
+  useEffect(() => {
+    if (state.global.singletons) {
+      state.global.singletons.documentService
+        .createOrFindApp('crowd.Bible', 'ETEN Lab', {
+          lang: {
+            tag: 'en',
+            descriptions: ['English'],
+          },
+        })
+        .then((app) => {
+          setCrowdBibleApp(app);
+        });
+    }
+  }, [state.global.singletons, setCrowdBibleApp]);
 
   useEffect(() => {
     setSingletons(null);
@@ -127,6 +171,12 @@ export function AppContextProvider({ children }: AppProviderProps) {
       setSqlPortalShown,
       setMenuCom,
       clearMenuCom,
+      setModalCom,
+      clearModalCom,
+      setSiteTextMap,
+      changeAppLanguage,
+      addTempSiteTextItem,
+      clearTempSiteTexts,
     },
     logger: state?.global?.singletons?.loggerService || logger.current,
   };

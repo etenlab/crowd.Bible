@@ -3,6 +3,7 @@ import { getAppDataSource } from '@/src/data-source';
 import getSingletons, { ISingletons } from '@/src/singletons';
 
 /**
+ * @deprecated
  * This hook will be depreciated in the future
  * Please use useAppContext hook instead of this.
  * If you developed some features using this please refactor them.

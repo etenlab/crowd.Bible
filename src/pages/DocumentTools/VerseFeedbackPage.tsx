@@ -3,10 +3,12 @@ import { useHistory } from 'react-router-dom';
 
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 
-import { FeedbackInput } from '@/components/FeedbackInput';
 import { mockChapters } from './ChapterFeedbackPage';
 import { RouteConst } from '@/constants/route.constant';
 
+import { useTr } from '@/hooks/useTr';
+
+import { FeedbackInput } from '@/components/FeedbackInput';
 import { PageLayout } from '@/components/Layout';
 
 const { TitleWithIcon, VerticalRadioList, ButtonList } = CrowdBibleUI;
@@ -21,18 +23,20 @@ export function ChapterList({
   onClickChapter,
   onClickCancel,
 }: ChapterListProps) {
+  const { tr } = useTr();
+
   return (
     <Stack justifyContent="space-between" sx={{ height: 'calc(100vh - 68px)' }}>
       <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
         <TitleWithIcon
-          label="Chapters"
+          label={tr('Chapters')}
           withBackIcon={false}
           onClose={onClickCancel}
           onBack={() => {}}
         />
         <ButtonList
           withUnderline
-          label="Select a Chapter"
+          label={tr('Select a Chapter')}
           items={mockChapters}
           onClick={onClickChapter}
         />
@@ -98,6 +102,8 @@ interface VerseFeedbackProps {
 }
 
 function VerseFeedback({ onClickCancel, onClickBack }: VerseFeedbackProps) {
+  const { tr } = useTr();
+
   const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
 
   const handleChangeVerse = (
@@ -113,13 +119,13 @@ function VerseFeedback({ onClickCancel, onClickBack }: VerseFeedbackProps) {
     <Stack justifyContent="space-between" sx={{ height: 'calc(100vh - 68px)' }}>
       <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
         <TitleWithIcon
-          label="Verses"
+          label={tr('Verses')}
           withBackIcon
           onClose={onClickCancel}
           onBack={onClickBack}
         />
         <VerticalRadioList
-          label="Select a Verse"
+          label={tr('Select a Verse')}
           withUnderline={true}
           items={mockVerses}
           value={selectedVerse}
@@ -134,6 +140,8 @@ function VerseFeedback({ onClickCancel, onClickBack }: VerseFeedbackProps) {
 
 export function VerseFeedbackPage() {
   const history = useHistory();
+  // const { tr } = useTr();
+
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
 
   const handleClickCancel = () => {

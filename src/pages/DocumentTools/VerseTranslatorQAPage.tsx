@@ -5,6 +5,7 @@ import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
 import { type Question } from '@eten-lab/ui-kit/dist/crowd-bible';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
 
 import { mockVerses, ChapterList } from './VerseFeedbackPage';
 import { FeedbackTypes } from '@/constants/common.constant';
@@ -25,6 +26,7 @@ function VerseTranslatorQA({ onClickCancel, onClickBack }: VerseFeedbackProps) {
   const {
     actions: { alertFeedback },
   } = useAppContext();
+  const { tr } = useTr();
 
   const [selectedVerse, setSelectedVerse] = useState<string | null>(null);
 
@@ -54,13 +56,13 @@ function VerseTranslatorQA({ onClickCancel, onClickBack }: VerseFeedbackProps) {
     <Stack justifyContent="space-between" sx={{ height: 'calc(100vh - 68px)' }}>
       <Stack sx={{ padding: '20px', flexGrow: 1, overflowY: 'auto' }}>
         <TitleWithIcon
-          label="Verses"
+          label={tr('Verses')}
           withBackIcon
           onClose={onClickCancel}
           onBack={onClickBack}
         />
         <VerticalRadioList
-          label="Select a Verse"
+          label={tr('Select a Verse')}
           withUnderline={true}
           items={mockVerses}
           value={selectedVerse}
@@ -75,6 +77,8 @@ function VerseTranslatorQA({ onClickCancel, onClickBack }: VerseFeedbackProps) {
 
 export function VerseTranslatorQAPage() {
   const history = useHistory();
+  // const { tr } = useTr();
+
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
 
   const handleClickCancel = () => {
