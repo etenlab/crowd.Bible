@@ -1,8 +1,7 @@
 import BasePage from './BasePage';
 
 const headerText = '//h3[contains(text(), "crowd.Bible")]';
-const expandIcon =
-  '//button[@class = "MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1s9j4fq-MuiButtonBase-root-MuiIconButton-root"]';
+const expandIcon = '//button[@id = "app-menu-toggle-button"]';
 
 class HomePage extends BasePage {
   async isheaderTextPresent() {
