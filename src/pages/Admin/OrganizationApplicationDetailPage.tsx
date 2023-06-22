@@ -13,17 +13,15 @@ import { RouteConst } from '@/constants/route.constant';
 const { ButtonList, HeadBox } = CrowdBibleUI;
 const { Box, Stack } = MuiMaterial;
 
-export function UserDetailsPage() {
+export function OrganizationApplicationDetailsPage() {
   const history = useHistory();
-  const { userId } = useParams<{ userId: string }>();
+  const { orgId, appId } = useParams<{ orgId: string; appId: string }>();
 
   const handleClickBackBtn = () => {
     history.goBack();
   };
 
-  const addRole = () => {
-    history.push(`${RouteConst.ADMIN}/create-role/${userId}`);
-  };
+  const addRole = () => {};
 
   const editRole = (roleId: string) => () => {
     history.push(`${RouteConst.ADMIN}/role/${roleId}`);
@@ -31,22 +29,14 @@ export function UserDetailsPage() {
 
   const roles = [
     {
-      application: 'Application Name 1',
-      organization: 'Organization Name 1',
+      user: 'michael@test.com',
       role: 'Project Manager',
       id: 'role_id_1',
     },
     {
-      application: 'Application Name 2',
-      organization: 'Organization Name 1',
+      user: 'aslam@test.com',
       role: 'Developer',
       id: 'role_id_2',
-    },
-    {
-      application: 'Application Name 2',
-      organization: 'Organization Name 2',
-      role: 'Project Manager',
-      id: 'role_id_3',
     },
   ];
 
@@ -55,12 +45,7 @@ export function UserDetailsPage() {
       <Stack>
         <Stack>
           <Typography variant="body1" color="text.dark">
-            {r.application}
-          </Typography>
-        </Stack>
-        <Stack>
-          <Typography variant="body2" color="text.grey">
-            {r.organization}
+            {r.user}
           </Typography>
         </Stack>
         <Stack>
@@ -84,7 +69,7 @@ export function UserDetailsPage() {
           marginBottom: '14px',
         }}
       >
-        <HeadBox back={{ action: handleClickBackBtn }} title={userId} />
+        <HeadBox back={{ action: handleClickBackBtn }} title={appId} />
       </Box>
       <ButtonList
         label="Roles"

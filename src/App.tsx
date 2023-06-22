@@ -76,6 +76,7 @@ export default function App() {
                     <Route
                       key={route.path as string}
                       path={route.path}
+                      exact
                       render={() => (
                         <RouteGuarder>{route.children}</RouteGuarder>
                       )}
@@ -85,6 +86,7 @@ export default function App() {
                   return (
                     <Route
                       key={route.path as string}
+                      exact
                       path={route.path}
                       render={() => <>{route.children}</>}
                     />

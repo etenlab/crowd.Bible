@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { CrowdBibleUI, FilterButton, PlusButton } from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
@@ -6,16 +6,15 @@ import { RouteConst } from '@/constants/route.constant';
 
 const { ButtonList, HeadBox } = CrowdBibleUI;
 
-export function UsersPage() {
+export function OrganizationUsersPage() {
   const history = useHistory();
+  const { orgId } = useParams<{ orgId: string }>();
 
   const handleClickBackBtn = () => {
     history.goBack();
   };
 
-  const handleClickItem = (value: string) => {
-    history.push(`${RouteConst.ADMIN}/user/${value}`);
-  };
+  const handleClickItem = (value: string) => {};
 
   const handleSearch = () => {};
 
@@ -42,7 +41,7 @@ export function UsersPage() {
     <PageLayout>
       <HeadBox
         back={{ action: handleClickBackBtn }}
-        title="Users"
+        title={orgId}
         search={{
           onChange: handleSearch,
           placeHolder: 'Find users',
