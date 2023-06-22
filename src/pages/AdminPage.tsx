@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import {
   IonButton,
@@ -11,20 +11,58 @@ import {
 } from '@ionic/react';
 
 import txtfile from '@/utils/iso_639_3_min.tab';
-import { NodeTypeConst } from '@/constants/graph.constant';
+import langObj from '@/utils/lang.json';
+
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
+import { NodeTypeConst } from '@/constants/graph.constant';
 import { FeedbackTypes, LoadingStatuses } from '@/constants/common.constant';
 
 import { PageLayout } from '@/components/Layout';
 
+const langInfos = {
+  en: {
+    lang: {
+      tag: 'en',
+      descriptions: ['English'],
+    },
+  },
+  jp: {
+    lang: {
+      tag: 'ja',
+      descriptions: ['Japanese'],
+    },
+  },
+  zh: {
+    lang: {
+      tag: 'zh',
+      descriptions: ['Chinese'],
+    },
+  },
+  hi: {
+    lang: {
+      tag: 'hi',
+      descriptions: ['Hindi'],
+    },
+  },
+  de: {
+    lang: {
+      tag: 'de',
+      descriptions: ['German'],
+    },
+  },
+};
+
 export function AdminPage() {
   const {
     states: {
-      global: { singletons },
+      global: { singletons, crowdBibleApp },
     },
     actions: { setLoadingState, alertFeedback },
     logger,
   } = useAppContext();
+  const { tr } = useTr();
 
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatuses>(
     LoadingStatuses.INITIAL,
@@ -35,8 +73,112 @@ export function AdminPage() {
     useState<LoadingStatuses>(LoadingStatuses.INITIAL);
 
   const [loadResult, setLoadResult] = useState('');
-
   const [loadingMessage, setLoadingMessage] = useState('Loading table...');
+  const [seeding, setSeeding] = useState<boolean>(false);
+  const [processedSiteTexts, setProcessedSiteTexts] = useState<string[]>([]);
+
+  useEffect(() => {
+    (async function partialSeeding() {
+      if (!seeding || !singletons || !crowdBibleApp) {
+        return;
+      }
+
+      const keys = Object.keys(langObj);
+      const obj: Record<string, Record<string, string>> = langObj;
+
+      const temp = window.localStorage.getItem('processed-site-texts');
+      const tempProcessedSiteTexts: string[] = temp ? JSON.parse(temp) : [];
+
+      let flg = false;
+
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+
+        setLoadingState(
+          true,
+          `Seeding (${key})`,
+          `${tempProcessedSiteTexts.length} / ${keys.length}`,
+          true,
+        );
+
+        if (tempProcessedSiteTexts.find((data) => data === key)) {
+          continue;
+        }
+
+        flg = true;
+
+        const en = obj[key].en;
+        const jp = obj[key].jp;
+        const zh = obj[key].zh;
+        const hi = obj[key].hi;
+        const de = obj[key].de;
+
+        try {
+          const { relationshipId } =
+            await singletons.siteTextService.createOrFindSiteText(
+              crowdBibleApp.id,
+              langInfos.en,
+              en,
+              '',
+            );
+
+          await singletons.siteTextService.createOrFindTranslation(
+            crowdBibleApp.id,
+            relationshipId,
+            langInfos.jp,
+            jp,
+            '',
+          );
+
+          await singletons.siteTextService.createOrFindTranslation(
+            crowdBibleApp.id,
+            relationshipId,
+            langInfos.zh,
+            zh,
+            '',
+          );
+
+          await singletons.siteTextService.createOrFindTranslation(
+            crowdBibleApp.id,
+            relationshipId,
+            langInfos.hi,
+            hi,
+            '',
+          );
+
+          await singletons.siteTextService.createOrFindTranslation(
+            crowdBibleApp.id,
+            relationshipId,
+            langInfos.de,
+            de,
+            '',
+          );
+        } catch (err) {
+          console.error('seeding partially failed::', err);
+          logger.error('seeding partially failed::', err);
+        }
+
+        window.localStorage.setItem(
+          'processed-site-texts',
+          JSON.stringify([...tempProcessedSiteTexts, key]),
+        );
+        setProcessedSiteTexts([...tempProcessedSiteTexts, key]);
+        break;
+      }
+
+      if (!flg) {
+        setLoadResult(`Total ${keys.length} / ${keys.length} loaded`);
+        setLoadingState(false);
+      }
+    })();
+  }, [
+    crowdBibleApp,
+    logger,
+    processedSiteTexts,
+    seeding,
+    setLoadingState,
+    singletons,
+  ]);
 
   const addNewData = async () => {
     setLoadingStatus(LoadingStatuses.LOADING);
@@ -182,24 +324,28 @@ export function AdminPage() {
     }
   };
 
+  const seedSiteText = async () => {
+    setSeeding(true);
+  };
+
   return (
     <PageLayout>
       <IonCard>
         <IonCardHeader>
-          <IonCardTitle>Import Partial ISO-639-3 Dataset</IonCardTitle>
+          <IonCardTitle>{tr('Import Partial ISO-639-3 Dataset')}</IonCardTitle>
         </IonCardHeader>
         <IonCardContent>
-          <IonButton onClick={addNewData}>Load</IonButton>
+          <IonButton onClick={addNewData}>{tr('Load')}</IonButton>
         </IonCardContent>
       </IonCard>
       <IonCard>
         <IonCardHeader>
-          <IonCardTitle>Seed some random data</IonCardTitle>
+          <IonCardTitle>{tr('Seed some random data')}</IonCardTitle>
         </IonCardHeader>
       </IonCard>
       <IonCard>
         <IonCardHeader>
-          <IonCardTitle>Sync Data</IonCardTitle>
+          <IonCardTitle>{tr('Sync Data')}</IonCardTitle>
         </IonCardHeader>
         <IonCardContent>
           <IonButton
@@ -208,8 +354,8 @@ export function AdminPage() {
             disabled={syncInLoadingStatus === LoadingStatuses.LOADING}
           >
             {syncInLoadingStatus === LoadingStatuses.LOADING
-              ? 'Syncing In...'
-              : 'Sync In'}
+              ? tr('Syncing In...')
+              : tr('Sync In')}
           </IonButton>
           <IonButton
             className="text-transform-none"
@@ -217,30 +363,38 @@ export function AdminPage() {
             disabled={syncOutLoadingStatus === LoadingStatuses.LOADING}
           >
             {syncOutLoadingStatus === LoadingStatuses.LOADING
-              ? 'Syncing Out...'
-              : 'Sync Out'}
+              ? tr('Syncing Out...')
+              : tr('Sync Out')}
           </IonButton>
         </IonCardContent>
       </IonCard>
       <IonCard>
         <IonCardHeader>
-          <IonCardTitle>Delete all local data</IonCardTitle>
+          <IonCardTitle>{tr('Delete all local data')}</IonCardTitle>
         </IonCardHeader>
         <IonCardContent>
           <IonButton
             className="text-transform-none"
             onClick={handleResetLocalGraphData}
           >
-            Reset Local Data
+            {tr('Reset Local Data')}
           </IonButton>
         </IonCardContent>
       </IonCard>
       <IonCard>
         <IonCardHeader>
-          <IonCardTitle>Materialize Table</IonCardTitle>
+          <IonCardTitle>{tr('Materialize Table')}</IonCardTitle>
         </IonCardHeader>
         <IonCardContent>
-          <IonButton onClick={materialize}>Materialize</IonButton>
+          <IonButton onClick={materialize}>{tr('Materialize')}</IonButton>
+        </IonCardContent>
+      </IonCard>
+      <IonCard>
+        <IonCardHeader>
+          <IonCardTitle>{tr('Site Text Seed')}</IonCardTitle>
+        </IonCardHeader>
+        <IonCardContent>
+          <IonButton onClick={seedSiteText}>{tr('Seed')}</IonButton>
         </IonCardContent>
       </IonCard>
       <IonLoading
