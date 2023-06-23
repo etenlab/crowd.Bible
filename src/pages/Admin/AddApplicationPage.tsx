@@ -1,5 +1,6 @@
 import { ChangeEventHandler, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+
 import {
   CrowdBibleUI,
   MuiMaterial,
@@ -13,6 +14,8 @@ import {
 import { PageLayout } from '@/components/Layout';
 import { RouteConst } from '@/constants/route.constant';
 
+import { useTr } from '@/hooks/useTr';
+
 const orgs = [
   'Organization Name 1',
   'Organization Name 2',
@@ -24,6 +27,8 @@ const { Stack } = MuiMaterial;
 
 export function AddApplicationPage() {
   const history = useHistory();
+  const { tr } = useTr();
+
   const { orgId } = useParams<{ orgId: string }>();
   const [appName, setAppName] = useState<string>('');
   const [org, setOrg] = useState<string | null>(null);
@@ -55,12 +60,12 @@ export function AddApplicationPage() {
 
   return (
     <PageLayout>
-      <HeadBox title="assign new application" />
+      <HeadBox title={tr('assign new application')} />
       <Stack sx={{ padding: '20px' }} gap="30px">
         <Stack gap="12px">
           {orgId ? (
             <Input
-              label="Organization"
+              label={tr('Organization')}
               fullWidth
               defaultValue={orgId}
               withLegend={false}
@@ -68,7 +73,7 @@ export function AddApplicationPage() {
             />
           ) : (
             <Autocomplete
-              label="Choose Organization Name"
+              label={tr('Choose Organization Name')}
               options={orgs}
               value={org}
               isOptionEqualToValue={(option, value) => option === value}
@@ -80,7 +85,7 @@ export function AddApplicationPage() {
         </Stack>
         <Stack gap="12px">
           <Input
-            label="Application"
+            label={tr('Application')}
             fullWidth
             value={appName}
             onChange={handleChange}
@@ -96,7 +101,7 @@ export function AddApplicationPage() {
             onClick={handleAdd}
           >
             <DiAdd fontSize="small" />
-            Add New
+            {tr('Add New')}
           </Button>
           <Button
             variant="text"
@@ -109,7 +114,7 @@ export function AddApplicationPage() {
               color="text.gray"
               sx={{ fontWeight: 500 }}
             >
-              Cancel
+              {tr('Cancel')}
             </Typography>
           </Button>
         </Stack>

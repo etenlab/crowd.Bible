@@ -12,6 +12,8 @@ import {
 import { PageLayout } from '@/components/Layout';
 import { RouteConst } from '@/constants/route.constant';
 
+import { useTr } from '@/hooks/useTr';
+
 const { HeadBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
@@ -26,6 +28,7 @@ const roles = ['Project Manager', 'Developer', 'Administrator'];
 export function AddRolePage() {
   const history = useHistory();
   const { userId } = useParams<{ userId: string }>();
+  const { tr } = useTr();
 
   const [org, setOrg] = useState<string | null>(null);
   const [app, setApp] = useState<string | null>(null);
@@ -62,11 +65,11 @@ export function AddRolePage() {
 
   return (
     <PageLayout>
-      <HeadBox title="assign new role" />
+      <HeadBox title={tr('assign new role')} />
       <Stack sx={{ padding: '20px' }} gap="30px">
         <Stack gap="12px">
           <Autocomplete
-            label="Choose Organization Name"
+            label={tr('Choose Organization Name')}
             options={orgs}
             value={org}
             isOptionEqualToValue={(option, value) => option === value}
@@ -75,7 +78,7 @@ export function AddRolePage() {
             withLegend={false}
           />
           <Autocomplete
-            label="Choose Application Name"
+            label={tr('Choose Application Name')}
             options={apps}
             value={app}
             isOptionEqualToValue={(option, value) => option === value}
@@ -84,7 +87,7 @@ export function AddRolePage() {
             withLegend={false}
           />
           <Autocomplete
-            label="Choose Role"
+            label={tr('Choose Role')}
             options={roles}
             value={role}
             isOptionEqualToValue={(option, value) => option === value}
@@ -102,7 +105,7 @@ export function AddRolePage() {
             onClick={handleAdd}
           >
             <DiAdd fontSize="small" />
-            Add New Role
+            {tr('Add New Role')}
           </Button>
           <Button
             variant="text"
@@ -115,7 +118,7 @@ export function AddRolePage() {
               color="text.gray"
               sx={{ fontWeight: 500 }}
             >
-              Cancel
+              {tr('Cancel')}
             </Typography>
           </Button>
         </Stack>

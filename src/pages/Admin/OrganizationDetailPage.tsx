@@ -11,14 +11,16 @@ import {
 import { PageLayout } from '@/components/Layout';
 import { RouteConst } from '@/constants/route.constant';
 
-const { Stack } = MuiMaterial;
+import { useTr } from '@/hooks/useTr';
 
+const { Stack } = MuiMaterial;
 const { HeadBox } = CrowdBibleUI;
 
 export function OrganizationDetailPage() {
   const history = useHistory();
   const { orgId } = useParams<{ orgId: string }>();
   const { getColor } = useColorModeContext();
+  const { tr } = useTr();
 
   const goApplications = () => {
     history.push(`${RouteConst.ADMIN}/organization/${orgId}/applications`);
@@ -61,7 +63,7 @@ export function OrganizationDetailPage() {
               sx={{ fontWeight: 600 }}
               color="text.dark"
             >
-              Applications
+              {tr('Applications')}
             </Typography>
           </Stack>
         </Stack>
@@ -90,7 +92,7 @@ export function OrganizationDetailPage() {
               sx={{ fontWeight: 600 }}
               color="text.dark"
             >
-              Users
+              {tr('Users')}
             </Typography>
           </Stack>
         </Stack>

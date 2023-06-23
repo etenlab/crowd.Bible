@@ -10,12 +10,29 @@ import {
 import { PageLayout } from '@/components/Layout';
 import { RouteConst } from '@/constants/route.constant';
 
+import { useTr } from '@/hooks/useTr';
+
 const { ButtonList, HeadBox } = CrowdBibleUI;
 const { Box, Stack } = MuiMaterial;
 
+const roles = [
+  {
+    user: 'michael@test.com',
+    role: 'Project Manager',
+    id: 'role_id_1',
+  },
+  {
+    user: 'aslam@test.com',
+    role: 'Developer',
+    id: 'role_id_2',
+  },
+];
+
 export function OrganizationApplicationDetailsPage() {
   const history = useHistory();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { orgId, appId } = useParams<{ orgId: string; appId: string }>();
+  const { tr } = useTr();
 
   const handleClickBackBtn = () => {
     history.goBack();
@@ -26,19 +43,6 @@ export function OrganizationApplicationDetailsPage() {
   const editRole = (roleId: string) => () => {
     history.push(`${RouteConst.ADMIN}/role/${roleId}`);
   };
-
-  const roles = [
-    {
-      user: 'michael@test.com',
-      role: 'Project Manager',
-      id: 'role_id_1',
-    },
-    {
-      user: 'aslam@test.com',
-      role: 'Developer',
-      id: 'role_id_2',
-    },
-  ];
 
   const items = roles.map((r) => ({
     label: (
@@ -72,7 +76,7 @@ export function OrganizationApplicationDetailsPage() {
         <HeadBox back={{ action: handleClickBackBtn }} title={appId} />
       </Box>
       <ButtonList
-        label="Roles"
+        label={tr('Roles')}
         withUnderline={true}
         items={items}
         onClick={() => {}}

@@ -4,10 +4,13 @@ import { CrowdBibleUI, FilterButton, PlusButton } from '@eten-lab/ui-kit';
 import { PageLayout } from '@/components/Layout';
 import { RouteConst } from '@/constants/route.constant';
 
+import { useTr } from '@/hooks/useTr';
+
 const { ButtonList, HeadBox } = CrowdBibleUI;
 
 export function UsersPage() {
   const history = useHistory();
+  const { tr } = useTr();
 
   const handleClickBackBtn = () => {
     history.goBack();
@@ -42,16 +45,16 @@ export function UsersPage() {
     <PageLayout>
       <HeadBox
         back={{ action: handleClickBackBtn }}
-        title="Users"
+        title={tr('Users')}
         search={{
           onChange: handleSearch,
-          placeHolder: 'Find users',
+          placeHolder: tr('Find users'),
           value: '',
         }}
       />
       <br />
       <ButtonList
-        label="List of Users"
+        label={tr('List of Users')}
         withUnderline={true}
         items={items}
         onClick={handleClickItem}

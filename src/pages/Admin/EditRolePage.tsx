@@ -12,6 +12,8 @@ import {
   Input,
 } from '@eten-lab/ui-kit';
 
+import { useTr } from '@/hooks/useTr';
+
 import { PageLayout } from '@/components/Layout';
 // import { RouteConst } from '@/constants/route.constant';
 
@@ -29,6 +31,7 @@ const roles = ['Project Manager', 'Developer', 'Administrator'];
 export function EditRolePage() {
   const history = useHistory();
   // const { roleId } = useParams<{ roleId: string }>();
+  const { tr } = useTr();
 
   const org = orgs[0];
   const app = apps[0];
@@ -51,25 +54,25 @@ export function EditRolePage() {
 
   return (
     <PageLayout>
-      <HeadBox title="Edit Role" />
+      <HeadBox title={tr('Edit Role')} />
       <Stack sx={{ padding: '20px' }} gap="30px">
         <Stack gap="12px">
           <Input
-            label="Organization"
+            label={tr('Organization')}
             disabled
             fullWidth
             value={org}
             withLegend={false}
           />
           <Input
-            label="Application"
+            label={tr('Application')}
             disabled
             fullWidth
             value={app}
             withLegend={false}
           />
           <Autocomplete
-            label="Choose Role"
+            label={tr('Choose Role')}
             options={roles}
             value={role}
             isOptionEqualToValue={(option, value) => option === value}
@@ -86,7 +89,7 @@ export function EditRolePage() {
             sx={{ alignItems: 'center' }}
             onClick={handleSave}
           >
-            Save
+            {tr('Save')}
           </Button>
           <Button
             variant="text"
@@ -99,7 +102,7 @@ export function EditRolePage() {
               color="text.gray"
               sx={{ fontWeight: 500 }}
             >
-              Cancel
+              {tr('Cancel')}
             </Typography>
           </Button>
         </Stack>
