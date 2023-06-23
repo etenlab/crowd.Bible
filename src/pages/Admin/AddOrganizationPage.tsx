@@ -12,11 +12,14 @@ import {
 import { PageLayout } from '@/components/Layout';
 import { RouteConst } from '@/constants/route.constant';
 
+import { useTr } from '@/hooks/useTr';
+
 const { HeadBox } = CrowdBibleUI;
 const { Stack } = MuiMaterial;
 
 export function AddOrganizationPage() {
   const history = useHistory();
+  const { tr } = useTr();
 
   const [orgName, setOrgName] = useState<string>('');
 
@@ -33,11 +36,11 @@ export function AddOrganizationPage() {
 
   return (
     <PageLayout>
-      <HeadBox title="assign new organization" />
+      <HeadBox title={tr('assign new organization')} />
       <Stack sx={{ padding: '20px' }} gap="30px">
         <Stack gap="12px">
           <Input
-            label="Organization"
+            label={tr('Organization')}
             fullWidth
             value={orgName}
             onChange={handleChange}
@@ -53,7 +56,7 @@ export function AddOrganizationPage() {
             onClick={handleAdd}
           >
             <DiAdd fontSize="small" />
-            Add New
+            {tr('Add New')}
           </Button>
           <Button
             variant="text"
@@ -66,7 +69,7 @@ export function AddOrganizationPage() {
               color="text.gray"
               sx={{ fontWeight: 500 }}
             >
-              Cancel
+              {tr('Cancel')}
             </Typography>
           </Button>
         </Stack>

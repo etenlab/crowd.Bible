@@ -4,6 +4,9 @@ import { CrowdBibleUI, MuiMaterial, Button } from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
 import { CheckboxList } from '@/components/CheckboxList';
+
+import { useTr } from '@/hooks/useTr';
+
 import { nanoid } from 'nanoid';
 
 const { HeadBox } = CrowdBibleUI;
@@ -25,6 +28,8 @@ type Item = {
 
 export function UsersFilterPage() {
   const history = useHistory();
+  const { tr } = useTr();
+
   const [orgItems, setOrgItems] = useState<Item[]>(() => {
     return orgs.map((o: string) => ({
       id: nanoid(),
@@ -42,7 +47,7 @@ export function UsersFilterPage() {
   });
 
   const handleOrgChange = (
-    event: React.SyntheticEvent,
+    _event: React.SyntheticEvent,
     newValue: boolean,
     id: string,
   ) => {
@@ -60,7 +65,7 @@ export function UsersFilterPage() {
   };
 
   const handleAppChange = (
-    event: React.SyntheticEvent,
+    _event: React.SyntheticEvent,
     newValue: boolean,
     id: string,
   ) => {
@@ -87,19 +92,19 @@ export function UsersFilterPage() {
 
   return (
     <PageLayout>
-      <HeadBox title="Choose Filters" />
+      <HeadBox title={tr('Choose Filters')} />
       <Stack sx={{ padding: '8px 20px' }} gap="20px">
         <Stack gap="40px">
           <CheckboxList
             items={orgItems}
-            label="ORGANIZATION"
+            label={tr('ORGANIZATION')}
             onChange={handleOrgChange}
             withUnderline
             underlineColor="#5C66730A"
           />
           <CheckboxList
             items={appItems}
-            label="APPLICATION"
+            label={tr('APPLICATION')}
             onChange={handleAppChange}
             withUnderline
             underlineColor="#5C66730A"
@@ -113,7 +118,7 @@ export function UsersFilterPage() {
             sx={{ alignItems: 'center' }}
             onClick={handleApply}
           >
-            Apply
+            {tr('Apply')}
           </Button>
           <Button
             variant="text"
@@ -126,7 +131,7 @@ export function UsersFilterPage() {
               color="text.gray"
               sx={{ fontWeight: 500 }}
             >
-              Cancel
+              {tr('Cancel')}
             </Typography>
           </Button>
         </Stack>

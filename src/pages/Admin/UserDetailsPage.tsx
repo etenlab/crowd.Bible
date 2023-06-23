@@ -10,12 +10,15 @@ import {
 import { PageLayout } from '@/components/Layout';
 import { RouteConst } from '@/constants/route.constant';
 
+import { useTr } from '@/hooks/useTr';
+
 const { ButtonList, HeadBox } = CrowdBibleUI;
 const { Box, Stack } = MuiMaterial;
 
 export function UserDetailsPage() {
   const history = useHistory();
   const { userId } = useParams<{ userId: string }>();
+  const { tr } = useTr();
 
   const handleClickBackBtn = () => {
     history.goBack();
@@ -87,7 +90,7 @@ export function UserDetailsPage() {
         <HeadBox back={{ action: handleClickBackBtn }} title={userId} />
       </Box>
       <ButtonList
-        label="Roles"
+        label={tr('Roles')}
         withUnderline={true}
         items={items}
         onClick={() => {}}

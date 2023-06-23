@@ -8,11 +8,14 @@ import {
 import { PageLayout } from '@/components/Layout';
 import { RouteConst } from '@/constants/route.constant';
 
+import { useTr } from '@/hooks/useTr';
+
 const { ButtonList, HeadBox } = CrowdBibleUI;
 
 export function OrganizationApplicationsPage() {
   const history = useHistory();
   const { orgId } = useParams<{ orgId: string }>();
+  const { tr } = useTr();
 
   const handleClickBackBtn = () => {
     history.goBack();
@@ -54,13 +57,13 @@ export function OrganizationApplicationsPage() {
         title={orgId}
         search={{
           onChange: handleSearch,
-          placeHolder: 'Find users',
+          placeHolder: tr('Find users'),
           value: '',
         }}
       />
       <br />
       <ButtonList
-        label="List of Applications"
+        label={tr('List of Applications')}
         withUnderline={true}
         items={items}
         onClick={handleClickItem}
