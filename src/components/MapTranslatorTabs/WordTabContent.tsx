@@ -146,6 +146,7 @@ export const WordTabContent = () => {
 
       for (const translation of word.translations || []) {
         if (!translation.isNew) continue;
+        if (translation.word.length < 1) continue;
         const translationWordId =
           await singletons.wordService.createOrFindWordOrPhraseWithLang(
             translation.word,
@@ -159,7 +160,7 @@ export const WordTabContent = () => {
         savedWordIds.push(word.id);
       }
     }
-    // TODO may be optimised if invend special methods to get words prefiltered by map also (not only language)
+    // TODO may be optimised if invent special methods to get words prefiltered by map also (not only language)
     const allWordsAsVotableItems = await getWordsAsVotableItems(
       sourceLangInfo,
       targetLangInfo,
@@ -315,9 +316,32 @@ export const WordTabContent = () => {
               );
             })}
           </Stack>
-          <Button variant={'contained'} fullWidth onClick={storeTranslations}>
-            Save
-          </Button>
+          <Stack
+            direction={'row'}
+            alignItems={'stretch'}
+            width={'100%'}
+            spacing={`${PADDING}px`}
+          >
+            <Box flexGrow={1}>
+              <Button
+                variant={'contained'}
+                fullWidth
+                onClick={() => setStep(Steps.GET_LANGUAGES)}
+              >
+                <TbArrowBack />
+                Back
+              </Button>
+            </Box>
+            <Box flexGrow={1}>
+              <Button
+                variant={'contained'}
+                fullWidth
+                onClick={storeTranslations}
+              >
+                Save
+              </Button>
+            </Box>
+          </Stack>
         </>
       ) : (
         <></>
@@ -359,8 +383,6 @@ export const WordTabContent = () => {
             </Box>
             <StyledFilterButton
               onClick={() => {
-                setSourceLangInfo(undefined);
-                setTargetLangInfo(undefined);
                 setStep(0);
               }}
             />
@@ -380,6 +402,23 @@ export const WordTabContent = () => {
                 }
               />
             ))}
+          </Stack>
+          <Stack
+            direction={'row'}
+            alignItems={'stretch'}
+            width={'100%'}
+            spacing={`${PADDING}px`}
+          >
+            <Box flexGrow={1}>
+              <Button
+                variant={'contained'}
+                fullWidth
+                onClick={() => setStep(Steps.INPUT_TRANSLATIONS)}
+              >
+                <TbArrowBack />
+                Back
+              </Button>
+            </Box>
           </Stack>
         </>
       ) : (
