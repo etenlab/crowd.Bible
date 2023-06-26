@@ -27,12 +27,13 @@ import {
 import { VotableItem } from '../../dtos/votable-item.dto';
 import { ElectionTypeConst, LoggerService } from '@eten-lab/core';
 import { UpOrDownVote, VoteTypes } from '../../constants/common.constant';
+import { BottomButtons } from './BottomButtons';
 
 const { ItemContentListEdit } = CrowdBibleUI;
 const { Box, Divider, Stack } = MuiMaterial;
 const logger = new LoggerService();
 
-enum Steps {
+export enum Steps {
   GET_LANGUAGES = 0,
   INPUT_TRANSLATIONS = 1,
   VOTE = 2,
@@ -273,7 +274,7 @@ export const WordTabContent = () => {
               }}
             />
           </Box>
-          <Stack divider={<Divider />} width={'100%'}>
+          <Stack divider={<Divider />} width={'100%'} paddingBottom={'40px'}>
             {words.map((word, idx) => {
               return (
                 <Box
@@ -328,32 +329,10 @@ export const WordTabContent = () => {
               );
             })}
           </Stack>
-          <Stack
-            direction={'row'}
-            alignItems={'stretch'}
-            width={'100%'}
-            spacing={`${PADDING}px`}
-          >
-            <Box flexGrow={1}>
-              <Button
-                variant={'contained'}
-                fullWidth
-                onClick={() => setStep(Steps.GET_LANGUAGES)}
-              >
-                <TbArrowBack />
-                Back
-              </Button>
-            </Box>
-            <Box flexGrow={1}>
-              <Button
-                variant={'contained'}
-                fullWidth
-                onClick={storeTranslations}
-              >
-                Save
-              </Button>
-            </Box>
-          </Stack>
+          <BottomButtons
+            setStep={() => setStep(Steps.GET_LANGUAGES)}
+            storeTranslations={storeTranslations}
+          ></BottomButtons>
         </>
       ) : (
         <></>
@@ -415,23 +394,7 @@ export const WordTabContent = () => {
               />
             ))}
           </Stack>
-          <Stack
-            direction={'row'}
-            alignItems={'stretch'}
-            width={'100%'}
-            spacing={`${PADDING}px`}
-          >
-            <Box flexGrow={1}>
-              <Button
-                variant={'contained'}
-                fullWidth
-                onClick={() => setStep(Steps.INPUT_TRANSLATIONS)}
-              >
-                <TbArrowBack />
-                Back
-              </Button>
-            </Box>
-          </Stack>
+          <BottomButtons setStep={() => setStep(Steps.INPUT_TRANSLATIONS)} />
         </>
       ) : (
         <></>
