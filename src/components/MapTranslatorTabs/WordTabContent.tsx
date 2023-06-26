@@ -44,11 +44,17 @@ export const WordTabContent = () => {
   const {
     states: {
       global: { singletons },
+      documentTools: { sourceLanguage, targetLanguage },
     },
+    actions: { setSourceLanguage, setTargetLanguage },
   } = useAppContext();
   const [words, setWords] = useState<WordItem[]>([]);
-  const [sourceLangInfo, setSourceLangInfo] = useState<LanguageInfo>();
-  const [targetLangInfo, setTargetLangInfo] = useState<LanguageInfo>();
+  const [sourceLangInfo, setSourceLangInfo] = useState<
+    LanguageInfo | undefined
+  >(sourceLanguage || undefined);
+  const [targetLangInfo, setTargetLangInfo] = useState<
+    LanguageInfo | undefined
+  >(targetLanguage || undefined);
   const [step, setStep] = useState<Steps>(Steps.GET_LANGUAGES);
   const { getWordsWithLangs, changeTranslationVotes } =
     useMapTranslationTools();
@@ -67,6 +73,22 @@ export const WordTabContent = () => {
     },
     [changeTranslationVotes, wordsVotableItems],
   );
+
+  const handleSetSourceLanguage = (
+    _langTag: string,
+    langInfo: LanguageInfo,
+  ) => {
+    setSourceLanguage(langInfo);
+    setSourceLangInfo(langInfo);
+  };
+
+  const handleSetTargetLanguage = (
+    _langTag: string,
+    langInfo: LanguageInfo,
+  ) => {
+    setTargetLanguage(langInfo);
+    setTargetLangInfo(langInfo);
+  };
 
   const getWordsAsVotableItems = useCallback(
     async (
@@ -193,9 +215,7 @@ export const WordTabContent = () => {
             <LangSelector
               label="Select the source language"
               selected={sourceLangInfo}
-              onChange={(_langTag: string, langInfo: LanguageInfo) =>
-                setSourceLangInfo(langInfo)
-              }
+              onChange={handleSetSourceLanguage}
             />
           </Box>
 
@@ -203,9 +223,7 @@ export const WordTabContent = () => {
             <LangSelector
               label="Select the target language"
               selected={targetLangInfo}
-              onChange={(_langTag: string, langInfo: LanguageInfo) =>
-                setTargetLangInfo(langInfo)
-              }
+              onChange={handleSetTargetLanguage}
             />
           </Box>
 
