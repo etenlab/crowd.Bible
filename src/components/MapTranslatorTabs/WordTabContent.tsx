@@ -8,6 +8,8 @@ import {
   LanguageInfo,
   Button,
   MuiMaterial,
+  DiArrowRight,
+  TbArrowBack,
 } from '@eten-lab/ui-kit';
 import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import {
@@ -189,6 +191,7 @@ export const WordTabContent = () => {
           <Box width={'100%'}>
             <LangSelector
               label="Select the source language"
+              selected={sourceLangInfo}
               onChange={(_langTag: string, langInfo: LanguageInfo) =>
                 setSourceLangInfo(langInfo)
               }
@@ -198,6 +201,7 @@ export const WordTabContent = () => {
           <Box width={'100%'}>
             <LangSelector
               label="Select the target language"
+              selected={targetLangInfo}
               onChange={(_langTag: string, langInfo: LanguageInfo) =>
                 setTargetLangInfo(langInfo)
               }
@@ -239,7 +243,7 @@ export const WordTabContent = () => {
               >
                 {langInfo2String(sourceLangInfo)}
               </Typography>
-              <IonIcon icon={arrowForwardOutline}></IonIcon>
+              <DiArrowRight />
               <Typography
                 fontWeight={600}
                 color={'text.dark'}
@@ -252,8 +256,6 @@ export const WordTabContent = () => {
             </Box>
             <StyledFilterButton
               onClick={() => {
-                setSourceLangInfo(undefined);
-                setTargetLangInfo(undefined);
                 setStep(0);
               }}
             />
