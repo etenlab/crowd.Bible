@@ -23,7 +23,6 @@ export function BottomButtons({
         >
           <TbArrowBack />
           {tr('Back')}
-          Back
         </Button>
       </Box>
       {storeTranslations ? (
