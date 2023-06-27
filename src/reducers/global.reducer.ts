@@ -50,6 +50,7 @@ export interface TempSiteTextItem {
 }
 
 export interface Loading {
+  id: string;
   message?: string;
   status?: string;
   isCancelButton?: boolean;
@@ -60,7 +61,7 @@ export interface StateType {
   mode: IMode;
   snack: SnackType;
   prefersColorScheme?: ColorThemes.LIGHT | ColorThemes.DARK;
-  loading?: Loading;
+  loadingStack: Loading[];
   connectivity: boolean;
   isNewDiscussion: boolean;
   isNewNotification: boolean;
@@ -86,6 +87,7 @@ export const initialState: StateType = {
     beta: false,
   },
   snack: initialSnack,
+  loadingStack: [],
   prefersColorScheme: undefined,
   connectivity: true,
   isNewDiscussion: false,
@@ -180,7 +182,17 @@ export function reducer(
     case actions.SET_LOGING_STATE: {
       return {
         ...prevState,
-        loading: action.payload as Loading | undefined,
+        loadingStack: [...prevState.loadingStack, action.payload as Loading],
+      };
+    }
+    case actions.DELETE_LOADING_STATE: {
+      return {
+        ...prevState,
+        loadingStack: [
+          ...prevState.loadingStack.filter(
+            (loading) => loading.id !== (action.payload as string),
+          ),
+        ],
       };
     }
     case actions.SET_SINGLETONS: {

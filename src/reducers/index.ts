@@ -48,7 +48,7 @@ export function persistStore(state: StateType) {
         global: {
           ...state.global,
           singletons: null,
-          loading: false,
+          loadingStack: [],
         },
         components: {},
       }),
@@ -71,6 +71,7 @@ export function loadPersistedStore(): StateType {
       ...newState,
       global: {
         ...newState.global,
+        loadingStack: [],
         connectivity: window.navigator.onLine,
       },
       components: {},
