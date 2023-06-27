@@ -236,6 +236,8 @@ export function useMapTranslationTools() {
         singletons.mapService.iterateOverINode(parsed, ['style'], (node) => {
           if (node.type === 'text' || node.type === 'textPath') {
             if (!node.value) return;
+            if (node.value.length <= 1) return;
+            if (!isNaN(Number(node.value))) return;
             const isExist = textArray.findIndex((w) => w === node.value);
             if (isExist < 0) {
               textArray.push(node.value);
