@@ -4,12 +4,11 @@ import React, { useCallback, useState } from 'react';
 import {
   Input,
   Typography,
-  LangSelector,
   LanguageInfo,
   Button,
   MuiMaterial,
   DiArrowRight,
-  TbArrowBack,
+  LangSelector,
 } from '@eten-lab/ui-kit';
 import { CrowdBibleUI } from '@eten-lab/ui-kit';
 import {
@@ -23,10 +22,10 @@ import { useAppContext } from '@/hooks/useAppContext';
 import {
   WordItem,
   useMapTranslationTools,
-} from '../../hooks/useMapTranslationTools';
-import { VotableItem } from '../../dtos/votable-item.dto';
+} from '@/hooks/useMapTranslationTools';
+import { VotableItem } from '@/dtos/votable-item.dto';
 import { ElectionTypeConst, LoggerService } from '@eten-lab/core';
-import { UpOrDownVote, VoteTypes } from '../../constants/common.constant';
+import { UpOrDownVote, VoteTypes } from '@/constants/common.constant';
 import { BottomButtons } from './BottomButtons';
 
 const { ItemContentListEdit } = CrowdBibleUI;
@@ -69,21 +68,19 @@ export const WordTabContent = () => {
     [changeTranslationVotes, wordsVotableItems],
   );
 
-  const handleSetSourceLanguage = (
-    _langTag: string,
-    langInfo: LanguageInfo,
-  ) => {
-    setSourceLanguage(langInfo);
-    setSourceLanguage(langInfo);
-  };
+  const handleSetSourceLanguage = useCallback(
+    (_langTag: string, langInfo: LanguageInfo) => {
+      setSourceLanguage(langInfo);
+    },
+    [setSourceLanguage],
+  );
 
-  const handleSetTargetLanguage = (
-    _langTag: string,
-    langInfo: LanguageInfo,
-  ) => {
-    setTargetLanguage(langInfo);
-    setTargetLanguage(langInfo);
-  };
+  const handleSetTargetLanguage = useCallback(
+    (_langTag: string, langInfo: LanguageInfo) => {
+      setTargetLanguage(langInfo);
+    },
+    [setTargetLanguage],
+  );
 
   const getWordsAsVotableItems = useCallback(
     async (
