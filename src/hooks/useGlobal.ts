@@ -10,6 +10,7 @@ import {
   setConnectivity as setConnectivityAction,
   logout as logoutAction,
   setLoadingState as setLoadingStateAction,
+  deleteLoadingState as deleteLoadingStateAction,
   setSingletons as setSingletonsAction,
   setSqlPortalShown as setSqlPortalShownAction,
   setSiteTextMap as setSiteTextMapAction,
@@ -29,6 +30,8 @@ import {
   type TempSiteTextItem,
 } from '@/reducers/global.reducer';
 import { type ISingletons } from '@/src/singletons';
+
+import { nanoid } from 'nanoid';
 
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { AppDto } from '@/dtos/document.dto';
@@ -80,19 +83,27 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     dispatchRef.current.dispatch(logoutAction());
   }, []);
 
-  const setLoadingState = useCallback(
-    (
-      isLoading: boolean,
-      message?: string,
-      status?: string,
-      isCancelButton?: boolean,
-    ) => {
-      dispatchRef.current.dispatch(
-        setLoadingStateAction(isLoading, message, status, isCancelButton),
-      );
+  const createLoadingStack = useCallback(
+    (message?: string, status?: string, isCancelButton?: boolean) => {
+      const id = nanoid();
+
+      return {
+        startLoading() {
+          dispatchRef.current.dispatch(
+            setLoadingStateAction(id, message, status, isCancelButton),
+          );
+        },
+        stopLoading() {
+          dispatchRef.current.dispatch(deleteLoadingStateAction(id));
+        },
+      };
     },
     [],
   );
+
+  const deleteLoadingState = useCallback((id: string) => {
+    dispatchRef.current.dispatch(deleteLoadingStateAction(id));
+  }, []);
 
   const setSingletons = useCallback((singletons: ISingletons | null) => {
     dispatchRef.current.dispatch(setSingletonsAction(singletons));
@@ -136,7 +147,8 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     setPrefersColorScheme,
     alertFeedback,
     closeFeedback,
-    setLoadingState,
+    createLoadingStack,
+    deleteLoadingState,
     setSingletons,
     setSqlPortalShown,
     setSiteTextMap,

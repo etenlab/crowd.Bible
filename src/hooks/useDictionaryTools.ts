@@ -19,7 +19,7 @@ export function useDictionaryTools(
     states: {
       global: { singletons },
     },
-    actions: { alertFeedback, setLoadingState },
+    actions: { alertFeedback, createLoadingStack },
     logger,
   } = useAppContext();
   const { getVotesStats, toggleVote } = useVote();
@@ -33,11 +33,13 @@ export function useDictionaryTools(
       itemText: string,
       languageInfo: LanguageInfo | null,
     ) => {
+      const { startLoading, stopLoading } = createLoadingStack();
       try {
         if (!definitionService)
           throw new Error(`definitionService not defined`);
         if (!languageInfo) throw new Error(`languageInfo not provided `);
-        setLoadingState(true);
+
+        startLoading();
 
         const existingItem = items.find((it) => it.title.content === itemText);
         if (existingItem) {
@@ -96,12 +98,12 @@ export function useDictionaryTools(
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       } finally {
         setIsDialogOpened(false);
-        setLoadingState(false);
+        stopLoading();
       }
     },
     [
       definitionService,
-      setLoadingState,
+      createLoadingStack,
       singletons?.definitionService,
       singletons?.wordService,
       setItems,
@@ -118,13 +120,15 @@ export function useDictionaryTools(
       upOrDown: UpOrDownVote,
       items: VotableItem[],
     ) => {
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
         if (!candidateId) {
           throw new Error(
             '!candidateId : No candidate entry given to change votes',
           );
         }
-        setLoadingState(true);
+        startLoading();
         await toggleVote(candidateId, upOrDown === VoteTypes.UP); // if not upVote, it calculated as false and toggleVote treats false as downVote
         const votes = await getVotesStats(candidateId);
         const wordIdx = items.findIndex(
@@ -138,11 +142,11 @@ export function useDictionaryTools(
         logger.error(error);
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       } finally {
-        setLoadingState(false);
+        stopLoading();
       }
     },
     [
-      setLoadingState,
+      createLoadingStack,
       toggleVote,
       getVotesStats,
       setItems,
@@ -158,6 +162,8 @@ export function useDictionaryTools(
       selectedItem: VotableItem | null,
       setSelectedItem: (item: VotableItem) => void,
     ) => {
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
         if (!definitionService) {
           throw new Error(`!definitionService when addDefinition`);
@@ -170,7 +176,7 @@ export function useDictionaryTools(
             `There is no ElectionId at ${itemsType} id ${selectedItem.title.id}`,
           );
         }
-        setLoadingState(true);
+        startLoading();
 
         const itemIdx = items.findIndex(
           (phrase) => phrase.title.id === selectedItem.title.id,
@@ -207,7 +213,7 @@ export function useDictionaryTools(
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       } finally {
         setIsDialogOpened(false);
-        setLoadingState(false);
+        stopLoading();
       }
     },
     [
@@ -216,7 +222,7 @@ export function useDictionaryTools(
       itemsType,
       alertFeedback,
       setIsDialogOpened,
-      setLoadingState,
+      createLoadingStack,
       logger,
     ],
   );
@@ -272,6 +278,8 @@ export function useDictionaryTools(
       candidateId: Nanoid | null,
       upOrDown: UpOrDownVote,
     ) => {
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
         if (!selectedItem?.title?.id) {
           throw new Error(
@@ -283,6 +291,8 @@ export function useDictionaryTools(
             `!candidateId: There is no assigned candidateId for this definition`,
           );
         }
+
+        startLoading();
         const wordIdx = items.findIndex(
           (w) => w.title.id === selectedItem?.title.id,
         );
@@ -306,7 +316,7 @@ export function useDictionaryTools(
         logger.error(error);
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       } finally {
-        setLoadingState(false);
+        stopLoading();
       }
     },
     [
@@ -315,7 +325,7 @@ export function useDictionaryTools(
       setItems,
       itemsType,
       alertFeedback,
-      setLoadingState,
+      createLoadingStack,
       logger,
     ],
   );

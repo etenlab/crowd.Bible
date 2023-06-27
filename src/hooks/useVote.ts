@@ -9,7 +9,7 @@ export function useVote() {
     states: {
       global: { singletons, user },
     },
-    actions: { alertFeedback, setLoadingState },
+    actions: { alertFeedback, createLoadingStack },
     logger,
   } = useAppContext();
 
@@ -28,8 +28,10 @@ export function useVote() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const electionId = await singletons.votingService.createOrFindElection(
           electionType,
           electionRef,
@@ -37,18 +39,18 @@ export function useVote() {
           candidateRefTableName,
         );
 
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.SUCCESS, 'Created a new Election!');
 
         return electionId;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getElectionById = useCallback(
@@ -58,21 +60,23 @@ export function useVote() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.votingService.getElectionById(
           electionId,
         );
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getElectionByRef = useCallback(
@@ -87,23 +91,25 @@ export function useVote() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.votingService.getElectionByRef(
           electionType,
           electionRef,
           refTableName,
         );
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getElectionFull = useCallback(
@@ -116,21 +122,23 @@ export function useVote() {
         return [];
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.votingService.getElectionFull(
           electionId,
         );
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const addCandidate = useCallback(
@@ -140,25 +148,27 @@ export function useVote() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const ballotEntryId = await singletons.votingService.addCandidate(
           electionId,
           candidateRef,
         );
 
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.SUCCESS, 'Created a new Election!');
 
         return ballotEntryId;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getCandidateById = useCallback(
@@ -168,21 +178,23 @@ export function useVote() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.votingService.getCandidateById(
           electionId,
         );
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getCandidateByRef = useCallback(
@@ -195,22 +207,24 @@ export function useVote() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.votingService.getCandidateByRef(
           electionId,
           candidateRef,
         );
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getVotesStats = useCallback(
@@ -220,21 +234,23 @@ export function useVote() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.votingService.getVotesStats(
           candidateId,
         );
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const addVote = useCallback(
@@ -249,26 +265,28 @@ export function useVote() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const userDto = await singletons.userService.createOrFindUser(
           user.userEmail,
         );
 
         await singletons.votingService.addVote(candidateId, userDto.id, vote);
 
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.SUCCESS, 'Created a new Vote!');
 
         return true;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, user, setLoadingState, logger],
+    [singletons, alertFeedback, user, createLoadingStack, logger],
   );
 
   const toggleVote = useCallback(
@@ -283,8 +301,10 @@ export function useVote() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const userDto = await singletons.userService.createOrFindUser(
           user.userEmail,
         );
@@ -303,17 +323,17 @@ export function useVote() {
         }
 
         await addVote(candidateId, voteValue);
-        setLoadingState(false);
+        stopLoading();
 
         return true;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, user, addVote, setLoadingState, logger],
+    [singletons, alertFeedback, user, addVote, createLoadingStack, logger],
   );
 
   return {
