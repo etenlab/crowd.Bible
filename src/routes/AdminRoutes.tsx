@@ -14,10 +14,13 @@ import { EditRolePage } from '@/pages/Admin/EditRolePage';
 import { UsersFilterPage } from '@/pages/Admin/UsersFilterPage';
 import { AddOrganizationPage } from '@/pages/Admin/AddOrganizationPage';
 import { AddApplicationPage } from '@/pages/Admin/AddApplicationPage';
+import { ImportPage } from '@/pages/Admin/ImportPage';
+import { SeedPage } from '@/pages/Admin/SeedPage';
+import { SyncPage } from '@/pages/Admin/SyncPage';
 
 export const AdminRoutes: CustomRouteProps[] = [
   {
-    path: `${RouteConst.ADMIN}/manage`,
+    path: `${RouteConst.ADMIN}`,
     children: <ManagePage />,
   },
   {
@@ -71,5 +74,17 @@ export const AdminRoutes: CustomRouteProps[] = [
   {
     path: `${RouteConst.ADMIN}/create-application`,
     children: <AddApplicationPage />,
+  },
+  {
+    path: `${RouteConst.ADMIN}/import`,
+    children: <ImportPage />,
+  },
+  {
+    path: `${RouteConst.ADMIN}/seed`,
+    children: <SeedPage />,
+  },
+  {
+    path: `${RouteConst.ADMIN}/sync`,
+    children: <SyncPage />,
   },
 ];
