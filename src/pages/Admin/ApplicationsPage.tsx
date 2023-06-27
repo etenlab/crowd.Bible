@@ -16,7 +16,7 @@ export function ApplicationsPage() {
     history.goBack();
   };
 
-  const handleClickItem = (value: string) => {};
+  const handleClickItem = (_value: string) => {};
 
   const handleAddApp = () => {
     history.push(`${RouteConst.ADMIN}/create-application`);

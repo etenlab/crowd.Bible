@@ -28,7 +28,7 @@ export const MapDetailPage = () => {
     states: {
       global: { singletons },
     },
-    actions: { setLoadingState, alertFeedback },
+    actions: { createLoadingStack, alertFeedback },
     logger,
   } = useAppContext();
   const { tr } = useTr();
@@ -48,13 +48,14 @@ export const MapDetailPage = () => {
     return () => {
       window.removeEventListener('resize', handleWindowResize);
     };
-  }, [setLoadingState]);
+  }, []);
 
   useEffect(() => {
     if (!singletons || !id) return;
     if (!singletons.mapService) return;
-    setLoadingState(true);
+    const { startLoading, stopLoading } = createLoadingStack();
     const findMapDetail = async (id: string) => {
+      startLoading();
       try {
         const [mapDto, mapWordsNodes] = await Promise.all([
           singletons.mapService.getMap(id),
@@ -74,11 +75,11 @@ export const MapDetailPage = () => {
         logger.error({ error }, 'Error with getting map details');
         router.goBack();
       } finally {
-        setLoadingState(false);
+        stopLoading();
       }
     };
     findMapDetail(id);
-  }, [singletons, id, router, alertFeedback, logger, setLoadingState]);
+  }, [singletons, id, router, alertFeedback, logger, createLoadingStack]);
 
   useEffect(() => {
     async function findFileData() {

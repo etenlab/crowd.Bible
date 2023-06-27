@@ -1,4 +1,4 @@
-import { useState, ChangeEventHandler } from 'react';
+import { useState, ChangeEventHandler, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { PageLayout } from '@/components/Layout';
@@ -30,12 +30,17 @@ export function NewApplicationAddPage() {
   const history = useHistory();
   const { createOrFindApp, getApp } = useDocument();
   const {
-    actions: { setLoadingState, alertFeedback },
+    actions: { createLoadingStack, alertFeedback },
   } = useAppContext();
   const { tr } = useTr();
 
   const [appName, setAppName] = useState<string>('');
   const [language, setLanguage] = useState<LanguageInfo>();
+
+  const { startLoading, stopLoading } = useMemo(
+    () => createLoadingStack(),
+    [createLoadingStack],
+  );
 
   const handleChangeName: ChangeEventHandler<HTMLInputElement> = (event) => {
     setAppName(event.target.value);
@@ -71,6 +76,14 @@ export function NewApplicationAddPage() {
     history.push(`${RouteConst.APPLICATION_LIST}`);
   };
 
+  const handleLoadingState = (loading: boolean) => {
+    if (loading) {
+      startLoading();
+    } else {
+      stopLoading();
+    }
+  };
+
   return (
     <PageLayout>
       <HeadBox title={tr('Add New Application')} />
@@ -91,7 +104,7 @@ export function NewApplicationAddPage() {
           label={tr('Select the language')}
           selected={language}
           onChange={handleChangeLanguage}
-          setLoadingState={setLoadingState}
+          setLoadingState={handleLoadingState}
         />
       </Stack>
       <Stack sx={{ padding: '20px' }}>

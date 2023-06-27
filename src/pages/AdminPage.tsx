@@ -59,7 +59,7 @@ export function AdminPage() {
     states: {
       global: { singletons, crowdBibleApp },
     },
-    actions: { setLoadingState, alertFeedback },
+    actions: { createLoadingStack, alertFeedback },
     logger,
   } = useAppContext();
   const { tr } = useTr();
@@ -94,14 +94,16 @@ export function AdminPage() {
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
 
-        setLoadingState(
-          true,
+        const { startLoading, stopLoading } = createLoadingStack(
           `Seeding (${key})`,
           `${tempProcessedSiteTexts.length} / ${keys.length}`,
           true,
         );
 
+        startLoading();
+
         if (tempProcessedSiteTexts.find((data) => data === key)) {
+          stopLoading();
           continue;
         }
 
@@ -163,12 +165,13 @@ export function AdminPage() {
           JSON.stringify([...tempProcessedSiteTexts, key]),
         );
         setProcessedSiteTexts([...tempProcessedSiteTexts, key]);
+
+        stopLoading();
         break;
       }
 
       if (!flg) {
         setLoadResult(`Total ${keys.length} / ${keys.length} loaded`);
-        setLoadingState(false);
       }
     })();
   }, [
@@ -176,7 +179,7 @@ export function AdminPage() {
     logger,
     processedSiteTexts,
     seeding,
-    setLoadingState,
+    createLoadingStack,
     singletons,
   ]);
 
@@ -268,7 +271,11 @@ export function AdminPage() {
 
   const doSyncOut = async () => {
     if (!singletons?.syncService) return;
-    setLoadingState(true);
+
+    const { startLoading, stopLoading } = createLoadingStack();
+
+    startLoading();
+
     setSyncOutLoadingStatus(LoadingStatuses.LOADING);
     try {
       const syncOutRes = await singletons.syncService.syncOut();
@@ -278,14 +285,15 @@ export function AdminPage() {
       logger.error('Error occurred while syncing out::', error);
       setLoadResult('Error occurred while syncing out.');
     } finally {
-      setLoadingState(false);
+      stopLoading();
       setSyncOutLoadingStatus(LoadingStatuses.FINISHED);
     }
   };
 
   const doSyncIn = async () => {
     if (!singletons?.syncService) return;
-    setLoadingState(true);
+    const { startLoading, stopLoading } = createLoadingStack();
+    startLoading();
     setSyncInLoadingStatus(LoadingStatuses.LOADING);
     try {
       await singletons.syncService.syncIn();
@@ -298,7 +306,7 @@ export function AdminPage() {
       );
       setLoadResult('Error occurred while syncing in.');
     } finally {
-      setLoadingState(false);
+      stopLoading();
       setSyncInLoadingStatus(LoadingStatuses.FINISHED);
     }
   };
@@ -309,7 +317,8 @@ export function AdminPage() {
 
   const handleResetLocalGraphData = async () => {
     if (!singletons) return false;
-    setLoadingState(true);
+    const { startLoading, stopLoading } = createLoadingStack();
+    startLoading();
     try {
       await singletons.dbService.resetAllData();
       singletons.syncService.clearAllSyncInfo();
@@ -320,7 +329,7 @@ export function AdminPage() {
         'Error when resetting data',
       );
     } finally {
-      setLoadingState(false);
+      stopLoading();
     }
   };
 

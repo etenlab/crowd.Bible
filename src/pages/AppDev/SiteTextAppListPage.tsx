@@ -34,7 +34,7 @@ export function SiteTextAppListPage() {
       global: { singletons },
       documentTools: { sourceLanguage, targetLanguage },
     },
-    actions: { setSourceLanguage, setTargetLanguage, setLoadingState },
+    actions: { setSourceLanguage, setTargetLanguage, createLoadingStack },
   } = useAppContext();
   const { tr } = useTr();
 
@@ -54,6 +54,11 @@ export function SiteTextAppListPage() {
       // }
     }
   }, [listApp, singletons, listAppByLanguageInfo, sourceLanguage]);
+
+  const { startLoading, stopLoading } = useMemo(
+    () => createLoadingStack(),
+    [createLoadingStack],
+  );
 
   const handleChangeSearchStr = (str: string) => {
     setSearchStr(str);
@@ -91,6 +96,14 @@ export function SiteTextAppListPage() {
     setFilterOpen(false);
   };
 
+  const handleLoadingState = (loading: boolean) => {
+    if (loading) {
+      startLoading();
+    } else {
+      stopLoading();
+    }
+  };
+
   const items: ButtonListItemType[] = useMemo(() => {
     return apps.map(({ id, name }) => ({
       value: id,
@@ -104,13 +117,13 @@ export function SiteTextAppListPage() {
         label={tr('Select the source language')}
         selected={sourceLanguage || undefined}
         onChange={handleSetSourceLanguage}
-        setLoadingState={setLoadingState}
+        setLoadingState={handleLoadingState}
       />
       <LangSelector
         label={tr('Select the target language')}
         selected={targetLanguage || undefined}
         onChange={handleSetTargetLanguage}
-        setLoadingState={setLoadingState}
+        setLoadingState={handleLoadingState}
       />
       <Button variant="contained" onClick={handleClickSearchButton}>
         {tr('Search')}
