@@ -1,5 +1,6 @@
 import { Button, TbArrowBack, MuiMaterial } from '@eten-lab/ui-kit';
 import { Steps } from './WordTabContent';
+import { useTr } from '../../hooks/useTr';
 const { Box, Stack, styled } = MuiMaterial;
 const PADDING = 15;
 export type BottomButtonsProps = {
@@ -11,6 +12,7 @@ export function BottomButtons({
   setStep,
   storeTranslations,
 }: BottomButtonsProps) {
+  const { tr } = useTr();
   return (
     <StickyStack direction={'row'} spacing={`${PADDING}px`}>
       <Box flexGrow={1}>
@@ -20,13 +22,14 @@ export function BottomButtons({
           onClick={() => setStep(Steps.GET_LANGUAGES)}
         >
           <TbArrowBack />
+          {tr('Back')}
           Back
         </Button>
       </Box>
       {storeTranslations ? (
         <Box flexGrow={1}>
           <Button variant={'contained'} fullWidth onClick={storeTranslations}>
-            Save
+            {tr('Save')}
           </Button>
         </Box>
       ) : (
