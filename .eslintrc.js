@@ -9,6 +9,7 @@ module.exports = {
     'config-overrides.js',
     'craco.config.js',
     'jest.config.ts',
+    'capacitor.config.ts',
   ],
   extends: [
     'plugin:react/recommended',

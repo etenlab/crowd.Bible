@@ -16,6 +16,7 @@ import { DocumentDto } from '@/dtos/document.dto';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useDocument } from '@/hooks/useDocument';
+import { useTr } from '@/hooks/useTr';
 
 import { compareLangInfo } from '@/utils/langUtils';
 import { RouteConst } from '@/constants/route.constant';
@@ -36,6 +37,7 @@ export function DocumentsListPage() {
     },
     actions: { setSourceLanguage, setLoadingState },
   } = useAppContext();
+  const { tr } = useTr();
 
   const { listDocument, listDocumentByLanguageInfo } = useDocument();
 
@@ -97,7 +99,7 @@ export function DocumentsListPage() {
 
   const langSelectorCom = filterOpen ? (
     <LangSelector
-      label="Select the source language"
+      label={tr('Select the source language')}
       selected={sourceLanguage || undefined}
       onChange={handleSetSourceLanguage}
       setLoadingState={setLoadingState}
@@ -107,7 +109,7 @@ export function DocumentsListPage() {
   return (
     <PageLayout>
       <HeadBox
-        title="Documents"
+        title={tr('Documents')}
         filter={{
           onClick: handleClickLanguageFilter,
         }}
@@ -117,11 +119,11 @@ export function DocumentsListPage() {
         {langSelectorCom}
       </Box>
       <ButtonList
-        label="List of Docs"
+        label={tr('List of Docs')}
         search={{
           value: searchStr,
           onChange: handleChangeSearchStr,
-          placeHolder: 'Input Search Word...',
+          placeHolder: tr('Input Search Word...'),
         }}
         withUnderline={true}
         items={items}

@@ -1,39 +1,69 @@
-import { IonItem } from '@ionic/react';
-import { MuiMaterial, Typography } from '@eten-lab/ui-kit';
+import { useHistory } from 'react-router-dom';
+import { CrowdBibleUI, PlusButton } from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
+import { RouteConst } from '@/constants/route.constant';
 
-const { Box } = MuiMaterial;
+import { useTr } from '@/hooks/useTr';
+
+const { ButtonList, HeadBox } = CrowdBibleUI;
 
 export function OrganizationsPage() {
+  const history = useHistory();
+  const { tr } = useTr();
+
+  const handleClickBackBtn = () => {
+    history.goBack();
+  };
+
+  const handleClickItem = (value: string) => {
+    history.push(`${RouteConst.ADMIN}/organization/${value}`);
+  };
+
+  const handleAddOrg = () => {
+    history.push(`${RouteConst.ADMIN}/create-organization`);
+  };
+
+  const handleSearch = () => {};
+
+  const items = [
+    {
+      label: 'Organization Name 1',
+      value: 'Organization Name 1',
+    },
+    {
+      label: 'Organization Name 2',
+      value: 'Organization Name 2',
+    },
+    {
+      label: 'Organization Name 3',
+      value: 'Organization Name 3',
+    },
+  ];
+
   return (
     <PageLayout>
-      <Box
-        component="form"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '123px 20px 20px 20px',
-          gap: '12px',
+      <HeadBox
+        back={{ action: handleClickBackBtn }}
+        title={tr('Organizations')}
+        search={{
+          onChange: handleSearch,
+          placeHolder: tr('Find organizations'),
+          value: '',
         }}
-        noValidate
-        autoComplete="off"
-      >
-        <Typography
-          variant="h1"
-          color="text.dark"
-          sx={{ marginBottom: '18px' }}
-        >
-          Organizations
-        </Typography>
-        <IonItem>Users</IonItem>
-        <IonItem>Organizations</IonItem>
-        <IonItem>Applications</IonItem>
-
-        <IonItem>Import</IonItem>
-        <IonItem>Seed some random data</IonItem>
-        <IonItem>Sync data</IonItem>
-      </Box>
+      />
+      <br />
+      <ButtonList
+        label={tr('List of Organizations')}
+        withUnderline={true}
+        items={items}
+        onClick={handleClickItem}
+        toolBtnGroup={
+          <>
+            <PlusButton variant="primary" onClick={handleAddOrg} />
+          </>
+        }
+      />
     </PageLayout>
   );
 }

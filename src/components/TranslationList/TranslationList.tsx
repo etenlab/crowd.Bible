@@ -18,6 +18,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useWordSequence } from '@/hooks/useWordSequence';
 import { useVote } from '@/hooks/useVote';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useTr } from '@/hooks/useTr';
 
 import {
   WordSequenceDto,
@@ -78,6 +79,7 @@ function Translation({
       global: { singletons },
     },
   } = useAppContext();
+  const { tr } = useTr();
 
   const [translatedWordSequence, setTranslatedWordSequence] =
     useState<WordSequenceDto | null>(null);
@@ -128,7 +130,7 @@ function Translation({
             variant="body3"
             sx={{ padding: '9px 0', color: getColor('dark') }}
           >
-            {translatedWordSequence?.text || 'No Translation Exists'}
+            {translatedWordSequence?.text || tr('No Translation Exists')}
           </Typography>
           <Stack
             direction="row"
@@ -174,6 +176,8 @@ export function TranslationList({
       global: { singletons },
     },
   } = useAppContext();
+  const { tr } = useTr();
+
   const [currentTab, setCurrentTab] = useState<TabState>(TabStates.ALL);
   const [translations, setTranslations] = useState<
     WordSequenceTranslationDto[]
@@ -234,8 +238,8 @@ export function TranslationList({
     <>
       <Tabs
         tabs={[
-          { value: TabStates.ALL, label: 'All Translations' },
-          { value: TabStates.MINE, label: 'My Translations' },
+          { value: TabStates.ALL, label: tr('All Translations') },
+          { value: TabStates.MINE, label: tr('My Translations') },
         ]}
         value={currentTab}
         onChange={handleTabChange}

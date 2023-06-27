@@ -13,41 +13,45 @@ import { RouteConst } from '@/constants/route.constant';
 
 import { CardGroup } from '@/components/CardGroup';
 
+import { useTr } from '@/hooks/useTr';
+
 const { Stack } = MuiMaterial;
 const { TitleWithIcon } = CrowdBibleUI;
 
-const cardGroup = {
-  group: 'Application Development Tools',
-  linkItems: [
-    {
-      to: RouteConst.SITE_TEXT_ADMIN,
-      title: 'User Interface',
-      description: 'User interface words for your application',
-      startIcon: (
-        <Stack>
-          <DiSite color="blue-primary" />
-          <DiAdmin color="blue-primary" />
-        </Stack>
-      ),
-    },
-    {
-      to: RouteConst.SITE_TEXT_TRANSLATION_APP_LIST,
-      title: 'Translation',
-      description:
-        'Translate user interface words so applications can be available in many languages',
-      startIcon: (
-        <Stack>
-          <DiSite color="blue-primary" />
-          <DiTranslator color="blue-primary" />
-        </Stack>
-      ),
-      implemented: true,
-    },
-  ],
-};
-
 export function SiteTextMenuPage() {
   const history = useHistory();
+  const { tr } = useTr();
+
+  const cardGroup = {
+    group: tr('Application Development Tools'),
+    linkItems: [
+      {
+        to: RouteConst.SITE_TEXT_UI_WORD_LIST,
+        title: tr('User Interface'),
+        description: tr('User interface words for your application'),
+        startIcon: (
+          <Stack>
+            <DiSite color="blue-primary" />
+            <DiAdmin color="blue-primary" />
+          </Stack>
+        ),
+      },
+      {
+        to: RouteConst.SITE_TEXT_TRANSLATION_APP_LIST,
+        title: tr('Translation'),
+        description: tr(
+          'Translate user interface words so applications can be available in many languages',
+        ),
+        startIcon: (
+          <Stack>
+            <DiSite color="blue-primary" />
+            <DiTranslator color="blue-primary" />
+          </Stack>
+        ),
+        implemented: true,
+      },
+    ],
+  };
 
   const handleClickBack = () => {
     history.push(RouteConst.HOME);
@@ -57,7 +61,7 @@ export function SiteTextMenuPage() {
     <PageLayout>
       <br />
       <TitleWithIcon
-        label="Question & Answer"
+        label={tr('Site Text')}
         withCloseIcon={false}
         withBackIcon={true}
         onClose={() => {}}

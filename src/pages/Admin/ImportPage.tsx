@@ -11,31 +11,29 @@ import {
 } from '@ionic/react';
 
 import txtfile from '@/utils/iso_639_3_min.tab';
-import { NodeTypeConst } from '@/constants/graph.constant';
+
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
+import { NodeTypeConst } from '@/constants/graph.constant';
 import { FeedbackTypes, LoadingStatuses } from '@/constants/common.constant';
 
 import { PageLayout } from '@/components/Layout';
 
-export function AdminPage() {
+export function ImportPage() {
   const {
     states: {
       global: { singletons },
     },
-    actions: { setLoadingState, alertFeedback },
     logger,
   } = useAppContext();
+  const { tr } = useTr();
 
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatuses>(
     LoadingStatuses.INITIAL,
   );
-  const [syncInLoadingStatus, setSyncInLoadingStatus] =
-    useState<LoadingStatuses>(LoadingStatuses.INITIAL);
-  const [syncOutLoadingStatus, setSyncOutLoadingStatus] =
-    useState<LoadingStatuses>(LoadingStatuses.INITIAL);
 
   const [loadResult, setLoadResult] = useState('');
-
   const [loadingMessage, setLoadingMessage] = useState('Loading table...');
 
   const addNewData = async () => {
@@ -124,125 +122,17 @@ export function AdminPage() {
     }
   };
 
-  const doSyncOut = async () => {
-    if (!singletons?.syncService) return;
-    setLoadingState(true);
-    setSyncOutLoadingStatus(LoadingStatuses.LOADING);
-    try {
-      const syncOutRes = await singletons.syncService.syncOut();
-      logger.info('syncOutRes: ', syncOutRes);
-      setLoadResult('Syncing Out was successful!');
-    } catch (error) {
-      logger.error('Error occurred while syncing out::', error);
-      setLoadResult('Error occurred while syncing out.');
-    } finally {
-      setLoadingState(false);
-      setSyncOutLoadingStatus(LoadingStatuses.FINISHED);
-    }
-  };
-
-  const doSyncIn = async () => {
-    if (!singletons?.syncService) return;
-    setLoadingState(true);
-    setSyncInLoadingStatus(LoadingStatuses.LOADING);
-    try {
-      await singletons.syncService.syncIn();
-      logger.info('sync done.');
-      setLoadResult('Syncing In was successful!');
-    } catch (error) {
-      logger.fatal(
-        'Error occurred while syncing in: ',
-        JSON.stringify((error as Error).message),
-      );
-      setLoadResult('Error occurred while syncing in.');
-    } finally {
-      setLoadingState(false);
-      setSyncInLoadingStatus(LoadingStatuses.FINISHED);
-    }
-  };
-
-  const materialize = async () => {
-    singletons?.materializerService.materialize('iso_639_3_min.tab');
-  };
-
-  const handleResetLocalGraphData = async () => {
-    if (!singletons) return false;
-    setLoadingState(true);
-    try {
-      await singletons.dbService.resetAllData();
-      singletons.syncService.clearAllSyncInfo();
-      alertFeedback(FeedbackTypes.SUCCESS, 'All database data deleted.');
-    } catch (error) {
-      logger.error(
-        { at: 'handleResetLocalGraphData' },
-        'Error when resetting data',
-      );
-    } finally {
-      setLoadingState(false);
-    }
-  };
-
   return (
     <PageLayout>
       <IonCard>
         <IonCardHeader>
-          <IonCardTitle>Import Partial ISO-639-3 Dataset</IonCardTitle>
+          <IonCardTitle>{tr('Import Partial ISO-639-3 Dataset')}</IonCardTitle>
         </IonCardHeader>
         <IonCardContent>
-          <IonButton onClick={addNewData}>Load</IonButton>
+          <IonButton onClick={addNewData}>{tr('Load')}</IonButton>
         </IonCardContent>
       </IonCard>
-      <IonCard>
-        <IonCardHeader>
-          <IonCardTitle>Seed some random data</IonCardTitle>
-        </IonCardHeader>
-      </IonCard>
-      <IonCard>
-        <IonCardHeader>
-          <IonCardTitle>Sync Data</IonCardTitle>
-        </IonCardHeader>
-        <IonCardContent>
-          <IonButton
-            className="text-transform-none"
-            onClick={doSyncIn}
-            disabled={syncInLoadingStatus === LoadingStatuses.LOADING}
-          >
-            {syncInLoadingStatus === LoadingStatuses.LOADING
-              ? 'Syncing In...'
-              : 'Sync In'}
-          </IonButton>
-          <IonButton
-            className="text-transform-none"
-            onClick={doSyncOut}
-            disabled={syncOutLoadingStatus === LoadingStatuses.LOADING}
-          >
-            {syncOutLoadingStatus === LoadingStatuses.LOADING
-              ? 'Syncing Out...'
-              : 'Sync Out'}
-          </IonButton>
-        </IonCardContent>
-      </IonCard>
-      <IonCard>
-        <IonCardHeader>
-          <IonCardTitle>Delete all local data</IonCardTitle>
-        </IonCardHeader>
-        <IonCardContent>
-          <IonButton
-            className="text-transform-none"
-            onClick={handleResetLocalGraphData}
-          >
-            Reset Local Data
-          </IonButton>
-        </IonCardContent>
-      </IonCard>
-      <IonCard>
-        <IonCardHeader>
-          <IonCardTitle>Materialize Table</IonCardTitle>
-        </IonCardHeader>
-        <IonCardContent>
-          <IonButton onClick={materialize}>Materialize</IonButton>
-        </IonCardContent>
-      </IonCard>
+
       <IonLoading
         isOpen={loadingStatus === LoadingStatuses.LOADING}
         onDidDismiss={() => setLoadingStatus(LoadingStatuses.FINISHED)}

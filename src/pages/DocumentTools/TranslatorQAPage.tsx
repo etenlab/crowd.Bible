@@ -13,12 +13,16 @@ import { mockDocument } from './ReaderQAPage';
 import { RouteConst } from '@/constants/route.constant';
 import { PageLayout } from '@/components/Layout';
 
+import { useTr } from '@/hooks/useTr';
+
 const { LabelWithIcon, KindSelectionBox } = CrowdBibleUI;
 const { Stack, Backdrop } = MuiMaterial;
 
 export function TranslatorQAPage() {
   const { getColor } = useColorModeContext();
   const history = useHistory();
+  const { tr } = useTr();
+
   const [openedKindSelectionBox, setOpenedKindSelectionBox] =
     useState<boolean>(false);
 
@@ -49,7 +53,7 @@ export function TranslatorQAPage() {
     <PageLayout>
       <Stack sx={{ padding: '20px' }}>
         <LabelWithIcon
-          label="translation"
+          label={tr('translation')}
           icon={<BiCommentAdd />}
           color="gray"
           onClick={handleClickPlus}
@@ -80,8 +84,8 @@ export function TranslatorQAPage() {
           }}
         >
           <KindSelectionBox
-            title="Ask Question"
-            label="Сhoose what you want to leave asking for:"
+            title={tr('Ask Question')}
+            label={tr('Сhoose what you want to leave asking for:')}
             onTextClick={handleTextClick}
             onChapterClick={handleChapterClick}
             onVerseClick={handleVerseClick}

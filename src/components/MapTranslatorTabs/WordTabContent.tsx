@@ -10,15 +10,15 @@ import {
   DiArrowRight,
   LangSelector,
 } from '@eten-lab/ui-kit';
+
+import { NodeTypeConst, PropertyKeyConst } from '@/constants/graph.constant';
 import { CrowdBibleUI } from '@eten-lab/ui-kit';
-import {
-  NodeTypeConst,
-  PropertyKeyConst,
-} from '@/src/constants/graph.constant';
+
 import { StyledFilterButton } from './StyledComponents';
 import { arrowForwardOutline } from 'ionicons/icons';
 import { langInfo2String } from '@/utils/langUtils';
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
 import {
   WordItem,
   useMapTranslationTools,
@@ -48,6 +48,8 @@ export const WordTabContent = () => {
     },
     actions: { setSourceLanguage, setTargetLanguage },
   } = useAppContext();
+  const { tr } = useTr();
+
   const [words, setWords] = useState<WordItem[]>([]);
   const [step, setStep] = useState<Steps>(Steps.GET_LANGUAGES);
   const { getWordsWithLangs, changeTranslationVotes } =
@@ -205,7 +207,7 @@ export const WordTabContent = () => {
         <>
           <Box width={'100%'}>
             <LangSelector
-              label="Select the source language"
+              label={tr('Select the source language')}
               selected={sourceLanguage || undefined}
               onChange={handleSetSourceLanguage}
             />
@@ -213,7 +215,7 @@ export const WordTabContent = () => {
 
           <Box width={'100%'}>
             <LangSelector
-              label="Select the target language"
+              label={tr('Select the target language')}
               selected={targetLanguage || undefined}
               onChange={handleSetTargetLanguage}
             />
@@ -224,7 +226,7 @@ export const WordTabContent = () => {
             onClick={onShowStringListClick}
             variant={'contained'}
           >
-            Show String List
+            {tr('Show String List')}
           </Button>
         </>
       ) : (
@@ -299,7 +301,7 @@ export const WordTabContent = () => {
                               label={
                                 translation.isNew
                                   ? ''
-                                  : 'Already in target language'
+                                  : tr('Already in target language')
                               }
                               value={translation[PropertyKeyConst.WORD]}
                               onChange={(e) =>
@@ -319,7 +321,7 @@ export const WordTabContent = () => {
                       sx={{ color: 'text.gray' }}
                       onClick={() => addEmptyTranslation(idx)}
                     >
-                      + Add Translation
+                      {tr('+ Add Translation')}
                     </Button>
                   </Box>
                 </Box>

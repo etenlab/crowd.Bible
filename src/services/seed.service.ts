@@ -11,6 +11,7 @@ import {
 import { LoggerService } from '@eten-lab/core';
 
 const DATA_SEEDED = 'DATA_SEEDED';
+
 export class SeedService {
   private get dataSeeded() {
     return localStorage.getItem(DATA_SEEDED) === 'true';
@@ -37,8 +38,7 @@ export class SeedService {
     try {
       if (this.dataSeeded) return;
       this.logger.info('*** data seeding started ***');
-      // No lang nodes are needed anymore
-      // await Promise.allSettled([this.seedLanguages()]);
+
       this.logger.info('*** data seeding completed ***');
       this.dataSeeded = true;
     } catch (error) {

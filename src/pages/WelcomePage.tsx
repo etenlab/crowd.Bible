@@ -7,14 +7,17 @@ import { Button, Typography } from '@eten-lab/ui-kit';
 
 import 'swiper/swiper-bundle.css';
 import '../styles.css';
-import { useAppContext } from '@/src/hooks/useAppContext';
+import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
 import { RouteConst } from '@/constants/route.constant';
 
 import { PageLayout } from '@/components/Layout';
 
 export function WelcomePage() {
-  const { logger } = useAppContext();
   const history = useHistory();
+  const { logger } = useAppContext();
+  const { tr } = useTr();
 
   const handleGoToLoginPage = () => {
     history.push(RouteConst.LOGIN);
@@ -22,7 +25,7 @@ export function WelcomePage() {
 
   const startButton = (
     <Button variant="contained" endIcon fullWidth onClick={handleGoToLoginPage}>
-      Get Started Now
+      {tr('Get Started Now')}
     </Button>
   );
 
@@ -39,7 +42,7 @@ export function WelcomePage() {
                 marginTop: '40px',
               }}
             >
-              crowd.Bible
+              {tr('crowd.Bible')}
             </Typography>
           </IonCol>
         </IonRow>
@@ -74,15 +77,16 @@ export function WelcomePage() {
                   <IonRow>
                     <IonCol>
                       <Typography variant="h3" color="text.dark">
-                        Digital Era, Learn Everything
+                        {tr('Digital Era, Learn Everything')}
                       </Typography>
                       <Typography
                         variant="body1"
                         color="text.gray"
                         sx={{ justifyContent: 'center' }}
                       >
-                        Welcome Text About the <br />
-                        Application. Next Line of the Text
+                        {tr(
+                          'Welcome Text About the Application. Next Line of the Text',
+                        )}
                       </Typography>
                     </IonCol>
                   </IonRow>
@@ -107,15 +111,16 @@ export function WelcomePage() {
                   <IonRow>
                     <IonCol>
                       <Typography variant="h3" color="text.dark">
-                        Digital Era, Learn Everything
+                        {tr('Digital Era, Learn Everything')}
                       </Typography>
                       <Typography
                         variant="body1"
                         color="text.gray"
                         sx={{ justifyContent: 'center' }}
                       >
-                        Welcome Text About the <br />
-                        Application. Next Line of the Text
+                        {tr(
+                          'Welcome Text About the Application. Next Line of the Text',
+                        )}
                       </Typography>
                     </IonCol>
                   </IonRow>
@@ -140,15 +145,16 @@ export function WelcomePage() {
                   <IonRow>
                     <IonCol>
                       <Typography variant="h3" color="text.dark">
-                        Digital Era, Learn Everything
+                        {tr('Digital Era, Learn Everything')}
                       </Typography>
                       <Typography
                         variant="body1"
                         color="text.gray"
                         sx={{ justifyContent: 'center' }}
                       >
-                        Welcome Text About the <br />
-                        Application. Next Line of the Text
+                        {tr(
+                          'Welcome Text About the Application. Next Line of the Text',
+                        )}
                       </Typography>
                     </IonCol>
                   </IonRow>
@@ -173,15 +179,16 @@ export function WelcomePage() {
                   <IonRow>
                     <IonCol>
                       <Typography variant="h3" color="text.dark">
-                        Digital Era, Learn Everything
+                        {tr('Digital Era, Learn Everything')}
                       </Typography>
                       <Typography
                         variant="body1"
                         color="text.gray"
                         sx={{ justifyContent: 'center' }}
                       >
-                        Welcome Text About the <br />
-                        Application. Next Line of the Text
+                        {tr(
+                          'Welcome Text About the Application. Next Line of the Text',
+                        )}
                       </Typography>
                     </IonCol>
                   </IonRow>

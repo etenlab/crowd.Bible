@@ -28,13 +28,14 @@ import './styles.css';
 import { ThemeProvider } from '@eten-lab/ui-kit';
 import { AppContextProvider } from './AppContext';
 
-import useSeedService from '@/hooks/useSeedService';
 import { AppMenu } from '@/components/Layout';
 
 import { RouteConst } from '@/constants/route.constant';
 
 import { AppRoutes } from '@/routes/AppRoutes';
 import { RouteGuarder } from '@/components/RouteGuarder';
+
+import useSeedService from '@/hooks/useSeedService';
 
 setupIonicReact();
 
@@ -75,6 +76,7 @@ export default function App() {
                     <Route
                       key={route.path as string}
                       path={route.path}
+                      exact
                       render={() => (
                         <RouteGuarder>{route.children}</RouteGuarder>
                       )}
@@ -84,6 +86,7 @@ export default function App() {
                   return (
                     <Route
                       key={route.path as string}
+                      exact
                       path={route.path}
                       render={() => <>{route.children}</>}
                     />

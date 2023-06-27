@@ -13,6 +13,8 @@ import { useFormik } from 'formik';
 
 import * as Yup from 'yup';
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+
 import { RouteConst } from '@/constants/route.constant';
 
 import { PageLayout } from '@/components/Layout';
@@ -46,6 +48,7 @@ const RESET_PASSWORD_MUTATION = gql`
 
 export function ResetPasswordPage() {
   const { logger } = useAppContext();
+  const { tr } = useTr();
   const [tokenValid, setTokenValid] = useState<boolean>(false);
   const [show, setShow] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -127,7 +130,7 @@ export function ResetPasswordPage() {
           color="text.dark"
           sx={{ marginBottom: '18px' }}
         >
-          Reset Token Invalid / Expired
+          {tr('Reset Token Invalid / Expired')}
         </Typography>
       </PageLayout>
     );
@@ -151,7 +154,7 @@ export function ResetPasswordPage() {
           color="text.dark"
           sx={{ marginBottom: '18px' }}
         >
-          Reset Password
+          {tr('Reset Password')}
         </Typography>
         {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
         {successMessage && <Alert severity="success">{successMessage}</Alert>}
@@ -159,7 +162,7 @@ export function ResetPasswordPage() {
         <PasswordInput
           id="password"
           name="password"
-          label="Password"
+          label={tr('Password')}
           onChange={formik.handleChange}
           onClickShowIcon={handleToggleShow}
           show={show}
@@ -174,7 +177,7 @@ export function ResetPasswordPage() {
         <PasswordInput
           id="passwordConfirm"
           name="passwordConfirm"
-          label="Repeat Password"
+          label={tr('Repeat Password')}
           onChange={formik.handleChange}
           onClickShowIcon={handleToggleShow}
           show={show}
@@ -195,7 +198,7 @@ export function ResetPasswordPage() {
           onClick={handleRegister}
           disabled={!formik.isValid}
         >
-          Reset Password
+          {tr('Reset Password')}
         </Button>
 
         <Button
@@ -205,7 +208,7 @@ export function ResetPasswordPage() {
           color="gray"
           onClick={handleGoLoginPage}
         >
-          Do you have an account?
+          {tr('Do you have an account?')}
         </Button>
       </Box>
     </PageLayout>

@@ -1,48 +1,63 @@
-import { IonItem } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { MuiMaterial, CrowdBibleUI, Typography } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, PlusButton } from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
+import { RouteConst } from '@/constants/route.constant';
 
-const { Box } = MuiMaterial;
-const { HeadBox } = CrowdBibleUI;
+import { useTr } from '@/hooks/useTr';
+
+const { ButtonList, HeadBox } = CrowdBibleUI;
 
 export function ApplicationsPage() {
   const history = useHistory();
+  const { tr } = useTr();
 
   const handleClickBackBtn = () => {
     history.goBack();
   };
 
+  const handleClickItem = (value: string) => {};
+
+  const handleAddApp = () => {
+    history.push(`${RouteConst.ADMIN}/create-application`);
+  };
+
+  const handleSearch = () => {};
+
+  const items = [
+    {
+      label: 'Application Name 1',
+      value: 'Application Name 1',
+    },
+    {
+      label: 'Application Name 2',
+      value: 'Application Name 2',
+    },
+  ];
+
   return (
     <PageLayout>
-      <HeadBox back={{ action: handleClickBackBtn }} title="Applications" />
-      <Box
-        component="form"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '123px 20px 20px 20px',
-          gap: '12px',
+      <HeadBox
+        back={{ action: handleClickBackBtn }}
+        title={tr('Applications')}
+        search={{
+          onChange: handleSearch,
+          placeHolder: tr('Find applications'),
+          value: '',
         }}
-        noValidate
-        autoComplete="off"
-      >
-        <Typography
-          variant="h1"
-          color="text.dark"
-          sx={{ marginBottom: '18px' }}
-        >
-          Applications
-        </Typography>
-        <IonItem>Users</IonItem>
-        <IonItem>Organizations</IonItem>
-        <IonItem>Applications</IonItem>
-
-        <IonItem>Import</IonItem>
-        <IonItem>Seed some random data</IonItem>
-        <IonItem>Sync data</IonItem>
-      </Box>
+      />
+      <br />
+      <ButtonList
+        label={tr('List of Applications')}
+        withUnderline={true}
+        items={items}
+        onClick={handleClickItem}
+        toolBtnGroup={
+          <>
+            <PlusButton variant="primary" onClick={handleAddApp} />
+          </>
+        }
+      />
     </PageLayout>
   );
 }

@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { IonToolbar } from '@ionic/react';
 import { useKeycloakClient } from '@eten-lab/sso';
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
 
 import {
   Button,
@@ -37,16 +38,13 @@ const validationSchema = Yup.object().shape({
 });
 
 export function RegisterPage() {
-  const { logger } = useAppContext();
-  const [show, setShow] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
   const history = useHistory();
   const kcClient = useKeycloakClient();
+  const { logger } = useAppContext();
+  const { tr } = useTr();
   const {
     actions: { setUser },
   } = useAppContext();
-  // const [userToken, setUserToken] = useState('');
   const formik = useFormik<{
     email: string;
     username: string;
@@ -107,6 +105,12 @@ export function RegisterPage() {
     },
   });
 
+  const [show, setShow] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  // const [userToken, setUserToken] = useState('');
+
   const handleToggleShow = () => {
     setShow((show) => !show);
   };
@@ -132,7 +136,7 @@ export function RegisterPage() {
             color="text.dark"
             sx={{ textTransform: 'none', px: '20px' }}
           >
-            crowd.Bible
+            {tr('crowd.Bible')}
           </Typography>
         </Link>
       </IonToolbar>
@@ -152,7 +156,7 @@ export function RegisterPage() {
           color="text.dark"
           sx={{ marginBottom: '18px' }}
         >
-          Register
+          {tr('Register')}
         </Typography>
         {errorMessage && (
           <Alert severity="error" id="error-message">
@@ -164,7 +168,7 @@ export function RegisterPage() {
           id="email"
           name="email"
           type="text"
-          label="Email"
+          label={tr('Email')}
           onChange={formik.handleChange}
           value={formik.values.email}
           valid={formik.values.email !== '' ? !formik.errors.email : undefined}
@@ -176,7 +180,7 @@ export function RegisterPage() {
           id="username"
           name="username"
           type="text"
-          label="Username"
+          label={tr('Username')}
           onChange={formik.handleChange}
           value={formik.values.username}
           valid={
@@ -189,7 +193,7 @@ export function RegisterPage() {
         <PasswordInput
           id="password"
           name="password"
-          label="Password"
+          label={tr('Password')}
           onChange={formik.handleChange}
           onClickShowIcon={handleToggleShow}
           show={show}
@@ -204,7 +208,7 @@ export function RegisterPage() {
         <PasswordInput
           id="passwordConfirm"
           name="passwordConfirm"
-          label="Repeat Password"
+          label={tr('Repeat Password')}
           onChange={formik.handleChange}
           onClickShowIcon={handleToggleShow}
           show={show}
@@ -225,7 +229,7 @@ export function RegisterPage() {
           onClick={handleRegister}
           disabled={!formik.isValid}
         >
-          Register Now
+          {tr('Register Now')}
         </Button>
 
         <Button
@@ -235,7 +239,7 @@ export function RegisterPage() {
           color="gray"
           onClick={handleGoLoginPage}
         >
-          Do you have an account?
+          {tr('Do you have an account?')}
         </Button>
       </Box>
     </PageLayout>

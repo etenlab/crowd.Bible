@@ -1,13 +1,27 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { IonHeader, IonToolbar } from '@ionic/react';
 
-import { Toolbar, useColorModeContext } from '@eten-lab/ui-kit';
+import {
+  Toolbar,
+  useColorModeContext,
+  CrowdBibleUI,
+  LanguageInfo,
+  MuiMaterial,
+} from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
+import { useTr } from '@/hooks/useTr';
+import { useSiteText } from '@/hooks/useSiteText';
+
 import { RouteConst } from '@/constants/route.constant';
 import { ColorThemes } from '@/constants/common.constant';
+
+import { langInfo2String, langInfo2tag, tag2langInfo } from '@/utils/langUtils';
+
+const { ButtonList } = CrowdBibleUI;
+const { Box } = MuiMaterial;
 
 const headerlessPages = [
   RouteConst.WELCOME,
@@ -20,13 +34,14 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
   const history = useHistory();
   const location = useLocation();
   const { setColorMode } = useColorModeContext();
+  const { tr } = useTr();
 
   const {
     states: {
-      components: { menu },
+      components: { menu, modal },
       global: { prefersColorScheme, isNewDiscussion, isNewNotification, mode },
     },
-    actions: { setPrefersColorScheme },
+    actions: { setPrefersColorScheme, setModalCom, clearModalCom },
   } = useAppContext();
 
   const [themeMode, setThemeMode] = useState<
@@ -91,6 +106,22 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
     }
   };
 
+  const handleClickDiscussionButton = () => {
+    history.push(RouteConst.DISCUSSIONS_LIST);
+  };
+
+  const handleClickNotificationButton = () => {
+    history.push(RouteConst.NOTIFICATIONS);
+  };
+
+  const handleClickLanguageButton = () => {
+    if (modal) {
+      clearModalCom();
+    } else {
+      setModalCom(<LanguageList />);
+    }
+  };
+
   const isHeader = !headerlessPages.find(
     (routeStr) => location.pathname === routeStr,
   );
@@ -99,14 +130,14 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
     ? {
         notification: true,
         discussion: true,
+        language: true,
         menu: true,
-        language: false,
       }
     : {
         notification: false,
         discussion: false,
+        language: true,
         menu: true,
-        language: false,
       };
 
   if (!isHeader) {
@@ -117,23 +148,19 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
     <IonHeader>
       <IonToolbar class="ionic-toolbar">
         <Toolbar
-          title="crowd.Bible"
+          title={tr('crowd.Bible')}
           buttons={{
             notification: false,
             discussion: false,
-            menu: false,
             language: false,
+            menu: false,
           }}
           themeMode={themeMode}
           onClickThemeModeBtn={handleToogleTheme}
-          onClickDiscussionBtn={() => {
-            history.push(RouteConst.DISCUSSIONS_LIST);
-          }}
-          onClickNotificationBtn={() => {
-            history.push(RouteConst.NOTIFICATIONS);
-          }}
+          onClickDiscussionBtn={handleClickDiscussionButton}
+          onClickNotificationBtn={handleClickNotificationButton}
+          onClickLanguageBtn={handleClickLanguageButton}
           onClickMenuBtn={handleToggleMenu}
-          onClickLanguageBtn={() => {}}
         />
       </IonToolbar>
     </IonHeader>
@@ -141,23 +168,75 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
     <IonHeader>
       <IonToolbar class="ionic-toolbar">
         <Toolbar
-          title="crowd.Bible"
+          title={tr('crowd.Bible')}
           buttons={buttonsConfig}
           themeMode={themeMode}
           onClickTitleBtn={handleGoToHomePage}
           onClickThemeModeBtn={handleToogleTheme}
           isNewDiscussion={isNewDiscussion}
           isNewNotification={isNewNotification}
-          onClickDiscussionBtn={() => {
-            history.push(RouteConst.DISCUSSIONS_LIST);
-          }}
-          onClickNotificationBtn={() => {
-            history.push(RouteConst.NOTIFICATIONS);
-          }}
+          onClickDiscussionBtn={handleClickDiscussionButton}
+          onClickNotificationBtn={handleClickNotificationButton}
+          onClickLanguageBtn={handleClickLanguageButton}
           onClickMenuBtn={handleToggleMenu}
-          onClickLanguageBtn={() => {}}
         />
       </IonToolbar>
     </IonHeader>
+  );
+}
+
+function LanguageList() {
+  const {
+    states: {
+      global: { singletons, crowdBibleApp },
+    },
+    actions: { changeAppLanguage },
+  } = useAppContext();
+  const { getColor } = useColorModeContext();
+
+  const { getAppLanguageList } = useSiteText();
+  const { tr } = useTr();
+
+  const [languageList, setLanguageList] = useState<LanguageInfo[]>([]);
+
+  useEffect(() => {
+    if (singletons && crowdBibleApp) {
+      getAppLanguageList().then((list) =>
+        setLanguageList([crowdBibleApp.languageInfo, ...list]),
+      );
+    }
+  }, [getAppLanguageList, singletons, crowdBibleApp]);
+
+  const items = useMemo(() => {
+    return languageList
+      .filter((languageInfo) => langInfo2tag(languageInfo))
+      .map((languageInfo) => ({
+        value: langInfo2tag(languageInfo)!,
+        label: langInfo2String(languageInfo),
+      }));
+  }, [languageList]);
+
+  const handleClickItem = (value: string) => {
+    const langInfo = tag2langInfo(value);
+    changeAppLanguage(langInfo);
+  };
+
+  return (
+    <Box
+      sx={{
+        maxHeight: '300px',
+        padding: '20px 0',
+        backgroundColor: getColor('light-blue'),
+        overflowY: 'auto',
+      }}
+    >
+      <ButtonList
+        label={tr('Help Us Translate!')}
+        withUnderline
+        items={items}
+        onClick={handleClickItem}
+        subheaderBGColor={getColor('light-blue')}
+      />
+    </Box>
   );
 }
