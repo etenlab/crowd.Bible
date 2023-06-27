@@ -64,7 +64,9 @@ export const MapDetailPage = () => {
           setMapDetail({
             ...mapDto,
             words: mapWordsNodes?.map
-              ? mapWordsNodes.map((w) => WordMapper.entityToDto(w))
+              ? mapWordsNodes
+                  .map((w) => WordMapper.entityToDto(w))
+                  .sort((a, b) => a.word.localeCompare(b.word))
               : [],
           });
         } else {

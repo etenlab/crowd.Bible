@@ -39,14 +39,15 @@ export const MapTabContent = () => {
   const {
     states: {
       global: { singletons },
+      documentTools: { sourceLanguage: langInfo },
     },
-    actions: { alertFeedback },
+    actions: { alertFeedback, setSourceLanguage: setLangInfo },
     logger,
   } = useAppContext();
   const { tr } = useTr();
 
   const [mapList, setMapList] = useState<MapDetail[]>([]);
-  const [langInfo, setLangInfo] = useState<LanguageInfo | undefined>();
+  // const [langInfo, setLangInfo] = useState<LanguageInfo | undefined>();
   const [uploadMapBtnStatus, setUploadMapBtnStatus] =
     useState<eUploadMapBtnStatus>(eUploadMapBtnStatus.NONE);
   const { processFile, setMapStatus } = useMapTranslationTools();
@@ -202,14 +203,14 @@ export const MapTabContent = () => {
       setLangInfo(langInfo);
       // setMapsByLang(langInfo); // for now we show all maps despite selected language
     },
-    [],
+    [setLangInfo],
   );
 
-  const handleClearLanguageFilter = () => {
-    setLangInfo(undefined);
+  const handleClearLanguageFilter = useCallback(() => {
+    setLangInfo(null);
     // setMapList([]); // for now we show all maps despite selected language
     setUploadMapBtnStatus(eUploadMapBtnStatus.LANG_SELECTION);
-  };
+  }, [setLangInfo]);
 
   return (
     <Box
@@ -220,13 +221,11 @@ export const MapTabContent = () => {
       width={'100%'}
       paddingTop={`${PADDING}px`}
     >
-      {uploadMapBtnStatus > eUploadMapBtnStatus.NONE ? (
-        <LangSelector
-          label={tr('Select the source language')}
-          onChange={handleLangChange}
-          selected={langInfo}
-        />
-      ) : null}
+      <LangSelector
+        label={tr('Select the source language')}
+        onChange={handleLangChange}
+        selected={langInfo || undefined}
+      />
 
       <Button
         fullWidth
@@ -234,7 +233,7 @@ export const MapTabContent = () => {
         variant={'contained'}
         component="label"
       >
-        Upload {langInfo2String(langInfo) || '.svg'} File
+        Upload {langInfo2String(langInfo || undefined) || '.svg'} File
         {uploadMapBtnStatus === eUploadMapBtnStatus.SAVING_FILE ? (
           <>
             <CircularProgress

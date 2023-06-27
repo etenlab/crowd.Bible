@@ -4,10 +4,11 @@ import React, { useCallback, useState } from 'react';
 import {
   Input,
   Typography,
-  LangSelector,
   LanguageInfo,
   Button,
   MuiMaterial,
+  DiArrowRight,
+  LangSelector,
 } from '@eten-lab/ui-kit';
 
 import { NodeTypeConst, PropertyKeyConst } from '@/constants/graph.constant';
@@ -25,12 +26,13 @@ import {
 import { VotableItem } from '@/dtos/votable-item.dto';
 import { ElectionTypeConst, LoggerService } from '@eten-lab/core';
 import { UpOrDownVote, VoteTypes } from '@/constants/common.constant';
+import { BottomButtons } from './BottomButtons';
 
 const { ItemContentListEdit } = CrowdBibleUI;
 const { Box, Divider, Stack } = MuiMaterial;
 const logger = new LoggerService();
 
-enum Steps {
+export enum Steps {
   GET_LANGUAGES = 0,
   INPUT_TRANSLATIONS = 1,
   VOTE = 2,
@@ -42,13 +44,13 @@ export const WordTabContent = () => {
   const {
     states: {
       global: { singletons },
+      documentTools: { sourceLanguage, targetLanguage },
     },
+    actions: { setSourceLanguage, setTargetLanguage },
   } = useAppContext();
   const { tr } = useTr();
 
   const [words, setWords] = useState<WordItem[]>([]);
-  const [sourceLangInfo, setSourceLangInfo] = useState<LanguageInfo>();
-  const [targetLangInfo, setTargetLangInfo] = useState<LanguageInfo>();
   const [step, setStep] = useState<Steps>(Steps.GET_LANGUAGES);
   const { getWordsWithLangs, changeTranslationVotes } =
     useMapTranslationTools();
@@ -66,6 +68,20 @@ export const WordTabContent = () => {
       );
     },
     [changeTranslationVotes, wordsVotableItems],
+  );
+
+  const handleSetSourceLanguage = useCallback(
+    (_langTag: string, langInfo: LanguageInfo) => {
+      setSourceLanguage(langInfo);
+    },
+    [setSourceLanguage],
+  );
+
+  const handleSetTargetLanguage = useCallback(
+    (_langTag: string, langInfo: LanguageInfo) => {
+      setTargetLanguage(langInfo);
+    },
+    [setTargetLanguage],
   );
 
   const getWordsAsVotableItems = useCallback(
@@ -92,11 +108,11 @@ export const WordTabContent = () => {
   );
 
   const onShowStringListClick = useCallback(async () => {
-    if (sourceLangInfo && targetLangInfo) {
-      setWords(await getWordsWithLangs(sourceLangInfo, targetLangInfo));
+    if (sourceLanguage && targetLanguage) {
+      setWords(await getWordsWithLangs(sourceLanguage, targetLanguage));
       setStep(Steps.INPUT_TRANSLATIONS);
     }
-  }, [getWordsWithLangs, sourceLangInfo, targetLangInfo]);
+  }, [getWordsWithLangs, sourceLanguage, targetLanguage]);
 
   const handleTranslationChange = useCallback(
     (
@@ -132,9 +148,9 @@ export const WordTabContent = () => {
   );
 
   const storeTranslations = useCallback(async () => {
-    if (!sourceLangInfo)
+    if (!sourceLanguage)
       throw new Error(`No sourceLangInfo when storeTranslations`);
-    if (!targetLangInfo)
+    if (!targetLanguage)
       throw new Error(`No sourceLangInfo when storeTranslations`);
     const savedWordIds: string[] = [];
     for (const word of words) {
@@ -146,10 +162,11 @@ export const WordTabContent = () => {
 
       for (const translation of word.translations || []) {
         if (!translation.isNew) continue;
+        if (translation.word.length < 1) continue;
         const translationWordId =
           await singletons.wordService.createOrFindWordOrPhraseWithLang(
             translation.word,
-            targetLangInfo!,
+            targetLanguage!,
             NodeTypeConst.WORD,
           );
         await singletons.wordService.createWordTranslationRelationship(
@@ -159,10 +176,10 @@ export const WordTabContent = () => {
         savedWordIds.push(word.id);
       }
     }
-    // TODO may be optimised if invend special methods to get words prefiltered by map also (not only language)
+    // TODO may be optimised if invent special methods to get words prefiltered by map also (not only language)
     const allWordsAsVotableItems = await getWordsAsVotableItems(
-      sourceLangInfo,
-      targetLangInfo,
+      sourceLanguage,
+      targetLanguage,
     );
     const existingWordIds = words.map((w) => w.id);
     const onlyWordInAnyMap = allWordsAsVotableItems.filter((w) =>
@@ -173,8 +190,8 @@ export const WordTabContent = () => {
   }, [
     getWordsAsVotableItems,
     singletons,
-    sourceLangInfo,
-    targetLangInfo,
+    sourceLanguage,
+    targetLanguage,
     words,
   ]);
 
@@ -191,18 +208,16 @@ export const WordTabContent = () => {
           <Box width={'100%'}>
             <LangSelector
               label={tr('Select the source language')}
-              onChange={(_langTag: string, langInfo: LanguageInfo) =>
-                setSourceLangInfo(langInfo)
-              }
+              selected={sourceLanguage || undefined}
+              onChange={handleSetSourceLanguage}
             />
           </Box>
 
           <Box width={'100%'}>
             <LangSelector
               label={tr('Select the target language')}
-              onChange={(_langTag: string, langInfo: LanguageInfo) =>
-                setTargetLangInfo(langInfo)
-              }
+              selected={targetLanguage || undefined}
+              onChange={handleSetTargetLanguage}
             />
           </Box>
 
@@ -239,9 +254,9 @@ export const WordTabContent = () => {
                 lineHeight={'28px'}
                 paddingRight={'5px'}
               >
-                {langInfo2String(sourceLangInfo)}
+                {langInfo2String(sourceLanguage || undefined)}
               </Typography>
-              <IonIcon icon={arrowForwardOutline}></IonIcon>
+              <DiArrowRight />
               <Typography
                 fontWeight={600}
                 color={'text.dark'}
@@ -249,18 +264,16 @@ export const WordTabContent = () => {
                 lineHeight={'28px'}
                 paddingLeft={'5px'}
               >
-                {langInfo2String(targetLangInfo)}
+                {langInfo2String(targetLanguage || undefined)}
               </Typography>
             </Box>
             <StyledFilterButton
               onClick={() => {
-                setSourceLangInfo(undefined);
-                setTargetLangInfo(undefined);
                 setStep(0);
               }}
             />
           </Box>
-          <Stack divider={<Divider />} width={'100%'}>
+          <Stack divider={<Divider />} width={'100%'} paddingBottom={'40px'}>
             {words.map((word, idx) => {
               return (
                 <Box
@@ -315,9 +328,10 @@ export const WordTabContent = () => {
               );
             })}
           </Stack>
-          <Button variant={'contained'} fullWidth onClick={storeTranslations}>
-            {tr('Save')}
-          </Button>
+          <BottomButtons
+            setStep={() => setStep(Steps.GET_LANGUAGES)}
+            storeTranslations={storeTranslations}
+          ></BottomButtons>
         </>
       ) : (
         <></>
@@ -344,7 +358,7 @@ export const WordTabContent = () => {
                 lineHeight={'28px'}
                 paddingRight={'5px'}
               >
-                {langInfo2String(sourceLangInfo)}
+                {langInfo2String(sourceLanguage || undefined)}
               </Typography>
               <IonIcon icon={arrowForwardOutline}></IonIcon>
               <Typography
@@ -354,13 +368,11 @@ export const WordTabContent = () => {
                 lineHeight={'28px'}
                 paddingLeft={'5px'}
               >
-                {langInfo2String(targetLangInfo)}
+                {langInfo2String(targetLanguage || undefined)}
               </Typography>
             </Box>
             <StyledFilterButton
               onClick={() => {
-                setSourceLangInfo(undefined);
-                setTargetLangInfo(undefined);
                 setStep(0);
               }}
             />
@@ -381,6 +393,7 @@ export const WordTabContent = () => {
               />
             ))}
           </Stack>
+          <BottomButtons setStep={() => setStep(Steps.INPUT_TRANSLATIONS)} />
         </>
       ) : (
         <></>
