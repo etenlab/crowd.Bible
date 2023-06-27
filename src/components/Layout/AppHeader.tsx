@@ -38,10 +38,10 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
 
   const {
     states: {
-      components: { menu },
+      components: { menu, modal },
       global: { prefersColorScheme, isNewDiscussion, isNewNotification, mode },
     },
-    actions: { setPrefersColorScheme, setModalCom },
+    actions: { setPrefersColorScheme, setModalCom, clearModalCom },
   } = useAppContext();
 
   const [themeMode, setThemeMode] = useState<
@@ -115,7 +115,11 @@ export function AppHeader({ kind }: { kind: 'menu' | 'page' }) {
   };
 
   const handleClickLanguageButton = () => {
-    setModalCom(<LanguageList />);
+    if (modal) {
+      clearModalCom();
+    } else {
+      setModalCom(<LanguageList />);
+    }
   };
 
   const isHeader = !headerlessPages.find(

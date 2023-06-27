@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
+import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 import {
   Node,
   NodePropertyKey,
@@ -60,7 +61,7 @@ const initialize = asyncMemoize(async () => {
 
 const options: SqljsConnectionOptions = {
   type: 'sqljs',
-  autoSave: true,
+  autoSave: false,
   useLocalForage: true,
   // logging: ['error', 'query', 'schema'],
   logging: ['error'],
@@ -92,7 +93,12 @@ const options: SqljsConnectionOptions = {
 
 const getDataSource = (opts: SqljsConnectionOptions) => async () => {
   await initialize();
-  return new DataSource(opts);
+  const ds = new DataSource(opts);
+  setInterval(() => {
+    (ds.driver as SqljsDriver).save();
+  }, 10000);
+
+  return ds;
 };
 
 export const getAppDataSource = asyncMemoize(

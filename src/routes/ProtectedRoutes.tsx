@@ -4,7 +4,6 @@ import { SettingsPage } from '@/pages/SettingsPage';
 import { DiscussionPage } from '@/pages/DiscussionPage';
 import { HomePage } from '@/pages/HomePage';
 import { DiscussionsListPage } from '@/pages/DiscussionsListPage';
-import { AdminPage } from '@/pages/AdminPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 import { PlaygroundPage } from '@/pages/PlaygroundPage';
 
@@ -14,6 +13,7 @@ import { MediaToolsRoutes } from './MediaToolsRoutes';
 import { DataToolsRoutes } from './DataToolsRoutes';
 import { AppDevRoutes } from './AppDevRoutes';
 import { DiscussionRoutes } from './DiscussionRoutes';
+import { AdminRoutes } from './AdminRoutes';
 
 import { RouteConst } from '@/constants/route.constant';
 import { CustomRouteProps } from './AppRoutes';
@@ -44,13 +44,10 @@ export const ProtectedRoutes: CustomRouteProps[] = [
     children: <SettingsPage />,
   },
   {
-    path: RouteConst.ADMIN,
-    children: <AdminPage />,
-  },
-  {
     path: RouteConst.PLAYGROUND,
     children: <PlaygroundPage />,
   },
+  ...AdminRoutes,
   ...DocumentToolsRoutes,
   ...LanguageToolsRoutes,
   ...MediaToolsRoutes,
