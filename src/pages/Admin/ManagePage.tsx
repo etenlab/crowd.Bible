@@ -37,7 +37,7 @@ export function ManagePage() {
       },
       {
         to: `${RouteConst.ADMIN}/seed`,
-        label: tr('Seed some random data'),
+        label: tr('Seed data'),
         implemented: true,
       },
       {

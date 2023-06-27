@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 
 import {
   NodeRepository,
@@ -43,6 +44,8 @@ import { WordSequenceService } from '@/services/word-sequence.service';
 import { MapService } from '@/services/map.service';
 
 export interface ISingletons {
+  driver: SqljsDriver;
+
   loggerService: LoggerService;
   dbService: DbService;
   syncService: SyncService;
@@ -85,6 +88,8 @@ const _cache = new Map<DataSource, Promise<ISingletons>>();
 const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   const loggerService = new LoggerService();
   const ds = await dataSource.initialize();
+
+  const driver = ds.driver as SqljsDriver;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const dbService = new DbService(ds as any);
 
@@ -227,6 +232,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   const materializerService = new MaterializerService(tableService, dbService);
 
   return {
+    driver,
     loggerService,
     dbService,
     syncService,
