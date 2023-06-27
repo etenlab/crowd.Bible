@@ -915,5 +915,40 @@
     "zh": "定义",
     "hi": "परिभाषा",
     "de": "Definition"
+  },
+  "Admin Manage": {
+    "en": "Admin Manage",
+    "jp": "管理者管理",
+    "zh": "管理员管理",
+    "hi": "व्यवस्थापक प्रबंधित करें",
+    "de": "Admin verwalten"
+  },
+  "Loading": {
+    "en": "Loading",
+    "jp": "読み込み中",
+    "zh": "加载中",
+    "hi": "लोड हो रहा है",
+    "de": "Wird geladen"
+  },
+  "Site Text Seed": {
+    "en": "Site Text Seed",
+    "jp": "サイトテキストシード",
+    "zh": "网站文本种子",
+    "hi": "साइट पाठ बीज",
+    "de": "Site-Text-Seed"
+  },
+  "Seed": {
+    "en": "Seed",
+    "jp": "シード",
+    "zh": "种子",
+    "hi": "बीज",
+    "de": "Samen"
+  },
+  "Seed Site Text": {
+    "en": "Seed Site Text",
+    "jp": "シードサイトのテキスト",
+    "zh": "种子网站文本",
+    "hi": "बीज साइट पाठ",
+    "de": "Seed-Site-Text"
   }
 }

@@ -1609,10 +1609,10 @@
     "typeorm" "^0.3.12"
     "yup" "^1.1.1"
 
-"@eten-lab/models@^1.3.14":
-  "integrity" "sha512-EKCcE1KFzt9Ztb/92AvCJTlVTTwSq+6XwXNwWIMOCs4cEsfg/lGQRsjjEBjFRN/yV0wZK7F7NjdnMMjMkHDX+A=="
-  "resolved" "https://registry.npmjs.org/@eten-lab/models/-/models-1.3.14.tgz"
-  "version" "1.3.14"
+"@eten-lab/models@^1.3.14", "@eten-lab/models@^1.3.15":
+  "integrity" "sha512-R2kqEyqzhVGpLZlUOCmZsgG12bAut6BJztzg6Xbg+Fl4htSB5M663ydQ8tyZc2aWNX0uL5B41bKL0r6FninUmw=="
+  "resolved" "https://registry.npmjs.org/@eten-lab/models/-/models-1.3.15.tgz"
+  "version" "1.3.15"
   dependencies:
     "bson" "^5.3.0"
     "reflect-metadata" "^0.1.13"
