@@ -1,5 +1,5 @@
 import React, { ReactNode, useCallback, useState, useEffect } from 'react';
-import { IonToolbar } from '@ionic/react';
+import { IonContent, IonToolbar } from '@ionic/react';
 import Editor from 'react-simple-code-editor';
 
 import {
@@ -15,8 +15,6 @@ import { useTr } from '@/hooks/useTr';
 import { useAppContext } from '@/hooks/useAppContext';
 
 import { SQLRUNNER_LOCAL_FORAGE_KEY } from '@/constants/common.constant';
-
-import { PageLayout } from '@/components/Layout';
 
 const { Box, Tabs, Tab, IconButton } = MuiMaterial;
 
@@ -198,7 +196,7 @@ export function SqlRunner({
   );
 
   return (
-    <PageLayout>
+    <IonContent>
       <IonToolbar style={{ position: 'fixed' }} ref={sqlToolbarRef}>
         <Tabs value={selectedTab} onChange={handleTabChange}>
           {sqls.data.map((sql, idx) => (
@@ -237,7 +235,7 @@ export function SqlRunner({
         </Box>
 
         {!isSqlPortalShown && (
-          <Button onClick={() => setSqlPortalShown(true)}>
+          <Button onClick={() => setSqlPortalShown(true, { x: 10, y: 10 })}>
             {tr('Show in portal')}
           </Button>
         )}
@@ -264,6 +262,6 @@ export function SqlRunner({
       >
         {sqls.data[selectedTab]?.result && sqls.data[selectedTab]?.result}
       </Box>
-    </PageLayout>
+    </IonContent>
   );
 }

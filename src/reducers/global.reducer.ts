@@ -69,6 +69,7 @@ export interface StateType {
   appLanguage: LanguageInfo;
   crowdBibleApp: AppDto | null;
   isSqlPortalShown: boolean;
+  sqlPortalPosition?: { x: number; y: number } | undefined;
   siteTextMap: Record<string, { siteText: string; isTranslated: boolean }>;
   tempSiteTexts: TempSiteTextItem[];
 }
@@ -190,9 +191,14 @@ export function reducer(
       };
     }
     case actions.SET_SQL_PORTAL_SHOWN: {
+      const { isShown, position } = action.payload as {
+        isShown: boolean;
+        position: { x: number; y: number } | undefined;
+      };
       return {
         ...prevState,
-        isSqlPortalShown: action.payload as boolean,
+        isSqlPortalShown: isShown,
+        sqlPortalPosition: position,
       };
     }
     case actions.CHANGE_APP_LANGUAGE: {

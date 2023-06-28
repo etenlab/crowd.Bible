@@ -1,7 +1,7 @@
 import { FileImportPage } from '@/pages/DataTools/FileImportPage';
 import { SearchNodePage } from '@/pages/DataTools/GraphViewer/SearchNodePage';
 import { NodeDetailsPage } from '@/pages/DataTools/GraphViewer/NodeDetailsPage';
-import { SqlRunner } from '@/pages/DataTools/SqlRunner/SqlRunner';
+import { SqlPage } from '@/pages/DataTools/SqlRunner/SqlPage';
 
 import { RouteConst } from '@/constants/route.constant';
 import { CustomRouteProps } from './AppRoutes';
@@ -21,6 +21,6 @@ export const DataToolsRoutes: CustomRouteProps[] = [
   },
   {
     path: RouteConst.SQL_RUNNER,
-    children: <SqlRunner />,
+    children: <SqlPage />,
   },
 ];

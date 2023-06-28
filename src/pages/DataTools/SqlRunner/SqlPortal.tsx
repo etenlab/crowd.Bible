@@ -8,7 +8,7 @@ import {
   useColorModeContext,
 } from '@eten-lab/ui-kit';
 
-import Draggable from 'react-draggable';
+import Draggable, { DraggableEventHandler } from 'react-draggable';
 import { Resizable } from 're-resizable';
 import { SqlRunner } from './SqlRunner';
 
@@ -20,6 +20,9 @@ const { Box } = MuiMaterial;
 export function SqlPortal() {
   const {
     actions: { setSqlPortalShown },
+    states: {
+      global: { sqlPortalPosition },
+    },
   } = useAppContext();
   const { getColor } = useColorModeContext();
   const { tr } = useTr();
@@ -28,10 +31,22 @@ export function SqlPortal() {
 
   const nodeRef = React.useRef(null);
 
+  const savePosition: DraggableEventHandler = (e, data) => {
+    setSqlPortalShown(true, { x: data.x, y: data.y });
+  };
+
   return (
     <>
       {createPortal(
-        <Draggable nodeRef={nodeRef} handle=".draggable-header">
+        <Draggable
+          nodeRef={nodeRef}
+          handle=".draggable-header"
+          position={{
+            x: sqlPortalPosition?.x || 0,
+            y: sqlPortalPosition?.y || 0,
+          }}
+          onStop={savePosition}
+        >
           <Resizable
             style={{
               display: 'flex',

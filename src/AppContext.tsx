@@ -54,7 +54,10 @@ export interface ContextType {
       status?: string,
       isCancelButton?: boolean,
     ) => void;
-    setSqlPortalShown: (isSqlPortalShown: boolean) => void;
+    setSqlPortalShown: (
+      isSqlPortalShown: boolean,
+      position?: { x: number; y: number },
+    ) => void;
     setMenuCom: (com: HTMLIonMenuElement) => void;
     clearMenuCom: () => void;
     setModalCom: (com: ReactNode) => void;
