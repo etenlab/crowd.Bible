@@ -47,7 +47,6 @@ export const MapTabContent = () => {
   const { tr } = useTr();
 
   const [mapList, setMapList] = useState<MapDetail[]>([]);
-  // const [langInfo, setLangInfo] = useState<LanguageInfo | undefined>();
   const [uploadMapBtnStatus, setUploadMapBtnStatus] =
     useState<eUploadMapBtnStatus>(eUploadMapBtnStatus.NONE);
   const { processFile, setMapStatus } = useMapTranslationTools();
