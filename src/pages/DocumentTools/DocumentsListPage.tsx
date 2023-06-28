@@ -35,7 +35,7 @@ export function DocumentsListPage() {
       global: { singletons },
       documentTools: { sourceLanguage },
     },
-    actions: { setSourceLanguage, setLoadingState },
+    actions: { setSourceLanguage, createLoadingStack },
   } = useAppContext();
   const { tr } = useTr();
 
@@ -55,6 +55,11 @@ export function DocumentsListPage() {
       }
     }
   }, [listDocument, singletons, listDocumentByLanguageInfo, sourceLanguage]);
+
+  const { startLoading, stopLoading } = useMemo(
+    () => createLoadingStack(),
+    [createLoadingStack],
+  );
 
   const handleChangeSearchStr = (str: string) => {
     setSearchStr(str);
@@ -80,6 +85,14 @@ export function DocumentsListPage() {
     history.push(`${RouteConst.ADD_DOCUMENT}`);
   };
 
+  const handleLoadingState = (loading: boolean) => {
+    if (loading) {
+      startLoading();
+    } else {
+      stopLoading();
+    }
+  };
+
   const items: ButtonListItemType[] = useMemo(() => {
     return documents.map(({ id, name }) => ({
       value: id,
@@ -102,7 +115,7 @@ export function DocumentsListPage() {
       label={tr('Select the source language')}
       selected={sourceLanguage || undefined}
       onChange={handleSetSourceLanguage}
-      setLoadingState={setLoadingState}
+      setLoadingState={handleLoadingState}
     />
   ) : null;
 

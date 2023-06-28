@@ -9,7 +9,7 @@ export function useDocument() {
     states: {
       global: { singletons },
     },
-    actions: { alertFeedback, setLoadingState },
+    actions: { alertFeedback, createLoadingStack },
     logger,
   } = useAppContext();
 
@@ -19,18 +19,20 @@ export function useDocument() {
       return [];
     }
 
+    const { startLoading, stopLoading } = createLoadingStack();
+
     try {
-      setLoadingState(true);
+      startLoading();
       const result = await singletons.documentService.listDocument();
-      setLoadingState(false);
+      stopLoading();
       return result;
     } catch (err) {
       logger.error((err as Error).toString());
-      setLoadingState(false);
+      stopLoading();
       alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       return [];
     }
-  }, [singletons, alertFeedback, setLoadingState, logger]);
+  }, [singletons, alertFeedback, createLoadingStack, logger]);
 
   const listDocumentByLanguageInfo = useCallback(
     async (langInfo: LanguageInfo) => {
@@ -38,21 +40,22 @@ export function useDocument() {
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at listDocument');
         return [];
       }
+      const { startLoading, stopLoading } = createLoadingStack();
 
       try {
-        setLoadingState(true);
+        startLoading();
         const result =
           await singletons.documentService.listDocumentByLanguageInfo(langInfo);
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getDocument = useCallback(
@@ -70,22 +73,24 @@ export function useDocument() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.documentService.getDocument(
           name,
           langInfo,
         );
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getDocumentById = useCallback(
@@ -95,21 +100,23 @@ export function useDocument() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.documentService.getDocumentById(
           documentId,
         );
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const createOrFindDocument = useCallback(
@@ -127,15 +134,17 @@ export function useDocument() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const document = await singletons.documentService.getDocument(
           name.trim(),
           langInfo,
         );
 
         if (document) {
-          setLoadingState(false);
+          stopLoading();
           alertFeedback(
             FeedbackTypes.WARNING,
             'Already exists a document with same name!',
@@ -147,18 +156,18 @@ export function useDocument() {
           langInfo,
         );
 
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.SUCCESS, 'Created a new document!');
 
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   /**
@@ -170,18 +179,20 @@ export function useDocument() {
       return [];
     }
 
+    const { startLoading, stopLoading } = createLoadingStack();
+
     try {
-      setLoadingState(true);
+      startLoading();
       const result = await singletons.documentService.listApp();
-      setLoadingState(false);
+      stopLoading();
       return result;
     } catch (err) {
       logger.error(err);
-      setLoadingState(false);
+      stopLoading();
       alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       return [];
     }
-  }, [singletons, alertFeedback, setLoadingState, logger]);
+  }, [singletons, alertFeedback, createLoadingStack, logger]);
 
   /**
    * @deprecated
@@ -201,19 +212,21 @@ export function useDocument() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.documentService.getApp(name);
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   /**
@@ -231,19 +244,21 @@ export function useDocument() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.documentService.getAppById(appId);
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   /**
@@ -256,21 +271,23 @@ export function useDocument() {
         return [];
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.documentService.listAppByLanguageInfo(
           langInfo,
         );
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   /**
@@ -295,26 +312,28 @@ export function useDocument() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const app = await singletons.documentService.createOrFindApp(
           name.trim(),
           organizationName,
           languageInfo,
         );
 
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.SUCCESS, 'Created a new document!');
 
         return app;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   return {

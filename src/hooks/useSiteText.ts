@@ -18,7 +18,7 @@ export function useSiteText() {
     },
     actions: {
       alertFeedback,
-      setLoadingState,
+      createLoadingStack,
       setSiteTextMap,
       clearTempSiteTexts,
     },
@@ -42,8 +42,10 @@ export function useSiteText() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
 
         const siteTextEntity =
           await singletons.siteTextService.createOrFindSiteText(
@@ -53,17 +55,17 @@ export function useSiteText() {
             definitionText,
           );
 
-        setLoadingState(false);
+        stopLoading();
 
         return siteTextEntity.definitionId;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const createOrFindTranslation = useCallback(
@@ -87,8 +89,10 @@ export function useSiteText() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
 
         const result = await singletons.siteTextService.createOrFindTranslation(
           appId,
@@ -98,17 +102,17 @@ export function useSiteText() {
           translatedDefinitionText,
         );
 
-        setLoadingState(false);
+        stopLoading();
 
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getDefinitionList = useCallback(
@@ -118,25 +122,27 @@ export function useSiteText() {
         return [];
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
 
         const result = await singletons.siteTextService.getDefinitionList(
           appId,
           siteTextId,
         );
 
-        setLoadingState(false);
+        stopLoading();
 
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getTranslationListBySiteTextRel = useCallback(
@@ -153,8 +159,10 @@ export function useSiteText() {
         return [];
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
 
         const result =
           await singletons.siteTextService.getTranslationListBySiteTextRel(
@@ -163,17 +171,17 @@ export function useSiteText() {
             languageInfo,
           );
 
-        setLoadingState(false);
+        stopLoading();
 
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getRecommendedSiteText = useCallback(
@@ -183,25 +191,27 @@ export function useSiteText() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.siteTextService.getRecommendedSiteText(
           appId,
           siteTextId,
           languageInfo,
         );
 
-        setLoadingState(false);
+        stopLoading();
 
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getTranslatedSiteTextListByAppId = useCallback(
@@ -215,8 +225,10 @@ export function useSiteText() {
         return [];
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result =
           await singletons.siteTextService.getTranslatedSiteTextListByAppId(
             appId,
@@ -224,17 +236,17 @@ export function useSiteText() {
             targetLanguageInfo,
           );
 
-        setLoadingState(false);
+        stopLoading();
 
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getSiteTextDto = useCallback(
@@ -244,24 +256,26 @@ export function useSiteText() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.siteTextService.getSiteTextDto(
           siteTextId,
           definitionId,
         );
 
-        setLoadingState(false);
+        stopLoading();
 
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getSiteTextDtoWithRel = useCallback(
@@ -271,23 +285,25 @@ export function useSiteText() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.siteTextService.getSiteTextDtoWithRel(
           definitionRel,
         );
 
-        setLoadingState(false);
+        stopLoading();
 
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getSiteTextTranslationDtoWithRel = useCallback(
@@ -301,8 +317,10 @@ export function useSiteText() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result =
           await singletons.siteTextService.getSiteTextTranslationDtoWithRel(
             appId,
@@ -310,17 +328,17 @@ export function useSiteText() {
             translatedDefinitionRel,
           );
 
-        setLoadingState(false);
+        stopLoading();
 
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getOriginalAndTranslatedRelFromSiteTextTranslationDto = useCallback(
@@ -362,15 +380,17 @@ export function useSiteText() {
         };
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
 
         if (!translated!.candidateId) {
           alertFeedback(
             FeedbackTypes.ERROR,
             'Cannot find such candidate at useSiteText hooks!',
           );
-          setLoadingState(false);
+          stopLoading();
           return {
             originalDefinitionRel: translated!.original.relationshipId,
             translatedDefinitionRel: null,
@@ -384,13 +404,13 @@ export function useSiteText() {
             FeedbackTypes.ERROR,
             'Cannot find such candidate at useSiteText hooks!',
           );
-          setLoadingState(false);
+          stopLoading();
           return {
             originalDefinitionRel: translated!.original.relationshipId,
             translatedDefinitionRel: null,
           };
         }
-        setLoadingState(false);
+        stopLoading();
 
         return {
           originalDefinitionRel: translated!.original.relationshipId,
@@ -398,7 +418,7 @@ export function useSiteText() {
         };
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return {
           originalDefinitionRel: null,
@@ -406,7 +426,7 @@ export function useSiteText() {
         };
       }
     },
-    [singletons, alertFeedback, setLoadingState, getCandidateById, logger],
+    [singletons, alertFeedback, createLoadingStack, getCandidateById, logger],
   );
 
   const loadSiteTextMap = useCallback(async () => {
@@ -415,8 +435,10 @@ export function useSiteText() {
       return;
     }
 
+    const { startLoading, stopLoading } = createLoadingStack();
+
     try {
-      setLoadingState(true, 'Loading Site Text Map', undefined, true);
+      startLoading();
 
       const candidate =
         await singletons.siteTextService.getTranslatedSiteTextListByAppId(
@@ -439,10 +461,10 @@ export function useSiteText() {
 
       setSiteTextMap(temp);
 
-      setLoadingState(false);
+      stopLoading();
     } catch (err) {
       logger.error(err);
-      setLoadingState(false);
+      stopLoading();
       alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       return;
     }
@@ -450,7 +472,7 @@ export function useSiteText() {
     singletons,
     crowdBibleApp,
     alertFeedback,
-    setLoadingState,
+    createLoadingStack,
     appLanguage,
     setSiteTextMap,
     logger,
@@ -461,7 +483,9 @@ export function useSiteText() {
       return;
     }
 
-    setLoadingState(true);
+    const { startLoading, stopLoading } = createLoadingStack();
+
+    startLoading();
 
     for (const item of tempSiteTexts) {
       try {
@@ -479,12 +503,12 @@ export function useSiteText() {
 
     clearTempSiteTexts();
 
-    setLoadingState(false);
+    stopLoading();
     loadSiteTextMap();
   }, [
     singletons,
     crowdBibleApp,
-    setLoadingState,
+    createLoadingStack,
     clearTempSiteTexts,
     loadSiteTextMap,
     tempSiteTexts,
@@ -501,23 +525,25 @@ export function useSiteText() {
       return [];
     }
 
+    const { startLoading, stopLoading } = createLoadingStack();
+
     try {
-      setLoadingState(true);
+      startLoading();
 
       const result = await singletons.siteTextService.getAppLanguageList(
         crowdBibleApp.id,
       );
 
-      setLoadingState(false);
+      stopLoading();
 
       return result;
     } catch (err) {
       logger.error(err);
-      setLoadingState(false);
+      stopLoading();
       alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       return [];
     }
-  }, [singletons, crowdBibleApp, alertFeedback, setLoadingState, logger]);
+  }, [singletons, crowdBibleApp, alertFeedback, createLoadingStack, logger]);
 
   return {
     loadSiteTextMap,

@@ -48,12 +48,15 @@ export interface ContextType {
     closeFeedback: () => void;
     setSourceLanguage: (lang: LanguageInfo | null) => void;
     setTargetLanguage: (lang: LanguageInfo | null) => void;
-    setLoadingState: (
-      isLoading: boolean,
+    createLoadingStack: (
       message?: string,
       status?: string,
       isCancelButton?: boolean,
-    ) => void;
+    ) => {
+      startLoading: () => void;
+      stopLoading: () => void;
+    };
+    deleteLoadingState: (id: string) => void;
     setSqlPortalShown: (
       isSqlPortalShown: boolean,
       position?: { x: number; y: number },
@@ -93,7 +96,8 @@ export function AppContextProvider({ children }: AppProviderProps) {
     setConnectivity,
     setPrefersColorScheme,
     logout,
-    setLoadingState,
+    createLoadingStack,
+    deleteLoadingState,
     setSingletons,
     setSqlPortalShown,
     setSiteTextMap,
@@ -166,7 +170,8 @@ export function AppContextProvider({ children }: AppProviderProps) {
       setMode,
       setConnectivity,
       setPrefersColorScheme,
-      setLoadingState,
+      createLoadingStack,
+      deleteLoadingState,
       setSingletons,
       setSourceLanguage,
       setTargetLanguage,

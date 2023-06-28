@@ -1,10 +1,8 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 
 import { CrowdBibleUI, MuiMaterial } from '@eten-lab/ui-kit';
-import { initialState, reducer } from '@/src/reducers';
 
-import { useGlobal } from '@/hooks/useGlobal';
 import { useAppContext } from '@/hooks/useAppContext';
 import { useTr } from '@/hooks/useTr';
 
@@ -18,11 +16,11 @@ export function NodeDetailsPage() {
     states: {
       global: { singletons },
     },
+    actions: { createLoadingStack },
     logger,
   } = useAppContext();
   const { tr } = useTr();
-  const [, dispatch] = useReducer(reducer, initialState);
-  const { setLoadingState } = useGlobal({ dispatch });
+
   const history = useHistory();
   const { nodeId } = useParams<{ nodeId: string }>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -127,14 +125,16 @@ export function NodeDetailsPage() {
       }
       return null;
     };
-    setLoadingState(true);
+
+    const { startLoading, stopLoading } = createLoadingStack();
+    startLoading();
     searchNode()
       .then((filtered_node) => {
         setNode(filtered_node);
       })
       .catch((err) => logger.error(err))
-      .finally(() => setLoadingState(false));
-  }, [singletons, setLoadingState, nodeId, logger]);
+      .finally(() => stopLoading());
+  }, [singletons, createLoadingStack, nodeId, logger]);
 
   const nodeClickHandler = (id: string) => {
     history.push(`/graph-viewer/${id}`);

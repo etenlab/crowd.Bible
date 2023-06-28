@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 
 import {
   MuiMaterial,
@@ -110,7 +110,7 @@ export function DictionaryPage() {
     states: {
       global: { singletons },
     },
-    actions: { setLoadingState, alertFeedback },
+    actions: { createLoadingStack, alertFeedback },
     logger,
   } = useAppContext();
   const { tr } = useTr();
@@ -149,8 +149,11 @@ export function DictionaryPage() {
   useEffect(() => {
     if (!definitionService) return;
     if (!selectedLanguageInfo) return;
+
+    const { startLoading, stopLoading } = createLoadingStack();
+
     try {
-      setLoadingState(true);
+      startLoading();
       logger.info({ at: 'DictionaryPage' }, 'load words');
       const loadWords = async () => {
         const words: VotableItem[] = await definitionService.getVotableItems(
@@ -164,15 +167,20 @@ export function DictionaryPage() {
       logger.error(error);
       alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
     } finally {
-      setLoadingState(false);
+      stopLoading();
     }
   }, [
     alertFeedback,
     definitionService,
     selectedLanguageInfo,
-    setLoadingState,
+    createLoadingStack,
     logger,
   ]);
+
+  const { startLoading, stopLoading } = useMemo(
+    () => createLoadingStack(),
+    [createLoadingStack],
+  );
 
   const addWord = useCallback(
     (newWord: string) => {
@@ -215,6 +223,14 @@ export function DictionaryPage() {
     setIsDialogOpened(true);
   }, [alertFeedback, selectedLanguageInfo]);
 
+  const handleLoadingState = (loading: boolean) => {
+    if (loading) {
+      startLoading();
+    } else {
+      stopLoading();
+    }
+  };
+
   return (
     <PageLayout>
       {!selectedWord ? (
@@ -244,7 +260,7 @@ export function DictionaryPage() {
 
           <LangSelector
             onChange={onChangeLang}
-            setLoadingState={setLoadingState}
+            setLoadingState={handleLoadingState}
             selected={selectedLanguageInfo}
           ></LangSelector>
 

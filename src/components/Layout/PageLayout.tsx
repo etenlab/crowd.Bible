@@ -23,17 +23,22 @@ interface PageLayoutProps {
 export function PageLayout({ children }: PageLayoutProps) {
   const {
     states: {
-      global: { snack, loading, singletons, isSqlPortalShown, crowdBibleApp },
+      global: {
+        snack,
+        loadingStack,
+        singletons,
+        isSqlPortalShown,
+        crowdBibleApp,
+      },
       components: { modal },
     },
-    actions: { closeFeedback, clearModalCom, setLoadingState },
+    actions: { closeFeedback, clearModalCom, deleteLoadingState },
   } = useAppContext();
   const { getColor } = useColorModeContext();
   const { tr } = useTr();
 
-  const handleClickCancelBtn = () => {
-    setLoadingState(false);
-  };
+  const loading =
+    loadingStack.length > 0 ? loadingStack[loadingStack.length - 1] : null;
 
   const isLoading = !!loading || !singletons || !crowdBibleApp;
   const loadingMessage =
@@ -116,7 +121,10 @@ export function PageLayout({ children }: PageLayoutProps) {
               </Typography>
             ) : null}
             {loading?.isCancelButton ? (
-              <Button variant="text" onClick={handleClickCancelBtn}>
+              <Button
+                variant="text"
+                onClick={() => deleteLoadingState(loading.id)}
+              >
                 {tr('Cancel')}
               </Button>
             ) : null}

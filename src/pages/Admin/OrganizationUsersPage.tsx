@@ -17,7 +17,7 @@ export function OrganizationUsersPage() {
     history.goBack();
   };
 
-  const handleClickItem = (value: string) => {};
+  const handleClickItem = (_value: string) => {};
 
   const handleSearch = () => {};
 

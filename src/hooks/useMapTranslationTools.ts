@@ -64,7 +64,7 @@ export type WordItem = {
 
 export function useMapTranslationTools() {
   const {
-    actions: { alertFeedback, setLoadingState },
+    actions: { alertFeedback, createLoadingStack },
     states: {
       global: { singletons },
     },
@@ -326,6 +326,8 @@ export function useMapTranslationTools() {
       candidateId: Nanoid | null,
       upOrDown: UpOrDownVote,
     ) => {
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
         if (!candidateId) {
           throw new Error(`!candidateId: There is no candidateId`);
@@ -337,6 +339,8 @@ export function useMapTranslationTools() {
           );
           return translationIdx >= 0;
         });
+
+        startLoading();
 
         await toggleVote(candidateId, upOrDown === VoteTypes.UP); // if not upVote, it calculated as false and toggleVote treats false as downVote
         const votes = await getVotesStats(candidateId);
@@ -355,10 +359,10 @@ export function useMapTranslationTools() {
         logger.error(error);
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
       } finally {
-        setLoadingState(false);
+        stopLoading();
       }
     },
-    [toggleVote, getVotesStats, alertFeedback, setLoadingState, logger],
+    [toggleVote, getVotesStats, alertFeedback, createLoadingStack, logger],
   );
 
   return {

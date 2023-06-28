@@ -56,105 +56,68 @@ export function SeedPage() {
     states: {
       global: { singletons, crowdBibleApp },
     },
-    actions: { setLoadingState },
+    actions: { createLoadingStack },
     logger,
   } = useAppContext();
   const { tr } = useTr();
 
   const [loadResult, setLoadResult] = useState('');
 
-  const seedOneSiteText = async () => {
+  const seedOneSiteText = async (key: string) => {
     if (!singletons || !crowdBibleApp) {
       return true;
     }
 
-    const keys = Object.keys(langObj);
     const obj: Record<string, Record<string, string>> = langObj;
 
-    const temp = window.localStorage.getItem('processed-site-texts');
-    const tempProcessedSiteTexts: string[] = temp ? JSON.parse(temp) : [];
+    const en = obj[key].en;
+    const jp = obj[key].jp;
+    const zh = obj[key].zh;
+    const hi = obj[key].hi;
+    const de = obj[key].de;
 
-    let flg = false;
+    try {
+      const { relationshipId } =
+        await singletons.siteTextService.createOrFindSiteText(
+          crowdBibleApp.id,
+          langInfos.en,
+          en,
+          '',
+        );
 
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-
-      setLoadingState(
-        true,
-        `Seeding (${key})`,
-        `${tempProcessedSiteTexts.length} / ${keys.length}`,
-        true,
+      await singletons.siteTextService.createOrFindTranslation(
+        crowdBibleApp.id,
+        relationshipId,
+        langInfos.jp,
+        jp,
+        '',
       );
 
-      if (tempProcessedSiteTexts.find((data) => data === key)) {
-        continue;
-      }
-
-      flg = true;
-
-      const en = obj[key].en;
-      const jp = obj[key].jp;
-      const zh = obj[key].zh;
-      const hi = obj[key].hi;
-      const de = obj[key].de;
-
-      try {
-        const { relationshipId } =
-          await singletons.siteTextService.createOrFindSiteText(
-            crowdBibleApp.id,
-            langInfos.en,
-            en,
-            '',
-          );
-
-        await singletons.siteTextService.createOrFindTranslation(
-          crowdBibleApp.id,
-          relationshipId,
-          langInfos.jp,
-          jp,
-          '',
-        );
-
-        await singletons.siteTextService.createOrFindTranslation(
-          crowdBibleApp.id,
-          relationshipId,
-          langInfos.zh,
-          zh,
-          '',
-        );
-
-        await singletons.siteTextService.createOrFindTranslation(
-          crowdBibleApp.id,
-          relationshipId,
-          langInfos.hi,
-          hi,
-          '',
-        );
-
-        await singletons.siteTextService.createOrFindTranslation(
-          crowdBibleApp.id,
-          relationshipId,
-          langInfos.de,
-          de,
-          '',
-        );
-      } catch (err) {
-        logger.error('seeding partially failed::', err);
-      }
-
-      window.localStorage.setItem(
-        'processed-site-texts',
-        JSON.stringify([...tempProcessedSiteTexts, key]),
+      await singletons.siteTextService.createOrFindTranslation(
+        crowdBibleApp.id,
+        relationshipId,
+        langInfos.zh,
+        zh,
+        '',
       );
-      break;
-    }
 
-    if (!flg) {
-      setLoadResult(`Total ${keys.length} / ${keys.length} loaded`);
-      setLoadingState(false);
-      return true;
-    } else {
-      return false;
+      await singletons.siteTextService.createOrFindTranslation(
+        crowdBibleApp.id,
+        relationshipId,
+        langInfos.hi,
+        hi,
+        '',
+      );
+
+      await singletons.siteTextService.createOrFindTranslation(
+        crowdBibleApp.id,
+        relationshipId,
+        langInfos.de,
+        de,
+        '',
+      );
+    } catch (err) {
+      logger.error('seeding partially failed::', err);
     }
   };
 
@@ -163,14 +126,43 @@ export function SeedPage() {
   };
 
   const seedSiteText = async () => {
-    setTimeout(async () => {
-      const result = await seedOneSiteText();
-      if (result) {
-        return;
-      } else {
-        seedSiteText();
+    const keys = Object.keys(langObj);
+
+    const temp = window.localStorage.getItem('processed-site-texts');
+    const tempProcessedSiteTexts: string[] = temp ? JSON.parse(temp) : [];
+
+    let selectedKey: null | string = null;
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+
+      if (tempProcessedSiteTexts.find((data) => data === key)) {
+        continue;
       }
-    }, 0);
+
+      selectedKey = key;
+    }
+
+    if (selectedKey) {
+      const { startLoading, stopLoading } = createLoadingStack(
+        `Seeding (${selectedKey})`,
+        `${tempProcessedSiteTexts.length} / ${keys.length}`,
+        true,
+      );
+      startLoading();
+      setTimeout(async () => {
+        await seedOneSiteText(selectedKey!);
+        window.localStorage.setItem(
+          'processed-site-texts',
+          JSON.stringify([...tempProcessedSiteTexts, selectedKey]),
+        );
+        stopLoading();
+        await seedSiteText();
+      }, 0);
+    } else {
+      setLoadResult(`Total ${keys.length} / ${keys.length} loaded`);
+      return;
+    }
   };
 
   return (

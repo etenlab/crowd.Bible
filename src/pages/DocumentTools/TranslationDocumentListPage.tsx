@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { PageLayout } from '@/components/Layout';
@@ -38,7 +38,7 @@ export function TranslationDocumentListPage() {
       global: { singletons },
       documentTools: { sourceLanguage, targetLanguage },
     },
-    actions: { setSourceLanguage, setTargetLanguage, setLoadingState },
+    actions: { setSourceLanguage, setTargetLanguage, createLoadingStack },
   } = useAppContext();
   const { tr } = useTr();
 
@@ -112,6 +112,11 @@ export function TranslationDocumentListPage() {
     getRecommendedTranslationCandidateId,
   ]);
 
+  const { startLoading, stopLoading } = useMemo(
+    () => createLoadingStack(),
+    [createLoadingStack],
+  );
+
   const handleChangeSearchStr = (str: string) => {
     setSearchStr(str);
   };
@@ -144,19 +149,27 @@ export function TranslationDocumentListPage() {
     history.push(`${RouteConst.TRANSLATION}/${documentId}`);
   };
 
+  const handleLoadingState = (loading: boolean) => {
+    if (loading) {
+      startLoading();
+    } else {
+      stopLoading();
+    }
+  };
+
   const langSelectorCom = filterOpen ? (
     <Stack gap="30px" sx={{ padding: '20px' }}>
       <LangSelector
         label={tr('Select the source language')}
         selected={sourceLanguage || undefined}
         onChange={handleSetSourceLanguage}
-        setLoadingState={setLoadingState}
+        setLoadingState={handleLoadingState}
       />
       <LangSelector
         label={tr('Select the target language')}
         selected={targetLanguage || undefined}
         onChange={handleSetTargetLanguage}
-        setLoadingState={setLoadingState}
+        setLoadingState={handleLoadingState}
       />
       <Button variant="contained" onClick={handleClickSearchButton}>
         {tr('Search')}
