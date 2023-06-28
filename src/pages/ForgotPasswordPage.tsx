@@ -35,7 +35,7 @@ export function ForgotPasswordPage() {
   const history = useHistory();
   const apolloClient = useApolloClient();
   const {
-    actions: { setLoadingState },
+    actions: { createLoadingStack },
     logger,
   } = useAppContext();
   const { tr } = useTr();
@@ -51,7 +51,8 @@ export function ForgotPasswordPage() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      setLoadingState(true);
+      const { startLoading, stopLoading } = createLoadingStack();
+      startLoading();
       setErrorMessage('');
       setSuccessMessage('');
       apolloClient
@@ -63,12 +64,12 @@ export function ForgotPasswordPage() {
         })
         .then((res) => {
           setSuccessMessage('Reset password link sent to your email');
-          setLoadingState(false);
+          stopLoading();
           logger.error(res);
         })
         .catch((error: any) => {
           setErrorMessage(error.message);
-          setLoadingState(false);
+          stopLoading();
         });
     },
   });

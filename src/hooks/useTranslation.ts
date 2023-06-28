@@ -13,7 +13,7 @@ export function useTranslation() {
       global: { singletons, user },
       documentTools: { targetLanguage },
     },
-    actions: { alertFeedback, setLoadingState },
+    actions: { alertFeedback, createLoadingStack },
     logger,
   } = useAppContext();
 
@@ -51,8 +51,10 @@ export function useTranslation() {
         );
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const userNode = await singletons.userService.createOrFindUser(
           user.userEmail,
         );
@@ -73,20 +75,27 @@ export function useTranslation() {
           );
 
         if (!wordSequenceTranslationRelationshipId) {
-          setLoadingState(false);
+          stopLoading();
           return null;
         }
 
-        setLoadingState(false);
+        stopLoading();
         return wordSequenceTranslationRelationshipId;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, user, targetLanguage, setLoadingState, logger],
+    [
+      singletons,
+      alertFeedback,
+      user,
+      targetLanguage,
+      createLoadingStack,
+      logger,
+    ],
   );
 
   const createOrFindDefinitionTranslation = useCallback(
@@ -99,8 +108,10 @@ export function useTranslation() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
 
         const { translationRelationshipId } =
           await singletons.translationService.createOrFindDefinitionTranslation(
@@ -109,20 +120,20 @@ export function useTranslation() {
           );
 
         if (!translationRelationshipId) {
-          setLoadingState(false);
+          stopLoading();
           return null;
         }
 
-        setLoadingState(false);
+        stopLoading();
         return translationRelationshipId;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const createOrFindWordTranslation = useCallback(
@@ -153,8 +164,10 @@ export function useTranslation() {
         );
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
 
         const { wordTranslationRelationshipId } =
           await singletons.translationService.createOrFindWordTranslation(
@@ -166,20 +179,20 @@ export function useTranslation() {
           );
 
         if (!wordTranslationRelationshipId) {
-          setLoadingState(false);
+          stopLoading();
           return null;
         }
 
-        setLoadingState(false);
+        stopLoading();
         return wordTranslationRelationshipId;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, targetLanguage, setLoadingState, logger],
+    [singletons, alertFeedback, targetLanguage, createLoadingStack, logger],
   );
 
   const getRecommendedTranslationCandidateId = useCallback(
@@ -207,8 +220,10 @@ export function useTranslation() {
         return originalId;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
 
         const recommendedId =
           await singletons.translationService.getRecommendedTranslationCandidateId(
@@ -216,16 +231,16 @@ export function useTranslation() {
             languageInfo || targetLanguage!,
           );
 
-        setLoadingState(false);
+        stopLoading();
         return recommendedId;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, targetLanguage, setLoadingState, logger],
+    [singletons, alertFeedback, targetLanguage, createLoadingStack, logger],
   );
 
   const getRecommendedWordSequenceTranslation = useCallback(
@@ -247,13 +262,15 @@ export function useTranslation() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
         if (
           compareLangInfo(originalLanguageInfo, languageInfo || targetLanguage!)
         ) {
           return singletons.wordSequenceService.getWordSequenceById(originalId);
         }
-        setLoadingState(true);
+        startLoading();
 
         const recommendedId =
           await singletons.translationService.getRecommendedWordSequenceTranslation(
@@ -261,16 +278,16 @@ export function useTranslation() {
             languageInfo || targetLanguage!,
           );
 
-        setLoadingState(false);
+        stopLoading();
         return recommendedId;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, targetLanguage, setLoadingState, logger],
+    [singletons, alertFeedback, targetLanguage, createLoadingStack, logger],
   );
 
   const listTranslationsByWordSequenceId = useCallback(
@@ -292,9 +309,10 @@ export function useTranslation() {
         alertFeedback(FeedbackTypes.ERROR, 'Not exists log in user!');
         return [];
       }
+      const { startLoading, stopLoading } = createLoadingStack();
 
       try {
-        setLoadingState(true);
+        startLoading();
 
         let userNode: UserDto;
 
@@ -315,16 +333,23 @@ export function useTranslation() {
             isUserId ? userNode!.id : undefined,
           );
 
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, user, targetLanguage, setLoadingState, logger],
+    [
+      singletons,
+      alertFeedback,
+      user,
+      targetLanguage,
+      createLoadingStack,
+      logger,
+    ],
   );
 
   return {

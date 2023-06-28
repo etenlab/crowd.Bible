@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { PageLayout } from '@/components/Layout';
@@ -35,7 +35,7 @@ export function AppListPage() {
       global: { singletons },
       documentTools: { sourceLanguage },
     },
-    actions: { setSourceLanguage, setLoadingState },
+    actions: { setSourceLanguage, createLoadingStack },
   } = useAppContext();
   const { tr } = useTr();
   const { listApp, listAppByLanguageInfo } = useDocument();
@@ -43,6 +43,8 @@ export function AppListPage() {
   const [apps, setApps] = useState<AppDto[]>([]);
   const [searchStr, setSearchStr] = useState<string>('');
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
+
+  const loadingRef = useRef(createLoadingStack());
 
   // Fetch Document Lists from db
   useEffect(() => {
@@ -83,6 +85,14 @@ export function AppListPage() {
     history.push(`${RouteConst.HOME}`);
   };
 
+  const handleLoadingState = (loading: boolean) => {
+    if (loading) {
+      loadingRef.current.startLoading();
+    } else {
+      loadingRef.current.stopLoading();
+    }
+  };
+
   const items: ButtonListItemType[] = useMemo(() => {
     return apps.map(({ id, name }) => ({
       value: id,
@@ -105,7 +115,7 @@ export function AppListPage() {
       label={tr('Select the source language')}
       selected={sourceLanguage || undefined}
       onChange={handleSetSourceLanguage}
-      setLoadingState={setLoadingState}
+      setLoadingState={handleLoadingState}
     />
   ) : null;
 

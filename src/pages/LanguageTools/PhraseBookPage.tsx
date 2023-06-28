@@ -7,7 +7,7 @@ import {
 } from '@eten-lab/ui-kit';
 import { CrowdBibleUI, Button, FiPlus, Typography } from '@eten-lab/ui-kit';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { VotableItem } from '@/dtos/votable-item.dto';
 
 import { useAppContext } from '@/hooks/useAppContext';
@@ -110,7 +110,7 @@ export function PhraseBookPage() {
     states: {
       global: { singletons },
     },
-    actions: { setLoadingState, alertFeedback },
+    actions: { createLoadingStack, alertFeedback },
     logger,
   } = useAppContext();
   const [selectedPhrase, setSelectedPhrase] = useState<VotableItem | null>(
@@ -151,8 +151,11 @@ export function PhraseBookPage() {
   useEffect(() => {
     if (!definitionService) return;
     if (!selectedLanguageInfo) return;
+
+    const { startLoading, stopLoading } = createLoadingStack();
+
     try {
-      setLoadingState(true);
+      startLoading();
       const loadPhrases = async () => {
         const phrases: VotableItem[] = await definitionService.getVotableItems(
           selectedLanguageInfo,
@@ -165,15 +168,20 @@ export function PhraseBookPage() {
       logger.error(error);
       alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
     } finally {
-      setLoadingState(false);
+      stopLoading();
     }
   }, [
     alertFeedback,
     definitionService,
     selectedLanguageInfo,
-    setLoadingState,
+    createLoadingStack,
     logger,
   ]);
+
+  const { startLoading, stopLoading } = useMemo(
+    () => createLoadingStack(),
+    [createLoadingStack],
+  );
 
   const addPhrase = useCallback(
     (newPhrase: string) => {
@@ -221,6 +229,14 @@ export function PhraseBookPage() {
     setIsDialogOpened(true);
   }, [alertFeedback, selectedLanguageInfo]);
 
+  const handleLoadingState = (loading: boolean) => {
+    if (loading) {
+      startLoading();
+    } else {
+      stopLoading();
+    }
+  };
+
   return (
     <PageLayout>
       {!selectedPhrase ? (
@@ -250,7 +266,7 @@ export function PhraseBookPage() {
 
           <LangSelector
             onChange={onChangeLang}
-            setLoadingState={setLoadingState}
+            setLoadingState={handleLoadingState}
             selected={selectedLanguageInfo}
           ></LangSelector>
           <Box display={'flex'} flexDirection="column" width={1}>

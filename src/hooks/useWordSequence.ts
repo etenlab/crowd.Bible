@@ -13,7 +13,7 @@ export function useWordSequence() {
     states: {
       global: { singletons, user },
     },
-    actions: { alertFeedback, setLoadingState },
+    actions: { alertFeedback, createLoadingStack },
     logger,
   } = useAppContext();
 
@@ -47,8 +47,10 @@ export function useWordSequence() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const userNode = await singletons.userService.createOrFindUser(
           user.userEmail,
         );
@@ -67,16 +69,16 @@ export function useWordSequence() {
             importUid,
           });
 
-        setLoadingState(false);
+        stopLoading();
         return wordSequenceNode.id;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, user, setLoadingState, logger],
+    [singletons, alertFeedback, user, createLoadingStack, logger],
   );
 
   const createSubWordSequence = useCallback(
@@ -97,8 +99,10 @@ export function useWordSequence() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const userNode = await singletons.userService.createOrFindUser(
           user.userEmail,
         );
@@ -115,16 +119,16 @@ export function useWordSequence() {
             userNode.id,
           );
 
-        setLoadingState(false);
+        stopLoading();
         return subWordSequenceNode.id;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, user, setLoadingState, logger],
+    [singletons, alertFeedback, user, createLoadingStack, logger],
   );
 
   const getTextFromWordSequenceId = useCallback(
@@ -134,13 +138,15 @@ export function useWordSequence() {
         return [];
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const wordSequenceNode =
           await singletons.graphFirstLayerService.readNode(wordSequenceId);
 
         if (!wordSequenceNode) {
-          setLoadingState(false);
+          stopLoading();
           alertFeedback(
             FeedbackTypes.ERROR,
             'Not exists a word-sequence with given word-sequence id!',
@@ -152,17 +158,17 @@ export function useWordSequence() {
           await singletons.wordSequenceService.getTextFromWordSequenceId(
             wordSequenceId,
           );
-        setLoadingState(false);
+        stopLoading();
 
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getWordSequenceById = useCallback(
@@ -175,21 +181,23 @@ export function useWordSequence() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.wordSequenceService.getWordSequenceById(
           wordSequenceId,
         );
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const appendWordSequence = useCallback(
@@ -202,22 +210,24 @@ export function useWordSequence() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result = await singletons.wordSequenceService.appendWordSequence(
           fromId,
           toId,
         );
-        setLoadingState(false);
+        stopLoading();
         return result.id;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getWordSequenceFromText = useCallback(
@@ -230,20 +240,22 @@ export function useWordSequence() {
         return [];
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result =
           await singletons.wordSequenceService.getWordSequenceFromText(text);
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const getWordSequenceByDocumentId = useCallback(
@@ -256,22 +268,24 @@ export function useWordSequence() {
         return null;
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
         const result =
           await singletons.wordSequenceService.getWordSequenceByDocumentId(
             documentId,
           );
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return null;
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   const listSubWordSequenceByWordSequenceId = useCallback(
@@ -289,8 +303,10 @@ export function useWordSequence() {
         return [];
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
+
       try {
-        setLoadingState(true);
+        startLoading();
 
         let userNode: UserDto;
 
@@ -310,16 +326,16 @@ export function useWordSequence() {
             isUserId ? userNode!.id : undefined,
           );
 
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.error(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, user, setLoadingState, logger],
+    [singletons, alertFeedback, user, createLoadingStack, logger],
   );
 
   return {

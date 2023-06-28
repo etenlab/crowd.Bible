@@ -9,7 +9,7 @@ export function useDefinition() {
     states: {
       global: { singletons },
     },
-    actions: { alertFeedback, setLoadingState },
+    actions: { alertFeedback, createLoadingStack },
     logger,
   } = useAppContext();
 
@@ -24,23 +24,24 @@ export function useDefinition() {
         return [];
       }
 
+      const { startLoading, stopLoading } = createLoadingStack();
       try {
-        setLoadingState(true);
+        startLoading();
         const result =
           await singletons.definitionService.getDefinitionsAsVotableContentByWord(
             word,
             languageInfo,
           );
-        setLoadingState(false);
+        stopLoading();
         return result;
       } catch (err) {
         logger.info(err);
-        setLoadingState(false);
+        stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, setLoadingState, logger],
+    [singletons, alertFeedback, createLoadingStack, logger],
   );
 
   return {

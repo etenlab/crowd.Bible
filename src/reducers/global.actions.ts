@@ -20,6 +20,7 @@ export const actions = {
   SET_CONNECTIVITY: 'SET_CONNECTIVITY',
   LOGOUT: 'LOGOUT',
   SET_LOGING_STATE: 'SET_LOGING_STATE',
+  DELETE_LOADING_STATE: 'DELETE_LOADING_STATE',
   SET_SINGLETONS: 'SET_SINGLETONS',
   SET_SQL_PORTAL_SHOWN: 'SET_SQL_PORTAL_SHOWN',
   CHANGE_APP_LANGUAGE: 'CHANGE_APP_LANGUAGE',
@@ -89,26 +90,27 @@ export function logout() {
 }
 
 export function setLoadingState(
-  isLoading: boolean,
+  id: string,
   message?: string,
   status?: string,
   isCancelButton?: boolean,
 ) {
-  if (isLoading) {
-    return {
-      type: actions.SET_LOGING_STATE,
-      payload: {
-        message,
-        status,
-        isCancelButton,
-      },
-    };
-  } else {
-    return {
-      type: actions.SET_LOGING_STATE,
-      payload: undefined,
-    };
-  }
+  return {
+    type: actions.SET_LOGING_STATE,
+    payload: {
+      id,
+      message,
+      status,
+      isCancelButton,
+    },
+  };
+}
+
+export function deleteLoadingState(id: string) {
+  return {
+    type: actions.DELETE_LOADING_STATE,
+    payload: id,
+  };
 }
 
 export function setSingletons(singletons: ISingletons | null) {
