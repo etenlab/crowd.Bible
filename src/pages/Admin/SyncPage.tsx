@@ -21,7 +21,7 @@ export function SyncPage() {
     states: {
       global: { singletons },
     },
-    actions: { setLoadingState, alertFeedback },
+    actions: { createLoadingStack, alertFeedback },
     logger,
   } = useAppContext();
   const { tr } = useTr();
@@ -35,7 +35,10 @@ export function SyncPage() {
 
   const doSyncOut = async () => {
     if (!singletons?.syncService) return;
-    setLoadingState(true);
+
+    const { startLoading, stopLoading } = createLoadingStack();
+    startLoading();
+
     setSyncOutLoadingStatus(LoadingStatuses.LOADING);
     try {
       const syncOutRes = await singletons.syncService.syncOut();
@@ -45,14 +48,17 @@ export function SyncPage() {
       logger.error('Error occurred while syncing out::', error);
       setLoadResult('Error occurred while syncing out.');
     } finally {
-      setLoadingState(false);
+      stopLoading();
       setSyncOutLoadingStatus(LoadingStatuses.FINISHED);
     }
   };
 
   const doSyncIn = async () => {
     if (!singletons?.syncService) return;
-    setLoadingState(true);
+
+    const { startLoading, stopLoading } = createLoadingStack();
+    startLoading();
+
     setSyncInLoadingStatus(LoadingStatuses.LOADING);
     try {
       await singletons.syncService.syncIn();
@@ -65,14 +71,17 @@ export function SyncPage() {
       );
       setLoadResult('Error occurred while syncing in.');
     } finally {
-      setLoadingState(false);
+      stopLoading();
       setSyncInLoadingStatus(LoadingStatuses.FINISHED);
     }
   };
 
   const handleResetLocalGraphData = async () => {
     if (!singletons) return false;
-    setLoadingState(true);
+
+    const { startLoading, stopLoading } = createLoadingStack();
+    startLoading();
+
     try {
       await singletons.dbService.resetAllData();
       singletons.syncService.clearAllSyncInfo();
@@ -83,7 +92,7 @@ export function SyncPage() {
         'Error when resetting data',
       );
     } finally {
-      setLoadingState(false);
+      stopLoading();
     }
   };
 
