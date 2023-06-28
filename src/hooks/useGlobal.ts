@@ -109,9 +109,17 @@ export function useGlobal({ dispatch }: UseGlobalProps) {
     dispatchRef.current.dispatch(setSingletonsAction(singletons));
   }, []);
 
-  const setSqlPortalShown = useCallback((isSqlPortalShown: boolean) => {
-    dispatchRef.current.dispatch(setSqlPortalShownAction(isSqlPortalShown));
-  }, []);
+  const setSqlPortalShown = useCallback(
+    (
+      isSqlPortalShown: boolean,
+      position: { x: number; y: number } | undefined,
+    ) => {
+      dispatchRef.current.dispatch(
+        setSqlPortalShownAction(isSqlPortalShown, position),
+      );
+    },
+    [],
+  );
 
   const setSiteTextMap = useCallback(
     (

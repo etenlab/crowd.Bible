@@ -120,10 +120,13 @@ export function setSingletons(singletons: ISingletons | null) {
   };
 }
 
-export function setSqlPortalShown(isShown: boolean) {
+export function setSqlPortalShown(
+  isShown: boolean,
+  position: { x: number; y: number } | undefined,
+) {
   return {
     type: actions.SET_SQL_PORTAL_SHOWN,
-    payload: isShown,
+    payload: { isShown, position },
   };
 }
 
