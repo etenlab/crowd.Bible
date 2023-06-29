@@ -119,6 +119,7 @@ export const MapTabContent = () => {
                   [PropertyKeyConst.IS_PROCESSING_FINISHED]: true,
                 },
               );
+              await singletons.driver.save();
               alertFeedback(
                 FeedbackTypes.SUCCESS,
                 `Map file (name:${argMap.name}) is uploaded.`,
@@ -129,7 +130,9 @@ export const MapTabContent = () => {
                 `Map file (name:${argMap.name}) already exists.`,
               );
             }
-          } else newState.status = eProcessStatus.FAILED;
+          } else {
+            newState.status = eProcessStatus.FAILED;
+          }
         } catch (error) {
           newState.status = eProcessStatus.FAILED;
         }
@@ -150,9 +153,6 @@ export const MapTabContent = () => {
         alertFeedback(FeedbackTypes.ERROR, 'No language seleced');
         return;
       }
-      window.addEventListener('beforeunload', () => {
-        'alert';
-      });
       processFile(file, langInfo, setMapList);
       e.target.value = '';
     },
