@@ -72,10 +72,11 @@ export const MapDetailPage = () => {
           });
         } else {
           alertFeedback(FeedbackTypes.ERROR, 'No map data found');
+          router.push(RouteConst.MAP_LIST);
         }
       } catch (error) {
         logger.error({ error }, 'Error with getting map details');
-        router.goBack();
+        router.push(RouteConst.MAP_LIST);
       } finally {
         stopLoading();
       }

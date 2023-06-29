@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { Route, Redirect } from 'react-router-dom';
 
 import { IonRouterOutlet, setupIonicReact, IonApp } from '@ionic/react';
@@ -36,8 +34,6 @@ import { AppRoutes } from '@/routes/AppRoutes';
 import { RouteGuarder } from '@/components/RouteGuarder';
 // import { useCacheBuster } from '@/hooks/useCacheBuster';
 
-import useSeedService from '@/hooks/useSeedService';
-
 setupIonicReact();
 
 const duplicated: string[] = [];
@@ -52,15 +48,6 @@ for (let i = 0; i < AppRoutes.length; i++) {
 }
 
 export default function App() {
-  const seedService = useSeedService();
-  // const {loading, isLatestVersion, refreshCacheAndReload} = useCacheBuster();
-
-  useEffect(() => {
-    if (seedService) {
-      seedService.init();
-    }
-  }, [seedService]);
-
   if (duplicated.length > 0) {
     alert(`There are duplicated Routes! \n ${duplicated.join('\n')}`);
   }

@@ -216,6 +216,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
   );
 
   const seedService = new SeedService(
+    dbService,
     nodeRepo,
     nodeTypeRepo,
     nodePropertyKeyRepo,

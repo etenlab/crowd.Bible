@@ -31,7 +31,7 @@ type ButtonListItemType = CrowdBibleUI.ButtonListItemType;
 
 export function SiteTextListPage() {
   const history = useHistory();
-  const { appId } = useParams<{ appId: Nanoid }>();
+  const { appId } = useParams<{ appId?: Nanoid }>();
   const {
     states: {
       global: { singletons },
@@ -48,7 +48,7 @@ export function SiteTextListPage() {
 
   // Fetch Mock App Info from db
   useEffect(() => {
-    if (singletons) {
+    if (singletons && appId) {
       getAppById(appId).then(setApp);
     }
   }, [getAppById, appId, singletons]);
