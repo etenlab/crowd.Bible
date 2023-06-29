@@ -119,6 +119,7 @@ export const MapTabContent = () => {
                   [PropertyKeyConst.IS_PROCESSING_FINISHED]: true,
                 },
               );
+              await singletons.driver.save();
               alertFeedback(
                 FeedbackTypes.SUCCESS,
                 `Map file (name:${argMap.name}) is uploaded.`,
@@ -129,7 +130,9 @@ export const MapTabContent = () => {
                 `Map file (name:${argMap.name}) already exists.`,
               );
             }
-          } else newState.status = eProcessStatus.FAILED;
+          } else {
+            newState.status = eProcessStatus.FAILED;
+          }
         } catch (error) {
           newState.status = eProcessStatus.FAILED;
         }
@@ -150,9 +153,6 @@ export const MapTabContent = () => {
         alertFeedback(FeedbackTypes.ERROR, 'No language seleced');
         return;
       }
-      window.addEventListener('beforeunload', () => {
-        'alert';
-      });
       processFile(file, langInfo, setMapList);
       e.target.value = '';
     },
@@ -270,51 +270,53 @@ export const MapTabContent = () => {
           </StyledBox>
           <Box width={'100%'} marginTop={'-25px'}>
             <IonList>
-              {mapList.map((map, idx) => {
-                return (
-                  <IonItem
-                    key={idx}
-                    href={`/map-detail/${map.id}`}
-                    disabled={!map.id}
-                  >
-                    <IonLabel
-                      style={{
-                        color: '#1B1B1B',
-                        fontSize: '16px',
-                        lineHeight: '26px',
-                        fontWeight: 400,
-                        padding: '12px 0px',
-                      }}
+              {mapList
+                .sort((m1, m2) => m1.name!.localeCompare(m2.name!))
+                .map((map, idx) => {
+                  return (
+                    <IonItem
+                      key={idx}
+                      href={`/map-detail/${map.id}`}
+                      disabled={!map.id}
                     >
-                      {map.name}
-                    </IonLabel>
-                    <IonLabel
-                      style={{
-                        color: '#616F82',
-                        fontSize: '14px',
-                        lineHeight: '20px',
-                        fontWeight: 500,
-                        padding: '12px 0px',
-                      }}
-                    >
-                      {langInfo2String(map.langInfo)}
-                    </IonLabel>
-                    {[
-                      eProcessStatus.PARSING_STARTED,
-                      eProcessStatus.PARSING_COMPLETED,
-                    ].includes(map.status) && (
-                      <Button variant={'text'} color={'blue-primary'}>
-                        {tr('Processing... Don`t close this page')}
-                      </Button>
-                    )}
-                    {map.status === eProcessStatus.FAILED && (
-                      <Button variant={'text'} color={'error'}>
-                        {tr('Error')}
-                      </Button>
-                    )}
-                  </IonItem>
-                );
-              })}
+                      <IonLabel
+                        style={{
+                          color: '#1B1B1B',
+                          fontSize: '16px',
+                          lineHeight: '26px',
+                          fontWeight: 400,
+                          padding: '12px 0px',
+                        }}
+                      >
+                        {map.name}
+                      </IonLabel>
+                      <IonLabel
+                        style={{
+                          color: '#616F82',
+                          fontSize: '14px',
+                          lineHeight: '20px',
+                          fontWeight: 500,
+                          padding: '12px 0px',
+                        }}
+                      >
+                        {langInfo2String(map.langInfo)}
+                      </IonLabel>
+                      {[
+                        eProcessStatus.PARSING_STARTED,
+                        eProcessStatus.PARSING_COMPLETED,
+                      ].includes(map.status) && (
+                        <Button variant={'text'} color={'blue-primary'}>
+                          {tr('Processing... Don`t close this page')}
+                        </Button>
+                      )}
+                      {map.status === eProcessStatus.FAILED && (
+                        <Button variant={'text'} color={'error'}>
+                          {tr('Error')}
+                        </Button>
+                      )}
+                    </IonItem>
+                  );
+                })}
             </IonList>
           </Box>
         </>
