@@ -15,8 +15,6 @@ import {
 
 import { PageLayout } from '@/components/Layout';
 
-import { Link } from '@/components/Link';
-
 import { useFormik } from 'formik';
 import { decodeToken } from '@/utils/AuthUtils';
 import * as Yup from 'yup';
@@ -116,6 +114,10 @@ export function RegisterPage() {
   };
 
   const handleGoLoginPage = () => {
+    history.push(RouteConst.LOGIN);
+  };
+
+  const handleGoHome = () => {
     history.push(RouteConst.HOME);
   };
 
@@ -130,7 +132,7 @@ export function RegisterPage() {
   return (
     <PageLayout>
       <IonToolbar class="ionic-toolbar">
-        <Link to="/">
+        <Button variant="text" onClick={handleGoHome}>
           <Typography
             variant="h2"
             color="text.dark"
@@ -138,7 +140,7 @@ export function RegisterPage() {
           >
             {tr('crowd.Bible')}
           </Typography>
-        </Link>
+        </Button>
       </IonToolbar>
       <Box
         component="form"
