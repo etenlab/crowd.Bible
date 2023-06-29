@@ -34,6 +34,7 @@ import { RouteConst } from '@/constants/route.constant';
 
 import { AppRoutes } from '@/routes/AppRoutes';
 import { RouteGuarder } from '@/components/RouteGuarder';
+// import { useCacheBuster } from '@/hooks/useCacheBuster';
 
 import useSeedService from '@/hooks/useSeedService';
 
@@ -52,6 +53,7 @@ for (let i = 0; i < AppRoutes.length; i++) {
 
 export default function App() {
   const seedService = useSeedService();
+  // const {loading, isLatestVersion, refreshCacheAndReload} = useCacheBuster();
 
   useEffect(() => {
     if (seedService) {
