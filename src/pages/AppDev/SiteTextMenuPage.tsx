@@ -15,7 +15,7 @@ import { CardGroup } from '@/components/CardGroup';
 
 import { useTr } from '@/hooks/useTr';
 
-const { Stack } = MuiMaterial;
+const { Stack, Box } = MuiMaterial;
 const { TitleWithIcon } = CrowdBibleUI;
 
 export function SiteTextMenuPage() {
@@ -59,14 +59,15 @@ export function SiteTextMenuPage() {
 
   return (
     <PageLayout>
-      <br />
-      <TitleWithIcon
-        label={tr('Site Text')}
-        withCloseIcon={false}
-        withBackIcon={true}
-        onClose={() => {}}
-        onBack={handleClickBack}
-      />
+      <Box sx={{ padding: '20px' }}>
+        <TitleWithIcon
+          label={tr('Site Text')}
+          withCloseIcon={false}
+          withBackIcon={true}
+          onClose={() => {}}
+          onBack={handleClickBack}
+        />
+      </Box>
 
       <CardGroup group={cardGroup.group} linkItems={cardGroup.linkItems} />
     </PageLayout>
