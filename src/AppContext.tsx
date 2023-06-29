@@ -30,6 +30,7 @@ import { ISingletons } from './singletons';
 
 import { getAppDataSource } from './data-source';
 import getSingletons from './singletons';
+import { FeedbackTypes } from './constants/common.constant';
 
 export interface ContextType {
   states: {
@@ -132,7 +133,18 @@ export function AppContextProvider({ children }: AppProviderProps) {
   useEffect(() => {
     (async () => {
       if (state.global.singletons) {
-        await state.global.singletons.seedService.init();
+        const { startLoading, stopLoading } = createLoadingStack('Sync In...');
+        startLoading();
+        try {
+          await state.global.singletons.seedService.init();
+
+          await state.global.singletons.syncService.syncIn();
+        } catch (err) {
+          alertFeedback(FeedbackTypes.ERROR, 'Failed at Sync In');
+          logger.current.error(err);
+        }
+
+        stopLoading();
 
         state.global.singletons.documentService
           .createOrFindApp('crowd.Bible', 'ETEN Lab', {
@@ -146,7 +158,12 @@ export function AppContextProvider({ children }: AppProviderProps) {
           });
       }
     })();
-  }, [state.global.singletons, setCrowdBibleApp]);
+  }, [
+    state.global.singletons,
+    setCrowdBibleApp,
+    alertFeedback,
+    createLoadingStack,
+  ]);
 
   useEffect(() => {
     setSingletons(null);
