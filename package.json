@@ -1,6 +1,6 @@
 {
   "name": "crowd-bible",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "private": true,
   "devServer": {
     "historyApiFallback": true
@@ -91,9 +91,7 @@
     "eject": "react-app-rewired eject",
     "ionic:serve": "react-app-rewired start",
     "prepare": "husky install",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.{ts,tsx,md,mdx,js,jsx}\" --fix",
-    "generate-build-version": "node generate-build-version",
-    "prebuild": "npm run generate-build-version"
+    "lint": "eslint \"{src,apps,libs,test}/**/*.{ts,tsx,md,mdx,js,jsx}\" --fix"
   },
   "eslintConfig": {
     "extends": [
