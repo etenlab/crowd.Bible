@@ -11,8 +11,6 @@ import {
   PasswordInput,
 } from '@eten-lab/ui-kit';
 
-import { Link } from '@/components/Link';
-
 import { useFormik } from 'formik';
 import { useAppContext } from '@/hooks/useAppContext';
 import { useTr } from '@/hooks/useTr';
@@ -105,6 +103,10 @@ export function LoginPage() {
     formik.submitForm();
   };
 
+  const handleGoHome = () => {
+    history.push(RouteConst.HOME);
+  };
+
   const handleForgotPassword = () => {
     history.push(RouteConst.FORGET_PASSWORD);
   };
@@ -116,7 +118,7 @@ export function LoginPage() {
   return (
     <PageLayout>
       <IonToolbar class="ionic-toolbar">
-        <Link to="/">
+        <Button variant="text" onClick={handleGoHome}>
           <Typography
             variant="h2"
             color="text.dark"
@@ -124,7 +126,7 @@ export function LoginPage() {
           >
             {tr('crowd.Bible')}
           </Typography>
-        </Link>
+        </Button>
       </IonToolbar>
       <Box
         component="form"

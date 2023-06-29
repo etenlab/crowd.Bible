@@ -130,18 +130,22 @@ export function AppContextProvider({ children }: AppProviderProps) {
   }, [setConnectivity]);
 
   useEffect(() => {
-    if (state.global.singletons) {
-      state.global.singletons.documentService
-        .createOrFindApp('crowd.Bible', 'ETEN Lab', {
-          lang: {
-            tag: 'en',
-            descriptions: ['English'],
-          },
-        })
-        .then((app) => {
-          setCrowdBibleApp(app);
-        });
-    }
+    (async () => {
+      if (state.global.singletons) {
+        await state.global.singletons.seedService.init();
+
+        state.global.singletons.documentService
+          .createOrFindApp('crowd.Bible', 'ETEN Lab', {
+            lang: {
+              tag: 'en',
+              descriptions: ['English'],
+            },
+          })
+          .then((app) => {
+            setCrowdBibleApp(app);
+          });
+      }
+    })();
   }, [state.global.singletons, setCrowdBibleApp]);
 
   useEffect(() => {
