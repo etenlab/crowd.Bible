@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { LoggerService } from '@eten-lab/core';
+
+import localforage from 'localforage';
 import packageJson from '../../package.json';
 const appVersion = packageJson.version;
 
@@ -18,6 +21,14 @@ const semverGreaterThan = (versionA: string, versionB: string) => {
   return false;
 };
 
+// const wait = (seconds: number) => {
+//   return new Promise((resolve, reject) => {
+//     setTimeout(() => {
+//       resolve(1);
+//     }, seconds);
+//   });
+// };
+
 export const useCacheBuster = () => {
   const [state, setState] = useState<{
     loading: boolean;
@@ -27,19 +38,23 @@ export const useCacheBuster = () => {
     isLatestVersion: false,
   });
 
-  const refreshCacheAndReload = () => {
-    console.log('Clearing cache and hard reloading...');
-    if (caches) {
-      // Service worker cache should be cleared with caches.delete()
-      caches.keys().then(function (names) {
-        for (const name of names) caches.delete(name);
-      });
+  const refreshCacheAndReload = useCallback(async () => {
+    try {
+      if (caches) {
+        // Service worker cache should be cleared with caches.delete()
+        caches.keys().then(function (names) {
+          for (const name of names) caches.delete(name);
+        });
+      }
+      localStorage.clear();
+      localforage.setDriver(localforage.INDEXEDDB);
+      await localforage.clear();
+    } catch (err) {
+      new LoggerService().error(err);
     }
-    localStorage.clear();
-    console.log('window.indexedDB.databases()', window.indexedDB.databases());
-    // delete browser cache and hard reload
-    window.location.reload();
-  };
+
+    // window.location.reload();
+  }, []);
 
   useEffect(() => {
     fetch('/meta.json')
@@ -64,7 +79,7 @@ export const useCacheBuster = () => {
           setState({ loading: false, isLatestVersion: true });
         }
       });
-  });
+  }, []);
   return {
     loading: state.loading,
     isLatestVersion: state.isLatestVersion,

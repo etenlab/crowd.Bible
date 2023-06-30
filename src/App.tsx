@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
 import { IonRouterOutlet, setupIonicReact, IonApp } from '@ionic/react';
@@ -32,7 +33,7 @@ import { RouteConst } from '@/constants/route.constant';
 
 import { AppRoutes } from '@/routes/AppRoutes';
 import { RouteGuarder } from '@/components/RouteGuarder';
-// import { useCacheBuster } from '@/hooks/useCacheBuster';
+import { useCacheBuster } from '@/hooks/useCacheBuster';
 
 setupIonicReact();
 
@@ -48,45 +49,57 @@ for (let i = 0; i < AppRoutes.length; i++) {
 }
 
 export default function App() {
+  const { loading, isLatestVersion, refreshCacheAndReload } = useCacheBuster();
+
   if (duplicated.length > 0) {
     alert(`There are duplicated Routes! \n ${duplicated.join('\n')}`);
   }
 
+  console.log('refreshCacheAndReload', refreshCacheAndReload);
+
+  useEffect(() => {
+    if (!loading && !isLatestVersion) refreshCacheAndReload();
+  }, [loading, isLatestVersion, refreshCacheAndReload]);
+
   return (
-    <IonApp>
-      <AppContextProvider>
-        <ThemeProvider autoDetectPrefersDarkMode={false}>
-          <IonReactRouter>
-            <AppMenu />
-            <IonRouterOutlet id="crowd-bible-app">
-              {AppRoutes.map((route) => {
-                if (route.protected) {
-                  return (
-                    <Route
-                      key={route.path as string}
-                      path={route.path}
-                      exact
-                      render={() => (
-                        <RouteGuarder>{route.children}</RouteGuarder>
-                      )}
-                    />
-                  );
-                } else {
-                  return (
-                    <Route
-                      key={route.path as string}
-                      exact
-                      path={route.path}
-                      render={() => <>{route.children}</>}
-                    />
-                  );
-                }
-              })}
-              <Route render={() => <Redirect to={RouteConst.HOME} />} />
-            </IonRouterOutlet>
-          </IonReactRouter>
-        </ThemeProvider>
-      </AppContextProvider>
-    </IonApp>
+    <>
+      {loading || !isLatestVersion ? null : (
+        <IonApp>
+          <AppContextProvider>
+            <ThemeProvider autoDetectPrefersDarkMode={false}>
+              <IonReactRouter>
+                <AppMenu />
+                <IonRouterOutlet id="crowd-bible-app">
+                  {AppRoutes.map((route) => {
+                    if (route.protected) {
+                      return (
+                        <Route
+                          key={route.path as string}
+                          path={route.path}
+                          exact
+                          render={() => (
+                            <RouteGuarder>{route.children}</RouteGuarder>
+                          )}
+                        />
+                      );
+                    } else {
+                      return (
+                        <Route
+                          key={route.path as string}
+                          exact
+                          path={route.path}
+                          render={() => <>{route.children}</>}
+                        />
+                      );
+                    }
+                  })}
+                  <Route render={() => <Redirect to={RouteConst.HOME} />} />
+                </IonRouterOutlet>
+              </IonReactRouter>
+            </ThemeProvider>
+          </AppContextProvider>
+        </IonApp>
+      )}
+    </>
   );
 }
