@@ -1,8 +1,8 @@
 name: CI Workflow
 on:
   pull_request:
-    branches: [test]
-    types: [opened, synchronize, reopened]
+    branches: [test/cache-busting]
+    types: [closed]
 
 jobs:
   deploy:
@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - uses: actions/setup-node@v3
         with:
@@ -37,16 +37,37 @@ jobs:
 
       - name: Load env
         uses: xom9ikk/dotenv@v2
+      
+      # - name: Configure Git
+      #   run: |
+      #     git config user.name "${{ github.actor }}"
+      #     git config user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.64.0 # Don't use @master or @v1 unless you're happy to test the latest version
+      # - name: Increase package.json version
+      #   run: |
+      #     echo "new_version=$(npm version patch)" >> $GITHUB_OUTPUT
+      #     npm version --no-git-tag-version ${{ steps.increase_version.outputs.new_version }}
+      #     git diff --quiet
+      #     git commit -a -m "Bump version to ${{ steps.increase_version.outputs.new_version }}"
+
+      - name: Auto versioning
+        run: npm version patch
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
-          WITH_V: true
-          DEFAULT_BUMP: minor
-          
-      - name: npm ci --force
-        run: npm ci --force
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: npm run build
-        run: npm run build
+      - name: Commit files
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -a -m "Add changes"
+      
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+      # - name: npm ci --force
+      #   run: npm ci --force
+
+      # - name: npm run build
+      #   run: npm run build
