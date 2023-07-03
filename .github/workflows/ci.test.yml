@@ -2,7 +2,7 @@ name: CI Workflow
 on:
   pull_request:
     branches: [test/cache-busting]
-    types: [closed]
+    types: [opened, synchronize, reopened]
 
 jobs:
   deploy:
@@ -38,10 +38,10 @@ jobs:
       - name: Load env
         uses: xom9ikk/dotenv@v2
       
-      # - name: Configure Git
-      #   run: |
-      #     git config user.name "${{ github.actor }}"
-      #     git config user.email "${{ github.actor }}@users.noreply.github.com"
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
 
       # - name: Increase package.json version
       #   run: |
@@ -51,14 +51,14 @@ jobs:
       #     git commit -a -m "Bump version to ${{ steps.increase_version.outputs.new_version }}"
 
       - name: Auto versioning
-        run: npm version patch
+        run: |
+          npm version patch
+          git diff --quiet
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit files
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
           git commit -a -m "Add changes"
       
       - name: Push changes
