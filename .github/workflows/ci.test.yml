@@ -39,6 +39,7 @@ jobs:
         uses: xom9ikk/dotenv@v2
       
       - name: Configure Git
+        run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
 
