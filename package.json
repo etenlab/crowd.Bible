@@ -1,6 +1,6 @@
 {
   "name": "crowd-bible",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "private": true,
   "devServer": {
     "historyApiFallback": true
