@@ -54,11 +54,13 @@ jobs:
         run: |
           npm version patch
           git diff --quiet
+          git status
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit files
         run: |
+          git status
           git commit -a -m "Add changes"
       
       - name: Push changes
