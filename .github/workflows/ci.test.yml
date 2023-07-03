@@ -8,55 +8,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+    steps:
+      - name: 'Checkout source code'
+        uses: 'actions/checkout@v2'
         with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
-
-
-      - uses: actions/setup-node@v3
+          ref: ${{ github.ref }}
+      - name: 'cat package.json'
+        run: cat ./package.json
+      - name: 'Automated Version Bump'
+        id: version-bump
+        uses: 'phips28/gh-action-bump-version@master'
         with:
-          node-version: 16
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_GITHUB_S3_PUSHER_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_GITHUB_S3_PUSHER_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
-
-      - uses: dkershner6/aws-ssm-getparameters-action@v1
-        with:
-          parameterPairs: '/dev/deploy/crowdbible/env = ENV'
-
-      - name: store env
-        run: |
-          cat << EOF > .env
-          ${{ env.ENV }}
-          CI=false
-          NODE_OPTIONS=--max-old-space-size=4096
-          EOF
-
-      - name: Load env
-        uses: xom9ikk/dotenv@v2
-      
-      - name: Configure Git
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-
-      - name: Auto versioning
-        run: |
-          npm version patch
-          git diff --quiet
-          git status
-          echo "hello"
-          echo "head refs:  ${{ github.ref }}"
+          tag-prefix: 'v'
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'cat package.json'
+        run: cat ./package.json
+      - name: 'Output Step'
+        env:
+          NEW_TAG: ${{ steps.version-bump.outputs.newTag }}
+        run: echo "new tag $NEW_TAG"
