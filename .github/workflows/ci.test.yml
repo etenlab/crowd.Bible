@@ -60,6 +60,7 @@ jobs:
           git status
           echo "Branch Ref: ${{ github.event.pull_request.head.ref }}"
           echo "head ref:  ${{ github.head_ref }}"
+          echo "hello"
           echo "base ref: ${{ github.event.pull_request.base.ref }}"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
