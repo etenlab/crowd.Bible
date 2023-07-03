@@ -9,8 +9,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
 
       - uses: actions/setup-node@v3
         with:
@@ -38,10 +41,10 @@ jobs:
       - name: Load env
         uses: xom9ikk/dotenv@v2
       
-      # - name: Configure Git
-      #   run: |
-      #     git config user.name "${{ github.actor }}"
-      #     git config user.email "${{ github.actor }}@users.noreply.github.com"
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
 
       # - name: Increase package.json version
       #   run: |
@@ -51,21 +54,21 @@ jobs:
       #     git commit -a -m "Bump version to ${{ steps.increase_version.outputs.new_version }}"
 
       - name: Auto versioning
-        run: npm version patch
+        run: |
+          npm version patch
+          git diff --quiet
+          git status
+          echo "Branch Ref: ${{ github.event.pull_request.head.ref }}"
+          echo "head ref:  ${{ github.head_ref }}"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit files
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit -a -m "Add changes"
-      
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          
+          branch: ${{ github.head_ref }}
+
       # - name: npm ci --force
       #   run: npm ci --force
 
