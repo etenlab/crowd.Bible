@@ -37,15 +37,19 @@ jobs:
 
       - name: Load env
         uses: xom9ikk/dotenv@v2
+      
+      - name: Configure Git
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
 
       - name: Increase package.json version
         run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-          npm version patch
+          echo "::set-output name=new_version::$(npm version patch)"
+          npm version --no-git-tag-version ${{ steps.increase_version.outputs.new_version }}
 
       - name: Commit changes
         run: |
+          git diff --quiet
           git commit -a -m "Bump version to ${{ steps.increase_version.outputs.new_version }}"
           
       # - name: npm ci --force
