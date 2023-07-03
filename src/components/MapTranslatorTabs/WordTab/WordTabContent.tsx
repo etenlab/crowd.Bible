@@ -14,7 +14,7 @@ import {
 import { NodeTypeConst, PropertyKeyConst } from '@/constants/graph.constant';
 import { CrowdBibleUI } from '@eten-lab/ui-kit';
 
-import { StyledFilterButton } from './StyledComponents';
+import { StyledFilterButton } from '../StyledComponents';
 import { arrowForwardOutline } from 'ionicons/icons';
 import { langInfo2String } from '@/utils/langUtils';
 import { useAppContext } from '@/hooks/useAppContext';
@@ -281,7 +281,7 @@ export const WordTabContent = () => {
                   width={'100%'}
                   padding={`10px 0px`}
                   display={'flex'}
-                  flexDirection={'row'}
+                  flexDirection={'column'}
                   justifyContent={'space-between'}
                   gap={`${PADDING}px`}
                 >
@@ -290,7 +290,7 @@ export const WordTabContent = () => {
                       {word.word}
                     </Typography>
                   </Box>
-                  <Box flex={1} alignSelf={'flex-start'}>
+                  <Box flex={1} alignSelf={'flex-start'} width={'100%'}>
                     {word.translations && word.translations.length > 0 ? (
                       <Stack gap={`${PADDING}px`}>
                         {word.translations.map((translation, tIdx) => {
@@ -298,11 +298,6 @@ export const WordTabContent = () => {
                             <Input
                               fullWidth
                               key={tIdx}
-                              label={
-                                translation.isNew
-                                  ? ''
-                                  : tr('Already in target language')
-                              }
                               value={translation[PropertyKeyConst.WORD]}
                               onChange={(e) =>
                                 handleTranslationChange(e, idx, tIdx)
@@ -321,7 +316,7 @@ export const WordTabContent = () => {
                       sx={{ color: 'text.gray' }}
                       onClick={() => addEmptyTranslation(idx)}
                     >
-                      {tr('+ Add Translation')}
+                      {tr('+ Add more')}
                     </Button>
                   </Box>
                 </Box>

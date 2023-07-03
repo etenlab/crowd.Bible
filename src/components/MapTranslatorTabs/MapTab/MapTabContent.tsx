@@ -9,7 +9,7 @@ import {
 import {
   StyledFilterButton,
   StyledSectionTypography,
-} from './StyledComponents';
+} from '../StyledComponents';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useTr } from '@/hooks/useTr';
