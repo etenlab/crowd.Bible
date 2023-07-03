@@ -1,8 +1,7 @@
 name: CI Workflow
 on:
-  pull_request:
+  push:
     branches: [test/cache-busting]
-    types: [closed]
 
 jobs:
   deploy:
@@ -46,21 +45,12 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-      # - name: Increase package.json version
-      #   run: |
-      #     echo "new_version=$(npm version patch)" >> $GITHUB_OUTPUT
-      #     npm version --no-git-tag-version ${{ steps.increase_version.outputs.new_version }}
-      #     git diff --quiet
-      #     git commit -a -m "Bump version to ${{ steps.increase_version.outputs.new_version }}"
-
       - name: Auto versioning
         run: |
           npm version patch
           git diff --quiet
           git status
           echo "hello"
-          echo "base ref: ${{ github.event.pull_request.base.ref }}"
-          echo "Branch Ref: ${{ github.event.pull_request.head.ref }}"
           echo "head ref:  ${{ github.head_ref }}"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -69,10 +59,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.event.pull_request.base.ref }}
-
-      # - name: npm ci --force
-      #   run: npm ci --force
-
-      # - name: npm run build
-      #   run: npm run build
+          branch: ${{ github.head_ref }}
