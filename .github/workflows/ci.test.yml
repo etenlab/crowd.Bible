@@ -2,7 +2,7 @@ name: CI Workflow
 on:
   pull_request:
     branches: [test/cache-busting]
-    types: [opened, synchronize, reopened]
+    types: [closed]
 
 jobs:
   deploy:
@@ -58,6 +58,8 @@ jobs:
           npm version patch
           git diff --quiet
           git status
+          echo "Branch Ref: ${{ github.event.pull_request.head.ref }}"
+          echo "head ref:  ${{ github.head_ref }}"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
