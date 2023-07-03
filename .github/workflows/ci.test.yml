@@ -51,7 +51,7 @@ jobs:
           git diff --quiet
           git status
           echo "hello"
-          echo "head ref:  ${{ steps.checkout.outputs.ref }}"
+          echo "head refs:  ${{ github.ref }}"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -59,4 +59,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.checkout.outputs.ref }}
+          branch: ${{ github.ref }}
