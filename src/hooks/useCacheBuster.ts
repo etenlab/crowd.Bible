@@ -21,13 +21,7 @@ const semverGreaterThan = (versionA: string, versionB: string) => {
   return false;
 };
 
-// const wait = (seconds: number) => {
-//   return new Promise((resolve, reject) => {
-//     setTimeout(() => {
-//       resolve(1);
-//     }, seconds);
-//   });
-// };
+const logger = new LoggerService();
 
 export const useCacheBuster = () => {
   const [state, setState] = useState<{
@@ -49,11 +43,10 @@ export const useCacheBuster = () => {
       localStorage.clear();
       localforage.setDriver(localforage.INDEXEDDB);
       await localforage.clear();
+      window.location.reload();
     } catch (err) {
-      new LoggerService().error(err);
+      logger.error(err);
     }
-
-    // window.location.reload();
   }, []);
 
   useEffect(() => {
@@ -68,12 +61,12 @@ export const useCacheBuster = () => {
           currentVersion,
         );
         if (shouldForceRefresh) {
-          console.log(
+          logger.info(
             `We have a new version - ${latestVersion}. Should force refresh`,
           );
           setState({ loading: false, isLatestVersion: false });
         } else {
-          console.log(
+          logger.info(
             `You already have the latest version - ${latestVersion}. No cache refresh needed.`,
           );
           setState({ loading: false, isLatestVersion: true });

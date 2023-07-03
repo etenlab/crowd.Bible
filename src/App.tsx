@@ -55,8 +55,6 @@ export default function App() {
     alert(`There are duplicated Routes! \n ${duplicated.join('\n')}`);
   }
 
-  console.log('refreshCacheAndReload', refreshCacheAndReload);
-
   useEffect(() => {
     if (!loading && !isLatestVersion) refreshCacheAndReload();
   }, [loading, isLatestVersion, refreshCacheAndReload]);
