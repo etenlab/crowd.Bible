@@ -38,12 +38,14 @@ jobs:
       - name: Load env
         uses: xom9ikk/dotenv@v2
 
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.64.0 # Don't use @master or @v1 unless you're happy to test the latest version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
-          WITH_V: true
-          DEFAULT_BUMP: minor
+      - name: Increase package.json version
+        run: npm version patch
+
+      - name: Commit changes
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git commit -a -m "Bump version to ${{ steps.increase_version.outputs.new_version }}"
           
       - name: npm ci --force
         run: npm ci --force
