@@ -25,7 +25,7 @@ import { PropertyKeyConst } from '@eten-lab/core';
 
 const { Box, styled, CircularProgress } = MuiMaterial;
 
-const PADDING = 20;
+const MARGIN = '30px';
 
 enum eUploadMapBtnStatus {
   NONE,
@@ -218,12 +218,13 @@ export const MapTabContent = () => {
       justifyContent={'start'}
       alignItems={'start'}
       width={'100%'}
-      paddingTop={`${PADDING}px`}
+      marginTop={MARGIN}
     >
       <LangSelector
         label={tr('Select the source language')}
         onChange={handleLangChange}
         selected={langInfo || undefined}
+        withInscriptions={false}
       />
 
       <Button
@@ -231,6 +232,7 @@ export const MapTabContent = () => {
         onClick={handleUploadBtnClick}
         variant={'contained'}
         component="label"
+        sx={{ marginTop: MARGIN }}
       >
         Upload {langInfo2String(langInfo || undefined) || '.svg'} File
         {uploadMapBtnStatus === eUploadMapBtnStatus.SAVING_FILE ? (

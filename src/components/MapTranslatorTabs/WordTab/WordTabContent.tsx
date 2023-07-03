@@ -38,7 +38,7 @@ export enum Steps {
   VOTE = 2,
 }
 
-const PADDING = 15;
+const MARGIN = '30px';
 
 export const WordTabContent = () => {
   const {
@@ -205,19 +205,21 @@ export const WordTabContent = () => {
     >
       {step === Steps.GET_LANGUAGES ? (
         <>
-          <Box width={'100%'}>
+          <Box width={'100%'} marginTop={MARGIN}>
             <LangSelector
               label={tr('Select the source language')}
               selected={sourceLanguage || undefined}
               onChange={handleSetSourceLanguage}
+              withInscriptions={false}
             />
           </Box>
 
-          <Box width={'100%'}>
+          <Box width={'100%'} marginTop={MARGIN}>
             <LangSelector
               label={tr('Select the target language')}
               selected={targetLanguage || undefined}
               onChange={handleSetTargetLanguage}
+              withInscriptions={false}
             />
           </Box>
 
@@ -225,6 +227,7 @@ export const WordTabContent = () => {
             fullWidth
             onClick={onShowStringListClick}
             variant={'contained'}
+            sx={{ marginTop: MARGIN }}
           >
             {tr('Show String List')}
           </Button>
@@ -283,7 +286,7 @@ export const WordTabContent = () => {
                   display={'flex'}
                   flexDirection={'column'}
                   justifyContent={'space-between'}
-                  gap={`${PADDING}px`}
+                  gap={`12px`}
                 >
                   <Box flex={1} alignSelf={'flex-start'}>
                     <Typography variant="subtitle1" fontWeight={400}>
@@ -292,7 +295,7 @@ export const WordTabContent = () => {
                   </Box>
                   <Box flex={1} alignSelf={'flex-start'} width={'100%'}>
                     {word.translations && word.translations.length > 0 ? (
-                      <Stack gap={`${PADDING}px`}>
+                      <Stack gap={`12px`}>
                         {word.translations.map((translation, tIdx) => {
                           return (
                             <Input

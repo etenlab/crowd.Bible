@@ -84,9 +84,10 @@ const StyledButtonTab = styled(Button)(({ theme, variant }) => {
   } else {
     Object.assign(conditionalStyles, {
       color: theme.palette.text['blue-primary'],
-      backgroundColor: theme.palette.text['light-blue'],
+      backgroundColor: theme.palette.background['middle-blue'],
       ':hover': {
-        backgroundColor: theme.palette.text['light-blue'],
+        backgroundColor: theme.palette.background['middle-blue'],
+        boxShadow: 'none',
       },
     });
   }
