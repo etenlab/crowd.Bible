@@ -1,7 +1,8 @@
 name: CI Workflow
 on:
-  push:
+  pull_request:
     branches: [test/cache-busting]
+    types: [closed]
 
 jobs:
   deploy:
@@ -68,7 +69,7 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
+          branch: ${{ github.event.pull_request.base.ref }}
 
       # - name: npm ci --force
       #   run: npm ci --force
