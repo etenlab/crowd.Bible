@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - uses: actions/setup-node@v3
         with:
@@ -38,20 +38,33 @@ jobs:
       - name: Load env
         uses: xom9ikk/dotenv@v2
       
-      - name: Configure Git
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
+      # - name: Configure Git
+      #   run: |
+      #     git config user.name "${{ github.actor }}"
+      #     git config user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Increase package.json version
-        run: |
-          echo "::set-output name=new_version::$(npm version patch)"
-          npm version --no-git-tag-version ${{ steps.increase_version.outputs.new_version }}
+      # - name: Increase package.json version
+      #   run: |
+      #     echo "new_version=$(npm version patch)" >> $GITHUB_OUTPUT
+      #     npm version --no-git-tag-version ${{ steps.increase_version.outputs.new_version }}
+      #     git diff --quiet
+      #     git commit -a -m "Bump version to ${{ steps.increase_version.outputs.new_version }}"
 
-      - name: Commit changes
+      - name: Auto versioning
+        run: npm version patch
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit files
         run: |
-          git diff --quiet
-          git commit -a -m "Bump version to ${{ steps.increase_version.outputs.new_version }}"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -a -m "Add changes"
+      
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           
       # - name: npm ci --force
       #   run: npm ci --force
