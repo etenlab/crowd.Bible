@@ -1,8 +1,7 @@
 name: CI Workflow
 on:
-  pull_request:
+  push:
     branches: [test/cache-busting]
-    types: [closed]
 
 jobs:
   deploy:
