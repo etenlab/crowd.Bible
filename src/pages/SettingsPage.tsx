@@ -43,6 +43,7 @@ export function SettingsPage() {
   const [selectedMode, setSelectedMode] = useState<IMode>({
     admin: true,
     beta: true,
+    autoSync: true,
   });
 
   useEffect(() => {
@@ -105,6 +106,18 @@ export function SettingsPage() {
             }
             label={tr('Beta')}
             name="beta"
+            sx={{ padding: '12px 0' }}
+          />
+          <Divider />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={selectedMode.autoSync}
+                onChange={handleChangeMode}
+              />
+            }
+            label={tr('Auto Sync')}
+            name="autoSync"
             sx={{ padding: '12px 0' }}
           />
         </FormGroup>
