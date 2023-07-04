@@ -3,7 +3,13 @@ import { useParams } from 'react-router';
 import { IonChip, useIonRouter } from '@ionic/react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
-import { CrowdBibleUI, Typography, MuiMaterial } from '@eten-lab/ui-kit';
+import {
+  CrowdBibleUI,
+  Typography,
+  MuiMaterial,
+  FadeSpinner,
+  useColorModeContext,
+} from '@eten-lab/ui-kit';
 
 import { useMapTranslationTools } from '@/hooks/useMapTranslationTools';
 import { useAppContext } from '@/hooks/useAppContext';
@@ -32,6 +38,7 @@ export const MapDetailPage = () => {
     logger,
   } = useAppContext();
   const { tr } = useTr();
+  const { getColor } = useColorModeContext();
 
   const router = useIonRouter();
   const { id } = useParams<{ id: string }>();
@@ -115,7 +122,7 @@ export const MapDetailPage = () => {
           label={mapDetail?.name || ''}
         ></TitleWithIcon>
         {mapFileData ? (
-          <Box padding={'20px'}>
+          <Box padding={`${PADDING}px`}>
             <TransformWrapper>
               <TransformComponent>
                 <img
@@ -128,7 +135,9 @@ export const MapDetailPage = () => {
             </TransformWrapper>
           </Box>
         ) : (
-          <></>
+          <Box margin={`${PADDING}px auto`}>
+            <FadeSpinner color={getColor('blue-primary')} />
+          </Box>
         )}
       </Box>
       <Box flex={'row'} flexWrap={'wrap'} padding={'20px'}>

@@ -4,8 +4,8 @@ import { MuiMaterial, Button } from '@eten-lab/ui-kit';
 
 import { useTr } from '@/hooks/useTr';
 
-import { WordTabContent } from '@/components/MapTranslatorTabs/WordTabContent';
-import { MapTabContent } from '@/components/MapTranslatorTabs/MapTabContent';
+import { WordTabContent } from '@/src/components/MapTranslatorTabs/WordTab/WordTabContent';
+import { MapTabContent } from '@/src/components/MapTranslatorTabs/MapTab/MapTabContent';
 import { PageLayout } from '@/components/Layout';
 
 const { Box, Typography, styled } = MuiMaterial;
@@ -84,9 +84,10 @@ const StyledButtonTab = styled(Button)(({ theme, variant }) => {
   } else {
     Object.assign(conditionalStyles, {
       color: theme.palette.text['blue-primary'],
-      backgroundColor: theme.palette.text['light-blue'],
+      backgroundColor: theme.palette.background['middle-blue'],
       ':hover': {
-        backgroundColor: theme.palette.text['light-blue'],
+        backgroundColor: theme.palette.background['middle-blue'],
+        boxShadow: 'none',
       },
     });
   }
