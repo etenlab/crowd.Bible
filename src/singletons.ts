@@ -29,8 +29,6 @@ import {
   LoggerService,
 } from '@eten-lab/core';
 
-import { DiscussionRepository } from '@/repositories/discussion/discussion.repository';
-
 import { SeedService } from '@/services/seed.service';
 
 import { DefinitionService } from '@/services/definition.service';
@@ -75,7 +73,6 @@ export interface ISingletons {
   relationshipTypeRepo: RelationshipTypeRepository;
   relationshipPropertyKeyRepo: RelationshipPropertyKeyRepository;
   relationshipPropertyValueRepo: RelationshipPropertyValueRepository;
-  discussionRepo: DiscussionRepository;
   userRepo: UserRepository;
 
   electionTypeRepo: ElectionTypeRepository;
@@ -124,7 +121,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     dbService,
     syncService,
   );
-  const discussionRepo = new DiscussionRepository(dbService);
 
   const userRepo = new UserRepository(dbService);
 
@@ -262,7 +258,6 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     relationshipTypeRepo,
     relationshipPropertyKeyRepo,
     relationshipPropertyValueRepo,
-    discussionRepo,
     userRepo,
 
     electionRepo,
