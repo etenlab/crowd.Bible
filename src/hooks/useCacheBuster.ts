@@ -61,12 +61,20 @@ export const useCacheBuster = () => {
           currentVersion,
         );
         if (shouldForceRefresh) {
-          logger.info(
+          console.info(
+            'info:::: ',
+            `We have a new version - ${latestVersion}. Should force refresh`,
+          );
+          logger.error(
             `We have a new version - ${latestVersion}. Should force refresh`,
           );
           setState({ loading: false, isLatestVersion: false });
         } else {
-          logger.info(
+          console.info(
+            'info:::: ',
+            `You already have the latest version - ${latestVersion}. No cache refresh needed.`,
+          );
+          logger.error(
             `You already have the latest version - ${latestVersion}. No cache refresh needed.`,
           );
           setState({ loading: false, isLatestVersion: true });
