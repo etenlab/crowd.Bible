@@ -27,12 +27,14 @@ export const useCacheBuster = () => {
   const [state, setState] = useState<{
     loading: boolean;
     isLatestVersion: boolean;
+    latestVersion: string;
   }>({
     loading: true,
     isLatestVersion: false,
+    latestVersion: '',
   });
 
-  const refreshCacheAndReload = useCallback(async () => {
+  const refreshCacheAndReload = useCallback(async (version: string) => {
     try {
       if (caches) {
         // Service worker cache should be cleared with caches.delete()
@@ -41,6 +43,7 @@ export const useCacheBuster = () => {
         });
       }
       localStorage.clear();
+      localStorage.setItem('APP_VERSION', version);
       localforage.setDriver(localforage.INDEXEDDB);
       await localforage.clear();
       window.location.reload();
@@ -55,20 +58,35 @@ export const useCacheBuster = () => {
       .then((meta) => {
         const latestVersion = meta.version;
         const currentVersion = appVersion;
+        const localStorageAppVersion = localStorage.getItem('APP_VERSION');
 
         const shouldForceRefresh = semverGreaterThan(
           latestVersion,
           currentVersion,
         );
-        if (shouldForceRefresh) {
-          console.info(
-            'info:::: ',
-            `We have a new version - ${latestVersion}. Should force refresh`,
-          );
+
+        let invalidPersistedData = false;
+        if (
+          !localStorageAppVersion ||
+          semverGreaterThan(latestVersion, localStorageAppVersion as string)
+        ) {
+          invalidPersistedData = true;
+        }
+        if (shouldForceRefresh || invalidPersistedData) {
+          if (shouldForceRefresh)
+            console.info(
+              'info:::: ',
+              `We have a new version - ${latestVersion}. Should force refresh`,
+            );
+          if (invalidPersistedData)
+            console.info(
+              'info:::: ',
+              `You have invalid persisted data - ${latestVersion}. Should force refresh`,
+            );
           logger.error(
             `We have a new version - ${latestVersion}. Should force refresh`,
           );
-          setState({ loading: false, isLatestVersion: false });
+          setState({ loading: false, isLatestVersion: false, latestVersion });
         } else {
           console.info(
             'info:::: ',
@@ -77,13 +95,14 @@ export const useCacheBuster = () => {
           logger.error(
             `You already have the latest version - ${latestVersion}. No cache refresh needed.`,
           );
-          setState({ loading: false, isLatestVersion: true });
+          setState({ loading: false, isLatestVersion: true, latestVersion });
         }
       });
   }, []);
   return {
     loading: state.loading,
     isLatestVersion: state.isLatestVersion,
+    latestVersion: state.latestVersion,
     refreshCacheAndReload,
   };
 };
