@@ -4,8 +4,8 @@ import { MuiMaterial, Button } from '@eten-lab/ui-kit';
 
 import { useTr } from '@/hooks/useTr';
 
-import { WordTabContent } from '@/src/components/MapTranslatorTabs/WordTab/WordTabContent';
-import { MapTabContent } from '@/src/components/MapTranslatorTabs/MapTab/MapTabContent';
+import { WordTabContent } from '@/components/MapTranslatorTabs/WordTab/WordTabContent';
+import { MapTabContent } from '@/components/MapTranslatorTabs/MapTab/MapTabContent';
 import { PageLayout } from '@/components/Layout';
 
 const { Box, Typography, styled } = MuiMaterial;
