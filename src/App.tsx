@@ -49,15 +49,15 @@ for (let i = 0; i < AppRoutes.length; i++) {
 }
 
 export default function App() {
-  const { loading, isLatestVersion, refreshCacheAndReload } = useCacheBuster();
+  const { loading, isLatestVersion, refreshCacheAndReload, latestVersion } =
+    useCacheBuster();
 
   if (duplicated.length > 0) {
     alert(`There are duplicated Routes! \n ${duplicated.join('\n')}`);
   }
-
   useEffect(() => {
-    if (!loading && !isLatestVersion) refreshCacheAndReload();
-  }, [loading, isLatestVersion, refreshCacheAndReload]);
+    if (!loading && !isLatestVersion) refreshCacheAndReload(latestVersion);
+  }, [loading, isLatestVersion, refreshCacheAndReload, latestVersion]);
 
   return (
     <>
