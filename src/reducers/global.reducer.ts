@@ -40,6 +40,7 @@ export interface IUser {
 export interface IMode {
   admin: boolean;
   beta: boolean;
+  autoSync: boolean;
 }
 
 export interface TempSiteTextItem {
@@ -86,6 +87,7 @@ export const initialState: StateType = {
   mode: {
     admin: false,
     beta: false,
+    autoSync: true,
   },
   snack: initialSnack,
   loadingStack: [],
