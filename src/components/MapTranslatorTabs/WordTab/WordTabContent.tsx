@@ -270,11 +270,6 @@ export const WordTabContent = () => {
                 {langInfo2String(targetLanguage || undefined)}
               </Typography>
             </Box>
-            <StyledFilterButton
-              onClick={() => {
-                setStep(0);
-              }}
-            />
           </Box>
           <Stack divider={<Divider />} width={'100%'} paddingBottom={'40px'}>
             {words.map((word, idx) => {
