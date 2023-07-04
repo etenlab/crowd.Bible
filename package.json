@@ -168,7 +168,7 @@
     "**/*.{ts,tsx,md,mdx,js,jsx}": [
       "prettier --write",
       "git add",
-      "eslint --cache --fix",
+      "eslint --fix $(git diff --name-only --staged | grep -E '(.js$|.ts$|.tsx$)')",
       "git add"
     ]
   }
