@@ -9,7 +9,6 @@ import {
 import axios from 'axios';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
-import { parseSync } from 'svgson';
 import { WordDto } from '../dtos/word.dto';
 import { RelationshipTypeConst } from '@eten-lab/core';
 import { WordMapper } from '../mappers/word.mapper';
@@ -230,22 +229,12 @@ export function useMapTranslationTools() {
           );
           return;
         }
-        const originalSvg = filecontent.toString();
-        const parsed = parseSync(originalSvg);
-        const textArray: string[] = [];
-        singletons.mapService.iterateOverINode(parsed, ['style'], (node) => {
-          if (node.type === 'text' || node.type === 'textPath') {
-            if (!node.value) return;
-            if (node.value.trim().length <= 1) return;
-            if (!isNaN(Number(node.value))) return;
-            const isExist = textArray.findIndex((w) => w === node.value);
-            if (isExist < 0) {
-              textArray.push(node.value);
-            }
-          }
-        });
+        const originalSvgString = filecontent.toString();
 
-        if (textArray.length === 0 && originalSvg) {
+        const { transformedSvgString, foundWords } =
+          singletons.mapService.parseSvgMapString(originalSvgString);
+
+        if (foundWords.length === 0 && originalSvgString) {
           setMapStatus(id, { status: eProcessStatus.FAILED }, setMapList);
           alertFeedback(FeedbackTypes.ERROR, 'No text or textPath tags found');
         } else {
@@ -257,7 +246,7 @@ export function useMapTranslationTools() {
                 {
                   status: eProcessStatus.PARSING_COMPLETED,
                   mapFileId: sentFileData.id,
-                  words: textArray,
+                  words: foundWords,
                 },
                 setMapList,
               );

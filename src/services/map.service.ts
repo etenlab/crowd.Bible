@@ -6,6 +6,7 @@ import {
   PropertyKeyConst,
   RelationshipTypeConst,
 } from '@eten-lab/core';
+import { parseSync as readSvg, stringify } from 'svgson';
 
 import { WordService } from './word.service';
 
@@ -16,6 +17,10 @@ import { LanguageInfo } from '@eten-lab/ui-kit';
 import { makeFindPropsByLang } from '@/utils/langUtils';
 
 import { type INode } from 'svgson';
+
+const TEXTY_INODE_NAMES = ['text', 'textPath']; // Final nodes of text. All children nodes' values will be gathered and concatenated into one value
+const SKIP_INODE_NAMES = ['rect', 'style', 'clipPath', 'image', 'rect']; // Nodes that definitenly don't contain any text. skipped for a performance purposes.
+
 export class MapService {
   constructor(
     private readonly graphFirstLayerService: GraphFirstLayerService,
@@ -137,6 +142,45 @@ export class MapService {
       props,
     );
     return !!foundNodeIds[0];
+  }
+
+  parseSvgMapString(originalSvgString: string): {
+    transformedSvgString: string;
+    foundWords: string[];
+  } {
+    const svgAsINode = readSvg(originalSvgString);
+    const foundWords: string[] = [];
+    this.iterateOverINode(svgAsINode, SKIP_INODE_NAMES, (node) => {
+      if (TEXTY_INODE_NAMES.includes(node.name)) {
+        let currNodeAllText = node.value || '';
+        if (node.children && node.children.length > 0) {
+          this.iterateOverINode(node, [], (subNode) => {
+            currNodeAllText += subNode.value;
+          });
+          node.children = [
+            {
+              value: currNodeAllText,
+              type: 'text',
+              name: '',
+              children: [],
+              attributes: {},
+            },
+          ]; // mutate svgAsINode, if node is texty and has children nodes, make it text with concatanated value from children's balues
+        }
+
+        if (!currNodeAllText) return;
+        if (currNodeAllText.trim().length <= 1) return;
+        if (!isNaN(Number(currNodeAllText))) return;
+        const isExist = foundWords.findIndex((w) => w === currNodeAllText);
+        if (isExist < 0) {
+          foundWords.push(currNodeAllText);
+        }
+      }
+    });
+    return {
+      transformedSvgString: stringify(svgAsINode),
+      foundWords,
+    };
   }
 
   iterateOverINode(
