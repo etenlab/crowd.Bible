@@ -10,6 +10,7 @@ module.exports = {
     'craco.config.js',
     'jest.config.ts',
     'capacitor.config.ts',
+    'generate-build-version.js',
   ],
   extends: [
     'plugin:react/recommended',

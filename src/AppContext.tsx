@@ -138,7 +138,9 @@ export function AppContextProvider({ children }: AppProviderProps) {
         try {
           await state.global.singletons.seedService.init();
 
-          await state.global.singletons.syncService.syncIn();
+          if (state.global.mode.autoSync) {
+            await state.global.singletons.syncService.syncIn();
+          }
         } catch (err) {
           alertFeedback(FeedbackTypes.ERROR, 'Failed at Sync In');
           logger.current.error(err);
@@ -160,6 +162,7 @@ export function AppContextProvider({ children }: AppProviderProps) {
     })();
   }, [
     state.global.singletons,
+    state.global.mode.autoSync,
     setCrowdBibleApp,
     alertFeedback,
     createLoadingStack,
