@@ -167,7 +167,7 @@
   "lint-staged": {
     "**/*.{ts,tsx,md,mdx,js,jsx}": [
       "npm run format",
-      "npx eslint --fix"
+      "npx eslint --fix --cache"
     ]
   }
 }
