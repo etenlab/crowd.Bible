@@ -59,5 +59,12 @@ export function CardGroup({ group, linkItems }: CardGroupType) {
     return null;
   }
 
-  return <CardsMenu label={group} items={items} onClick={handleClickItem} />;
+  return (
+    <CardsMenu
+      label={group}
+      items={items}
+      onClick={handleClickItem}
+      marginTop="20px"
+    />
+  );
 }
