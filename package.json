@@ -167,8 +167,7 @@
   "lint-staged": {
     "**/*.{ts,tsx,md,mdx,js,jsx}": [
       "prettier --write",
-      "git add",
-      "eslint --fix $(git diff --name-only --staged | grep -E '(.js$|.ts$|.tsx$)')",
+      "eslint --cache --fix",
       "git add"
     ]
   }
