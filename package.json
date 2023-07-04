@@ -166,8 +166,8 @@
   },
   "lint-staged": {
     "**/*.{ts,tsx,md,mdx,js,jsx}": [
-      "npm run format",
-      "npx eslint --fix"
+      "prettier --write",
+      "eslint --cache --fix"
     ]
   }
 }
