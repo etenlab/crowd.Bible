@@ -1,6 +1,6 @@
 import { Button, TbArrowBack, MuiMaterial } from '@eten-lab/ui-kit';
 import { Steps } from './WordTabContent';
-import { useTr } from '../../hooks/useTr';
+import { useTr } from '../../../hooks/useTr';
 const { Box, Stack, styled } = MuiMaterial;
 const PADDING = 15;
 export type BottomButtonsProps = {
