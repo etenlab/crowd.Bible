@@ -1,6 +1,7 @@
 import {
   ElectionTypeConst,
   GraphFirstLayerService,
+  LoggerService,
   MainKeyName,
   NodeTypeConst,
   PropertyKeyConst,
@@ -11,6 +12,7 @@ import { LanguageInfo } from '@eten-lab/ui-kit';
 import { VotableContent, VotableItem } from '@/dtos/votable-item.dto';
 import { makeFindPropsByLang } from '@/utils/langUtils';
 import { TableNameConst } from '@eten-lab/models';
+const logger = new LoggerService();
 
 export class VotableItemsService {
   constructor(
@@ -254,15 +256,16 @@ export class VotableItemsService {
       customPropValues,
     );
 
-    const viPromises = itemContents.map(async (wc) => {
-      if (!wc.id) {
-        throw new Error(`word ${wc.content} desn't have an id`);
+    const votableItems: VotableItem[] = [];
+    for (const vc of itemContents) {
+      if (!vc.id) {
+        throw new Error(`word ${vc.content} desn't have an id`);
       }
       // election for word to elect definitions.
       // if electionId exists, it won't be created, Just found and returned.
       const election = await this.votingService.createOrFindElection(
         forElectionType,
-        wc.id,
+        vc.id,
         TableNameConst.NODES,
         TableNameConst.RELATIONSHIPS,
       );
@@ -271,13 +274,13 @@ export class VotableItemsService {
       switch (forElectionType) {
         case ElectionTypeConst.DEFINITION:
           contents = await this.getDefinitionsAsVotableContent(
-            wc.id,
+            vc.id,
             election.id,
           );
           break;
         case ElectionTypeConst.TRANSLATION:
           contents = await this.getWordsAsVotableContent(
-            wc.id,
+            vc.id,
             election.id,
             contentLangInfo,
           );
@@ -288,13 +291,12 @@ export class VotableItemsService {
           );
       }
 
-      return {
-        title: wc,
+      votableItems.push({
+        title: vc,
         contents,
         contentElectionId: election.id,
-      } as VotableItem;
-    });
-    const vi = await Promise.all(viPromises);
-    return vi;
+      } as VotableItem);
+    }
+    return votableItems;
   }
 }
