@@ -94,7 +94,7 @@ export const WordTabContent = () => {
         return [];
       }
       const wordsAsVotableItems =
-        await singletons.definitionService.getVotableItems(
+        await singletons.votableItemsService.getVotableItems(
           forLangInfo,
           NodeTypeConst.WORD,
           undefined,

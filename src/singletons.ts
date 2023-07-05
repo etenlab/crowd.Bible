@@ -40,6 +40,7 @@ import { DocumentService } from '@/services/document.service';
 import { WordService } from '@/services/word.service';
 import { WordSequenceService } from '@/services/word-sequence.service';
 import { MapService } from '@/services/map.service';
+import { VotableItemsService } from './services/votable-items.service';
 
 export interface ISingletons {
   driver: SqljsDriver;
@@ -54,6 +55,7 @@ export interface ISingletons {
 
   votingService: VotingService;
   tableService: TableService;
+  votableItemsService: VotableItemsService;
   definitionService: DefinitionService;
   siteTextService: SiteTextService;
   lexiconService: LexiconService;
@@ -187,11 +189,17 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     loggerService,
   );
 
+  const votableItemsService = new VotableItemsService(
+    graphFirstLayerService,
+    votingService,
+  );
+
   const definitionService = new DefinitionService(
     graphFirstLayerService,
     graphSecondLayerService,
     votingService,
     wordService,
+    votableItemsService,
   );
 
   const translationService = new TranslationService(
@@ -209,6 +217,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     definitionService,
     translationService,
     wordService,
+    votableItemsService,
   );
 
   const seedService = new SeedService(
@@ -239,6 +248,7 @@ const initialize = async (dataSource: DataSource): Promise<ISingletons> => {
     graphSecondLayerService,
     votingService,
     tableService,
+    votableItemsService,
     definitionService,
     siteTextService,
     lexiconService,
