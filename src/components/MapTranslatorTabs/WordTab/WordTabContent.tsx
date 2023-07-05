@@ -369,7 +369,7 @@ export const WordTabContent = () => {
             </Box>
             <StyledFilterButton
               onClick={() => {
-                setStep(0);
+                setStep(Steps.GET_LANGUAGES);
               }}
             />
           </Box>
@@ -389,7 +389,11 @@ export const WordTabContent = () => {
               />
             ))}
           </Stack>
-          <BottomButtons setStep={() => setStep(Steps.INPUT_TRANSLATIONS)} />
+          <BottomButtons
+            setStep={() => {
+              onShowStringListClick();
+            }}
+          />
         </>
       ) : (
         <></>
