@@ -135,7 +135,7 @@ export function SiteTextAppListPage() {
     <Stack gap="16px">
       <LanguageStatusBar />
       <ButtonList
-        label={tr('List of Docs')}
+        label={tr('List of Applications')}
         search={{
           value: searchStr,
           onChange: handleChangeSearchStr,

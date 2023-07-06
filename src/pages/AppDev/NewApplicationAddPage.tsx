@@ -53,6 +53,7 @@ export function NewApplicationAddPage() {
 
   const handleClickSave = async () => {
     if (!language || appName.trim().length === 0) {
+      alertFeedback(FeedbackTypes.WARNING, 'Please select App Language!');
       return;
     }
 

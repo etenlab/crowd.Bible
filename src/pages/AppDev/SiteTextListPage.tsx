@@ -75,7 +75,7 @@ export function SiteTextListPage() {
   };
 
   const handleClickBackBtn = () => {
-    history.push(`${RouteConst.SITE_TEXT_TRANSLATION_APP_LIST}`);
+    history.push(`${RouteConst.APPLICATION_LIST}`);
   };
 
   const handleClickPlusBtn = () => {
@@ -88,7 +88,7 @@ export function SiteTextListPage() {
 
   const items: ButtonListItemType[] = useMemo(() => {
     return siteTextList.map((data) => {
-      const notranslatedBadgeCom = !data.translatedSiteText ? (
+      const notranslatedBadgeCom = !data.sourceSiteText ? (
         <Chip
           component="span"
           label="Not translated"
@@ -99,11 +99,30 @@ export function SiteTextListPage() {
         />
       ) : null;
 
+      const source = (
+        <Typography variant="body1" color="text.dark">
+          {data.sourceSiteText ? data.sourceSiteText : data.siteText}
+        </Typography>
+      );
+      const target =
+        data.sourceSiteText && data.targetSiteText ? (
+          <Typography variant="body1" color="text.green">
+            {data.targetSiteText}
+          </Typography>
+        ) : null;
+
       const labelCom = (
-        <>
-          {data.translatedSiteText ? data.translatedSiteText : data.siteText}
+        <Stack
+          direction="row"
+          justifyContent="flex-start"
+          alignItems="center"
+          sx={{ overflowWrap: 'anywhere' }}
+          gap="16px"
+        >
+          {source}
+          {target}
           {notranslatedBadgeCom}
-        </>
+        </Stack>
       );
 
       return {
@@ -127,7 +146,7 @@ export function SiteTextListPage() {
   return (
     <PageLayout>
       <HeadBox
-        title={tr('Applications')}
+        title={app?.name || tr('Applications')}
         search={{
           value: searchStr,
           onChange: handleChangeSearchStr,
