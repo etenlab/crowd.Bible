@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+import { useIonViewDidEnter } from '@ionic/react';
 
 import {
   CrowdBibleUI,
@@ -55,6 +56,22 @@ export function SiteTextListPage() {
 
   // Fetch site Lists from db
   useEffect(() => {
+    if (singletons && app && sourceLanguage && targetLanguage) {
+      getTranslatedSiteTextListByAppId(
+        app.id,
+        sourceLanguage,
+        targetLanguage,
+      ).then((list) => setSiteTextList(list));
+    }
+  }, [
+    app,
+    singletons,
+    sourceLanguage,
+    targetLanguage,
+    getTranslatedSiteTextListByAppId,
+  ]);
+
+  useIonViewDidEnter(() => {
     if (singletons && app && sourceLanguage && targetLanguage) {
       getTranslatedSiteTextListByAppId(
         app.id,

@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { CrowdBibleUI, Button, MuiMaterial, Input } from '@eten-lab/ui-kit';

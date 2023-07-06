@@ -47,11 +47,7 @@ export function SiteTextAppListPage() {
   // Fetch Document Lists from db
   useEffect(() => {
     if (singletons) {
-      // if (sourceLanguage) {
-      // listAppByLanguageInfo(sourceLanguage).then(setApps);
-      // } else {
       listApp().then(setApps);
-      // }
     }
   }, [listApp, singletons, listAppByLanguageInfo, sourceLanguage]);
 

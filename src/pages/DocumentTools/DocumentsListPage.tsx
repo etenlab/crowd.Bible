@@ -1,5 +1,6 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useIonViewDidEnter } from '@ionic/react';
 
 import { PageLayout } from '@/components/Layout';
 
@@ -46,6 +47,16 @@ export function DocumentsListPage() {
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
 
   // Fetch Document Lists from db
+  useIonViewDidEnter(() => {
+    if (singletons) {
+      if (sourceLanguage) {
+        listDocumentByLanguageInfo(sourceLanguage).then(setDocuments);
+      } else {
+        listDocument().then(setDocuments);
+      }
+    }
+  }, [listDocument, singletons, listDocumentByLanguageInfo, sourceLanguage]);
+
   useEffect(() => {
     if (singletons) {
       if (sourceLanguage) {

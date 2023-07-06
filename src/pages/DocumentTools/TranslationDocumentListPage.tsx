@@ -1,5 +1,6 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useIonViewDidEnter } from '@ionic/react';
 
 import { PageLayout } from '@/components/Layout';
 
@@ -58,7 +59,13 @@ export function TranslationDocumentListPage() {
     }
   }, [listDocument, singletons, sourceLanguage]);
 
-  useEffect(() => {
+  useIonViewDidEnter(() => {
+    if (singletons) {
+      listDocument().then(setDocuments);
+    }
+  }, [listDocument, singletons, sourceLanguage]);
+
+  useIonViewDidEnter(() => {
     (async () => {
       const items: ButtonListItemType[] = [];
 
