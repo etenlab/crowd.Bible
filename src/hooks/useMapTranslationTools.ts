@@ -231,7 +231,7 @@ export function useMapTranslationTools() {
         }
         const originalSvgString = filecontent.toString();
 
-        const { transformedSvgString, foundWords } =
+        const { foundWords } =
           singletons.mapService.parseSvgMapString(originalSvgString);
 
         if (foundWords.length === 0 && originalSvgString) {

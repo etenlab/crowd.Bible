@@ -2,10 +2,14 @@ import { useHistory } from 'react-router-dom';
 
 import { Button, useColorModeContext } from '@eten-lab/ui-kit';
 import { RouteConst } from '@/constants/route.constant';
+
+import { useTr } from '@/hooks/useTr';
 import { useAppContext } from '@/hooks/useAppContext';
+
 import { USER_TOKEN_KEY } from '@/constants/common.constant';
 
 export function LogoutButton() {
+  const history = useHistory();
   const { getColor } = useColorModeContext();
   const {
     // logger,
@@ -14,7 +18,8 @@ export function LogoutButton() {
     },
     actions: { logout },
   } = useAppContext();
-  const history = useHistory();
+  const { tr } = useTr();
+
   const userToken = localStorage.getItem(USER_TOKEN_KEY);
   // let tokenObj = null;
   if (userToken && userToken !== undefined) {
@@ -48,7 +53,7 @@ export function LogoutButton() {
         lineHeight: '26px',
       }}
     >
-      Logout
+      {tr('Logout')}
     </Button>
   );
 }
