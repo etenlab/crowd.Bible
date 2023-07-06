@@ -96,7 +96,7 @@ const getDataSource = (opts: SqljsConnectionOptions) => async () => {
   const ds = new DataSource(opts);
   setInterval(() => {
     (ds.driver as SqljsDriver).save();
-  }, 10000);
+  }, 3000);
 
   return ds;
 };
