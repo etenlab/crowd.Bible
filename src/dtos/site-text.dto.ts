@@ -24,6 +24,7 @@ export interface SiteTextTranslationDto extends Votable {
 export interface TranslatedSiteTextDto {
   siteTextId: Nanoid;
   siteText: string;
-  translatedSiteText?: string;
+  sourceSiteText?: string;
+  targetSiteText?: string;
   translationCnt: number;
 }

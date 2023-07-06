@@ -37,7 +37,7 @@ export function SiteTextMenuPage() {
         ),
       },
       {
-        to: RouteConst.SITE_TEXT_TRANSLATION_APP_LIST,
+        to: RouteConst.APPLICATION_LIST,
         title: tr('Translation'),
         description: tr(
           'Translate user interface words so applications can be available in many languages',
@@ -59,7 +59,7 @@ export function SiteTextMenuPage() {
 
   return (
     <PageLayout>
-      <Box sx={{ padding: '20px' }}>
+      <Box sx={{ padding: '20px', paddingBottom: 0 }}>
         <TitleWithIcon
           label={tr('Site Text')}
           withCloseIcon={false}
