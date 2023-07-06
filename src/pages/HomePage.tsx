@@ -66,6 +66,7 @@ export function HomePage() {
           ),
           startIcon: <DiAskQuestion color="blue-primary" />,
           onlineOnly: true,
+          betaOnly: true,
           implemented: true,
         },
         // { to: '/feedback', label: 'Feedback', betaOnly: true, implemented: true },
@@ -113,6 +114,7 @@ export function HomePage() {
           title: tr('Dictionary'),
           description: tr('Create and vote on words and their definitions'),
           startIcon: <DiRead color="blue-primary" />,
+          betaOnly: true,
         },
         {
           to: RouteConst.PHRASE_BOOK,
@@ -124,6 +126,7 @@ export function HomePage() {
               <DiPhrase color="blue-primary" />
             </Stack>
           ),
+          betaOnly: true,
         },
         {
           to: RouteConst.BILINGUAL_DICTIONARY,
@@ -137,6 +140,7 @@ export function HomePage() {
               <DiTranslate color="blue-primary" />
             </Stack>
           ),
+          betaOnly: true,
         },
         {
           to: RouteConst.LEXICON,
@@ -166,6 +170,7 @@ export function HomePage() {
             'Navigate the graph layer where most data in crowd.Bible data is stored',
           ),
           startIcon: <DiDataViewer color="blue-primary" />,
+          adminOnly: true,
         },
         {
           to: RouteConst.SQL_RUNNER,
