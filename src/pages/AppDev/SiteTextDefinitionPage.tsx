@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+import { useIonViewDidEnter } from '@ionic/react';
 
 import { CrowdBibleUI, Button, MuiMaterial, Input } from '@eten-lab/ui-kit';
 
@@ -80,6 +81,20 @@ export function SiteTextDefinitionPage() {
   // Fetch site text definition Lists from db
   // you here this page that means you have same language info between app language and sourceLanguage
   useEffect(() => {
+    if (singletons && appId) {
+      getDefinitionList(appId, siteTextId).then(setDefinitionList);
+      getSiteTextDtoWithRel(originalDefinitionRel).then(setSiteText);
+    }
+  }, [
+    getDefinitionList,
+    getSiteTextDtoWithRel,
+    singletons,
+    appId,
+    siteTextId,
+    originalDefinitionRel,
+  ]);
+
+  useIonViewDidEnter(() => {
     if (singletons && appId) {
       getDefinitionList(appId, siteTextId).then(setDefinitionList);
       getSiteTextDtoWithRel(originalDefinitionRel).then(setSiteText);

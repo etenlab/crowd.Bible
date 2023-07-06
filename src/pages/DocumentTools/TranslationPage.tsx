@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo, type MouseEvent } from 'react';
+import { useState, useMemo, type MouseEvent, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useIonViewDidEnter } from '@ionic/react';
 
 import {
   FiPlus,
@@ -52,6 +53,48 @@ export function TranslationPage() {
   const [subWordSequences, setSubWordSequences] = useState<
     SubWordSequenceDto[]
   >([]);
+
+  useIonViewDidEnter(() => {
+    (async () => {
+      if (singletons && documentId && sourceLanguage) {
+        const original = await getWordSequenceByDocumentId(documentId);
+
+        if (!original) {
+          return;
+        }
+
+        const wordSequence = compareLangInfo(
+          original.languageInfo,
+          sourceLanguage,
+        )
+          ? original
+          : await getRecommendedWordSequenceTranslation(
+              original.id,
+              original.languageInfo,
+              sourceLanguage,
+            );
+
+        if (!wordSequence) {
+          return;
+        }
+
+        const subWordSequences = await listSubWordSequenceByWordSequenceId(
+          wordSequence.id,
+        );
+
+        setOriginalWordSequence(wordSequence);
+        setSubWordSequences(subWordSequences);
+      }
+    })();
+  }, [
+    documentId,
+    singletons,
+    sourceLanguage,
+    getWordSequenceById,
+    getWordSequenceByDocumentId,
+    listSubWordSequenceByWordSequenceId,
+    getRecommendedWordSequenceTranslation,
+  ]);
 
   useEffect(() => {
     (async () => {

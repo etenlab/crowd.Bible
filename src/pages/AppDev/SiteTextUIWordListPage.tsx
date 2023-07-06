@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useIonViewDidEnter } from '@ionic/react';
 
 import { CrowdBibleUI, MuiMaterial, Button } from '@eten-lab/ui-kit';
 
@@ -29,6 +30,12 @@ export function SiteTextUIWordListPage() {
   const [searchStr, setSearchStr] = useState<string>('');
 
   // Fetch Mock App Info from db
+  useIonViewDidEnter(() => {
+    if (singletons && crowdBibleApp) {
+      loadSiteTextMap();
+    }
+  }, [loadSiteTextMap, singletons, crowdBibleApp]);
+
   useEffect(() => {
     if (singletons && crowdBibleApp) {
       loadSiteTextMap();
