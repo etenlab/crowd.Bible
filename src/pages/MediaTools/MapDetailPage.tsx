@@ -33,6 +33,7 @@ export const MapDetailPage = () => {
   const {
     states: {
       global: { singletons },
+      documentTools: { sourceLanguage, targetLanguage },
     },
     actions: { createLoadingStack, alertFeedback },
     logger,
@@ -45,7 +46,8 @@ export const MapDetailPage = () => {
   const [windowWidth, setWindowWidth] = useState(getWindowWidth());
   const [mapDetail, setMapDetail] = useState<MapDto>();
   const [mapFileData, setMapFileData] = useState<string>();
-  const { getFileDataBase64 } = useMapTranslationTools();
+  const [mapTranslatedFileData, setMapTranslatedFileData] = useState<string>();
+  const { getFileDataAsBuffer, translateMap } = useMapTranslationTools();
 
   useEffect(() => {
     function handleWindowResize() {
@@ -93,15 +95,43 @@ export const MapDetailPage = () => {
 
   useEffect(() => {
     async function findFileData() {
-      const f = await getFileDataBase64(mapDetail?.mapFileId);
-      setMapFileData(f);
+      const fb = await getFileDataAsBuffer(mapDetail?.mapFileId);
+      if (!fb) return;
+      setMapFileData(fb.toString('base64'));
+      if (!sourceLanguage || !targetLanguage) return;
+      const translated = await translateMap(
+        fb.toString(),
+        sourceLanguage,
+        targetLanguage,
+      );
+      if (!translated) return;
+      const b64 = window.btoa(translated);
+      console.log(b64);
+
+      setMapTranslatedFileData(b64);
     }
     findFileData();
-  }, [getFileDataBase64, mapDetail, mapDetail?.mapFileId]);
+  }, [
+    getFileDataAsBuffer,
+    mapDetail,
+    mapDetail?.mapFileId,
+    sourceLanguage,
+    targetLanguage,
+    translateMap,
+  ]);
 
-  if (!mapDetail) {
-    return <></>;
-  }
+  // useEffect(() => {
+  //   async function getTranslatedMap() {
+  //     if (!mapFileData || !sourceLanguage || !targetLanguage) return;
+  //     const translated = await translateMap(
+  //       mapFileData,
+  //       sourceLanguage,
+  //       targetLanguage,
+  //     );
+  //     setMapTranslatedFileData(translated);
+  //   }
+  //   getTranslatedMap();
+  // }, [mapFileData, sourceLanguage, targetLanguage, translateMap]);
 
   return (
     <PageLayout>
@@ -148,6 +178,25 @@ export const MapDetailPage = () => {
           <IonChip key={w.id}>{w.word}</IonChip>
         ))}
       </Box>
+
+      {mapTranslatedFileData ? (
+        <Box padding={`${PADDING}px`}>
+          <TransformWrapper>
+            <TransformComponent>
+              <img
+                width={`${windowWidth - PADDING}px`}
+                height={'auto'}
+                src={`data:image/svg+xml;base64,${mapTranslatedFileData}`}
+                alt="Translated map"
+              />
+            </TransformComponent>
+          </TransformWrapper>
+        </Box>
+      ) : (
+        <Box margin={`${PADDING}px auto`}>
+          <FadeSpinner color={getColor('blue-primary')} />
+        </Box>
+      )}
     </PageLayout>
   );
 };

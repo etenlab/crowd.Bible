@@ -6,7 +6,7 @@ import {
   PropertyKeyConst,
   RelationshipTypeConst,
 } from '@eten-lab/core';
-import { parseSync as readSvg, stringify } from 'svgson';
+import { parseSync as readSvg } from 'svgson';
 
 import { WordService } from './word.service';
 
@@ -96,6 +96,7 @@ export class MapService {
     });
   }
 
+  /** creates words and links them with map (or add links to existing words) */
   async processMapWords(
     words: string[],
     langInfo: LanguageInfo,
@@ -144,8 +145,12 @@ export class MapService {
     return !!foundNodeIds[0];
   }
 
+  /**
+   * Since we must concatenate word if it is divided into several subtags inside some texty tag,
+   * we also have transformed file with replaced (concatenated) each texty tag.
+   */
   parseSvgMapString(originalSvgString: string): {
-    transformedSvgString: string;
+    transformedSvgINode: INode;
     foundWords: string[];
   } {
     const svgAsINode = readSvg(originalSvgString);
@@ -178,9 +183,27 @@ export class MapService {
       }
     });
     return {
-      transformedSvgString: stringify(svgAsINode),
+      transformedSvgINode: svgAsINode,
       foundWords,
     };
+  }
+
+  /**
+   * Mutetes INode sturcture - replaces subnodes' values using provided valuesToReplace
+   * @param iNodeStructure INode structure to replace values inside it.
+   * @param valuesToReplace
+   */
+  replaceINodeTagValues(
+    iNodeStructure: INode,
+    valuesToReplace: { source: string; translation: string }[],
+  ): void {
+    this.iterateOverINode(iNodeStructure, SKIP_INODE_NAMES, (node) => {
+      const idx = valuesToReplace.findIndex(
+        ({ source }) => source === node.value,
+      );
+      if (idx < 0) return;
+      node.value = valuesToReplace[idx].translation;
+    });
   }
 
   iterateOverINode(
