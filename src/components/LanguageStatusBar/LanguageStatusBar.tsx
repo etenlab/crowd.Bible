@@ -5,7 +5,7 @@ import { langInfo2String } from '@/utils/langUtils';
 import {
   MuiMaterial,
   LanguageInfo,
-  BiRightArrowAlt,
+  DiArrowRight,
   useColorModeContext,
 } from '@eten-lab/ui-kit';
 
@@ -13,7 +13,13 @@ import { useTr } from '@/hooks/useTr';
 
 const { Stack, Typography } = MuiMaterial;
 
-export function LanguageStatus({ lang }: { lang: LanguageInfo | null }) {
+export function LanguageStatus({
+  lang,
+  noSelectedMsg,
+}: {
+  lang: LanguageInfo | null;
+  noSelectedMsg?: string;
+}) {
   const { tr } = useTr();
 
   return lang ? (
@@ -22,7 +28,7 @@ export function LanguageStatus({ lang }: { lang: LanguageInfo | null }) {
     </Typography>
   ) : (
     <Typography variant="body2" color="text.red">
-      {tr('Not Selected Language')}
+      {noSelectedMsg || tr('Not Selected Language')}
     </Typography>
   );
 }
@@ -34,6 +40,7 @@ export function LanguageStatusBar() {
       documentTools: { sourceLanguage, targetLanguage },
     },
   } = useAppContext();
+  const { tr } = useTr();
 
   return (
     <Stack
@@ -43,10 +50,16 @@ export function LanguageStatusBar() {
       sx={{ padding: '20px', paddingBotton: 0 }}
     >
       <Stack gap="6px">
-        <LanguageStatus lang={sourceLanguage} />
-        <LanguageStatus lang={targetLanguage} />
+        <LanguageStatus
+          lang={sourceLanguage}
+          noSelectedMsg={tr('Not Selected Source Language')}
+        />
+        <LanguageStatus
+          lang={targetLanguage}
+          noSelectedMsg={tr('Not Selected Target Language')}
+        />
       </Stack>
-      <BiRightArrowAlt style={{ color: getColor('gray'), fontSize: '24px' }} />
+      <DiArrowRight style={{ color: getColor('gray') }} />
     </Stack>
   );
 }

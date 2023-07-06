@@ -15,7 +15,6 @@ import {
   DiImport,
   DiSite,
   DiText,
-  DiList,
   DiPlay,
 } from '@eten-lab/ui-kit';
 
@@ -205,20 +204,6 @@ export function HomePage() {
               <DiText color="blue-primary" />
             </Stack>
           ),
-        },
-        {
-          to: RouteConst.APPLICATION_LIST,
-          title: tr('Application List'),
-          description: tr(
-            'Lorem ipsum is placeholder commonly used in the graphic, print',
-          ),
-          startIcon: (
-            <Stack>
-              <DiSite color="blue-primary" />
-              <DiList color="blue-primary" />
-            </Stack>
-          ),
-          implemented: true,
         },
       ],
     },

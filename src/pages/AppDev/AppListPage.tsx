@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { PageLayout } from '@/components/Layout';
@@ -6,10 +6,8 @@ import { PageLayout } from '@/components/Layout';
 import {
   MuiMaterial,
   CrowdBibleUI,
+  FilterButton,
   PlusButton,
-  LangSelector,
-  LanguageInfo,
-  BiDotsHorizontalRounded,
 } from '@eten-lab/ui-kit';
 
 import { AppDto } from '@/dtos/document.dto';
@@ -18,13 +16,16 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useDocument } from '@/hooks/useDocument';
 import { useTr } from '@/hooks/useTr';
 
-import { compareLangInfo } from '@/utils/langUtils';
 import { RouteConst } from '@/constants/route.constant';
 
-import { LanguageStatus } from '@/components/LanguageStatusBar';
+import { LanguageStatusBar } from '@/components/LanguageStatusBar';
+import { LanguageFilter } from '@/components/LanguageFilter';
+
+import { langInfo2String } from '@/utils/langUtils';
+import { FeedbackTypes } from '@/constants/common.constant';
 
 const { ButtonList, HeadBox } = CrowdBibleUI;
-const { Box } = MuiMaterial;
+const { Stack } = MuiMaterial;
 
 type ButtonListItemType = CrowdBibleUI.ButtonListItemType;
 
@@ -33,99 +34,61 @@ export function AppListPage() {
   const {
     states: {
       global: { singletons },
-      documentTools: { sourceLanguage },
+      documentTools: { sourceLanguage, targetLanguage },
     },
-    actions: { setSourceLanguage, createLoadingStack },
+    actions: { setModalCom, alertFeedback },
   } = useAppContext();
   const { tr } = useTr();
-  const { listApp, listAppByLanguageInfo } = useDocument();
+  const { listApp } = useDocument();
 
   const [apps, setApps] = useState<AppDto[]>([]);
   const [searchStr, setSearchStr] = useState<string>('');
-  const [filterOpen, setFilterOpen] = useState<boolean>(false);
-
-  const loadingRef = useRef(createLoadingStack());
 
   // Fetch Document Lists from db
   useEffect(() => {
     if (singletons) {
-      if (sourceLanguage) {
-        listAppByLanguageInfo(sourceLanguage).then(setApps);
-      } else {
-        listApp().then(setApps);
-      }
+      listApp().then(setApps);
     }
-  }, [listApp, singletons, listAppByLanguageInfo, sourceLanguage]);
+  }, [listApp, singletons]);
 
   const handleChangeSearchStr = (str: string) => {
     setSearchStr(str);
   };
 
   const handleClickLanguageFilter = () => {
-    setFilterOpen((open) => !open);
+    setModalCom(<LanguageFilter />);
   };
 
-  const handleSetSourceLanguage = (
-    _langTag: string,
-    selected: LanguageInfo,
-  ) => {
-    if (compareLangInfo(selected, sourceLanguage)) return;
-    setSourceLanguage(selected);
+  const handleClickApp = (appId: Nanoid) => {
+    if (sourceLanguage === null || targetLanguage === null) {
+      alertFeedback(
+        FeedbackTypes.WARNING,
+        'Please choose source and target languages!',
+      );
+      return;
+    }
+    history.push(`${RouteConst.SITE_TEXT_LIST}/${appId}`);
   };
 
-  const handleClickApp = (appId: string) => {
-    // history.push(`${RouteConst.APPLICATION_LIST}/${appId}`);
+  const handleClickBack = () => {
+    history.push(`${RouteConst.SITE_TEXT_MENU_PAGE}`);
   };
 
   const handleClickAddAppBtn = () => {
     history.push(`${RouteConst.ADD_APPLICATION}`);
   };
 
-  const handleClickBack = () => {
-    history.push(`${RouteConst.HOME}`);
-  };
-
-  const handleLoadingState = (loading: boolean) => {
-    if (loading) {
-      loadingRef.current.startLoading();
-    } else {
-      loadingRef.current.stopLoading();
-    }
-  };
-
   const items: ButtonListItemType[] = useMemo(() => {
-    return apps.map(({ id, name }) => ({
+    return apps.map(({ id, name, languageInfo }) => ({
       value: id,
-      label: name,
-      endIcon: (
-        <BiDotsHorizontalRounded
-          style={{
-            borderRadius: '7px',
-            padding: '7px',
-            fontSize: '32px',
-            background: '#E3EAF3',
-          }}
-        />
-      ),
+      label: `${name} (${langInfo2String(languageInfo)})`,
     }));
   }, [apps]);
-
-  const langSelectorCom = filterOpen ? (
-    <LangSelector
-      label={tr('Select the source language')}
-      selected={sourceLanguage || undefined}
-      onChange={handleSetSourceLanguage}
-      setLoadingState={handleLoadingState}
-    />
-  ) : null;
 
   return (
     <PageLayout>
       <HeadBox
         title={tr('Applications')}
-        filter={{
-          onClick: handleClickLanguageFilter,
-        }}
         back={{ action: handleClickBack }}
         search={{
           value: searchStr,
@@ -133,17 +96,25 @@ export function AppListPage() {
           placeHolder: tr('Input a search word!'),
         }}
       />
-      <Box sx={{ padding: '20px' }}>
-        <LanguageStatus lang={sourceLanguage} />
-        {langSelectorCom}
-      </Box>
+      <LanguageStatusBar />
       <ButtonList
         label={tr('List of Applications')}
         withUnderline={true}
         items={items}
         onClick={handleClickApp}
         toolBtnGroup={
-          <PlusButton variant="primary" onClick={handleClickAddAppBtn} />
+          <Stack
+            direction="row"
+            justifyContent="center"
+            alignItems="flex-start"
+            gap="16px"
+          >
+            <FilterButton
+              variant="secondary"
+              onClick={handleClickLanguageFilter}
+            />
+            <PlusButton variant="primary" onClick={handleClickAddAppBtn} />
+          </Stack>
         }
       />
     </PageLayout>
