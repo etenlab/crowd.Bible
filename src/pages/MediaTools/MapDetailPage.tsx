@@ -23,6 +23,7 @@ import { FeedbackTypes } from '@/constants/common.constant';
 import { MapDto } from '@/dtos/map.dto';
 
 import { PageLayout } from '@/components/Layout';
+import { bytesToBase64DataUrl, toBase64 } from '../../utils/commonUtils';
 
 const { TitleWithIcon } = CrowdBibleUI;
 
@@ -105,9 +106,8 @@ export const MapDetailPage = () => {
         targetLanguage,
       );
       if (!translated) return;
-      const b64 = window.btoa(translated);
+      const b64 = await toBase64(translated);
       console.log(b64);
-
       setMapTranslatedFileData(b64);
     }
     findFileData();
@@ -119,19 +119,6 @@ export const MapDetailPage = () => {
     targetLanguage,
     translateMap,
   ]);
-
-  // useEffect(() => {
-  //   async function getTranslatedMap() {
-  //     if (!mapFileData || !sourceLanguage || !targetLanguage) return;
-  //     const translated = await translateMap(
-  //       mapFileData,
-  //       sourceLanguage,
-  //       targetLanguage,
-  //     );
-  //     setMapTranslatedFileData(translated);
-  //   }
-  //   getTranslatedMap();
-  // }, [mapFileData, sourceLanguage, targetLanguage, translateMap]);
 
   return (
     <PageLayout>
