@@ -119,7 +119,7 @@ export function PhraseBookPage() {
   const { tr } = useTr();
 
   const [isDialogOpened, setIsDialogOpened] = useState(false);
-  const definitionService = singletons?.definitionService;
+  const votableItemsService = singletons?.votableItemsService;
   const [phrases, setPhrases] = useState<VotableItem[]>([]);
 
   const [selectedLanguageInfo, setSelectedLanguageInfo] = useState<
@@ -149,7 +149,7 @@ export function PhraseBookPage() {
   );
 
   useEffect(() => {
-    if (!definitionService) return;
+    if (!votableItemsService) return;
     if (!selectedLanguageInfo) return;
 
     const { startLoading, stopLoading } = createLoadingStack();
@@ -157,10 +157,11 @@ export function PhraseBookPage() {
     try {
       startLoading();
       const loadPhrases = async () => {
-        const phrases: VotableItem[] = await definitionService.getVotableItems(
-          selectedLanguageInfo,
-          NodeTypeConst.PHRASE,
-        );
+        const phrases: VotableItem[] =
+          await votableItemsService.getVotableItems(
+            selectedLanguageInfo,
+            NodeTypeConst.PHRASE,
+          );
         setPhrases(phrases);
       };
       loadPhrases();
@@ -172,7 +173,7 @@ export function PhraseBookPage() {
     }
   }, [
     alertFeedback,
-    definitionService,
+    votableItemsService,
     selectedLanguageInfo,
     createLoadingStack,
     logger,

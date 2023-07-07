@@ -26,6 +26,7 @@ import { LanguageInfo } from '@eten-lab/ui-kit';
 import { LanguageMapper } from '@/mappers/language.mapper';
 
 import { compareLangInfo } from '@/utils/langUtils';
+import { VotableItemsService } from './votable-items.service';
 
 export class SiteTextService {
   constructor(
@@ -36,6 +37,7 @@ export class SiteTextService {
     private readonly definitionService: DefinitionService,
     private readonly translationService: TranslationService,
     private readonly wordService: WordService,
+    private readonly votableItemsService: VotableItemsService,
   ) {}
 
   private async filterDefinitionCandidatesByLanguage(
@@ -374,7 +376,7 @@ export class SiteTextService {
       throw new Error('Not exists election entity with given props');
     }
 
-    return this.definitionService.getDefinitionsAsVotableContent(
+    return this.votableItemsService.getDefinitionsAsVotableContent(
       siteTextId,
       election.id,
     );

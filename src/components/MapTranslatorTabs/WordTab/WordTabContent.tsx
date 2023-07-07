@@ -94,7 +94,7 @@ export const WordTabContent = () => {
         return [];
       }
       const wordsAsVotableItems =
-        await singletons.definitionService.getVotableItems(
+        await singletons.votableItemsService.getVotableItems(
           forLangInfo,
           NodeTypeConst.WORD,
           undefined,
@@ -109,7 +109,8 @@ export const WordTabContent = () => {
 
   const onShowStringListClick = useCallback(async () => {
     if (sourceLanguage && targetLanguage) {
-      setWords(await getWordsWithLangs(sourceLanguage, targetLanguage));
+      const wordItems = await getWordsWithLangs(sourceLanguage, targetLanguage);
+      setWords(wordItems.sort((wi1, wi2) => wi1.word.localeCompare(wi2.word)));
       setStep(Steps.INPUT_TRANSLATIONS);
     }
   }, [getWordsWithLangs, sourceLanguage, targetLanguage]);
@@ -182,9 +183,11 @@ export const WordTabContent = () => {
       targetLanguage,
     );
     const existingWordIds = words.map((w) => w.id);
-    const onlyWordInAnyMap = allWordsAsVotableItems.filter((w) =>
-      [...savedWordIds, ...existingWordIds].includes(w.title.id as string),
-    );
+    const onlyWordInAnyMap = allWordsAsVotableItems
+      .filter((w) =>
+        [...savedWordIds, ...existingWordIds].includes(w.title.id as string),
+      )
+      .sort((wi1, wi2) => wi1.title.content.localeCompare(wi2.title.content));
     setWordsVotableItems(onlyWordInAnyMap);
     setStep(Steps.VOTE);
   }, [
@@ -366,7 +369,7 @@ export const WordTabContent = () => {
             </Box>
             <StyledFilterButton
               onClick={() => {
-                setStep(0);
+                setStep(Steps.GET_LANGUAGES);
               }}
             />
           </Box>
@@ -386,7 +389,11 @@ export const WordTabContent = () => {
               />
             ))}
           </Stack>
-          <BottomButtons setStep={() => setStep(Steps.INPUT_TRANSLATIONS)} />
+          <BottomButtons
+            setStep={() => {
+              onShowStringListClick();
+            }}
+          />
         </>
       ) : (
         <></>

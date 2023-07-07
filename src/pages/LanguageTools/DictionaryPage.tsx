@@ -118,7 +118,7 @@ export function DictionaryPage() {
   const [selectedWord, setSelectedWord] = useState<VotableItem | null>(null);
   const [isDialogOpened, setIsDialogOpened] = useState(false);
   const [words, setWords] = useState<VotableItem[]>([]);
-  const definitionService = singletons?.definitionService;
+  const votableItemsService = singletons?.votableItemsService;
 
   const [selectedLanguageInfo, setSelectedLanguageInfo] = useState<
     LanguageInfo | undefined
@@ -147,7 +147,7 @@ export function DictionaryPage() {
   );
 
   useEffect(() => {
-    if (!definitionService) return;
+    if (!votableItemsService) return;
     if (!selectedLanguageInfo) return;
 
     const { startLoading, stopLoading } = createLoadingStack();
@@ -156,7 +156,7 @@ export function DictionaryPage() {
       startLoading();
       logger.info({ at: 'DictionaryPage' }, 'load words');
       const loadWords = async () => {
-        const words: VotableItem[] = await definitionService.getVotableItems(
+        const words: VotableItem[] = await votableItemsService.getVotableItems(
           selectedLanguageInfo,
           NodeTypeConst.WORD,
         );
@@ -171,10 +171,10 @@ export function DictionaryPage() {
     }
   }, [
     alertFeedback,
-    definitionService,
     selectedLanguageInfo,
     createLoadingStack,
     logger,
+    votableItemsService,
   ]);
 
   const { startLoading, stopLoading } = useMemo(

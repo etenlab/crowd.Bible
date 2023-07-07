@@ -1,6 +1,7 @@
 import {
   GraphFirstLayerService,
   GraphSecondLayerService,
+  MainKeyName,
   VotingService,
 } from '@eten-lab/core';
 
@@ -9,7 +10,7 @@ import { WordSequenceService } from './word-sequence.service';
 
 import { ElectionTypeConst } from '@eten-lab/core';
 import { RelationshipTypeConst, NodeTypeConst } from '@eten-lab/core';
-import { TableNameConst } from '@eten-lab/models';
+import { Candidate, Node, TableNameConst } from '@eten-lab/models';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 
 import {
@@ -18,6 +19,14 @@ import {
 } from '@/dtos/word-sequence.dto';
 
 import { LanguageMapper } from '@/mappers/language.mapper';
+import { NodeMapper } from '../mappers/node.mapper';
+
+export interface getRecommendedTranslationParams {
+  sourceLang: LanguageInfo;
+  targetLang: LanguageInfo;
+  source: string;
+  nodeType: NodeTypeConst.WORD | NodeTypeConst.PHRASE;
+}
 
 export class TranslationService {
   constructor(
@@ -246,10 +255,35 @@ export class TranslationService {
   //   };
   // }
 
-  async getRecommendedTranslationCandidateId(
+  async getRecommendedTranslation({
+    sourceLang,
+    targetLang,
+    source,
+    nodeType,
+  }: getRecommendedTranslationParams): Promise<string | null> {
+    const originalId = await this.wordService.getWordOrPhraseWithLang(
+      source,
+      sourceLang,
+      nodeType,
+    );
+    if (!originalId) return null;
+    const candidateAndNode =
+      await this.getRecommendedTranslationCandidateAndNode(
+        originalId,
+        targetLang,
+      );
+
+    if (!candidateAndNode) return null;
+
+    const translatedNode = NodeMapper.entityToDto(candidateAndNode.electedNode);
+
+    return translatedNode[MainKeyName[nodeType]];
+  }
+
+  async getRecommendedTranslationCandidateAndNode(
     originalId: Nanoid,
     languageInfo: LanguageInfo,
-  ): Promise<Nanoid | null> {
+  ): Promise<{ candidateId: Nanoid; electedNode: Node } | null> {
     const election = await this.votingService.getElectionByRef(
       ElectionTypeConst.TRANSLATION,
       originalId,
@@ -264,7 +298,8 @@ export class TranslationService {
       election.id,
     );
 
-    const candidatesByLanguage = [];
+    const candidatesByLanguage: { candidate: Candidate; targetedNode: Node }[] =
+      [];
 
     for (const candidate of allCandidates) {
       const rel = await this.graphFirstLayerService.readRelationship(
@@ -294,61 +329,60 @@ export class TranslationService {
         continue;
       }
 
-      candidatesByLanguage.push(candidate);
+      candidatesByLanguage.push({ candidate, targetedNode: rel.toNode });
     }
 
     let highestVoted: {
       id: string | null;
       votes: number;
+      targetNode: Node | null;
     } = {
       id: null,
       votes: 0,
+      targetNode: null,
     };
 
-    for (const candidate of candidatesByLanguage) {
-      const voteStatus = await this.votingService.getVotesStats(candidate.id);
+    for (const cbl of candidatesByLanguage) {
+      const voteStatus = await this.votingService.getVotesStats(
+        cbl.candidate.id,
+      );
 
       if (voteStatus.upVotes >= highestVoted.votes) {
         highestVoted = {
-          id: candidate.candidate_ref,
+          id: cbl.candidate.candidate_ref,
           votes: voteStatus.upVotes,
+          targetNode: cbl.targetedNode,
         };
       }
     }
 
-    if (!highestVoted.id) {
+    if (!highestVoted.id || !highestVoted.targetNode) {
       return null;
     }
 
-    return highestVoted.id;
+    return {
+      candidateId: highestVoted.id,
+      electedNode: highestVoted.targetNode,
+    };
   }
 
   async getRecommendedWordSequenceTranslation(
     originalId: Nanoid,
     languageInfo: LanguageInfo,
   ): Promise<WordSequenceDto | null> {
-    const recommendedRef = await this.getRecommendedTranslationCandidateId(
-      originalId,
-      languageInfo,
-    );
+    const translationCandidate =
+      await this.getRecommendedTranslationCandidateAndNode(
+        originalId,
+        languageInfo,
+      );
 
-    if (!recommendedRef) {
+    if (!translationCandidate) {
       return null;
     }
 
-    const rel = await this.graphFirstLayerService.readRelationship(
-      recommendedRef,
-      ['toNode', 'toNode.propertyKeys', 'toNode.propertyKeys.propertyValue'],
-      {
-        id: recommendedRef,
-      },
+    return this.wordSequenceService.getWordSequenceById(
+      translationCandidate.electedNode.id,
     );
-
-    if (!rel || !rel.toNode) {
-      return null;
-    }
-
-    return this.wordSequenceService.getWordSequenceById(rel.toNode.id);
   }
 
   async listTranslationsByWordSequenceId(
