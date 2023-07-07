@@ -452,9 +452,9 @@ export function useSiteText() {
 
       candidate.forEach((data) => {
         temp[data.siteText] = {
-          siteText: data.translatedSiteText || data.siteText,
+          siteText: data.sourceSiteText || data.siteText,
           isTranslated: !!(
-            data.translatedSiteText && data.translatedSiteText.length > 0
+            data.sourceSiteText && data.sourceSiteText.length > 0
           ),
         };
       });

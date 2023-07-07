@@ -1,7 +1,6 @@
 import {
   ElectionTypeConst,
   GraphFirstLayerService,
-  LoggerService,
   MainKeyName,
   NodeTypeConst,
   PropertyKeyConst,
@@ -12,7 +11,6 @@ import { LanguageInfo } from '@eten-lab/ui-kit';
 import { VotableContent, VotableItem } from '@/dtos/votable-item.dto';
 import { makeFindPropsByLang } from '@/utils/langUtils';
 import { TableNameConst } from '@eten-lab/models';
-const logger = new LoggerService();
 
 export class VotableItemsService {
   constructor(

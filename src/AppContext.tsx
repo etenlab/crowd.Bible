@@ -146,18 +146,17 @@ export function AppContextProvider({ children }: AppProviderProps) {
           logger.current.error(err);
         }
 
-        stopLoading();
+        const app = await state.global.singletons.documentService.getApp(
+          'crowd.Bible',
+        );
 
-        state.global.singletons.documentService
-          .createOrFindApp('crowd.Bible', 'ETEN Lab', {
-            lang: {
-              tag: 'en',
-              descriptions: ['English'],
-            },
-          })
-          .then((app) => {
-            setCrowdBibleApp(app);
-          });
+        if (app) {
+          setCrowdBibleApp(app);
+        } else {
+          alertFeedback(FeedbackTypes.ERROR, 'Cannot find CrowdBible App!');
+        }
+
+        stopLoading();
       }
     })();
   }, [

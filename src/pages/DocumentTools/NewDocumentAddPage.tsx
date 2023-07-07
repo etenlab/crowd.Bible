@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEventHandler } from 'react';
+import { useState, ChangeEventHandler, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { Input, TextArea, Button, MuiMaterial } from '@eten-lab/ui-kit';

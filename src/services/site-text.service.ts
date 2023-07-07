@@ -545,10 +545,16 @@ export class SiteTextService {
     const translatedSiteTextList: TranslatedSiteTextDto[] = [];
 
     for (const siteText of siteTextList) {
-      const recommended = await this.getRecommendedSiteText(
+      const recommendedSource = await this.getRecommendedSiteText(
         appId,
         siteText.id,
         sourceLanguageInfo,
+      );
+
+      const recommendedTarget = await this.getRecommendedSiteText(
+        appId,
+        siteText.id,
+        targetLanguageInfo,
       );
 
       let translationCnt = 0;
@@ -567,7 +573,8 @@ export class SiteTextService {
       translatedSiteTextList.push({
         siteTextId: siteText.id,
         siteText: siteText.word,
-        translatedSiteText: recommended?.translatedSiteText,
+        sourceSiteText: recommendedSource?.translatedSiteText,
+        targetSiteText: recommendedTarget?.translatedSiteText,
         translationCnt,
       });
     }

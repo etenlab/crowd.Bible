@@ -1,4 +1,4 @@
-import { ChangeEventHandler, useState, useEffect, useCallback } from 'react';
+import { ChangeEventHandler, useState, useCallback, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
 
@@ -44,7 +44,7 @@ export function NewSiteTextAddPage() {
   const [app, setApp] = useState<AppDto | null>(null);
 
   const [word, setWord] = useState<string>('');
-  const [bouncedWord] = useDebounce(word, 1000);
+  const [bouncedWord] = useDebounce(word, 300);
 
   const [description, setDescription] = useState<string>('');
 
@@ -99,6 +99,7 @@ export function NewSiteTextAddPage() {
       );
 
       if (result) {
+        alertFeedback(FeedbackTypes.SUCCESS, 'Created a new Site Text!');
         history.goBack();
       }
     } else {

@@ -235,7 +235,7 @@ export function useDocument() {
   const getAppById = useCallback(
     async (appId: string) => {
       if (!singletons) {
-        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at getApp');
+        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at getAppById');
         return null;
       }
 
@@ -267,7 +267,10 @@ export function useDocument() {
   const listAppByLanguageInfo = useCallback(
     async (langInfo: LanguageInfo) => {
       if (!singletons) {
-        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at listDocument');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at listAppByLanguageInfo',
+        );
         return [];
       }
 
@@ -300,7 +303,10 @@ export function useDocument() {
       languageInfo: LanguageInfo,
     ) => {
       if (!singletons) {
-        alertFeedback(FeedbackTypes.ERROR, 'Internal Error! at createApp');
+        alertFeedback(
+          FeedbackTypes.ERROR,
+          'Internal Error! at createOrFindApp',
+        );
         return null;
       }
 
@@ -323,7 +329,7 @@ export function useDocument() {
         );
 
         stopLoading();
-        alertFeedback(FeedbackTypes.SUCCESS, 'Created a new document!');
+        alertFeedback(FeedbackTypes.SUCCESS, 'Created a new Application!');
 
         return app;
       } catch (err) {
