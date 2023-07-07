@@ -92,6 +92,7 @@ export const MapTabContent = () => {
             [PropertyKeyConst.NAME]: argMap.name!,
             [PropertyKeyConst.MAP_FILE_ID]: argMap.mapFileId!,
             [PropertyKeyConst.EXT]: 'svg',
+            [PropertyKeyConst.IS_PROCESSING_FINISHED]: false, // need to process words
           });
           if (mapId) {
             newState.id = mapId;

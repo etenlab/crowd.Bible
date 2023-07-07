@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { IonChip, useIonRouter } from '@ionic/react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
@@ -9,6 +9,7 @@ import {
   MuiMaterial,
   FadeSpinner,
   useColorModeContext,
+  Button,
 } from '@eten-lab/ui-kit';
 
 import { useMapTranslationTools } from '@/hooks/useMapTranslationTools';
@@ -46,9 +47,10 @@ export const MapDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [windowWidth, setWindowWidth] = useState(getWindowWidth());
   const [mapDetail, setMapDetail] = useState<MapDto>();
-  const [mapFileData, setMapFileData] = useState<string>();
+  const [mapFileData, setMapFileData] = useState<Buffer>();
   const [mapTranslatedFileData, setMapTranslatedFileData] = useState<string>();
-  const { getFileDataAsBuffer, translateMap } = useMapTranslationTools();
+  const { getFileDataAsBuffer, translateMap, processTranslatedMap } =
+    useMapTranslationTools();
 
   useEffect(() => {
     function handleWindowResize() {
@@ -95,24 +97,45 @@ export const MapDetailPage = () => {
   }, [singletons, id, router, alertFeedback, logger, createLoadingStack]);
 
   useEffect(() => {
-    async function findFileData() {
-      const fb = await getFileDataAsBuffer(mapDetail?.mapFileId);
+    async function findFileDataAndTranslate() {
+      if (!mapDetail) return;
+      const fb = await getFileDataAsBuffer(mapDetail.mapFileId);
       if (!fb) return;
-      setMapFileData(fb.toString('base64'));
+      setMapFileData(fb);
       if (!sourceLanguage || !targetLanguage) return;
-      const translated = await translateMap(
+      const mtr = await translateMap(
         fb.toString(),
         sourceLanguage,
         targetLanguage,
       );
-      if (!translated) return;
-      setMapTranslatedFileData(toBase64(translated));
+
+      if (!mtr) return;
+      setMapTranslatedFileData(toBase64(mtr.translatedMap));
     }
-    findFileData();
+    findFileDataAndTranslate();
   }, [
     getFileDataAsBuffer,
     mapDetail,
-    mapDetail?.mapFileId,
+    processTranslatedMap,
+    sourceLanguage,
+    targetLanguage,
+    translateMap,
+  ]);
+
+  const translateAndSave = useCallback(async () => {
+    if (!mapDetail?.name || !mapFileData) return;
+    if (!sourceLanguage || !targetLanguage) return;
+    const mtr = await translateMap(
+      mapFileData.toString(),
+      sourceLanguage,
+      targetLanguage,
+    );
+    if (!mtr) return;
+    await processTranslatedMap(mtr, targetLanguage, mapDetail.name);
+  }, [
+    mapDetail?.name,
+    mapFileData,
+    processTranslatedMap,
     sourceLanguage,
     targetLanguage,
     translateMap,
@@ -143,7 +166,9 @@ export const MapDetailPage = () => {
                 <img
                   width={`${windowWidth - PADDING}px`}
                   height={'auto'}
-                  src={`data:image/svg+xml;base64,${mapFileData}`}
+                  src={`data:image/svg+xml;base64,${mapFileData.toString(
+                    'base64',
+                  )}`}
                   alt="Original map"
                 />
               </TransformComponent>
@@ -176,6 +201,7 @@ export const MapDetailPage = () => {
               />
             </TransformComponent>
           </TransformWrapper>
+          <Button onClick={translateAndSave}>Save translated map</Button>
         </Box>
       ) : (
         <Box margin={`${PADDING}px auto`}>

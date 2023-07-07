@@ -35,6 +35,7 @@ export class MapService {
       [PropertyKeyConst.NAME]: string;
       [PropertyKeyConst.MAP_FILE_ID]: string;
       [PropertyKeyConst.EXT]: string;
+      [PropertyKeyConst.IS_PROCESSING_FINISHED]: boolean;
     },
   ): Promise<Nanoid | null> {
     const langProps: { [key: string]: string } = {
@@ -101,7 +102,7 @@ export class MapService {
     words: string[],
     langInfo: LanguageInfo,
     mapId: string,
-  ) {
+  ): Promise<void> {
     if (!words.length || !langInfo) return;
     const start = performance.now();
     let hasNextBatch = true;
