@@ -49,7 +49,7 @@ export const MapDetailPage = () => {
   const [mapDetail, setMapDetail] = useState<MapDto>();
   const [mapFileData, setMapFileData] = useState<Buffer>();
   const [mapTranslatedFileData, setMapTranslatedFileData] = useState<string>();
-  const { getFileDataAsBuffer, translateMap, processTranslatedMap } =
+  const { getFileDataAsBuffer, translateMapString, processTranslatedMap } =
     useMapTranslationTools();
 
   useEffect(() => {
@@ -103,13 +103,13 @@ export const MapDetailPage = () => {
       if (!fb) return;
       setMapFileData(fb);
       if (!sourceLanguage || !targetLanguage) return;
-      const mtr = await translateMap(
+      const mtr = await translateMapString(
         fb.toString(),
         sourceLanguage,
         targetLanguage,
       );
-
       if (!mtr) return;
+
       setMapTranslatedFileData(toBase64(mtr.translatedMap));
     }
     findFileDataAndTranslate();
@@ -119,26 +119,33 @@ export const MapDetailPage = () => {
     processTranslatedMap,
     sourceLanguage,
     targetLanguage,
-    translateMap,
+    translateMapString,
   ]);
 
   const translateAndSave = useCallback(async () => {
-    if (!mapDetail?.name || !mapFileData) return;
+    if (!mapDetail?.name || !mapFileData || !mapDetail?.id) return;
     if (!sourceLanguage || !targetLanguage) return;
-    const mtr = await translateMap(
+    const mtr = await translateMapString(
       mapFileData.toString(),
       sourceLanguage,
       targetLanguage,
     );
     if (!mtr) return;
-    await processTranslatedMap(mtr, targetLanguage, mapDetail.name);
+    await processTranslatedMap(
+      mtr,
+      targetLanguage,
+      mapDetail.name,
+      mapDetail.id,
+      null,
+    );
   }, [
+    mapDetail?.id,
     mapDetail?.name,
     mapFileData,
     processTranslatedMap,
     sourceLanguage,
     targetLanguage,
-    translateMap,
+    translateMapString,
   ]);
 
   return (

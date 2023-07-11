@@ -14,9 +14,11 @@ import { MapDto } from '@/dtos/map.dto';
 import { MapMapper } from '@/mappers/map.mapper';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 
-import { makeFindPropsByLang } from '@/utils/langUtils';
+import { compareLangInfo, makeFindPropsByLang } from '@/utils/langUtils';
 
 import { type INode } from 'svgson';
+// TODO: add to RelationshipTypeConst at core and import from there
+export const MAP_TO_TRANSLATED_MAP = 'map-to-translated-map';
 
 const TEXTY_INODE_NAMES = ['text', 'textPath']; // Final nodes of text. All children nodes' values will be gathered and concatenated into one value
 const SKIP_INODE_NAMES = ['rect', 'style', 'clipPath', 'image', 'rect']; // Nodes that definitenly don't contain any text. skipped for a performance purposes.
@@ -88,6 +90,44 @@ export class MapService {
     );
     const dtos = mapNodes.map((node) => MapMapper.entityToDto(node));
     return dtos;
+  }
+
+  async getMapsForTranslation(
+    sourceLangInfo: LanguageInfo,
+    targetLangInfo: LanguageInfo,
+  ): Promise<Array<{ source: MapDto; target: MapDto | null }>> {
+    const sMapNodeIds = await this.graphFirstLayerService.getNodeIdsByProps(
+      NodeTypeConst.MAP,
+      makeFindPropsByLang(sourceLangInfo),
+    );
+    const sMapNodes =
+      await this.graphFirstLayerService.getNodesWithRelationshipsByIds(
+        sMapNodeIds,
+      );
+
+    const res: Array<{ source: MapDto; target: MapDto | null }> = [];
+
+    for (const sMapNode of sMapNodes) {
+      if (
+        sMapNode.toNodeRelationships?.length &&
+        sMapNode.toNodeRelationships.length > 0
+      ) {
+        for (const rel of sMapNode.toNodeRelationships || []) {
+          if (rel.relationship_type !== MAP_TO_TRANSLATED_MAP) continue;
+          const tMapNode = await this.graphFirstLayerService.readNode(
+            rel.to_node_id,
+            ['propertyKeys', 'propertyKeys.propertyValue'],
+          );
+          if (!tMapNode) continue;
+          const tMap = MapMapper.entityToDto(tMapNode);
+          if (!compareLangInfo(tMap.langInfo, targetLangInfo)) continue;
+          res.push({ source: MapMapper.entityToDto(sMapNode), target: tMap });
+        }
+      } else {
+        res.push({ source: MapMapper.entityToDto(sMapNode), target: null });
+      }
+    }
+    return res;
   }
 
   async getMapWords(mapId: Nanoid) {
