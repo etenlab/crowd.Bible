@@ -173,10 +173,10 @@ export function useMapTranslationTools() {
         })
         .then((res) => {
           logger.info(
-            { at: 'useMapTranslationTools, gql mutation - updatre map.' },
+            { at: 'useMapTranslationTools, gql mutation - update map.' },
             `Map file (name:${file.name}) is updated.`,
           );
-          const { id, fileName, fileHash, fileUrl } = res.data.uploadFile;
+          const { id, fileName, fileHash, fileUrl } = res.data.updateFile;
           afterSuccess({ id, fileName, fileHash, fileUrl });
         })
         .catch((error) => {
@@ -290,12 +290,18 @@ export function useMapTranslationTools() {
         id: string;
         fileName: string;
       }) => {
-        const mapId = await singletons.mapService.saveMap(langInfo, {
-          [PropertyKeyConst.NAME]: fileName,
-          [PropertyKeyConst.MAP_FILE_ID]: id,
-          [PropertyKeyConst.EXT]: MAPFILE_EXTENSION,
-          [PropertyKeyConst.IS_PROCESSING_FINISHED]: false, // need to process words
-        });
+        let mapId: string | null;
+        if (targetMap) {
+          mapId = targetMap.id;
+        } else {
+          mapId = await singletons.mapService.saveMap(langInfo, {
+            [PropertyKeyConst.NAME]: fileName,
+            [PropertyKeyConst.MAP_FILE_ID]: id,
+            [PropertyKeyConst.EXT]: MAPFILE_EXTENSION,
+            [PropertyKeyConst.IS_PROCESSING_FINISHED]: false, // need to process words
+          });
+        }
+
         if (!mapId) {
           throw new Error(`Error with creating translated map node`);
         }
