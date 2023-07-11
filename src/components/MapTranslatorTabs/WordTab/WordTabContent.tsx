@@ -440,15 +440,15 @@ export const WordTabContent = () => {
           >
             <Typography>
               {tr(
-                'The following maps with selected source language and their translations are found:',
+                'Found maps with selected source language and their translations (if any):',
               )}
             </Typography>
             {mapsToTranslate ? (
               <Stack divider={<Divider />} width={'100%'}>
                 {mapsToTranslate.map((m, i) => (
                   <Typography key={i} variant="body1">
-                    {m.source.name} - {'update translation: '}
-                    {m.target?.name || 'New map will be created'}
+                    {m.source.name} - {tr('translation: ')}
+                    {m.target?.name || 'New translated map will be created'}
                   </Typography>
                 ))}
               </Stack>

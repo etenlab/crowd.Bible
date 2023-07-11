@@ -17,8 +17,7 @@ import { LanguageInfo } from '@eten-lab/ui-kit';
 import { compareLangInfo, makeFindPropsByLang } from '@/utils/langUtils';
 
 import { type INode } from 'svgson';
-// TODO: add to RelationshipTypeConst at core and import from there
-export const MAP_TO_TRANSLATED_MAP = 'map-to-translated-map';
+import { log } from 'console';
 
 const TEXTY_INODE_NAMES = ['text', 'textPath']; // Final nodes of text. All children nodes' values will be gathered and concatenated into one value
 const SKIP_INODE_NAMES = ['rect', 'style', 'clipPath', 'image', 'rect']; // Nodes that definitenly don't contain any text. skipped for a performance purposes.
@@ -113,7 +112,18 @@ export class MapService {
         sMapNode.toNodeRelationships.length > 0
       ) {
         for (const rel of sMapNode.toNodeRelationships || []) {
-          if (rel.relationship_type !== MAP_TO_TRANSLATED_MAP) continue;
+          if (
+            rel.relationship_type !==
+            RelationshipTypeConst.MAP_TO_TRANSLATED_MAP
+          ) {
+            console.log(
+              rel.relationship_type,
+              RelationshipTypeConst.MAP_TO_TRANSLATED_MAP,
+              rel.relationship_type ===
+                RelationshipTypeConst.MAP_TO_TRANSLATED_MAP,
+            );
+            continue;
+          }
           const tMapNode = await this.graphFirstLayerService.readNode(
             rel.to_node_id,
             ['propertyKeys', 'propertyKeys.propertyValue'],

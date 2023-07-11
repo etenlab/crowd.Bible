@@ -24,7 +24,6 @@ import {
 import { VotableItem } from '../dtos/votable-item.dto';
 import { useVote } from './useVote';
 import * as svgson from 'svgson';
-import { MAP_TO_TRANSLATED_MAP } from '../services/map.service';
 import { MapDto } from '../dtos/map.dto';
 const MAPFILE_EXTENSION = 'svg';
 
@@ -45,13 +44,13 @@ export const UPLOAD_FILE_MUTATION = gql`
 `;
 
 export const UPDATE_FILE_MUTATION = gql`
-  mutation UploadFile(
+  mutation UpdateFile(
     $id: Int!
     $file: Upload!
     $file_type: String!
     $file_size: Int!
   ) {
-    uploadFile(
+    updateFile(
       id: $id
       file: $file
       file_type: $file_type
@@ -280,6 +279,7 @@ export function useMapTranslationTools() {
       const mapFileTosave = new File(
         [mapBlob],
         `${fileNamePrefix}-${langInfo2tag(langInfo)}.${MAPFILE_EXTENSION}`,
+        { type: 'image/svg+xml' },
       );
       const words = mtr.translations.map((tr) => tr.translation);
 
@@ -302,7 +302,7 @@ export function useMapTranslationTools() {
         await singletons.graphFirstLayerService.createRelationship(
           sourceMapNodeId,
           mapId,
-          MAP_TO_TRANSLATED_MAP,
+          RelationshipTypeConst.MAP_TO_TRANSLATED_MAP,
         );
 
         await singletons.mapService.processMapWords(words, langInfo, mapId);
@@ -346,7 +346,7 @@ export function useMapTranslationTools() {
         });
       }
     },
-    [alertFeedback, logger, sendMapFile, singletons],
+    [alertFeedback, logger, sendMapFile, singletons, updateMapFile],
   );
 
   const processFile = useCallback(

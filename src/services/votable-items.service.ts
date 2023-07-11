@@ -33,32 +33,8 @@ export class VotableItemsService {
     votableNodeId: Nanoid,
     electionId: Nanoid,
     electionTargetId: Nanoid,
+    relationshipType: RelationshipTypeConst,
   ): Promise<Nanoid> {
-    const electionTargetNode = await this.graphFirstLayerService.readNode(
-      electionTargetId,
-      ['nodeType'],
-    );
-    const votableNode = await this.graphFirstLayerService.readNode(
-      votableNodeId,
-      ['nodeType'],
-    );
-    let relationshipType: RelationshipTypeConst;
-    switch (electionTargetNode?.nodeType.type_name) {
-      case NodeTypeConst.PHRASE:
-        relationshipType = RelationshipTypeConst.PHRASE_TO_DEFINITION;
-        break;
-      case NodeTypeConst.WORD:
-        relationshipType = RelationshipTypeConst.WORD_TO_DEFINITION;
-        break;
-      default:
-        throw new Error(
-          `
-            We don't know which type of Relationship we take for voting 
-            if election target type is ${electionTargetNode?.nodeType.type_name} 
-            And votable node type is ${votableNode?.nodeType.type_name}
-          `,
-        );
-    }
     let relationship = await this.graphFirstLayerService.findRelationship(
       electionTargetId,
       votableNodeId,
@@ -95,14 +71,23 @@ export class VotableItemsService {
    * @param fromVotableNodes - set direction of relations. 'true' - default - relationship  is from votable items to election target.
    * @returns
    */
-  async getVotableContent(
-    electionTargetId: Nanoid,
-    electionId: Nanoid,
-    votableNodesType: NodeTypeConst,
-    propertyKeyText: PropertyKeyConst,
+  async getVotableContent({
+    electionTargetId,
+    electionId,
+    votableNodesType,
+    propertyKeyText,
     fromVotableNodes = true,
-    onlyWithLangInfo?: LanguageInfo,
-  ): Promise<Array<VotableContent>> {
+    onlyWithLangInfo,
+    relationshipType,
+  }: {
+    electionTargetId: Nanoid;
+    electionId: Nanoid;
+    votableNodesType: NodeTypeConst;
+    propertyKeyText: PropertyKeyConst;
+    fromVotableNodes?: boolean; // = true,
+    onlyWithLangInfo?: LanguageInfo;
+    relationshipType: RelationshipTypeConst;
+  }): Promise<Array<VotableContent>> {
     const relationDirection = fromVotableNodes ? 'from_node_id' : 'to_node_id';
     const votableNodes =
       await this.graphFirstLayerService.getNodesByTypeAndRelatedNodes({
@@ -118,6 +103,7 @@ export class VotableItemsService {
           votableNode.id,
           electionId,
           electionTargetId,
+          relationshipType,
         );
         const { upVotes, downVotes } = await this.votingService.getVotesStats(
           candidateId,
@@ -140,43 +126,38 @@ export class VotableItemsService {
 
   /**
    * Finds definitions for given node Id and election Id and returns as VotableContent
-   *
-   * @param forNodeId
-   * @param electionId
-   * @returns
    */
   async getDefinitionsAsVotableContent(
     forNodeId: Nanoid,
     electionId: Nanoid,
+    relationshipType: RelationshipTypeConst,
   ): Promise<Array<VotableContent>> {
-    return this.getVotableContent(
-      forNodeId,
+    return this.getVotableContent({
+      electionTargetId: forNodeId,
       electionId,
-      NodeTypeConst.DEFINITION,
-      MainKeyName[NodeTypeConst.DEFINITION],
-    );
+      votableNodesType: NodeTypeConst.DEFINITION,
+      propertyKeyText: MainKeyName[NodeTypeConst.DEFINITION],
+      relationshipType,
+    });
   }
 
   /**
    * Finds words for given node Id and election Id and returns as VotableContent
-   *
-   * @param forNodeId
-   * @param electionId
-   * @returns
    */
   async getWordsAsVotableContent(
     forNodeId: Nanoid,
     electionId: Nanoid,
+    relationshipType: RelationshipTypeConst,
     langInfo?: LanguageInfo,
   ): Promise<Array<VotableContent>> {
-    return this.getVotableContent(
-      forNodeId,
+    return this.getVotableContent({
+      electionTargetId: forNodeId,
       electionId,
-      NodeTypeConst.WORD,
-      MainKeyName[NodeTypeConst.WORD],
-      undefined,
-      langInfo,
-    );
+      votableNodesType: NodeTypeConst.WORD,
+      propertyKeyText: MainKeyName[NodeTypeConst.WORD],
+      onlyWithLangInfo: langInfo,
+      relationshipType,
+    });
   }
 
   /**
@@ -274,12 +255,18 @@ export class VotableItemsService {
           contents = await this.getDefinitionsAsVotableContent(
             vc.id,
             election.id,
+            type === NodeTypeConst.WORD
+              ? RelationshipTypeConst.WORD_TO_DEFINITION
+              : RelationshipTypeConst.PHRASE_TO_DEFINITION,
           );
           break;
         case ElectionTypeConst.TRANSLATION:
           contents = await this.getWordsAsVotableContent(
             vc.id,
             election.id,
+            type === NodeTypeConst.WORD
+              ? RelationshipTypeConst.WORD_TO_TRANSLATION
+              : RelationshipTypeConst.PHRASE_TO_TRANSLATION,
             contentLangInfo,
           );
           break;

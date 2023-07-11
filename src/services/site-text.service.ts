@@ -379,6 +379,7 @@ export class SiteTextService {
     return this.votableItemsService.getDefinitionsAsVotableContent(
       siteTextId,
       election.id,
+      RelationshipTypeConst.WORD_TO_DEFINITION,
     );
   }
 
