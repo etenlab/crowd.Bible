@@ -19,6 +19,7 @@ export type LinkItemProps = {
   betaOnly?: boolean;
   implemented?: boolean;
   noAuthOnly?: boolean;
+  authOnly?: boolean;
 };
 
 type LinkGroupType = {
@@ -37,7 +38,7 @@ export function LinkGroup({ group, linkItems }: LinkGroupType) {
 
   const items = useMemo(() => {
     return linkItems
-      .filter(({ adminOnly, betaOnly, noAuthOnly }) => {
+      .filter(({ adminOnly, betaOnly, noAuthOnly, authOnly }) => {
         if (mode?.admin === false && adminOnly === true) {
           return false;
         }
@@ -48,9 +49,13 @@ export function LinkGroup({ group, linkItems }: LinkGroupType) {
           if (!user) {
             return true;
           }
-          if (user.userEmail.trim().length > 0) {
-            return false;
+          return false;
+        }
+        if (authOnly === true) {
+          if (user) {
+            return true;
           }
+          return false;
         }
         return true;
       })

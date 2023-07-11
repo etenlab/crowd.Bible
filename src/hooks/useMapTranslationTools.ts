@@ -246,7 +246,7 @@ export function useMapTranslationTools() {
         },
       );
     },
-    [logger, sendMapFile, singletons],
+    [alertFeedback, logger, sendMapFile, singletons],
   );
 
   const processFile = useCallback(

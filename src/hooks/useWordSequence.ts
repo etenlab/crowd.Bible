@@ -52,7 +52,7 @@ export function useWordSequence() {
       try {
         startLoading();
         const userNode = await singletons.userService.createOrFindUser(
-          user.userEmail,
+          user.email,
         );
 
         if (!userNode) {
@@ -104,7 +104,7 @@ export function useWordSequence() {
       try {
         startLoading();
         const userNode = await singletons.userService.createOrFindUser(
-          user.userEmail,
+          user.email,
         );
 
         if (!userNode) {
@@ -311,9 +311,7 @@ export function useWordSequence() {
         let userNode: UserDto;
 
         if (isUserId) {
-          userNode = await singletons.userService.createOrFindUser(
-            user!.userEmail,
-          );
+          userNode = await singletons.userService.createOrFindUser(user!.email);
 
           if (!userNode) {
             return [];
