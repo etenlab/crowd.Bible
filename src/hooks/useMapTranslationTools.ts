@@ -10,11 +10,26 @@ import axios from 'axios';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
 import { WordDto } from '../dtos/word.dto';
-import { RelationshipTypeConst } from '@eten-lab/core';
+import {
+  NodeTypeConst,
+  PropertyKeyConst,
+  RelationshipTypeConst,
+} from '@eten-lab/core';
 import { WordMapper } from '../mappers/word.mapper';
-import { compareLangInfo, wordProps2LangInfo } from '../utils/langUtils';
+import {
+  compareLangInfo,
+  langInfo2tag,
+  wordProps2LangInfo,
+} from '../utils/langUtils';
 import { VotableItem } from '../dtos/votable-item.dto';
 import { useVote } from './useVote';
+import * as svgson from 'svgson';
+const MAPFILE_EXTENSION = 'svg';
+
+export type MapTranslationResult = {
+  translatedMap: string;
+  translations: Array<{ source: string; translation: string }>;
+};
 
 export const UPLOAD_FILE_MUTATION = gql`
   mutation UploadFile($file: Upload!, $file_type: String!, $file_size: Int!) {
@@ -146,13 +161,13 @@ export function useMapTranslationTools() {
     [alertFeedback, apolloClient, logger],
   );
 
-  const getFileDataBase64 = useCallback(
-    async (fileId: string | undefined): Promise<string | undefined> => {
+  const getFileDataAsBuffer = useCallback(
+    async (fileId: string | undefined): Promise<Buffer | undefined> => {
       if (!fileId) return;
       const { fileUrl } = await getMapFileInfo(fileId);
       if (!fileUrl) return;
       const res = await axios.get(fileUrl, { responseType: 'arraybuffer' });
-      return Buffer.from(res.data, 'binary').toString('base64');
+      return Buffer.from(res.data, 'binary');
     },
     [getMapFileInfo],
   );
@@ -173,6 +188,65 @@ export function useMapTranslationTools() {
       });
     },
     [],
+  );
+
+  const processTranslatedMap = useCallback(
+    (
+      mtr: MapTranslationResult,
+      langInfo: LanguageInfo,
+      fileNamePrefix: string,
+    ) => {
+      if (!singletons) {
+        logger.error('---No singletons!');
+        return;
+      }
+      if (!langInfo) return;
+      if (!mtr) return;
+
+      const mapBlob = new Blob([mtr.translatedMap], { type: 'text/plain' });
+      const mapFileTosave = new File(
+        [mapBlob],
+        `${fileNamePrefix}-${langInfo2tag(langInfo)}.${MAPFILE_EXTENSION}`,
+      );
+      const words = mtr.translations.map((tr) => tr.translation);
+
+      sendMapFile(
+        mapFileTosave,
+        async ({ id, fileName }) => {
+          const mapId = await singletons.mapService.saveMap(langInfo, {
+            [PropertyKeyConst.NAME]: fileName,
+            [PropertyKeyConst.MAP_FILE_ID]: id,
+            [PropertyKeyConst.EXT]: MAPFILE_EXTENSION,
+            [PropertyKeyConst.IS_PROCESSING_FINISHED]: false, // need to process words
+          });
+          if (!mapId) {
+            throw new Error(`Error with creating translated map node`);
+          }
+          await singletons.mapService.processMapWords(words, langInfo, mapId);
+          await singletons.graphSecondLayerService.addNewNodePropertiesNoChecks(
+            mapId,
+            {
+              [PropertyKeyConst.IS_PROCESSING_FINISHED]: true,
+            },
+          );
+          await singletons.driver.save();
+          alertFeedback(
+            FeedbackTypes.SUCCESS,
+            `Map file (name:${fileName}) is created.`,
+          );
+        },
+        (_error) => {
+          logger.error(
+            {
+              at: 'useMapTranslationTools#processTranslatedMap',
+              when: `try to save translated map file`,
+            },
+            JSON.stringify(_error),
+          );
+        },
+      );
+    },
+    [logger, sendMapFile, singletons],
   );
 
   const processFile = useCallback(
@@ -354,13 +428,85 @@ export function useMapTranslationTools() {
     [toggleVote, getVotesStats, alertFeedback, createLoadingStack, logger],
   );
 
+  const getRecommendedTranslations = useCallback(
+    async ({
+      sourceLang,
+      targetLang,
+      sources,
+      nodeType,
+    }: {
+      sourceLang: LanguageInfo;
+      targetLang: LanguageInfo;
+      sources: string[];
+      nodeType: NodeTypeConst.WORD | NodeTypeConst.PHRASE;
+    }): Promise<{ source: string; translation: string }[]> => {
+      if (!singletons) {
+        logger.error('---No singletons!');
+        return [];
+      }
+
+      const translations: { source: string; translation: string }[] = [];
+
+      for (const source of sources) {
+        const translation =
+          await singletons.translationService.getRecommendedTranslation({
+            sourceLang,
+            targetLang,
+            source,
+            nodeType,
+          });
+        if (translation) {
+          translations.push({ source, translation });
+        }
+      }
+
+      return translations;
+    },
+    [logger, singletons],
+  );
+
+  const translateMap = useCallback(
+    async (
+      sourceSvgString: string,
+      sourceLang: LanguageInfo,
+      targetLang: LanguageInfo,
+    ): Promise<MapTranslationResult | undefined> => {
+      if (!singletons) {
+        logger.error('---No singletons!');
+        return;
+      }
+      const { transformedSvgINode, foundWords: sourceWords } =
+        singletons.mapService.parseSvgMapString(sourceSvgString);
+
+      const translations = await getRecommendedTranslations({
+        sourceLang,
+        targetLang,
+        sources: sourceWords,
+        nodeType: NodeTypeConst.WORD,
+      });
+
+      singletons.mapService.replaceINodeTagValues(
+        transformedSvgINode,
+        translations,
+      );
+
+      const translatedMap = await svgson.stringify(transformedSvgINode);
+
+      return { translatedMap, translations };
+    },
+
+    [getRecommendedTranslations, logger, singletons],
+  );
+
   return {
     sendMapFile,
     getMapFileInfo,
-    getFileDataBase64,
+    getFileDataAsBuffer,
     processFile,
+    processTranslatedMap,
     setMapStatus,
     getWordsWithLangs,
     changeTranslationVotes,
+    translateMap,
   };
 }

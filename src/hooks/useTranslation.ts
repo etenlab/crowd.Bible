@@ -225,14 +225,14 @@ export function useTranslation() {
       try {
         startLoading();
 
-        const recommendedId =
-          await singletons.translationService.getRecommendedTranslationCandidateId(
+        const recommended =
+          await singletons.translationService.getRecommendedTranslationCandidateAndNode(
             originalId,
             languageInfo || targetLanguage!,
           );
 
         stopLoading();
-        return recommendedId;
+        return recommended?.candidateId;
       } catch (err) {
         logger.error(err);
         stopLoading();
