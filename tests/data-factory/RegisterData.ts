@@ -5,6 +5,8 @@ class RegisterData {
     const registerData = RegisterDto;
     const x = Math.random() * 100;
     registerData.email = 'AutomationUser' + x + '@mailinator.com';
+    registerData.firstName = 'Automation First Name';
+    registerData.lastName = 'Automation Last Name';
     registerData.userName = 'Automation User';
     registerData.password = 'automation@123';
     registerData.repeatPassword = 'automation@123';
@@ -14,6 +16,8 @@ class RegisterData {
   registerDataWithoutEmail() {
     const registerData = RegisterDto;
     registerData.email = '';
+    registerData.firstName = 'Automation First Name';
+    registerData.lastName = 'Automation Last Name';
     registerData.userName = 'Automation User';
     registerData.password = 'automation@123';
     registerData.repeatPassword = 'automation@123';
@@ -24,6 +28,8 @@ class RegisterData {
     const registerData = RegisterDto;
     registerData.email = 'AutomationUser@mailinator.com';
     registerData.userName = '';
+    registerData.firstName = 'Automation First Name';
+    registerData.lastName = 'Automation Last Name';
     registerData.password = 'automation@123';
     registerData.repeatPassword = 'automation@123';
     return registerData;
@@ -32,6 +38,8 @@ class RegisterData {
   registerDataWithoutPassword() {
     const registerData = RegisterDto;
     registerData.email = 'AutomationUser@mailinator.com';
+    registerData.firstName = 'Automation First Name';
+    registerData.lastName = 'Automation Last Name';
     registerData.userName = 'Automation User';
     registerData.password = '';
     registerData.repeatPassword = 'automation@123';
@@ -42,6 +50,8 @@ class RegisterData {
     const registerData = RegisterDto;
     registerData.email = 'AutomationUser@mailinator.com';
     registerData.userName = 'Automation User';
+    registerData.firstName = 'Automation First Name';
+    registerData.lastName = 'Automation Last Name';
     registerData.password = 'automation@123';
     registerData.repeatPassword = '';
     return registerData;
@@ -51,6 +61,8 @@ class RegisterData {
     const registerData = RegisterDto;
     registerData.email = 'AutomationUser';
     registerData.userName = 'Automation User';
+    registerData.firstName = 'Automation First Name';
+    registerData.lastName = 'Automation Last Name';
     registerData.password = 'automation@123';
     registerData.repeatPassword = 'automation@123';
     return registerData;
@@ -60,6 +72,8 @@ class RegisterData {
     const registerData = RegisterDto;
     registerData.email = 'AutomationUser@mailinator.com';
     registerData.userName = 'Automation User';
+    registerData.firstName = 'Automation First Name';
+    registerData.lastName = 'Automation Last Name';
     registerData.password = 'tester';
     registerData.repeatPassword = 'automation@123';
     return registerData;
@@ -69,6 +83,8 @@ class RegisterData {
     const registerData = RegisterDto;
     registerData.email = 'AutomationUser@mailinator.com';
     registerData.userName = 'Automation User';
+    registerData.firstName = 'Automation First Name';
+    registerData.lastName = 'Automation Last Name';
     registerData.password = 'automation1234';
     registerData.repeatPassword = 'automation1234';
     return registerData;
