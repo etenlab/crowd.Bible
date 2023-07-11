@@ -1631,10 +1631,10 @@
     "axios" "^1.3.6"
     "qs" "^6.11.1"
 
-"@eten-lab/ui-kit@^0.5.42", "@eten-lab/ui-kit@^0.5.92":
-  "integrity" "sha512-6Y2mIkJ9bDCd3h61UDpezVFAiLSyz2eWY9rIHN9WVfmaif4Hk/YPnNJl6raJS1ydkVmrBcY1AQvtdW2taqkesw=="
-  "resolved" "https://registry.npmjs.org/@eten-lab/ui-kit/-/ui-kit-0.5.92.tgz"
-  "version" "0.5.92"
+"@eten-lab/ui-kit@^0.5.42", "@eten-lab/ui-kit@^0.5.93":
+  "integrity" "sha512-Dxr5UOkFa58h9E5nZ0ahPMrJwEwaCqqpF5Yd6t7i+EHWFvqwNOF1OPNf0ZR/NyH4Ky83IECaiYchXn5e1CGAgQ=="
+  "resolved" "https://registry.npmjs.org/@eten-lab/ui-kit/-/ui-kit-0.5.93.tgz"
+  "version" "0.5.93"
   dependencies:
     "@apollo/client" "^3.7.16"
     "@emotion/react" "^11.10.4"
