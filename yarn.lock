@@ -29,15 +29,15 @@
     "jsonpointer" "^5.0.0"
     "leven" "^3.1.0"
 
-"@apollo/client@^3.0.0", "@apollo/client@^3.7.0", "@apollo/client@^3.7.11":
-  "integrity" "sha512-BRvdkwq5PAXBkjXjboO12uksDm3nrZEqDi4xF97Fk3Mnaa0zDOEfJa7hoKTY9b9KA1EkeWv9BL3i7hSd4SfGBg=="
-  "resolved" "https://registry.npmjs.org/@apollo/client/-/client-3.7.14.tgz"
-  "version" "3.7.14"
+"@apollo/client@^3.0.0", "@apollo/client@^3.7.0", "@apollo/client@^3.7.11", "@apollo/client@^3.7.16":
+  "integrity" "sha512-0EErSHEtKPNl5wgWikHJbKFAzJ/k11O0WO2QyqZSHpdxdAnw7UWHY4YiLbHCFG7lhrD+NTQ3Z/H9Jn4rcikoJA=="
+  "resolved" "https://registry.npmjs.org/@apollo/client/-/client-3.7.17.tgz"
+  "version" "3.7.17"
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.1"
     "@wry/context" "^0.7.0"
     "@wry/equality" "^0.5.0"
-    "@wry/trie" "^0.3.0"
+    "@wry/trie" "^0.4.0"
     "graphql-tag" "^2.12.6"
     "hoist-non-react-statics" "^3.3.2"
     "optimism" "^0.16.2"
@@ -1631,19 +1631,24 @@
     "axios" "^1.3.6"
     "qs" "^6.11.1"
 
-"@eten-lab/ui-kit@^0.5.42", "@eten-lab/ui-kit@^0.5.90":
-  "integrity" "sha512-0FzO5EOac/GzM41AtAqvPkpeeiBpKS9WgADdC6ILB58ym1HbpsHDWo8VsEHc/usF+F3uTd/vEqS0SuHjfcaQqQ=="
-  "resolved" "https://registry.npmjs.org/@eten-lab/ui-kit/-/ui-kit-0.5.90.tgz"
-  "version" "0.5.90"
+"@eten-lab/ui-kit@^0.5.42", "@eten-lab/ui-kit@^0.5.92":
+  "integrity" "sha512-6Y2mIkJ9bDCd3h61UDpezVFAiLSyz2eWY9rIHN9WVfmaif4Hk/YPnNJl6raJS1ydkVmrBcY1AQvtdW2taqkesw=="
+  "resolved" "https://registry.npmjs.org/@eten-lab/ui-kit/-/ui-kit-0.5.92.tgz"
+  "version" "0.5.92"
   dependencies:
+    "@apollo/client" "^3.7.16"
     "@emotion/react" "^11.10.4"
     "@emotion/styled" "^11.10.4"
     "@fontsource/inter" "^4.5.15"
     "@fontsource/noto-serif-display" "^4.5.15"
     "@foobar404/wave" "^2.0.4"
     "@mui/material" "^5.10.5"
+    "@types/apollo-upload-client" "^17.0.2"
     "ace-builds" "^1.20.0"
-    "emoji-picker-react" "^4.4.3"
+    "apollo-upload-client" "^17.0.0"
+    "emoji-picker-react" "^4.4.9"
+    "graphql" "^16.7.1"
+    "graphql-ws" "^5.14.0"
     "nanoid" "^4.0.2"
     "react-ace" "^10.1.0"
     "react-debounce-input" "^3.3.0"
@@ -3632,6 +3637,13 @@
   "integrity" "sha512-yRTyhWSls2OY/pYLfwff867r8ekooZ4UI+/gxot5Wj8EFwSf2rG+n+Mo/6LoLQm1TKA4GRj2+LCpbfS937dClQ=="
   "resolved" "https://registry.npmjs.org/@wry/trie/-/trie-0.3.2.tgz"
   "version" "0.3.2"
+  dependencies:
+    "tslib" "^2.3.0"
+
+"@wry/trie@^0.4.0":
+  "integrity" "sha512-I6bHwH0fSf6RqQcnnXLJKhkSXG45MFral3GxPaY4uAl0LYDZM+YDVDAiU9bYwjTuysy1S0IeecWtmq1SZA3M1w=="
+  "resolved" "https://registry.npmjs.org/@wry/trie/-/trie-0.4.3.tgz"
+  "version" "0.4.3"
   dependencies:
     "tslib" "^2.3.0"
 
@@ -6083,7 +6095,7 @@
   "resolved" "https://registry.npmjs.org/emittery/-/emittery-0.8.1.tgz"
   "version" "0.8.1"
 
-"emoji-picker-react@^4.4.3":
+"emoji-picker-react@^4.4.9":
   "integrity" "sha512-ef9MfzSJy5xrzihLLv0e1zZmiNtcekubctTBQVfIpvKfsfu4iLBBzcHCmOC2IaUVBCZuUw+GM24BAPj1MdCQXQ=="
   "resolved" "https://registry.npmjs.org/emoji-picker-react/-/emoji-picker-react-4.4.9.tgz"
   "version" "4.4.9"
@@ -7375,15 +7387,15 @@
   dependencies:
     "tslib" "^2.1.0"
 
-"graphql-ws@^5.5.5", "graphql-ws@5.14.0":
+"graphql-ws@^5.14.0", "graphql-ws@^5.5.5", "graphql-ws@5.14.0":
   "integrity" "sha512-itrUTQZP/TgswR4GSSYuwWUzrE/w5GhbwM2GX3ic2U7aw33jgEsayfIlvaj7/GcIvZgNMzsPTrE5hqPuFUiE5g=="
   "resolved" "https://registry.npmjs.org/graphql-ws/-/graphql-ws-5.14.0.tgz"
   "version" "5.14.0"
 
-"graphql@^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0", "graphql@^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0", "graphql@^14.0.0 || ^15.0.0 || ^16.0.0", "graphql@^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0", "graphql@^15.7.2 || ^16.0.0", "graphql@^16.6.0", "graphql@^v16.6.0", "graphql@>=0.11 <=16", "graphql@14 - 16":
-  "integrity" "sha512-KPIBPDlW7NxrbT/eh4qPXz5FiFdL5UbaA0XUNz2Rp3Z3hqBSkbj0GVjwFDztsWVauZUWsbKHgMg++sk8UX0bkw=="
-  "resolved" "https://registry.npmjs.org/graphql/-/graphql-16.6.0.tgz"
-  "version" "16.6.0"
+"graphql@^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0", "graphql@^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0", "graphql@^14.0.0 || ^15.0.0 || ^16.0.0", "graphql@^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0", "graphql@^15.7.2 || ^16.0.0", "graphql@^16.6.0", "graphql@^16.7.1", "graphql@^v16.6.0", "graphql@>=0.11 <=16", "graphql@14 - 16":
+  "integrity" "sha512-DRYR9tf+UGU0KOsMcKAlXeFfX89UiiIZ0dRU3mR0yJfu6OjZqUcp68NnFLnqQU5RexygFoDy1EW+ccOYcPfmHg=="
+  "resolved" "https://registry.npmjs.org/graphql/-/graphql-16.7.1.tgz"
+  "version" "16.7.1"
 
 "gzip-size@^6.0.0":
   "integrity" "sha512-ax7ZYomf6jqPTQ4+XCpUGyXKHk5WweS+e05MBO4/y3WJ5RkmPXNKvX+bx1behVILVwr6JSQvZAku021CHPXG3Q=="
