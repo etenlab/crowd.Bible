@@ -76,7 +76,6 @@ export const MapTranslatorPage = () => {
   );
 };
 
-//#region styled component
 const StyledButtonTab = styled(Button)(({ theme, variant }) => {
   const conditionalStyles = {};
   if (variant === 'text') {
@@ -107,4 +106,3 @@ const StyledButtonTab = styled(Button)(({ theme, variant }) => {
     ...conditionalStyles,
   };
 });
-//#endregion

@@ -31,8 +31,8 @@ import {
   VoteTypes,
 } from '@/constants/common.constant';
 import { BottomButtons } from './BottomButtons';
-import { MapDto } from '../../../dtos/map.dto';
-import { alertFeedback } from '../../../reducers/global.actions';
+import { MapDto } from '@/dtos/map.dto';
+import { alertFeedback } from '@/reducers/global.actions';
 
 const { ItemContentListEdit } = CrowdBibleUI;
 const { Box, Divider, Stack } = MuiMaterial;

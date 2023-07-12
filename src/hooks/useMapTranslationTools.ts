@@ -9,22 +9,22 @@ import {
 import axios from 'axios';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
-import { WordDto } from '../dtos/word.dto';
+import { WordDto } from '@/dtos/word.dto';
 import {
   NodeTypeConst,
   PropertyKeyConst,
   RelationshipTypeConst,
 } from '@eten-lab/core';
-import { WordMapper } from '../mappers/word.mapper';
+import { WordMapper } from '@/mappers/word.mapper';
 import {
   compareLangInfo,
   langInfo2tag,
   wordProps2LangInfo,
 } from '../utils/langUtils';
-import { VotableItem } from '../dtos/votable-item.dto';
+import { VotableItem } from '@/dtos/votable-item.dto';
 import { useVote } from './useVote';
 import * as svgson from 'svgson';
-import { MapDto } from '../dtos/map.dto';
+import { MapDto } from '@/dtos/map.dto';
 const MAPFILE_EXTENSION = 'svg';
 
 export type MapTranslationResult = {
@@ -298,7 +298,7 @@ export function useMapTranslationTools() {
             [PropertyKeyConst.NAME]: fileName.split('.').at(-2) || fileName,
             [PropertyKeyConst.MAP_FILE_ID]: id,
             [PropertyKeyConst.EXT]: MAPFILE_EXTENSION,
-            [PropertyKeyConst.IS_PROCESSING_FINISHED]: false, // need to process words
+            [PropertyKeyConst.IS_PROCESSING_FINISHED]: false, // still need to process words
           });
         }
 
