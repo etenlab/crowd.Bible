@@ -67,7 +67,7 @@ export default function App() {
             <ThemeProvider autoDetectPrefersDarkMode={false}>
               <IonReactRouter>
                 <AppMenu />
-                <IonRouterOutlet id="crowd-bible-app" animated={false}>
+                <IonRouterOutlet id="crowd-bible-app">
                   {AppRoutes.map((route) => {
                     if (route.protected) {
                       return (
