@@ -1,5 +1,5 @@
 import { IonIcon } from '@ionic/react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import {
   Input,
@@ -25,8 +25,14 @@ import {
 } from '@/hooks/useMapTranslationTools';
 import { VotableItem } from '@/dtos/votable-item.dto';
 import { ElectionTypeConst, LoggerService } from '@eten-lab/core';
-import { UpOrDownVote, VoteTypes } from '@/constants/common.constant';
+import {
+  FeedbackTypes,
+  UpOrDownVote,
+  VoteTypes,
+} from '@/constants/common.constant';
 import { BottomButtons } from './BottomButtons';
+import { MapDto } from '@/dtos/map.dto';
+import { alertFeedback } from '@/reducers/global.actions';
 
 const { ItemContentListEdit } = CrowdBibleUI;
 const { Box, Divider, Stack } = MuiMaterial;
@@ -40,20 +46,34 @@ export enum Steps {
 
 const MARGIN = '30px';
 
-export const WordTabContent = () => {
+export const WordTabContent = ({
+  setActiveTab,
+}: {
+  setActiveTab: (tabNumber: number) => void;
+}) => {
   const {
     states: {
       global: { singletons },
       documentTools: { sourceLanguage, targetLanguage },
     },
-    actions: { setSourceLanguage, setTargetLanguage },
+    actions: { setSourceLanguage, setTargetLanguage, createLoadingStack },
   } = useAppContext();
   const { tr } = useTr();
-
+  const { startLoading, stopLoading } = useMemo(
+    () => createLoadingStack(),
+    [createLoadingStack],
+  );
   const [words, setWords] = useState<WordItem[]>([]);
+  const [mapsToTranslate, setMapsToTranslate] = useState<
+    Array<{ source: MapDto; target: MapDto | null }>
+  >([]);
   const [step, setStep] = useState<Steps>(Steps.GET_LANGUAGES);
-  const { getWordsWithLangs, changeTranslationVotes } =
-    useMapTranslationTools();
+  const {
+    getWordsWithLangs,
+    changeTranslationVotes,
+    translateAndSaveOrUpdateFile,
+    getFileDataAsBuffer,
+  } = useMapTranslationTools();
   const [wordsVotableItems, setWordsVotableItems] = useState<VotableItem[]>([]);
 
   const handleChangeTranslationVotes = useCallback(
@@ -149,10 +169,11 @@ export const WordTabContent = () => {
   );
 
   const storeTranslations = useCallback(async () => {
+    if (!singletons) throw new Error(`No singletons when storeTranslations`);
     if (!sourceLanguage)
-      throw new Error(`No sourceLangInfo when storeTranslations`);
+      throw new Error(`No sourceLanguage when storeTranslations`);
     if (!targetLanguage)
-      throw new Error(`No sourceLangInfo when storeTranslations`);
+      throw new Error(`No targetLanguage when storeTranslations`);
     const savedWordIds: string[] = [];
     for (const word of words) {
       if (!singletons) return;
@@ -189,6 +210,14 @@ export const WordTabContent = () => {
       )
       .sort((wi1, wi2) => wi1.title.content.localeCompare(wi2.title.content));
     setWordsVotableItems(onlyWordInAnyMap);
+
+    setMapsToTranslate(
+      await singletons.mapService.getMapsForTranslation(
+        sourceLanguage,
+        targetLanguage,
+      ),
+    );
+
     setStep(Steps.VOTE);
   }, [
     getWordsAsVotableItems,
@@ -196,6 +225,42 @@ export const WordTabContent = () => {
     sourceLanguage,
     targetLanguage,
     words,
+  ]);
+
+  const translateAndSaveMapsHandle = useCallback(async () => {
+    if (!sourceLanguage)
+      throw new Error(`No sourceLanguage when translateAndSaveMapsHandle`);
+    if (!targetLanguage)
+      throw new Error(`No targetLanguage when translateAndSaveMapsHandle`);
+    startLoading();
+    try {
+      for (const { source, target } of mapsToTranslate) {
+        const fb = await getFileDataAsBuffer(source.mapFileId);
+        if (!fb) continue;
+        await translateAndSaveOrUpdateFile({
+          mapDetail: source,
+          mapFileData: fb,
+          sourceLanguage,
+          targetLanguage,
+          targetMap: target,
+        });
+      }
+    } catch (error) {
+      logger.error(error);
+      alertFeedback(FeedbackTypes.ERROR, `Error on map translations. `);
+    } finally {
+      setActiveTab(0);
+      stopLoading();
+    }
+  }, [
+    getFileDataAsBuffer,
+    mapsToTranslate,
+    setActiveTab,
+    sourceLanguage,
+    startLoading,
+    stopLoading,
+    targetLanguage,
+    translateAndSaveOrUpdateFile,
   ]);
 
   return (
@@ -389,10 +454,38 @@ export const WordTabContent = () => {
               />
             ))}
           </Stack>
+
+          <Box
+            display={'flex'}
+            alignItems={'center'}
+            flexDirection={'column'}
+            sx={{ fontSize: '20px' }}
+            borderTop={'solid black 1px'}
+          >
+            <Typography variant="caption">
+              {tr(
+                'Found maps with selected source language and their translations (if any):',
+              )}
+            </Typography>
+            {mapsToTranslate ? (
+              <Stack divider={<Divider />} width={'100%'}>
+                {mapsToTranslate.map((m, i) => (
+                  <Typography key={i} variant="body1">
+                    {m.source.name} - {tr('translation: ')}
+                    {m.target?.name || 'New translated map will be created'}
+                  </Typography>
+                ))}
+              </Stack>
+            ) : (
+              <>{tr('No maps with selected source language are found.')}</>
+            )}
+          </Box>
+
           <BottomButtons
             setStep={() => {
               onShowStringListClick();
             }}
+            translateAndSaveMaps={translateAndSaveMapsHandle}
           />
         </>
       ) : (

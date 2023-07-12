@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { IonChip, useIonRouter } from '@ionic/react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
@@ -9,7 +9,6 @@ import {
   MuiMaterial,
   FadeSpinner,
   useColorModeContext,
-  Button,
 } from '@eten-lab/ui-kit';
 
 import { useMapTranslationTools } from '@/hooks/useMapTranslationTools';
@@ -24,7 +23,6 @@ import { FeedbackTypes } from '@/constants/common.constant';
 import { MapDto } from '@/dtos/map.dto';
 
 import { PageLayout } from '@/components/Layout';
-import { toBase64 } from '@/utils/stringUtils';
 
 const { TitleWithIcon } = CrowdBibleUI;
 
@@ -48,8 +46,7 @@ export const MapDetailPage = () => {
   const [windowWidth, setWindowWidth] = useState(getWindowWidth());
   const [mapDetail, setMapDetail] = useState<MapDto>();
   const [mapFileData, setMapFileData] = useState<Buffer>();
-  const [mapTranslatedFileData, setMapTranslatedFileData] = useState<string>();
-  const { getFileDataAsBuffer, translateMap, processTranslatedMap } =
+  const { getFileDataAsBuffer, translateMapString, processTranslatedMap } =
     useMapTranslationTools();
 
   useEffect(() => {
@@ -103,14 +100,12 @@ export const MapDetailPage = () => {
       if (!fb) return;
       setMapFileData(fb);
       if (!sourceLanguage || !targetLanguage) return;
-      const mtr = await translateMap(
+      const mtr = await translateMapString(
         fb.toString(),
         sourceLanguage,
         targetLanguage,
       );
-
       if (!mtr) return;
-      setMapTranslatedFileData(toBase64(mtr.translatedMap));
     }
     findFileDataAndTranslate();
   }, [
@@ -119,26 +114,7 @@ export const MapDetailPage = () => {
     processTranslatedMap,
     sourceLanguage,
     targetLanguage,
-    translateMap,
-  ]);
-
-  const translateAndSave = useCallback(async () => {
-    if (!mapDetail?.name || !mapFileData) return;
-    if (!sourceLanguage || !targetLanguage) return;
-    const mtr = await translateMap(
-      mapFileData.toString(),
-      sourceLanguage,
-      targetLanguage,
-    );
-    if (!mtr) return;
-    await processTranslatedMap(mtr, targetLanguage, mapDetail.name);
-  }, [
-    mapDetail?.name,
-    mapFileData,
-    processTranslatedMap,
-    sourceLanguage,
-    targetLanguage,
-    translateMap,
+    translateMapString,
   ]);
 
   return (
@@ -188,26 +164,6 @@ export const MapDetailPage = () => {
           <IonChip key={w.id}>{w.word}</IonChip>
         ))}
       </Box>
-
-      {mapTranslatedFileData ? (
-        <Box padding={`${PADDING}px`}>
-          <TransformWrapper>
-            <TransformComponent>
-              <img
-                width={`${windowWidth - PADDING}px`}
-                height={'auto'}
-                src={`data:image/svg+xml;base64,${mapTranslatedFileData}`}
-                alt="Translated map"
-              />
-            </TransformComponent>
-          </TransformWrapper>
-          <Button onClick={translateAndSave}>Save translated map</Button>
-        </Box>
-      ) : (
-        <Box margin={`${PADDING}px auto`}>
-          <FadeSpinner color={getColor('blue-primary')} />
-        </Box>
-      )}
     </PageLayout>
   );
 };

@@ -14,7 +14,7 @@ import { MapDto } from '@/dtos/map.dto';
 import { MapMapper } from '@/mappers/map.mapper';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 
-import { makeFindPropsByLang } from '@/utils/langUtils';
+import { compareLangInfo, makeFindPropsByLang } from '@/utils/langUtils';
 
 import { type INode } from 'svgson';
 
@@ -88,6 +88,76 @@ export class MapService {
     );
     const dtos = mapNodes.map((node) => MapMapper.entityToDto(node));
     return dtos;
+  }
+
+  async getMapsForTranslation(
+    sourceLangInfo: LanguageInfo,
+    targetLangInfo: LanguageInfo,
+  ): Promise<Array<{ source: MapDto; target: MapDto | null }>> {
+    const sMapNodeIds = await this.graphFirstLayerService.getNodeIdsByProps(
+      NodeTypeConst.MAP,
+      makeFindPropsByLang(sourceLangInfo),
+    );
+    const sMapNodes =
+      await this.graphFirstLayerService.getNodesWithRelationshipsByIds(
+        sMapNodeIds,
+      );
+
+    const maps: Array<{ source: MapDto; target: MapDto | null }> = [];
+
+    for (const sMapNode of sMapNodes) {
+      if (
+        sMapNode.toNodeRelationships?.length &&
+        sMapNode.toNodeRelationships.length > 0
+      ) {
+        let foundTranslationForCurrMap = false;
+        for (const rel of sMapNode.toNodeRelationships || []) {
+          if (
+            rel.relationship_type !==
+            RelationshipTypeConst.MAP_TO_TRANSLATED_MAP
+          ) {
+            console.log(
+              rel.relationship_type,
+              RelationshipTypeConst.MAP_TO_TRANSLATED_MAP,
+              rel.relationship_type ===
+                RelationshipTypeConst.MAP_TO_TRANSLATED_MAP,
+            );
+            continue;
+          }
+          const tMapNode = await this.graphFirstLayerService.readNode(
+            rel.to_node_id,
+            ['propertyKeys', 'propertyKeys.propertyValue'],
+          );
+          if (!tMapNode) continue;
+          const tMap = MapMapper.entityToDto(tMapNode);
+          if (compareLangInfo(tMap.langInfo, targetLangInfo)) {
+            maps.push({
+              source: MapMapper.entityToDto(sMapNode),
+              target: tMap,
+            });
+            foundTranslationForCurrMap = true;
+          }
+        }
+        if (!foundTranslationForCurrMap) {
+          maps.push({
+            source: MapMapper.entityToDto(sMapNode),
+            target: null,
+          });
+        }
+      } else {
+        maps.push({ source: MapMapper.entityToDto(sMapNode), target: null });
+      }
+    }
+    const uniqMaps: Array<{ source: MapDto; target: MapDto | null }> = [];
+    maps.forEach((m) => {
+      const isAlreadyInList = uniqMaps.find(
+        (um) => um.source.id === m.source.id && um.target?.id === m.target?.id,
+      );
+      if (!isAlreadyInList) {
+        uniqMaps.push(m);
+      }
+    });
+    return uniqMaps; // clean up repetative map ids wich could be caused by mistakenly added relations
   }
 
   async getMapWords(mapId: Nanoid) {

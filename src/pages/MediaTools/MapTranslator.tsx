@@ -66,13 +66,16 @@ export const MapTranslatorPage = () => {
           </StyledButtonTab>
         </Box>
         {activeTab === 0 ? <MapTabContent /> : <></>}
-        {activeTab === 1 ? <WordTabContent /> : <></>}
+        {activeTab === 1 ? (
+          <WordTabContent setActiveTab={setActiveTab} />
+        ) : (
+          <></>
+        )}
       </Box>
     </PageLayout>
   );
 };
 
-//#region styled component
 const StyledButtonTab = styled(Button)(({ theme, variant }) => {
   const conditionalStyles = {};
   if (variant === 'text') {
@@ -103,4 +106,3 @@ const StyledButtonTab = styled(Button)(({ theme, variant }) => {
     ...conditionalStyles,
   };
 });
-//#endregion
