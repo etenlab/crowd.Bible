@@ -295,7 +295,7 @@ export function useMapTranslationTools() {
           mapId = targetMap.id;
         } else {
           mapId = await singletons.mapService.saveMap(langInfo, {
-            [PropertyKeyConst.NAME]: fileName,
+            [PropertyKeyConst.NAME]: fileName.split('.').at(-2) || fileName,
             [PropertyKeyConst.MAP_FILE_ID]: id,
             [PropertyKeyConst.EXT]: MAPFILE_EXTENSION,
             [PropertyKeyConst.IS_PROCESSING_FINISHED]: false, // need to process words

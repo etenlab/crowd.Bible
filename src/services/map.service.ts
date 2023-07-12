@@ -103,13 +103,14 @@ export class MapService {
         sMapNodeIds,
       );
 
-    const res: Array<{ source: MapDto; target: MapDto | null }> = [];
+    const maps: Array<{ source: MapDto; target: MapDto | null }> = [];
 
     for (const sMapNode of sMapNodes) {
       if (
         sMapNode.toNodeRelationships?.length &&
         sMapNode.toNodeRelationships.length > 0
       ) {
+        let foundTranslationForCurrMap = false;
         for (const rel of sMapNode.toNodeRelationships || []) {
           if (
             rel.relationship_type !==
@@ -129,14 +130,34 @@ export class MapService {
           );
           if (!tMapNode) continue;
           const tMap = MapMapper.entityToDto(tMapNode);
-          if (!compareLangInfo(tMap.langInfo, targetLangInfo)) continue;
-          res.push({ source: MapMapper.entityToDto(sMapNode), target: tMap });
+          if (compareLangInfo(tMap.langInfo, targetLangInfo)) {
+            maps.push({
+              source: MapMapper.entityToDto(sMapNode),
+              target: tMap,
+            });
+            foundTranslationForCurrMap = true;
+          }
+        }
+        if (!foundTranslationForCurrMap) {
+          maps.push({
+            source: MapMapper.entityToDto(sMapNode),
+            target: null,
+          });
         }
       } else {
-        res.push({ source: MapMapper.entityToDto(sMapNode), target: null });
+        maps.push({ source: MapMapper.entityToDto(sMapNode), target: null });
       }
     }
-    return res;
+    const uniqMaps: Array<{ source: MapDto; target: MapDto | null }> = [];
+    maps.forEach((m) => {
+      const isAlreadyInList = uniqMaps.find(
+        (um) => um.source.id === m.source.id && um.target?.id === m.target?.id,
+      );
+      if (!isAlreadyInList) {
+        uniqMaps.push(m);
+      }
+    });
+    return uniqMaps; // clean up repetative map ids wich could be caused by mistakenly added relations
   }
 
   async getMapWords(mapId: Nanoid) {

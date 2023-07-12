@@ -1,4 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import {
+  // useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { useParams } from 'react-router';
 import { IonChip, useIonRouter } from '@ionic/react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
@@ -9,7 +13,7 @@ import {
   MuiMaterial,
   FadeSpinner,
   useColorModeContext,
-  Button,
+  // Button,
 } from '@eten-lab/ui-kit';
 
 import { useMapTranslationTools } from '@/hooks/useMapTranslationTools';
@@ -24,7 +28,7 @@ import { FeedbackTypes } from '@/constants/common.constant';
 import { MapDto } from '@/dtos/map.dto';
 
 import { PageLayout } from '@/components/Layout';
-import { toBase64 } from '@/utils/stringUtils';
+// import { toBase64 } from '@/utils/stringUtils';
 
 const { TitleWithIcon } = CrowdBibleUI;
 
@@ -48,7 +52,7 @@ export const MapDetailPage = () => {
   const [windowWidth, setWindowWidth] = useState(getWindowWidth());
   const [mapDetail, setMapDetail] = useState<MapDto>();
   const [mapFileData, setMapFileData] = useState<Buffer>();
-  const [mapTranslatedFileData, setMapTranslatedFileData] = useState<string>();
+  // const [mapTranslatedFileData, setMapTranslatedFileData] = useState<string>();
   const { getFileDataAsBuffer, translateMapString, processTranslatedMap } =
     useMapTranslationTools();
 
@@ -110,7 +114,7 @@ export const MapDetailPage = () => {
       );
       if (!mtr) return;
 
-      setMapTranslatedFileData(toBase64(mtr.translatedMap));
+      // setMapTranslatedFileData(toBase64(mtr.translatedMap));
     }
     findFileDataAndTranslate();
   }, [
@@ -122,31 +126,31 @@ export const MapDetailPage = () => {
     translateMapString,
   ]);
 
-  const translateAndSave = useCallback(async () => {
-    if (!mapDetail?.name || !mapFileData || !mapDetail?.id) return;
-    if (!sourceLanguage || !targetLanguage) return;
-    const mtr = await translateMapString(
-      mapFileData.toString(),
-      sourceLanguage,
-      targetLanguage,
-    );
-    if (!mtr) return;
-    await processTranslatedMap(
-      mtr,
-      targetLanguage,
-      mapDetail.name,
-      mapDetail.id,
-      null,
-    );
-  }, [
-    mapDetail?.id,
-    mapDetail?.name,
-    mapFileData,
-    processTranslatedMap,
-    sourceLanguage,
-    targetLanguage,
-    translateMapString,
-  ]);
+  // const translateAndSave = useCallback(async () => {
+  //   if (!mapDetail?.name || !mapFileData || !mapDetail?.id) return;
+  //   if (!sourceLanguage || !targetLanguage) return;
+  //   const mtr = await translateMapString(
+  //     mapFileData.toString(),
+  //     sourceLanguage,
+  //     targetLanguage,
+  //   );
+  //   if (!mtr) return;
+  //   await processTranslatedMap(
+  //     mtr,
+  //     targetLanguage,
+  //     mapDetail.name,
+  //     mapDetail.id,
+  //     null,
+  //   );
+  // }, [
+  //   mapDetail?.id,
+  //   mapDetail?.name,
+  //   mapFileData,
+  //   processTranslatedMap,
+  //   sourceLanguage,
+  //   targetLanguage,
+  //   translateMapString,
+  // ]);
 
   return (
     <PageLayout>
@@ -195,7 +199,7 @@ export const MapDetailPage = () => {
           <IonChip key={w.id}>{w.word}</IonChip>
         ))}
       </Box>
-
+      {/* 
       {mapTranslatedFileData ? (
         <Box padding={`${PADDING}px`}>
           <TransformWrapper>
@@ -214,7 +218,7 @@ export const MapDetailPage = () => {
         <Box margin={`${PADDING}px auto`}>
           <FadeSpinner color={getColor('blue-primary')} />
         </Box>
-      )}
+      )} */}
     </PageLayout>
   );
 };
