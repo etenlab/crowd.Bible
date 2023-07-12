@@ -186,14 +186,13 @@ export const MapTabContent = () => {
   const handleLangChange = useCallback(
     (_langTag: string, langInfo: LanguageInfo) => {
       setLangInfo(langInfo);
-      loadProcessedMaps(langInfo); // for now we show all maps despite selected language
+      loadProcessedMaps(langInfo);
     },
     [loadProcessedMaps, setLangInfo],
   );
 
   const handleClearLanguageFilter = useCallback(() => {
     setLangInfo(null);
-    // loadProcessedMaps(langInfo || undefined);
     setUploadMapBtnStatus(eUploadMapBtnStatus.LANG_SELECTION);
   }, [setLangInfo]);
 
