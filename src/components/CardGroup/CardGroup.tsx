@@ -3,7 +3,6 @@ import { useHistory } from 'react-router';
 
 import { CrowdBibleUI } from '@eten-lab/ui-kit';
 
-import { useAppContext } from '@/hooks/useAppContext';
 const { CardsMenu } = CrowdBibleUI;
 
 export type CardItemProps = {
@@ -24,20 +23,15 @@ type CardGroupType = {
 };
 
 export function CardGroup({ group, linkItems }: CardGroupType) {
-  const {
-    states: {
-      global: { mode, connectivity },
-    },
-  } = useAppContext();
   const history = useHistory();
 
   const items = useMemo(() => {
     return linkItems
       .filter(({ adminOnly, betaOnly }) => {
-        if (mode?.admin === false && adminOnly === true) {
+        if (adminOnly === true) {
           return false;
         }
-        if (mode?.beta === false && betaOnly === true) {
+        if (betaOnly === true) {
           return false;
         }
         return true;
@@ -47,9 +41,9 @@ export function CardGroup({ group, linkItems }: CardGroupType) {
         title,
         description,
         startIcon,
-        disabled: connectivity === false && onlineOnly === true ? true : false,
+        disabled: false,
       }));
-  }, [linkItems, mode, connectivity]);
+  }, [linkItems]);
 
   const handleClickItem = (value: string) => {
     history.push(value);

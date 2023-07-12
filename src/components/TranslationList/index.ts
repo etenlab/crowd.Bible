@@ -1,1 +1,0 @@
-export { TranslationList } from './TranslationList';

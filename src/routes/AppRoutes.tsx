@@ -1,9 +1,7 @@
 import { RouteProps } from 'react-router-dom';
 
-import { ProtectedRoutes } from './ProtectedRoutes';
-import { AuthRoutes } from './AuthRoutes';
-
-import { WelcomePage } from '@/pages/WelcomePage';
+import { HomePage } from '@/pages/HomePage';
+import { SiteTextMenuPage } from '@/src/pages/SiteTextMenuPage';
 import { RouteConst } from '@/constants/route.constant';
 
 export interface CustomRouteProps extends RouteProps {
@@ -12,9 +10,11 @@ export interface CustomRouteProps extends RouteProps {
 
 export const AppRoutes: CustomRouteProps[] = [
   {
-    path: RouteConst.WELCOME,
-    children: <WelcomePage />,
+    path: RouteConst.HOME,
+    children: <HomePage />,
   },
-  ...AuthRoutes,
-  ...ProtectedRoutes,
+  {
+    path: RouteConst.SITE_TEXT_MENU_PAGE,
+    children: <SiteTextMenuPage />,
+  },
 ];

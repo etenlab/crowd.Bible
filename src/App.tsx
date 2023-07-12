@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
 import { IonRouterOutlet, setupIonicReact, IonApp } from '@ionic/react';
@@ -25,15 +24,14 @@ import './theme/variables.css';
 import './styles.css';
 
 import { ThemeProvider } from '@eten-lab/ui-kit';
-import { AppContextProvider } from './AppContext';
-
-import { AppMenu } from '@/components/Layout';
 
 import { RouteConst } from '@/constants/route.constant';
 
 import { AppRoutes } from '@/routes/AppRoutes';
 import { RouteGuarder } from '@/components/RouteGuarder';
-import { useCacheBuster } from '@/hooks/useCacheBuster';
+
+import { HomePage } from '@/pages/HomePage';
+import { SiteTextMenuPage } from '@/pages/SiteTextMenuPage';
 
 setupIonicReact();
 
@@ -49,57 +47,35 @@ for (let i = 0; i < AppRoutes.length; i++) {
 }
 
 export default function App() {
-  const { loading, isLatestVersion, refreshCacheAndReload, latestVersion } =
-    useCacheBuster();
-
-  if (duplicated.length > 0) {
-    alert(`There are duplicated Routes! \n ${duplicated.join('\n')}`);
-  }
-  useEffect(() => {
-    if (!loading && !isLatestVersion) refreshCacheAndReload(latestVersion);
-  }, [loading, isLatestVersion, refreshCacheAndReload, latestVersion]);
-
   return (
-    <>
-      {loading || !isLatestVersion ? null : (
-        <IonApp>
-          <AppContextProvider>
-            <ThemeProvider autoDetectPrefersDarkMode={false}>
-              <IonReactRouter>
-                <AppMenu />
-                <IonRouterOutlet id="crowd-bible-app">
-                  {AppRoutes.map((route) => {
-                    if (route.protected) {
-                      return (
-                        <Route
-                          key={route.path as string}
-                          path={route.path}
-                          exact
-                          render={() => (
-                            <RouteGuarder>{route.children}</RouteGuarder>
-                          )}
-                        />
-                      );
-                    } else {
-                      return (
-                        <Route
-                          key={route.path as string}
-                          exact
-                          path={route.path}
-                          render={() => <>{route.children}</>}
-                        />
-                      );
-                    }
-                  })}
-                  <Route render={() => <Redirect to={RouteConst.HOME} />} />
-                </IonRouterOutlet>
-              </IonReactRouter>
-            </ThemeProvider>
-          </AppContextProvider>
-        </IonApp>
-      )}
-    </>
+    <IonApp>
+      <ThemeProvider autoDetectPrefersDarkMode={false}>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            {AppRoutes.map((route) => {
+              if (route.protected) {
+                return (
+                  <Route
+                    key={route.path as string}
+                    path={route.path}
+                    exact
+                    render={() => <RouteGuarder>{route.children}</RouteGuarder>}
+                  />
+                );
+              } else {
+                return (
+                  <Route
+                    key={route.path as string}
+                    exact
+                    path={route.path}
+                    render={() => <>{route.children}</>}
+                  />
+                );
+              }
+            })}
+          </IonRouterOutlet>
+        </IonReactRouter>
+      </ThemeProvider>
+    </IonApp>
   );
 }
-
-// trigger rebuild 41

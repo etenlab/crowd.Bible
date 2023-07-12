@@ -1,1 +1,0 @@
-export { TranslationEditor } from './TranslationEditor';

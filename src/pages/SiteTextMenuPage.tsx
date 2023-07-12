@@ -13,22 +13,19 @@ import { RouteConst } from '@/constants/route.constant';
 
 import { CardGroup } from '@/components/CardGroup';
 
-import { useTr } from '@/hooks/useTr';
-
 const { Stack, Box } = MuiMaterial;
 const { TitleWithIcon } = CrowdBibleUI;
 
 export function SiteTextMenuPage() {
   const history = useHistory();
-  const { tr } = useTr();
 
   const cardGroup = {
-    group: tr('Application Development Tools'),
+    group: 'Application Development Tools',
     linkItems: [
       {
         to: RouteConst.SITE_TEXT_UI_WORD_LIST,
-        title: tr('User Interface'),
-        description: tr('User interface words for your application'),
+        title: 'User Interface',
+        description: 'User interface words for your application',
         startIcon: (
           <Stack>
             <DiSite color="blue-primary" />
@@ -37,11 +34,10 @@ export function SiteTextMenuPage() {
         ),
       },
       {
-        to: RouteConst.APPLICATION_LIST,
-        title: tr('Translation'),
-        description: tr(
+        to: RouteConst.HOME,
+        title: 'Translation',
+        description:
           'Translate user interface words so applications can be available in many languages',
-        ),
         startIcon: (
           <Stack>
             <DiSite color="blue-primary" />
@@ -61,7 +57,7 @@ export function SiteTextMenuPage() {
     <PageLayout>
       <Box sx={{ padding: '20px', paddingBottom: 0 }}>
         <TitleWithIcon
-          label={tr('Site Text')}
+          label={'Site Text'}
           withCloseIcon={false}
           withBackIcon={true}
           onClose={() => {}}
