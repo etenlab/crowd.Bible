@@ -91,7 +91,11 @@ export default function App() {
                       );
                     }
                   })}
-                  <Route render={() => <Redirect to={RouteConst.HOME} />} />
+                  <Route
+                    exact
+                    path="/"
+                    render={() => <Redirect to={RouteConst.HOME} />}
+                  />
                 </IonRouterOutlet>
               </IonReactRouter>
             </ThemeProvider>
@@ -101,5 +105,3 @@ export default function App() {
     </>
   );
 }
-
-// trigger rebuild 41
