@@ -33,19 +33,10 @@ export const UPDATE_USER = gql`
   }
 `;
 
-export const GET_USER_FROM_EMAIL = gql`
+export const GET_USER = gql`
   ${USER_FIELDS}
-  query GetUserFromEmail($email: String!) {
-    getUserFromEmail(email: $email) {
-      ...UserFields
-    }
-  }
-`;
-
-export const GET_USER_ID_FROM_NAME = gql`
-  ${USER_FIELDS}
-  query GetUserIdFromName($name: String!) {
-    getUserIdFromName(name: $name) {
+  query GetUser($id: String, $kid: String, $username: String, $email: String) {
+    getUser(id: $id, kid: $kid, username: $username, email: $email) {
       ...UserFields
     }
   }

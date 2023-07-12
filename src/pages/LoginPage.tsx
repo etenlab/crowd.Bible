@@ -24,7 +24,7 @@ import { decodeToken } from '@/utils/AuthUtils';
 import { RouteConst } from '@/constants/route.constant';
 import { USER_TOKEN_KEY } from '@/constants/common.constant';
 
-import { GET_USER_FROM_EMAIL } from '@/graphql/userQuery';
+import { GET_USER } from '@/graphql/userQuery';
 
 import { PageLayout } from '@/components/Layout';
 
@@ -56,14 +56,14 @@ export function LoginPage() {
   const [errorMessage, setErrorMessage] = useState('');
 
   const [
-    createUser,
+    getUser,
     {
       data: userData,
       loading: userLoading,
       error: userError,
       called: userCalled,
     },
-  ] = useLazyQuery<GetUserFromEmail>(GET_USER_FROM_EMAIL);
+  ] = useLazyQuery<GetUser>(GET_USER);
 
   const [token, setToken] = useState<string | null>('');
 
@@ -106,7 +106,7 @@ export function LoginPage() {
 
             setToken(res.access_token);
 
-            createUser({
+            getUser({
               variables: {
                 email: token.email,
               },
@@ -129,12 +129,17 @@ export function LoginPage() {
       return;
     }
 
+    if (userCalled && !!userError) {
+      alertFeedback(FeedbackTypes.ERROR, 'Cannot get user from the server!');
+      stopLoading();
+      return;
+    }
+
     if (userData) {
       stopLoading();
 
-      if (userCalled && !!userError) {
+      if (!userData.getUser) {
         alertFeedback(FeedbackTypes.ERROR, 'Cannot get user from the server!');
-        stopLoading();
         return;
       }
 
@@ -146,7 +151,7 @@ export function LoginPage() {
       localStorage.setItem(USER_TOKEN_KEY, token);
 
       setUser({
-        ...userData.getUserFromEmail,
+        ...userData.getUser,
         roles: [],
       });
 

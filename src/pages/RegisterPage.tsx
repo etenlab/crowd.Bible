@@ -103,7 +103,7 @@ export function RegisterPage() {
       await kcClient
         .register({
           email: values.email,
-          username: values.email,
+          username: values.username,
           password: values.password,
         })
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
