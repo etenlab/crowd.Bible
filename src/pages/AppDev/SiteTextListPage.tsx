@@ -21,8 +21,6 @@ import { LanguageStatusBar } from '@/components/LanguageStatusBar';
 import { AppDto } from '@/dtos/document.dto';
 import { TranslatedSiteTextDto } from '@/dtos/site-text.dto';
 
-import { compareLangInfo } from '@/utils/langUtils';
-
 import { PageLayout } from '@/components/Layout';
 
 const { HeadBox, ButtonList } = CrowdBibleUI;
@@ -155,10 +153,7 @@ export function SiteTextListPage() {
     });
   }, [siteTextList]);
 
-  const isDisabledPlusBtn =
-    app && sourceLanguage && compareLangInfo(app.languageInfo, sourceLanguage)
-      ? false
-      : true;
+  const isDisabledPlusBtn = app && sourceLanguage ? false : true;
 
   return (
     <PageLayout>
