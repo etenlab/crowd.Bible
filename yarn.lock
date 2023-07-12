@@ -1594,10 +1594,10 @@
   "resolved" "https://registry.npmjs.org/@eslint/js/-/js-8.41.0.tgz"
   "version" "8.41.0"
 
-"@eten-lab/core@^0.2.29":
-  "integrity" "sha512-Du4bb6ysbJMpgDnRVIA08joV+HnoUDLQs0PD4js+7vQ5zCykkEAGqH/PStHOi8KtBmi4VGO0c25v8JfBMSDVkA=="
-  "resolved" "https://registry.npmjs.org/@eten-lab/core/-/core-0.2.29.tgz"
-  "version" "0.2.29"
+"@eten-lab/core@^0.2.30":
+  "integrity" "sha512-tGN2Q2nYBqFUiPqBLVY8G1v4uhHcLKKQ4tPmE4JxOfJJS0yPmmvxAFoT3UnfWnUDUfuDKyygiXS7r9jtDI6CTw=="
+  "resolved" "https://registry.npmjs.org/@eten-lab/core/-/core-0.2.30.tgz"
+  "version" "0.2.30"
   dependencies:
     "@eten-lab/models" "^1.3.16"
     "@eten-lab/ui-kit" "^0.5.42"

@@ -458,10 +458,11 @@ export const WordTabContent = ({
           <Box
             display={'flex'}
             alignItems={'center'}
+            flexDirection={'column'}
             sx={{ fontSize: '20px' }}
             borderTop={'solid black 1px'}
           >
-            <Typography>
+            <Typography variant="caption">
               {tr(
                 'Found maps with selected source language and their translations (if any):',
               )}

@@ -19,7 +19,7 @@ export function BottomButtons({
   const { tr } = useTr();
   return (
     <StickyStack direction={'row'} spacing={`${PADDING}px`}>
-      <Box flexGrow={1}>
+      <Box flexGrow={1} flexBasis={0}>
         <Button
           variant={'contained'}
           fullWidth
@@ -30,7 +30,7 @@ export function BottomButtons({
         </Button>
       </Box>
       {storeTranslations ? (
-        <Box flexGrow={1}>
+        <Box flexGrow={1} flexBasis={0}>
           <Button variant={'contained'} fullWidth onClick={storeTranslations}>
             {tr('Save')}
           </Button>
@@ -39,7 +39,7 @@ export function BottomButtons({
         <></>
       )}
       {translateAndSaveMaps ? (
-        <Box flexGrow={1}>
+        <Box flexGrow={1} flexBasis={0}>
           <Button
             variant={'contained'}
             fullWidth
