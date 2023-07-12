@@ -1,5 +1,5 @@
 import { IonIcon } from '@ionic/react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import {
   Input,
@@ -25,9 +25,14 @@ import {
 } from '@/hooks/useMapTranslationTools';
 import { VotableItem } from '@/dtos/votable-item.dto';
 import { ElectionTypeConst, LoggerService } from '@eten-lab/core';
-import { UpOrDownVote, VoteTypes } from '@/constants/common.constant';
+import {
+  FeedbackTypes,
+  UpOrDownVote,
+  VoteTypes,
+} from '@/constants/common.constant';
 import { BottomButtons } from './BottomButtons';
 import { MapDto } from '../../../dtos/map.dto';
+import { alertFeedback } from '../../../reducers/global.actions';
 
 const { ItemContentListEdit } = CrowdBibleUI;
 const { Box, Divider, Stack } = MuiMaterial;
@@ -41,16 +46,23 @@ export enum Steps {
 
 const MARGIN = '30px';
 
-export const WordTabContent = () => {
+export const WordTabContent = ({
+  setActiveTab,
+}: {
+  setActiveTab: (tabNumber: number) => void;
+}) => {
   const {
     states: {
       global: { singletons },
       documentTools: { sourceLanguage, targetLanguage },
     },
-    actions: { setSourceLanguage, setTargetLanguage },
+    actions: { setSourceLanguage, setTargetLanguage, createLoadingStack },
   } = useAppContext();
   const { tr } = useTr();
-
+  const { startLoading, stopLoading } = useMemo(
+    () => createLoadingStack(),
+    [createLoadingStack],
+  );
   const [words, setWords] = useState<WordItem[]>([]);
   const [mapsToTranslate, setMapsToTranslate] = useState<
     Array<{ source: MapDto; target: MapDto | null }>
@@ -220,22 +232,33 @@ export const WordTabContent = () => {
       throw new Error(`No sourceLanguage when translateAndSaveMapsHandle`);
     if (!targetLanguage)
       throw new Error(`No targetLanguage when translateAndSaveMapsHandle`);
-
-    for (const { source, target } of mapsToTranslate) {
-      const fb = await getFileDataAsBuffer(source.mapFileId);
-      if (!fb) continue;
-      translateAndSaveOrUpdateFile({
-        mapDetail: source,
-        mapFileData: fb,
-        sourceLanguage,
-        targetLanguage,
-        targetMap: target,
-      });
+    startLoading();
+    try {
+      for (const { source, target } of mapsToTranslate) {
+        const fb = await getFileDataAsBuffer(source.mapFileId);
+        if (!fb) continue;
+        await translateAndSaveOrUpdateFile({
+          mapDetail: source,
+          mapFileData: fb,
+          sourceLanguage,
+          targetLanguage,
+          targetMap: target,
+        });
+      }
+    } catch (error) {
+      logger.error(error);
+      alertFeedback(FeedbackTypes.ERROR, `Error on map translations. `);
+    } finally {
+      setActiveTab(0);
+      stopLoading();
     }
   }, [
     getFileDataAsBuffer,
     mapsToTranslate,
+    setActiveTab,
     sourceLanguage,
+    startLoading,
+    stopLoading,
     targetLanguage,
     translateAndSaveOrUpdateFile,
   ]);

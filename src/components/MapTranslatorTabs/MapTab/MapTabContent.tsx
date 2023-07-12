@@ -160,8 +160,6 @@ export const MapTabContent = () => {
     [alertFeedback, langInfo, processFile],
   );
 
-  // for now we show all maps despite selected language
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const setMapsByLang = useCallback(
     async (langInfo: LanguageInfo) => {
       if (!singletons) return;
@@ -201,14 +199,14 @@ export const MapTabContent = () => {
   const handleLangChange = useCallback(
     (_langTag: string, langInfo: LanguageInfo) => {
       setLangInfo(langInfo);
-      // setMapsByLang(langInfo); // for now we show all maps despite selected language
+      setMapsByLang(langInfo); // for now we show all maps despite selected language
     },
-    [setLangInfo],
+    [setLangInfo, setMapsByLang],
   );
 
   const handleClearLanguageFilter = useCallback(() => {
     setLangInfo(null);
-    // setMapList([]); // for now we show all maps despite selected language
+    setMapList([]); // for now we show all maps despite selected language
     setUploadMapBtnStatus(eUploadMapBtnStatus.LANG_SELECTION);
   }, [setLangInfo]);
 

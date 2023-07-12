@@ -647,6 +647,6 @@ export function useMapTranslationTools() {
     getWordsWithLangs,
     changeTranslationVotes,
     translateMapString,
-    translateAndSaveOrUpdateFile: translateAndSaveOrUpdateFile,
+    translateAndSaveOrUpdateFile,
   };
 }
