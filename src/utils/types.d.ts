@@ -60,8 +60,8 @@ interface CreatedUser {
   createUser: IUser;
 }
 
-interface GetUserFromEmail {
-  getUserFromEmail: IUser;
+interface GetUser {
+  getUser?: IUser;
 }
 
 interface UpdatedUser {

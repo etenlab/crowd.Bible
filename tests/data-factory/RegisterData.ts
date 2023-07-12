@@ -7,7 +7,7 @@ class RegisterData {
     registerData.email = 'AutomationUser' + x + '@mailinator.com';
     registerData.firstName = 'Automation First Name';
     registerData.lastName = 'Automation Last Name';
-    registerData.userName = 'Automation User';
+    registerData.userName = 'Automation User' + x;
     registerData.password = 'automation@123';
     registerData.repeatPassword = 'automation@123';
     return registerData;
