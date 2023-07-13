@@ -1,3 +1,5 @@
+declare module '!!file-loader?name=sql-wasm-[contenthash].wasm!sql.js/dist/sql-wasm.wasm' {}
+
 declare module '*.tab' {
   const value: string;
   export default value;

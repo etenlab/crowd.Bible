@@ -26,6 +26,9 @@ import initSqlJs, { SqlJsStatic } from 'sql.js';
 import localforage from 'localforage';
 import { SyncSession } from '@eten-lab/models';
 
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import sqlWasm from '!!file-loader?name=sql-wasm-[contenthash].wasm!sql.js/dist/sql-wasm.wasm';
+
 declare global {
   interface Window {
     localforage?: LocalForage;
@@ -48,7 +51,7 @@ const asyncMemoize = <T>(f: () => Promise<T>): (() => Promise<T>) => {
 const initialize = asyncMemoize(async () => {
   return initSqlJs({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    locateFile: (file_1: any) => `https://sql.js.org/dist/${file_1}`,
+    locateFile: () => sqlWasm as string,
   }).then((SQL) => {
     window.SQL = SQL;
     window.localforage = localforage;
