@@ -4,6 +4,8 @@ const headerText = '//h1[contains(text(), "Register")]';
 const emailTextBox = '//input[@id = "email"]';
 const userNameTextBox = '#username';
 const passwordTextBox = '#password';
+const firstNameTextBox = '#first_name';
+const lastNameTextBox = '#last_name';
 const repeatPasswordTextBox = '#passwordConfirm';
 const registerNowButton = '//button[contains(text(), "Register Now")]';
 const forgotPasswordButton = '//button[contains(text(), "Forgot Password?")]';
@@ -21,6 +23,14 @@ class RegistrationPage extends BasePage {
       .locator(userNameTextBox)
       .first()
       .fill(registrationData.userName);
+    await this.page
+      .locator(firstNameTextBox)
+      .first()
+      .fill(registrationData.firstName);
+    await this.page
+      .locator(lastNameTextBox)
+      .first()
+      .fill(registrationData.lastName);
     await this.page
       .locator(passwordTextBox)
       .last()

@@ -37,6 +37,12 @@ export function AppMenu() {
         adminOnly: true,
       },
       {
+        to: RouteConst.PROFILE,
+        label: tr('Profile'),
+        onlineOnly: true,
+        authOnly: true,
+      },
+      {
         to: RouteConst.LOGIN,
         label: tr('Login'),
         implemented: true,

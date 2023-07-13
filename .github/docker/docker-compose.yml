@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 networks:
   default:
     name: eil
@@ -12,8 +12,21 @@ services:
       POSTGRES_DB: eil
     ports:
       - 5432:5432
-    volumes:
-      - ./init-eil-database.sh:/docker-entrypoint-initdb.d/init-database.sh
+
+  cpg-server:
+    image: etenlab/cpg-server:latest
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: example
+      DB_NAME: eil
+      MODE: DEV
+      PORT: 80
+    ports:
+      - 8201:80
+    depends_on:
+      - postgres
 
   postgres-sso:
     image: postgres:14.5
@@ -43,19 +56,3 @@ services:
       - start-dev
     depends_on:
       - postgres-sso
-
-  cpg-server:
-    image: etenlab/cpg-server:latest
-    environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: example
-      DB_NAME: eil
-      RUN_MIGRATIONS: "false"
-      MODE: DEV
-      PORT: 80
-    ports:
-      - 8201:80
-    depends_on:
-      - postgres

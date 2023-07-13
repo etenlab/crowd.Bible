@@ -1,26 +1,35 @@
-import { useState } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IonToolbar } from '@ionic/react';
+import { useMutation } from '@apollo/client';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+
 import { useKeycloakClient } from '@eten-lab/sso';
+
 import { useAppContext } from '@/hooks/useAppContext';
 import { useTr } from '@/hooks/useTr';
 
+import { CREATE_USER } from '@/graphql/userQuery';
+
 import {
+  DiAdd,
   Button,
   MuiMaterial,
   Typography,
   Input,
   PasswordInput,
+  useColorModeContext,
 } from '@eten-lab/ui-kit';
 
 import { PageLayout } from '@/components/Layout';
+import { AvatarUploader } from '@/components/UploadAvatar';
 
-import { useFormik } from 'formik';
 import { decodeToken } from '@/utils/AuthUtils';
-import * as Yup from 'yup';
 import { RouteConst } from '@/constants/route.constant';
-import { USER_TOKEN_KEY } from '../constants/common.constant';
-const { Box, Alert } = MuiMaterial;
+import { FeedbackTypes, USER_TOKEN_KEY } from '@/constants/common.constant';
+
+const { Box, Alert, Stack } = MuiMaterial;
 
 const validationSchema = Yup.object().shape({
   username: Yup.string().required('First name is required'),
@@ -40,18 +49,41 @@ export function RegisterPage() {
   const kcClient = useKeycloakClient();
   const { logger } = useAppContext();
   const { tr } = useTr();
+  const { getColor } = useColorModeContext();
+
+  const [
+    createUser,
+    { data: userData, loading: userLoading, error: userError },
+  ] = useMutation<CreatedUser>(CREATE_USER);
+
   const {
-    actions: { setUser },
+    actions: { setUser, alertFeedback, createLoadingStack },
   } = useAppContext();
+
+  const [show, setShow] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>('');
+
+  const { startLoading, stopLoading } = useMemo(
+    () => createLoadingStack('Saving User...'),
+    [createLoadingStack],
+  );
+
   const formik = useFormik<{
     email: string;
     username: string;
+    first_name: string;
+    last_name: string;
     password: string;
     passwordConfirm: string;
   }>({
     initialValues: {
       email: '',
       username: '',
+      first_name: '',
+      last_name: '',
       password: '',
       passwordConfirm: '',
     },
@@ -61,14 +93,23 @@ export function RegisterPage() {
       setErrorMessage('');
       setSuccessMessage('');
 
+      const {
+        startLoading: startRegisterLoading,
+        stopLoading: stopRegisterLoading,
+      } = createLoadingStack('Registering...');
+
+      startRegisterLoading();
+
       await kcClient
         .register({
           email: values.email,
-          username: values.email,
+          username: values.username,
           password: values.password,
         })
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .then(async (response: any) => {
+          stopRegisterLoading();
+
           if (response.name !== 'AxiosError') {
             setSuccessMessage('User registration successfull');
             await kcClient
@@ -78,15 +119,25 @@ export function RegisterPage() {
               })
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               .then((res: any) => {
-                localStorage.setItem(USER_TOKEN_KEY, res.access_token);
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const token: any = decodeToken(res.access_token);
-                setUser({
-                  userId: token.sub,
-                  userEmail: token.email,
-                  roles: [],
+
+                setToken(res.access_token);
+
+                createUser({
+                  variables: {
+                    newUserData: {
+                      kid: token.sub,
+                      email: token.email,
+                      first_name: values.first_name,
+                      last_name: values.last_name,
+                      username: values.username,
+                      avatar_url: avatarUrl,
+                    },
+                  },
                 });
-                history.push(RouteConst.HOME);
+
+                startLoading();
               })
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               .catch((err: any) => {
@@ -103,11 +154,48 @@ export function RegisterPage() {
     },
   });
 
-  const [show, setShow] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  useEffect(() => {
+    if (userLoading) {
+      return;
+    }
 
-  // const [userToken, setUserToken] = useState('');
+    if (userData) {
+      stopLoading();
+
+      if (!!userError) {
+        alertFeedback(FeedbackTypes.ERROR, 'Cannot save user to the server!');
+        stopLoading();
+        return;
+      }
+
+      if (!token) {
+        alertFeedback(FeedbackTypes.ERROR, 'Cannot find user access token!');
+        return;
+      }
+
+      localStorage.setItem(USER_TOKEN_KEY, token);
+
+      setUser({
+        ...userData.createUser,
+        roles: [],
+      });
+
+      history.push(RouteConst.HOME);
+    }
+  }, [
+    history,
+    userData,
+    userLoading,
+    userError,
+    alertFeedback,
+    setUser,
+    token,
+    stopLoading,
+  ]);
+
+  const handleAvatarUrl = useCallback((avatar: string) => {
+    setAvatarUrl(avatar);
+  }, []);
 
   const handleToggleShow = () => {
     setShow((show) => !show);
@@ -147,19 +235,38 @@ export function RegisterPage() {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          padding: '123px 20px 20px 20px',
+          padding: '50px 20px 20px 20px',
           gap: '12px',
         }}
         noValidate
         autoComplete="off"
       >
-        <Typography
-          variant="h1"
-          color="text.dark"
-          sx={{ marginBottom: '18px' }}
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-end"
         >
-          {tr('Register')}
-        </Typography>
+          <Stack
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="center"
+            gap="16px"
+          >
+            <Box
+              sx={{
+                background: getColor('bg-second'),
+                padding: '10px',
+                borderRadius: '10px',
+              }}
+            >
+              <DiAdd color="blue-primary" sx={{ fontSize: '30px' }} />
+            </Box>
+            <Typography variant="h1" color="text.dark">
+              {tr('Register')}
+            </Typography>
+          </Stack>
+          <AvatarUploader url={avatarUrl || ''} onAvatarUrl={handleAvatarUrl} />
+        </Stack>
         {errorMessage && (
           <Alert severity="error" id="error-message">
             {errorMessage}
@@ -189,6 +296,38 @@ export function RegisterPage() {
             formik.values.username !== '' ? !formik.errors.username : undefined
           }
           helperText={formik.errors.username}
+          fullWidth
+        />
+
+        <Input
+          id="first_name"
+          name="first_name"
+          type="text"
+          label={tr('First name')}
+          onChange={formik.handleChange}
+          value={formik.values.first_name}
+          valid={
+            formik.values.first_name !== ''
+              ? !formik.errors.first_name
+              : undefined
+          }
+          helperText={formik.errors.first_name}
+          fullWidth
+        />
+
+        <Input
+          id="last_name"
+          name="last_name"
+          type="text"
+          label={tr('Last name')}
+          onChange={formik.handleChange}
+          value={formik.values.last_name}
+          valid={
+            formik.values.last_name !== ''
+              ? !formik.errors.last_name
+              : undefined
+          }
+          helperText={formik.errors.last_name}
           fullWidth
         />
 

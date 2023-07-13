@@ -14,7 +14,8 @@
       "@/repositories/*": ["src/repositories/*"],
       "@/routes/*": ["src/routes/*"],
       "@/services/*": ["src/services/*"],
-      "@/utils/*": ["src/utils/*"]
+      "@/utils/*": ["src/utils/*"],
+      "@/graphql/*": ["src/graphql/*"]
     }
   }
 }
