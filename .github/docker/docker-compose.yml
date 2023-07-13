@@ -28,31 +28,31 @@ services:
     depends_on:
       - postgres
 
-  # postgres-sso:
-  #   image: postgres:14.5
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: example
-  #     POSTGRES_DB: keycloak_db
-  #   volumes:
-  #     - ./keycloak-db.sql:/docker-entrypoint-initdb.d/keycloak-db.sql
-  #   ports:
-  #     - 5435:5432
+  postgres-sso:
+    image: postgres:14.5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: keycloak_db
+    volumes:
+      - ./keycloak-db.sql:/docker-entrypoint-initdb.d/keycloak-db.sql
+    ports:
+      - 5435:5432
 
-  # keycloak:
-  #   image: quay.io/keycloak/keycloak:latest
-  #   environment:
-  #     KC_DB: postgres
-  #     KC_DB_USERNAME: postgres
-  #     KC_DB_PASSWORD: example
-  #     KC_DB_SCHEMA: public
-  #     KC_DB_URL_DATABASE: keycloak_db
-  #     KC_DB_URL_HOST: postgres-sso
-  #     KEYCLOAK_ADMIN: admin
-  #     KEYCLOAK_ADMIN_PASSWORD: admin
-  #   ports:
-  #     - 8080:8080
-  #   command:
-  #     - start-dev
-  #   depends_on:
-  #     - postgres-sso
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      KC_DB: postgres
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: example
+      KC_DB_SCHEMA: public
+      KC_DB_URL_DATABASE: keycloak_db
+      KC_DB_URL_HOST: postgres-sso
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - 8080:8080
+    command:
+      - start-dev
+    depends_on:
+      - postgres-sso
