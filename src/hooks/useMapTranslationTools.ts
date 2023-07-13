@@ -9,21 +9,22 @@ import {
 import axios from 'axios';
 import { LanguageInfo } from '@eten-lab/ui-kit';
 import { nanoid } from 'nanoid';
-import { WordDto } from '../dtos/word.dto';
+import { WordDto } from '@/dtos/word.dto';
 import {
   NodeTypeConst,
   PropertyKeyConst,
   RelationshipTypeConst,
 } from '@eten-lab/core';
-import { WordMapper } from '../mappers/word.mapper';
+import { WordMapper } from '@/mappers/word.mapper';
 import {
   compareLangInfo,
   langInfo2tag,
   wordProps2LangInfo,
 } from '../utils/langUtils';
-import { VotableItem } from '../dtos/votable-item.dto';
+import { VotableItem } from '@/dtos/votable-item.dto';
 import { useVote } from './useVote';
 import * as svgson from 'svgson';
+import { MapDto } from '@/dtos/map.dto';
 const MAPFILE_EXTENSION = 'svg';
 
 export type MapTranslationResult = {
@@ -34,6 +35,27 @@ export type MapTranslationResult = {
 export const UPLOAD_FILE_MUTATION = gql`
   mutation UploadFile($file: Upload!, $file_type: String!, $file_size: Int!) {
     uploadFile(file: $file, file_type: $file_type, file_size: $file_size) {
+      id
+      fileHash
+      fileName
+      fileUrl
+    }
+  }
+`;
+
+export const UPDATE_FILE_MUTATION = gql`
+  mutation UpdateFile(
+    $id: Int!
+    $file: Upload!
+    $file_type: String!
+    $file_size: Int!
+  ) {
+    updateFile(
+      id: $id
+      file: $file
+      file_type: $file_type
+      file_size: $file_size
+    ) {
       id
       fileHash
       fileName
@@ -127,6 +149,48 @@ export function useMapTranslationTools() {
     [alertFeedback, apolloClient, logger],
   );
 
+  const updateMapFile = useCallback(
+    async (
+      file: File,
+      id: number,
+      afterSuccess: (uploadedFileData: {
+        id: string;
+        fileName: string;
+        fileHash: string;
+        fileUrl: string;
+      }) => void,
+      afterFail: (error: Error) => void,
+    ): Promise<void> => {
+      apolloClient
+        .mutate({
+          mutation: UPDATE_FILE_MUTATION,
+          variables: {
+            id,
+            file,
+            file_size: file.size,
+            file_type: file.type,
+          },
+        })
+        .then((res) => {
+          logger.info(
+            { at: 'useMapTranslationTools, gql mutation - update map.' },
+            `Map file (name:${file.name}) is updated.`,
+          );
+          const { id, fileName, fileHash, fileUrl } = res.data.updateFile;
+          afterSuccess({ id, fileName, fileHash, fileUrl });
+        })
+        .catch((error) => {
+          alertFeedback(
+            FeedbackTypes.ERROR,
+            `Error on map uploading: ${error.message}`,
+          );
+          afterFail(error);
+          logger.error(JSON.stringify(error));
+        });
+    },
+    [alertFeedback, apolloClient, logger],
+  );
+
   const getMapFileInfo = useCallback(
     async (
       id: string,
@@ -190,11 +254,19 @@ export function useMapTranslationTools() {
     [],
   );
 
+  /**
+   * creates new translated map (or updates if tragetMap is given) at cpg server, ( therefore at aws also), creates
+   * map node at the graph database, creates relation 'source map'-> 'translated map',
+   * saves and/or assigns translated words to translated map
+   *
+   */
   const processTranslatedMap = useCallback(
     (
       mtr: MapTranslationResult,
       langInfo: LanguageInfo,
       fileNamePrefix: string,
+      sourceMapNodeId: string,
+      targetMap: MapDto | null,
     ) => {
       if (!singletons) {
         logger.error('---No singletons!');
@@ -207,35 +279,69 @@ export function useMapTranslationTools() {
       const mapFileTosave = new File(
         [mapBlob],
         `${fileNamePrefix}-${langInfo2tag(langInfo)}.${MAPFILE_EXTENSION}`,
+        { type: 'image/svg+xml' },
       );
       const words = mtr.translations.map((tr) => tr.translation);
 
-      sendMapFile(
-        mapFileTosave,
-        async ({ id, fileName }) => {
-          const mapId = await singletons.mapService.saveMap(langInfo, {
-            [PropertyKeyConst.NAME]: fileName,
+      const afterSave = async ({
+        id,
+        fileName,
+      }: {
+        id: string;
+        fileName: string;
+      }) => {
+        let mapId: string | null;
+        if (targetMap) {
+          mapId = targetMap.id;
+        } else {
+          mapId = await singletons.mapService.saveMap(langInfo, {
+            [PropertyKeyConst.NAME]: fileName.split('.').at(-2) || fileName,
             [PropertyKeyConst.MAP_FILE_ID]: id,
             [PropertyKeyConst.EXT]: MAPFILE_EXTENSION,
-            [PropertyKeyConst.IS_PROCESSING_FINISHED]: false, // need to process words
+            [PropertyKeyConst.IS_PROCESSING_FINISHED]: false, // still need to process words
           });
-          if (!mapId) {
-            throw new Error(`Error with creating translated map node`);
-          }
-          await singletons.mapService.processMapWords(words, langInfo, mapId);
-          await singletons.graphSecondLayerService.addNewNodePropertiesNoChecks(
-            mapId,
-            {
-              [PropertyKeyConst.IS_PROCESSING_FINISHED]: true,
-            },
-          );
-          await singletons.driver.save();
-          alertFeedback(
-            FeedbackTypes.SUCCESS,
-            `Map file (name:${fileName}) is created.`,
-          );
-        },
-        (_error) => {
+        }
+
+        if (!mapId) {
+          throw new Error(`Error with creating translated map node`);
+        }
+        await singletons.graphFirstLayerService.createRelationship(
+          sourceMapNodeId,
+          mapId,
+          RelationshipTypeConst.MAP_TO_TRANSLATED_MAP,
+        );
+
+        await singletons.mapService.processMapWords(words, langInfo, mapId);
+        await singletons.graphSecondLayerService.addNewNodePropertiesNoChecks(
+          mapId,
+          {
+            [PropertyKeyConst.IS_PROCESSING_FINISHED]: true,
+          },
+        );
+        await singletons.driver.save();
+        alertFeedback(
+          FeedbackTypes.SUCCESS,
+          `Map file (name:${fileName}) is created.`,
+        );
+      };
+
+      if (!isNaN(Number(targetMap?.mapFileId))) {
+        updateMapFile(
+          mapFileTosave,
+          Number(targetMap!.mapFileId),
+          afterSave,
+          (_error) => {
+            logger.error(
+              {
+                at: 'useMapTranslationTools#processTranslatedMap',
+                when: `try to save translated map file`,
+              },
+              JSON.stringify(_error),
+            );
+          },
+        );
+      } else {
+        sendMapFile(mapFileTosave, afterSave, (_error) => {
           logger.error(
             {
               at: 'useMapTranslationTools#processTranslatedMap',
@@ -243,10 +349,10 @@ export function useMapTranslationTools() {
             },
             JSON.stringify(_error),
           );
-        },
-      );
+        });
+      }
     },
-    [logger, sendMapFile, singletons],
+    [alertFeedback, logger, sendMapFile, singletons, updateMapFile],
   );
 
   const processFile = useCallback(
@@ -465,7 +571,7 @@ export function useMapTranslationTools() {
     [logger, singletons],
   );
 
-  const translateMap = useCallback(
+  const translateMapString = useCallback(
     async (
       sourceSvgString: string,
       sourceLang: LanguageInfo,
@@ -498,6 +604,39 @@ export function useMapTranslationTools() {
     [getRecommendedTranslations, logger, singletons],
   );
 
+  const translateAndSaveOrUpdateFile = useCallback(
+    async ({
+      mapDetail,
+      mapFileData,
+      sourceLanguage,
+      targetLanguage,
+      targetMap,
+    }: {
+      mapDetail: MapDto;
+      mapFileData: Buffer;
+      sourceLanguage: LanguageInfo;
+      targetLanguage: LanguageInfo;
+      targetMap: MapDto | null;
+    }) => {
+      if (!mapDetail?.name || !mapFileData || !mapDetail?.id) return;
+      if (!sourceLanguage || !targetLanguage) return;
+      const mtr = await translateMapString(
+        mapFileData.toString(),
+        sourceLanguage,
+        targetLanguage,
+      );
+      if (!mtr) return;
+      await processTranslatedMap(
+        mtr,
+        targetLanguage,
+        mapDetail.name,
+        mapDetail.id,
+        targetMap,
+      );
+    },
+    [processTranslatedMap, translateMapString],
+  );
+
   return {
     sendMapFile,
     getMapFileInfo,
@@ -507,6 +646,7 @@ export function useMapTranslationTools() {
     setMapStatus,
     getWordsWithLangs,
     changeTranslationVotes,
-    translateMap,
+    translateMapString,
+    translateAndSaveOrUpdateFile,
   };
 }

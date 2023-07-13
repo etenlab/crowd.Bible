@@ -18,6 +18,7 @@ class LoginPage extends BasePage {
     return headerTextPresnt;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async loginToApp(loginData: any) {
     await this.page.locator(emailTextBox).first().fill(loginData.email);
     await this.page.locator(passwordTextBox).first().fill(loginData.password);

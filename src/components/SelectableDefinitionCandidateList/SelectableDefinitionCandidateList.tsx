@@ -92,7 +92,7 @@ function SelectableDefinitionCandidateListPure({
 
   return (
     <DescriptionList
-      title={tr('Definition Candidates')}
+      label={tr('Definition Candidates')}
       items={items}
       radioBtn={{
         checkedId: selectedId,

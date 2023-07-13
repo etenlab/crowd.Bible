@@ -9,6 +9,8 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { KeycloakClient, KeycloakProvider } from '@eten-lab/sso';
 import { createUploadLink } from 'apollo-upload-client';
 
+import { typeDefs } from '@/graphql/typedef';
+
 const uploadLink = createUploadLink({
   uri: `${process.env.REACT_APP_CPG_SERVER_URL}/graphql`,
 });
@@ -16,6 +18,7 @@ const uploadLink = createUploadLink({
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: uploadLink,
+  typeDefs,
 });
 
 const kcClient = new KeycloakClient({

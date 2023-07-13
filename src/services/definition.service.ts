@@ -54,11 +54,29 @@ export class DefinitionService {
         { from_node_id: forNodeId },
       );
 
+    const { electionId } = await this.createDefinitionsElection(forNodeId);
+
+    const electionTargetNode = await this.graphFirstLayerService.readNode(
+      forNodeId,
+      ['nodeType'],
+    );
+
+    let relationshipType: RelationshipTypeConst;
+    switch (electionTargetNode?.nodeType.type_name) {
+      case NodeTypeConst.PHRASE:
+        relationshipType = RelationshipTypeConst.PHRASE_TO_DEFINITION;
+        break;
+      case NodeTypeConst.WORD:
+      default:
+        relationshipType = RelationshipTypeConst.WORD_TO_DEFINITION;
+        break;
+    }
+
     const definitionNode = existingDefinitionNode
       ? existingDefinitionNode
       : (
           await this.graphSecondLayerService.createRelatedToNodeFromObject(
-            RelationshipTypeConst.WORD_TO_DEFINITION,
+            relationshipType,
             {},
             forNodeId,
             NodeTypeConst.DEFINITION,
@@ -66,12 +84,11 @@ export class DefinitionService {
           )
         ).node;
 
-    const { electionId } = await this.createDefinitionsElection(forNodeId);
-
     const candidateId = await this.votableItemsService.findOrCreateCandidateId(
       definitionNode.id,
       electionId,
       forNodeId,
+      relationshipType,
     );
 
     return {
@@ -194,6 +211,7 @@ export class DefinitionService {
     return this.votableItemsService.getDefinitionsAsVotableContent(
       wordNodeId,
       electionId,
+      RelationshipTypeConst.WORD_TO_DEFINITION,
     );
   }
 }

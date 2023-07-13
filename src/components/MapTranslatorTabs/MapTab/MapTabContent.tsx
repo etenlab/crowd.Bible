@@ -51,14 +51,15 @@ export const MapTabContent = () => {
     useState<eUploadMapBtnStatus>(eUploadMapBtnStatus.NONE);
   const { processFile, setMapStatus } = useMapTranslationTools();
 
-  // for now we show all maps despite selected language
-  useEffect(() => {
-    if (!singletons) {
-      logger.error({ at: 'useEffect loading all maps' }, 'No singletons!');
-      return;
-    }
-    (async function loadAllProcessedMaps() {
-      const res = await singletons.mapService.getMaps();
+  const loadProcessedMaps = useCallback(
+    async (withLanguage?: LanguageInfo | null) => {
+      if (!singletons) {
+        logger.error({ at: 'useEffect loading all maps' }, 'No singletons!');
+        return;
+      }
+      const res = await singletons.mapService.getMaps(
+        withLanguage || undefined,
+      );
       setMapList(
         res
           .filter((m) => m[PropertyKeyConst.IS_PROCESSING_FINISHED])
@@ -72,8 +73,13 @@ export const MapTabContent = () => {
               } as MapDetail),
           ),
       );
-    })();
-  }, [logger, singletons]);
+    },
+    [logger, singletons],
+  );
+
+  useEffect(() => {
+    loadProcessedMaps(langInfo);
+  }, [loadProcessedMaps, langInfo]);
 
   useEffect(() => {
     if (!singletons) {
@@ -160,27 +166,6 @@ export const MapTabContent = () => {
     [alertFeedback, langInfo, processFile],
   );
 
-  // for now we show all maps despite selected language
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const setMapsByLang = useCallback(
-    async (langInfo: LanguageInfo) => {
-      if (!singletons) return;
-      const res = await singletons.mapService.getMaps(langInfo);
-      setMapList(
-        res.map(
-          (m) =>
-            ({
-              id: m.id,
-              name: m.name,
-              status: eProcessStatus.NONE,
-              langInfo: m.langInfo,
-            } as MapDetail),
-        ),
-      );
-    },
-    [singletons],
-  );
-
   const handleUploadBtnClick = (
     e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
   ): void => {
@@ -201,14 +186,13 @@ export const MapTabContent = () => {
   const handleLangChange = useCallback(
     (_langTag: string, langInfo: LanguageInfo) => {
       setLangInfo(langInfo);
-      // setMapsByLang(langInfo); // for now we show all maps despite selected language
+      loadProcessedMaps(langInfo);
     },
-    [setLangInfo],
+    [loadProcessedMaps, setLangInfo],
   );
 
   const handleClearLanguageFilter = useCallback(() => {
     setLangInfo(null);
-    // setMapList([]); // for now we show all maps despite selected language
     setUploadMapBtnStatus(eUploadMapBtnStatus.LANG_SELECTION);
   }, [setLangInfo]);
 

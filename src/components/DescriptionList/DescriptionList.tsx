@@ -1,10 +1,10 @@
-import { ChangeEventHandler } from 'react';
+import { ChangeEventHandler, ReactNode } from 'react';
 
 import {
   MuiMaterial,
   Typography,
   useColorModeContext,
-  BiMessageRounded,
+  DiMessages,
   VoteButton,
   Radio,
 } from '@eten-lab/ui-kit';
@@ -83,6 +83,13 @@ function Description({
     radioBtn?.onSelectRadio!(event.target.value);
   };
 
+  if (
+    (!title || title.length === 0) &&
+    (!description || description.length === 0)
+  ) {
+    return null;
+  }
+
   const radioCom = radioBtn ? (
     <Radio
       sx={{ marginLeft: '-9px' }}
@@ -114,13 +121,13 @@ function Description({
 
   const discussionCom = discussionBtn ? (
     <IconButton onClick={() => discussionBtn.onClickDiscussionBtn(content.id)}>
-      <BiMessageRounded
-        style={{
+      <DiMessages
+        color="gray"
+        sx={{
           padding: '5px',
           borderRadius: '4px',
+          fontSize: '29px',
           background: getColor('light-blue'),
-          color: getColor('gray'),
-          fontSize: '26px',
         }}
       />
     </IconButton>
@@ -179,7 +186,8 @@ function Description({
 }
 
 type DescriptionListProps = {
-  title: string;
+  label: string;
+  toolBtnComs?: ReactNode;
   items: DescriptionItem[];
   radioBtn?: {
     checkedId: Nanoid | null;
@@ -199,7 +207,8 @@ type DescriptionListProps = {
 };
 
 export function DescriptionList({
-  title,
+  label,
+  toolBtnComs,
   items,
   radioBtn,
   discussionBtn,
@@ -208,9 +217,12 @@ export function DescriptionList({
 }: DescriptionListProps) {
   return (
     <Stack sx={{ padding: '20px' }}>
-      <Typography variant="overline" sx={{ opacity: 0.5 }}>
-        {title}
-      </Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="overline" sx={{ opacity: 0.5 }}>
+          {label}
+        </Typography>
+        {toolBtnComs}
+      </Stack>
 
       {items.map((item) => (
         <Description

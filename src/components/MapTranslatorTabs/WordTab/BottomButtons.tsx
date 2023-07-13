@@ -5,30 +5,47 @@ const { Box, Stack, styled } = MuiMaterial;
 const PADDING = 15;
 export type BottomButtonsProps = {
   setStep: React.Dispatch<React.SetStateAction<Steps>>;
+  setStepDescription?: string;
   storeTranslations?: () => void;
+  translateAndSaveMaps?: () => void;
 };
 
 export function BottomButtons({
   setStep,
+  setStepDescription,
   storeTranslations,
+  translateAndSaveMaps,
 }: BottomButtonsProps) {
   const { tr } = useTr();
   return (
     <StickyStack direction={'row'} spacing={`${PADDING}px`}>
-      <Box flexGrow={1}>
+      <Box flexGrow={1} flexBasis={0}>
         <Button
           variant={'contained'}
           fullWidth
           onClick={() => setStep(Steps.GET_LANGUAGES)}
         >
           <TbArrowBack />
-          {tr('Back')}
+          {setStepDescription ? setStepDescription : tr('Back')}
         </Button>
       </Box>
       {storeTranslations ? (
-        <Box flexGrow={1}>
+        <Box flexGrow={1} flexBasis={0}>
           <Button variant={'contained'} fullWidth onClick={storeTranslations}>
             {tr('Save')}
+          </Button>
+        </Box>
+      ) : (
+        <></>
+      )}
+      {translateAndSaveMaps ? (
+        <Box flexGrow={1} flexBasis={0}>
+          <Button
+            variant={'contained'}
+            fullWidth
+            onClick={translateAndSaveMaps}
+          >
+            {tr('Translate and save maps')}
           </Button>
         </Box>
       ) : (

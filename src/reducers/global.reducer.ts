@@ -32,8 +32,16 @@ export type RoleType = UserRoles[];
 export type PrefersColorSchemeType = ColorThemes.LIGHT | ColorThemes.DARK;
 
 export interface IUser {
-  userId: string;
-  userEmail: string;
+  user_id: string;
+  kid: string;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  active: boolean;
+  avatar_url?: string;
+  is_email_verified: boolean;
+  created_at: Date;
   roles: RoleType;
 }
 
