@@ -447,6 +447,10 @@ export const WordTabContent = ({
                 buttonText="New Definition"
                 changeContentValue={() => {}}
                 changeContentVotes={handleChangeTranslationVotes}
+                isWithDiscussion={true}
+                onContentDiscussionClick={(id) =>
+                  logger.info(`onContentDiscussionClick for ${id}`)
+                }
                 addContent={() => {}}
                 customTitle={
                   <Typography variant="body1">{w.title.content}</Typography>

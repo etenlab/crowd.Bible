@@ -1,4 +1,4 @@
-import { Button, DiFilter, MuiMaterial } from '@eten-lab/ui-kit';
+import { Button, DiFilter, DiMessages, MuiMaterial } from '@eten-lab/ui-kit';
 
 const { Typography, styled } = MuiMaterial;
 
@@ -22,6 +22,7 @@ export const StyledFilterButton = styled((props: StyledButtonProps) => (
 ))(({ theme }) => ({
   backgroundColor: theme.palette.text['light-blue'],
   padding: '9px',
+  borderRadius: '5px',
   minWidth: 'fit-content',
   ':hover': {
     backgroundColor: theme.palette.text['light-blue'],
