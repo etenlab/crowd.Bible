@@ -78,7 +78,7 @@ export default defineConfig({
     command: ciEnv ? 'npm run start' : '',
     url: ciEnv ? 'http://localhost:3000/' : 'https://dev.crowd.bible',
     reuseExistingServer: !ciEnv,
-    timeout: 500 * 1000,
+    timeout: 300 * 1000,
     env: {
       REACT_APP_CPG_SERVER_URL: 'http://localhost:8201',
       REACT_APP_KEYCLOAK_URL: 'http://localhost:8080',
