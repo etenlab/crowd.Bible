@@ -159,14 +159,14 @@ export function RegisterPage() {
       return;
     }
 
+    if (!!userError) {
+      alertFeedback(FeedbackTypes.ERROR, 'Cannot save user to the server!');
+      stopLoading();
+      return;
+    }
+
     if (userData) {
       stopLoading();
-
-      if (!!userError) {
-        alertFeedback(FeedbackTypes.ERROR, 'Cannot save user to the server!');
-        stopLoading();
-        return;
-      }
 
       if (!token) {
         alertFeedback(FeedbackTypes.ERROR, 'Cannot find user access token!');
