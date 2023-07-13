@@ -438,7 +438,7 @@ export const WordTabContent = ({
               }}
             />
           </Box>
-          <Stack divider={<Divider />} width={'100%'}>
+          <Stack width={'100%'} gap={'20px'}>
             {wordsVotableItems.map((w, i) => (
               <ItemContentListEdit
                 key={i}
