@@ -161,7 +161,7 @@ function Description({
           {voteCom}
           {discussionCom}
         </Stack>
-        <Stack direction="row" gap="5px">
+        {/* <Stack direction="row" gap="5px">
           <Typography
             variant="body3"
             sx={{ padding: '9px 0', color: getColor('gray') }}
@@ -178,7 +178,7 @@ function Description({
           >
             Name
           </Typography>
-        </Stack>
+        </Stack> */}
       </Stack>
       <Divider />
     </Stack>
