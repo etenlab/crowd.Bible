@@ -116,12 +116,6 @@ export class MapService {
             rel.relationship_type !==
             RelationshipTypeConst.MAP_TO_TRANSLATED_MAP
           ) {
-            console.log(
-              rel.relationship_type,
-              RelationshipTypeConst.MAP_TO_TRANSLATED_MAP,
-              rel.relationship_type ===
-                RelationshipTypeConst.MAP_TO_TRANSLATED_MAP,
-            );
             continue;
           }
           const tMapNode = await this.graphFirstLayerService.readNode(
