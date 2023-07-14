@@ -235,9 +235,9 @@ export class SeedService {
 
   async init() {
     try {
+      await this.saveSyncEntries(MOCK_CROWD_BIBLE_APP);
       if (this.dataSeeded) return;
       this.logger.info('*** data seeding started ***');
-      await this.saveSyncEntries(MOCK_CROWD_BIBLE_APP);
       this.logger.info('*** data seeding completed ***');
       this.dataSeeded = true;
     } catch (error) {

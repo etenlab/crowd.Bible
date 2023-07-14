@@ -219,7 +219,6 @@ export function SiteTextDetailPage() {
   };
 
   const handleClickDiscussionBtn = (definitionId: Nanoid) => {
-    console.log(definitionId);
     history.push(`${RouteConst.DISCUSSIONS}/definition/${definitionId}`);
   };
 

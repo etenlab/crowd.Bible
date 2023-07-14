@@ -244,7 +244,9 @@ export function useDocument() {
         return null;
       }
 
-      const { startLoading, stopLoading } = createLoadingStack();
+      const { startLoading, stopLoading } = createLoadingStack(
+        'Loading App Data...',
+      );
 
       try {
         startLoading();

@@ -23,13 +23,7 @@ interface PageLayoutProps {
 export function PageLayout({ children }: PageLayoutProps) {
   const {
     states: {
-      global: {
-        snack,
-        loadingStack,
-        singletons,
-        isSqlPortalShown,
-        crowdBibleApp,
-      },
+      global: { snack, loadingStack, singletons, isSqlPortalShown },
       components: { modal },
     },
     actions: { closeFeedback, clearModalCom, deleteLoadingState },
@@ -40,11 +34,10 @@ export function PageLayout({ children }: PageLayoutProps) {
   const loading =
     loadingStack.length > 0 ? loadingStack[loadingStack.length - 1] : null;
 
-  const isLoading = !!loading || !singletons || !crowdBibleApp;
+  const isLoading = !!loading || !singletons;
   const loadingMessage =
     loading?.message ||
     (!singletons && tr('Loading Singletons')) ||
-    (!crowdBibleApp && tr('Loading App Data')) ||
     tr('Loading');
 
   return (
