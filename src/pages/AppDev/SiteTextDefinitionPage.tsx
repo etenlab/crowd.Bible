@@ -188,14 +188,17 @@ export function SiteTextDefinitionPage() {
       })
       .map((definition) => ({
         id: definition.id!,
-        description: definition.content,
+        description:
+          definition.content.length > 0
+            ? definition.content
+            : tr('No description'),
         vote: {
           upVotes: definition.upVotes,
           downVotes: definition.downVotes,
           candidateId: definition.candidateId!,
         },
       }));
-  }, [definitionList]);
+  }, [definitionList, tr]);
 
   return (
     <PageLayout>

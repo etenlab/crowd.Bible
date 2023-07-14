@@ -228,7 +228,10 @@ export function SiteTextDetailPage() {
       ? siteTextTranslationList.map((translation) => ({
           id: translation.candidateId || '',
           title: translation.translatedSiteText,
-          description: translation.translatedDefinition,
+          description:
+            translation.translatedDefinition.length > 0
+              ? translation.translatedDefinition
+              : tr('No translation'),
           vote: {
             upVotes: translation.upVotes,
             downVotes: translation.downVotes,
@@ -236,7 +239,7 @@ export function SiteTextDetailPage() {
           },
         }))
       : [];
-  }, [siteTextTranslationList]);
+  }, [siteTextTranslationList, tr]);
 
   const siteTextString =
     siteText?.translatedSiteText ||
