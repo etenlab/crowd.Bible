@@ -198,14 +198,17 @@ export function SiteTextTranslationSwitchPage() {
     return translationList.map((translation) => ({
       id: translation.candidateId || '',
       title: translation.translatedSiteText,
-      description: translation.translatedDefinition,
+      description:
+        translation.translatedDefinition.length > 0
+          ? translation.translatedDefinition
+          : tr('No translation'),
       vote: {
         upVotes: translation.upVotes,
         downVotes: translation.downVotes,
         candidateId: translation.candidateId || '',
       },
     }));
-  }, [translationList]);
+  }, [translationList, tr]);
 
   return (
     <PageLayout>

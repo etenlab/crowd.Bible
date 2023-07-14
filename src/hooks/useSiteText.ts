@@ -225,10 +225,13 @@ export function useSiteText() {
         return [];
       }
 
-      const { startLoading, stopLoading } = createLoadingStack();
+      const { startLoading, stopLoading } = createLoadingStack(
+        'Loading Site Text List ..',
+      );
 
       try {
         startLoading();
+
         const result =
           await singletons.siteTextService.getTranslatedSiteTextListByAppId(
             appId,
@@ -241,12 +244,12 @@ export function useSiteText() {
         return result;
       } catch (err) {
         logger.error(err);
-        stopLoading();
+        // stopLoading();
         alertFeedback(FeedbackTypes.ERROR, 'Internal Error!');
         return [];
       }
     },
-    [singletons, alertFeedback, createLoadingStack, logger],
+    [singletons, alertFeedback, logger, createLoadingStack],
   );
 
   const getSiteTextDto = useCallback(
