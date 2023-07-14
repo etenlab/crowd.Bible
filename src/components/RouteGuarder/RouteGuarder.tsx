@@ -1,34 +1,33 @@
+import { useMemo } from 'react';
 import { Redirect, RouteProps } from 'react-router-dom';
 
 import { RouteConst } from '@/constants/route.constant';
-// import { useHistory } from 'react-router-dom';
-// import { useAppContext } from '@/hooks/useAppContext';
-// import { type IUser } from '@/reducers/global.reducer';
+import { useAppContext } from '@/hooks/useAppContext';
+
+const mode = process.env.REACT_APP_MODE;
 
 export function RouteGuarder({ children }: RouteProps) {
-  // const history = useHistory();
-  // const {
-  //   states: {
-  //     global: { user },
-  //   },
-  // } = useAppContext();
+  const {
+    states: {
+      global: { user },
+    },
+  } = useAppContext();
 
-  // const isAutherized = (user: IUser | null) => {
-  //   if (user) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // };
-  const isAutherized = true;
+  const isAutherized = useMemo(() => {
+    if (user) {
+      return true;
+    } else {
+      return false;
+    }
+  }, [user]);
 
-  // if (!isAutherized(user)) {
-  //   history.push(RouteConst.LOGIN);
-  // }
+  if (mode === 'local-dev') {
+    return <>{children}</>;
+  }
 
   if (isAutherized) {
     return <>{children}</>;
   } else {
-    return <Redirect to={RouteConst.HOME} />;
+    return <Redirect to={RouteConst.LOGIN} />;
   }
 }

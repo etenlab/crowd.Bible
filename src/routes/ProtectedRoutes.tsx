@@ -21,7 +21,6 @@ export const ProtectedRoutes: CustomRouteProps[] = [
     path: RouteConst.PROFILE,
     children: <ProfilePage />,
   },
-
   {
     path: RouteConst.NOTIFICATIONS,
     children: <NotificationsPage />,
