@@ -16,6 +16,8 @@ jobs:
           compose-file: './.github/docker/docker-compose.yml'
           down-flags: '--volumes'
           services: |
+            postgres
+            cpg-server
             postgres-sso
             keycloak
 

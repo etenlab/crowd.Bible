@@ -33,7 +33,7 @@ export function LogoutButton() {
     history.push(RouteConst.LOGIN);
   };
 
-  if (!user || user?.userEmail.trim().length === 0) {
+  if (!user) {
     return null;
   }
 

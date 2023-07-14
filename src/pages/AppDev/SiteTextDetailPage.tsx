@@ -218,7 +218,9 @@ export function SiteTextDetailPage() {
     });
   };
 
-  const handleClickDiscussionBtn = async (_descriptionId: Nanoid) => {};
+  const handleClickDiscussionBtn = (definitionId: Nanoid) => {
+    history.push(`${RouteConst.DISCUSSIONS}/definition/${definitionId}`);
+  };
 
   const items: DescriptionItem[] = useMemo(() => {
     return siteTextTranslationList
@@ -236,9 +238,13 @@ export function SiteTextDetailPage() {
   }, [siteTextTranslationList]);
 
   const siteTextString =
-    siteText?.translatedSiteText || originalSiteText?.siteText || '';
+    siteText?.translatedSiteText ||
+    originalSiteText?.siteText ||
+    tr('Site Text');
   const definitionString =
-    siteText?.translatedDefinition || originalSiteText?.definition || '';
+    siteText?.translatedDefinition ||
+    originalSiteText?.definition ||
+    tr('No definition');
 
   return (
     <PageLayout>
@@ -277,7 +283,7 @@ export function SiteTextDetailPage() {
       </Stack>
 
       <DescriptionList
-        title={tr('Translation Candidates')}
+        label={tr('Translation Candidates')}
         items={items}
         discussionBtn={{
           onClickDiscussionBtn: handleClickDiscussionBtn,

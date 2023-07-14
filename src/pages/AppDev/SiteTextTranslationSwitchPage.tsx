@@ -1,7 +1,7 @@
 import { useMemo, useState, useCallback, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
-import { CrowdBibleUI, Button, MuiMaterial, Input } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, MuiMaterial, Input, PlusButton } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useSiteText } from '@/hooks/useSiteText';
@@ -131,7 +131,9 @@ export function SiteTextTranslationSwitchPage() {
     );
   };
 
-  const handleClickDiscussionBtn = async (_descriptionId: Nanoid) => {};
+  const handleClickDiscussionBtn = (definitionId: Nanoid) => {
+    history.push(`${RouteConst.DISCUSSIONS}/definition/${definitionId}`);
+  };
 
   const handleChangeVote = useCallback(
     async (candidateId: Nanoid, voteValue: boolean, descriptionId: Nanoid) => {
@@ -216,11 +218,14 @@ export function SiteTextTranslationSwitchPage() {
       />
       <Stack gap="12px" sx={{ padding: '20px' }}>
         <Typography variant="body1" color="text.dark">
-          {siteText?.translatedDefinition || ''}
+          {siteText?.translatedDefinition || tr('No definition')}
         </Typography>
       </Stack>
       <DescriptionList
-        title={tr('Site Text Translation List')}
+        label={tr('Site Text Translation List')}
+        toolBtnComs={
+          <PlusButton variant="primary" onClick={handleClickAddNew} />
+        }
         items={items}
         discussionBtn={{
           onClickDiscussionBtn: handleClickDiscussionBtn,
@@ -230,14 +235,6 @@ export function SiteTextTranslationSwitchPage() {
         }}
         onClickRow={handleClickTranslationRow}
       />
-      <Stack gap="12px" sx={{ padding: '20px' }}>
-        <Button variant="contained" onClick={handleClickAddNew}>
-          {tr('+ Add New Translation')}
-        </Button>
-        <Button variant="text" onClick={handleClickCancel}>
-          {tr('Cancel')}
-        </Button>
-      </Stack>
     </PageLayout>
   );
 }

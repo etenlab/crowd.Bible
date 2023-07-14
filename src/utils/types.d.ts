@@ -30,3 +30,40 @@ interface Word {
   id?: string;
   name: string;
 }
+
+interface IFile {
+  id: number;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  fileUrl: string;
+  fileHash: string;
+}
+interface UploadedFile {
+  uploadFile: IFile;
+}
+
+interface IUser {
+  user_id: string;
+  kid: string;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  active: boolean;
+  avatar_url?: string;
+  is_email_verified: boolean;
+  created_at: Date;
+}
+
+interface CreatedUser {
+  createUser: IUser;
+}
+
+interface GetUser {
+  getUser?: IUser;
+}
+
+interface UpdatedUser {
+  updateUser: IUser;
+}

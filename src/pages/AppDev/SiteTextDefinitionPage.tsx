@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useIonViewDidEnter } from '@ionic/react';
 
-import { CrowdBibleUI, Button, MuiMaterial, Input } from '@eten-lab/ui-kit';
+import { CrowdBibleUI, PlusButton, MuiMaterial, Input } from '@eten-lab/ui-kit';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useSiteText } from '@/hooks/useSiteText';
@@ -116,7 +116,9 @@ export function SiteTextDefinitionPage() {
     history.push(`${RouteConst.SITE_TEXT_DETAIL}/${appId}/${siteTextId}`);
   };
 
-  const handleClickDiscussionBtn = async (_descriptionId: Nanoid) => {};
+  const handleClickDiscussionBtn = (definitionId: Nanoid) => {
+    history.push(`${RouteConst.DISCUSSIONS}/definition/${definitionId}`);
+  };
 
   const handleChangeVote = useCallback(
     async (candidateId: Nanoid, voteValue: boolean, descriptionId: Nanoid) => {
@@ -199,17 +201,22 @@ export function SiteTextDefinitionPage() {
       <HeadBox
         back={{ action: handleClickCancel }}
         title={tr('Site Text Definitions')}
-        extraNode={<Input value={siteText?.siteText || ''} disabled />}
+        extraNode={
+          <Input value={siteText?.siteText || tr('Site Text')} disabled />
+        }
       />
 
       <Stack gap="12px" sx={{ padding: '20px' }}>
         <Typography variant="body1" color="text.dark">
-          {siteText?.definition || ''}
+          {siteText?.definition || tr('No definition')}
         </Typography>
       </Stack>
 
       <DescriptionList
-        title={tr('Translation Candidates')}
+        label={tr('Definition Candidates')}
+        toolBtnComs={
+          <PlusButton variant="primary" onClick={handleClickAddNew} />
+        }
         items={items}
         discussionBtn={{
           onClickDiscussionBtn: handleClickDiscussionBtn,
@@ -219,15 +226,6 @@ export function SiteTextDefinitionPage() {
         }}
         onClickRow={handleClickDefinitionRow}
       />
-
-      <Stack gap="12px" sx={{ padding: '20px' }}>
-        <Button variant="contained" onClick={handleClickAddNew}>
-          {tr('+ Add New Definition')}
-        </Button>
-        <Button variant="text" onClick={handleClickCancel}>
-          {tr('Cancel')}
-        </Button>
-      </Stack>
     </PageLayout>
   );
 }

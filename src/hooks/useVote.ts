@@ -270,7 +270,7 @@ export function useVote() {
       try {
         startLoading();
         const userDto = await singletons.userService.createOrFindUser(
-          user.userEmail,
+          user.email,
         );
 
         await singletons.votingService.addVote(candidateId, userDto.id, vote);
@@ -305,9 +305,7 @@ export function useVote() {
 
       try {
         startLoading();
-        const userDto = await singletons.userService.createOrFindUser(
-          user.userEmail,
-        );
+        const userDto = await singletons.userService.createOrFindUser(user.kid);
 
         const voteEntity = await singletons.votingService.getVoteByRef(
           candidateId,
