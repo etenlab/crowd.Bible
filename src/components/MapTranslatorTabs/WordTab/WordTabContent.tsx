@@ -1,5 +1,6 @@
 import { IonIcon } from '@ionic/react';
 import React, { useCallback, useMemo, useState } from 'react';
+import { DebounceInput } from 'react-debounce-input';
 
 import {
   Input,
@@ -361,8 +362,10 @@ export const WordTabContent = ({
                       <Stack gap={`12px`}>
                         {word.translations.map((translation, tIdx) => {
                           return (
-                            <Input
+                            <DebounceInput
+                              element={Input}
                               fullWidth
+                              debounceTimeout={500}
                               key={tIdx}
                               value={translation[PropertyKeyConst.WORD]}
                               onChange={(e) =>
