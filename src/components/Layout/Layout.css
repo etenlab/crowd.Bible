@@ -18,3 +18,11 @@
 .footer-md::before {
   display: none;
 }
+
+.overscroll::before {
+  bottom: 0;
+}
+
+.overscroll::after {
+  top: 0;
+}
