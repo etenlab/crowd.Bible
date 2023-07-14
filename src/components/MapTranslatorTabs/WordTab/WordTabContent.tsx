@@ -438,20 +438,25 @@ export const WordTabContent = ({
               }}
             />
           </Box>
-          <Stack divider={<Divider />} width={'100%'}>
+          <Stack width={'100%'}>
             {wordsVotableItems.map((w, i) => (
-              <ItemContentListEdit
-                key={i}
-                item={w}
-                onBack={() => setStep(Steps.INPUT_TRANSLATIONS)}
-                buttonText="New Definition"
-                changeContentValue={() => {}}
-                changeContentVotes={handleChangeTranslationVotes}
-                addContent={() => {}}
-                customTitle={
-                  <Typography variant="body1">{w.title.content}</Typography>
-                }
-              />
+              <Box key={i} paddingBottom={'20px'}>
+                <ItemContentListEdit
+                  item={w}
+                  onBack={() => setStep(Steps.INPUT_TRANSLATIONS)}
+                  buttonText="New Definition"
+                  changeContentValue={() => {}}
+                  changeContentVotes={handleChangeTranslationVotes}
+                  isWithDiscussion={true}
+                  onContentDiscussionClick={(id) =>
+                    logger.info(`onContentDiscussionClick for ${id}`)
+                  }
+                  addContent={() => {}}
+                  customTitle={
+                    <Typography variant="body1">{w.title.content}</Typography>
+                  }
+                />
+              </Box>
             ))}
           </Stack>
 
