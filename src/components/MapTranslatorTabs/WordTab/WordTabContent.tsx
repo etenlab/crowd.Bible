@@ -33,6 +33,8 @@ import {
 import { BottomButtons } from './BottomButtons';
 import { MapDto } from '@/dtos/map.dto';
 import { alertFeedback } from '@/reducers/global.actions';
+import { RouteConst } from '../../../constants/route.constant';
+import { useHistory } from 'react-router';
 
 const { ItemContentListEdit } = CrowdBibleUI;
 const { Box, Divider, Stack } = MuiMaterial;
@@ -51,6 +53,7 @@ export const WordTabContent = ({
 }: {
   setActiveTab: (tabNumber: number) => void;
 }) => {
+  const history = useHistory();
   const {
     states: {
       global: { singletons },
@@ -263,6 +266,14 @@ export const WordTabContent = ({
     translateAndSaveOrUpdateFile,
   ]);
 
+  const handleDiscussionClick = (translationId: Nanoid | null) => {
+    if (translationId === null) {
+      alertFeedback(FeedbackTypes.ERROR, `No translation Id to discuss`);
+      return;
+    }
+    history.push(`${RouteConst.DISCUSSIONS}/translation/${translationId}`);
+  };
+
   return (
     <Box
       display={'flex'}
@@ -448,9 +459,7 @@ export const WordTabContent = ({
                   changeContentValue={() => {}}
                   changeContentVotes={handleChangeTranslationVotes}
                   isWithDiscussion={true}
-                  onContentDiscussionClick={(id) =>
-                    logger.info(`onContentDiscussionClick for ${id}`)
-                  }
+                  onContentDiscussionClick={(id) => handleDiscussionClick(id)}
                   addContent={() => {}}
                   customTitle={
                     <Typography variant="body1">{w.title.content}</Typography>
